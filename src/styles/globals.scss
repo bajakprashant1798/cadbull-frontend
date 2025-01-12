@@ -1,0 +1,815 @@
+@import "variables.scss";
+@import "mixinx";
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "typography.scss";
+@import "layout.scss";
+@import 'react-quill/dist/quill.snow.css';
+@import "overrides.scss";
+
+
+
+@media (min-width: 1400px) {
+
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xl {
+    max-width: 1380px;
+  }
+}
+
+// ******** Utility Classes ********
+
+.text-danger {
+  color: $danger !important;
+}
+
+.text-grey {
+  color: $gray;
+}
+
+.text-secondary {
+  color: $secondary !important;
+}
+
+.text-black {
+  color: $black !important;
+}
+
+.text-primary {
+  color: $primary !important;
+}
+
+.bg-danger {
+  background-color: $danger !important;
+}
+
+.bg-primary {
+  background: $primary !important;
+}
+
+.bg-secondary {
+  background: $secondary !important;
+}
+
+
+.bg-light {
+  background-color: $bg !important;
+}
+
+.badge {
+  padding: 4px 6px !important;
+  border-radius: $borderRadiusSm !important;
+}
+
+.rounded-xl {
+  border-radius: $borderRadiusXl !important;
+}
+
+.rounded-xxl {
+  border-radius: $borderRadiusXXl;
+}
+
+.divider {
+  background-color: $formborder;
+  height: 10px;
+}
+
+
+// ******** Section Heading ********
+
+.heading-image-wrapper {
+  position: relative;
+  margin-right: -15px;
+
+  // @media all and (max-width:767px) {
+  //   top: 15px;
+  // }
+
+  // @media all and (max-width:575px) {
+  //   position: relative;
+  //   margin-right: -15px;
+  //   top: 20px;
+  // }
+}
+
+.main-heading-wrapper {
+  &::before {
+    position: absolute;
+    content: '';
+    background-image: url('../assets/images/heading-image.png');
+    width: 68px;
+    height: 60px;
+    left: -45px;
+    top: 15px;
+  }
+}
+
+.logo {
+  max-width: 140px;
+}
+
+// ******** Hero Section ********
+
+.hero {
+
+  p {
+    font: normal normal 600 30px/39px 'Poppins', sans-serif;
+
+    span {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    @media all and (max-width:767px) {
+      font: normal normal 600 10px/13px 'Poppins', sans-serif;
+    }
+  }
+
+  form {
+    max-width: 600px;
+  }
+
+  .drawing-type-wrapper {
+    background: $bgdark;
+    max-width: 1000px;
+    margin: auto;
+
+    img {
+      mix-blend-mode: darken;
+    }
+
+    h6 {
+      font: normal normal 600 15px/15px 'Poppins', sans-serif !important;
+      color: $black;
+
+      @media all and (max-width:767px) {
+        font: normal normal 600 10px/11px 'Poppins', sans-serif;
+      }
+    }
+
+    p {
+      font: normal normal 500 12px/15px 'Poppins', sans-serif;
+
+      @media all and (max-width:767px) {
+        font: normal normal 500 8px/11px 'Poppins', sans-serif;
+      }
+
+      @media all and (max-width:350px) {
+        font: normal normal 500 7px/11px 'Poppins', sans-serif;
+      }
+    }
+    @media all  and (max-width:575px) {
+      background: transparent;
+    }
+  }
+}
+
+
+
+// ******** Project of the day ********
+
+
+.project-day-card {
+  @include card;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.5 ease-in-out;
+
+  .action-buttons-wrapper {
+    visibility: hidden;
+    transition: all 0.5 ease-in-out;
+  }
+
+  &:hover {
+    box-shadow: $shadowLg;
+    transition: all 0.5 ease-in-out;
+
+    .action-buttons-wrapper {
+      visibility: visible;
+      transition: all 0.5 ease-in-out;
+    }
+
+    .project-day-card-image {
+      &:before {
+        width: 100%;
+        height: 100%;
+        transition: all 0.3 ease-in-out;
+      }
+    }
+
+    .project-day-card-link {
+      position: relative;
+
+      p {
+        color: $secondary;
+      }
+    }
+  }
+
+  .project-day-card-image {
+    height: 250px;
+    width: 100%;
+    position: relative;
+    border-radius: $borderRadiusLg;
+    overflow: hidden;
+
+    &:before {
+      position: absolute;
+      content: '';
+      inset: 0;
+      width: 0%;
+      height: 0%;
+      background-color: $overRealy;
+      transition: all 0.3s ease-in-out;
+    }
+
+    img {
+      border: 1px solid $borderLightColor;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .project-day-card-description {
+    border-left: 4px solid $gray;
+    .work-title {
+      min-height: 48px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      max-height: 3em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+
+    span {
+      font: normal normal 500 12px/1 'Poppins', sans-serif;
+    }
+
+    p {
+      max-width: 28ch;
+    }
+  }
+
+  .project-day-card-link {
+    position: relative;
+
+    p {
+      color: $black;
+      font: normal normal 600 15px/20px 'Poppins', sans-serif;
+      background-color: $white;
+      position: relative;
+      display: inline-block;
+    }
+
+    &::before {
+      position: absolute;
+      content: '';
+      width: 100%;
+      height: 1px;
+      inset: 0;
+      margin: auto;
+      background: $borderColor;
+    }
+
+  }
+}
+
+// ******** Category ********
+.category-wrapper {
+  h6 {
+    font: normal normal 600 16px/1 'Poppins', sans-serif;
+    color: $black;
+
+    @media all and (max-width:767px) {
+      font: normal normal 600 14px/1 'Poppins', sans-serif;
+    }
+  }
+}
+
+
+// ******** OUR SKILLS ********
+
+.progress {
+  overflow: visible !important;
+  height: 2px;
+  background-color: $borderLightColor;
+  font-size: var(--bs-progress-font-size);
+  border-radius: var(--bs-progress-border-radius);
+
+  .progress-bar {
+    background-color: $primary !important;
+    overflow: visible !important;
+
+  }
+}
+
+.pricing-slider {
+  .progress {
+    height: 10px;
+  }
+
+  .progress-bar {
+    border-radius: 30px;
+    position: relative;
+
+    &::before {
+      position: absolute;
+      content: attr(data-attr);
+      bottom: -60px;
+      right: -20px;
+      background-image: url('../assets/icons/bubble.svg');
+      width: 66px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 10px;
+    }
+
+    &::after {
+      position: absolute;
+      content: '';
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin-block: auto;
+      background-color: $secondary !important;
+      width: 30px;
+      box-shadow: 0px 0px 6px #00000029;
+      height: 30px;
+      border: 4px solid $white;
+      border-radius: 50%;
+    }
+  }
+}
+
+.our-skills {
+  .progress {
+    background-color: transparent;
+
+    .progress-bar {
+      position: relative;
+      background-color: $black !important;
+
+      &::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin-block: auto;
+        background-color: $black !important;
+        width: 2px;
+        height: 16px;
+        transform: rotate(20deg);
+      }
+    }
+  }
+}
+
+
+// ******** Get Off ********
+.get-off-wrapper {
+  background-color: $white;
+  border: 0.5px solid $borderLightColor;
+  overflow: hidden;
+
+  @media all and (max-width:991px) {
+    border: 0;
+  }
+
+  .get-off-text {
+    background-color: $secondary !important;
+    clip-path: polygon(0 0, 73% 0, 100% 100%, 0% 100%);
+
+    @media all and (max-width:991px) {
+      clip-path: unset;
+      border-radius: $borderRadiusXl !important;
+    }
+  }
+}
+
+// auth-page
+
+.auth-page {
+  h1 {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h4 {
+    font-family: 'Poppins', sans-serif;
+    color: $black;
+
+    span {
+      font-family: 'Poppins', sans-serif;
+    }
+  }
+
+}
+
+.form-wrapper {
+  @include card;
+  padding: 15px;
+  border-radius: $borderRadiusXXl;
+  box-shadow: $shadowMd;
+}
+
+// ******** Dropdown ********
+ul.dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+// ******** Edit Profile ********
+.profile-page {
+  .form-wrapper {
+    @include card;
+    padding: 15px;
+    border-radius: $borderRadiusXXl;
+    box-shadow: $shadowMd;
+  }
+
+  font-family: 'Poppins',
+  sans-serif;
+
+  h5,
+  h6 {
+    span {
+      font-family: 'Poppins', sans-serif;
+    }
+  }
+}
+
+
+
+.designer-profile {
+  .select-country {
+    .dropdown-toggle::after {
+      border: 0;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      right: 10px;
+      width: 16px;
+      height: 12px;
+      background-repeat: no-repeat;
+      position: absolute;
+      top: 9px;
+    }
+  }
+}
+
+
+// ******** Form styling ********
+
+.form-wrapper h6 {
+  span {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+// ******** Upload Files and Images ********
+.upload-icon-wraper {
+  input[type=file] {
+    width: 24px;
+    height: 24px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .icon-upload {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+input[type=file] {
+  cursor: pointer;
+}
+
+.upload-files-wrapper {
+  background: $white;
+  border: 1px dashed $secondary;
+  border-radius: $borderRadiusXl;
+  padding: 30px;
+
+  @media all and (max-width:767px) {
+    padding: 15px;
+
+  }
+}
+
+
+.uploading-wrapper {
+  border: 1px solid $formborder;
+  border-radius: $borderRadiusLg;
+  padding: 15px;
+}
+
+// ******** Table ********
+
+table {
+  white-space: nowrap;
+
+  .title-wrapper {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .table-image {
+    object-fit: cover;
+    border: 1px solid #E1E1E1 !important;
+    border-radius: $borderRadiusSm !important;
+
+    @media all and (max-width:767px) {
+      width: 80px;
+    }
+  }
+
+  thead td {
+    padding: 15px 40px !important;
+    background-color: $secondary !important;
+    color: #fff !important;
+
+    @media all and (max-width:767px) {
+      padding: 10px 20px !important;
+    }
+  }
+
+  tbody {
+    td {
+      padding: 20px 40px !important;
+
+      &>* {
+        color: #5B5B5B;
+      }
+
+      @media all and (max-width:767px) {
+        padding: 15px 20px !important;
+      }
+
+    }
+  }
+}
+
+
+.favourites-page {
+  td {
+    min-width: 100px;
+
+    &:nth-child(3),
+    &:nth-child(5),
+    &:nth-child(6) {
+      min-width: 250px;
+    }
+  }
+}
+
+
+
+// ******** Categories ********
+
+.category-page {
+  h3 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+
+.category-list-wrapper {
+  li {
+    color: $gray;
+
+    a {
+      color: currentColor;
+    }
+  }
+
+  .active {
+    color: $primary;
+
+    a {
+      color: currentColor;
+    }
+  }
+}
+
+.border-start-primary {
+  border-color: $secondary !important;
+}
+
+
+.form-check-input {
+  cursor: pointer;
+}
+
+.form-check-input:checked {
+  background-color: $secondary;
+  border-color: $primary;
+}
+
+.form-check-input:focus {
+  border-color: $primary;
+}
+
+.form-switch .form-check-input:focus {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%20325a99'/%3e%3c/svg%3e")
+}
+
+.pricing-card {
+  background: $white 0% 0% no-repeat padding-box;
+  box-shadow: $shadowMd;
+  border: 1px solid #D1D1D5;
+  border-radius: $borderRadiusLg;
+  overflow: hidden;
+
+  .header-wrapper {
+    padding: 20px 30px;
+  }
+
+  .inner-wrapper {
+    border-top: 10px solid #D1D1D5;
+    padding: 40px 30px;
+  }
+
+  li {
+    color: $primary;
+  }
+}
+
+.top-ve {
+  top: -50px;
+}
+
+.nav-link {
+  color: $gray;
+  background: transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  font: normal normal 500 16px/24px 'Poppins', sans-serif;
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 14px/20px 'Poppins', sans-serif;
+  }
+}
+
+.nav-link:hover {
+  color: $primary;
+  border-radius: 0;
+}
+
+.nav-pills .nav-link.active {
+  border-bottom: 3px solid $danger;
+  background: transparent;
+  color: $primary;
+  border-radius: 0;
+}
+
+// .swiper {
+//   padding-inline: 20px;
+// }
+
+.swiper-button-prev {
+  left: var(--swiper-navigation-sides-offset, -3px) !important;
+}
+
+.swiper-button-next {
+  right: var(--swiper-navigation-sides-offset, -3px) !important;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  border: 3px solid $primary !important;
+  width: 24px !important;
+  color: $primary;
+  height: 24px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  @media all and (max-width:767px) {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 8px !important;
+  }
+}
+
+.slider-image img {
+  height: 160px !important;
+
+  @media all and (max-width:991px) {
+    height: 80px !important;
+  }
+}
+
+
+
+.radio-tags {
+  p {
+
+    font: normal normal normal 12px/20px 'Poppins',
+      sans-serif;
+  }
+
+  .btn-radio-primary {
+    border: 0.5px solid $formborder;
+    color: $gray;
+    padding: 8px 16px;
+
+    @media all and (max-width:767px) {
+      padding: 6px 8px;
+
+    }
+
+    &:hover {
+      border: 0.5px solid $primary;
+    }
+  }
+}
+
+.company-page {
+  position: relative;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    content: '';
+    width: 100%;
+    height: 300px;
+    background-color: $bg;
+    z-index: -1;
+  }
+}
+
+.company-logo-info {
+  width: 100px;
+  height: 100px;
+
+
+  @media all and (max-width:575px) {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+.professionals-images {
+  width: 190px;
+  height: 190px;
+
+  @media all and (max-width:991px) {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.w-xs-100 {
+  @media all and (max-width:575px) {
+    width: 100%;
+  }
+}
+
+
+.switch-wraper {
+  @media all and (max-width:575px) {
+    max-width: 300px;
+  }
+}
+
+// input[type=checkbox] {
+//   width: 16px !important;
+//   height: 16px !important;
+//   background-image: url("../assets/icons/uncheck.png");
+//   &:checked{
+//     background-image: url("../assets/icons/checked.png");
+//   }
+// }
+.form-check-input[type=radio] {
+  width: 16px !important;
+  height: 16px !important;
+  background: url("../assets/icons/unchecked.png") !important;
+  background-repeat: no-repeat !important;
+  border: 0 !important;
+  background-size: contain;
+}
+
+.form-check-input:checked[type=radio] {
+  width: 16px !important;
+  height: 16px !important;
+  background: url("../assets/icons/checked.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: contain;
+  border: 0 !important;
+}
+
+.offcanvas {
+  --bs-offcanvas-height: 58vh;
+}
+
+.category-drawer {
+  --bs-offcanvas-height: 100vh;
+}

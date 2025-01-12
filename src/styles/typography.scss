@@ -1,0 +1,160 @@
+// ******** Typography Styling ********
+
+body {
+  letter-spacing: 0px;
+  font: normal normal 500 15px/20px 'Poppins', sans-serif;
+  color: $gray;
+
+  @media all and (max-width:767px) {
+    font: normal normal 500 14px/16px 'Poppins', sans-serif;
+  }
+
+  @media all and (max-width:350px) {
+    font: normal normal 500 12px/13px 'Poppins', sans-serif;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  font: normal normal 600 40px/50px 'Poppins', sans-serif;
+  color: $primary;
+
+  span {
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  @media all and (max-width:991px) {
+    font: normal normal 600 24px/32px 'Poppins', sans-serif;
+  }
+}
+
+h2 {
+  font: normal normal 900 36px/50px 'Poppins', sans-serif;
+
+  @media all and (max-width:767px) {
+    font: normal normal 900 22px/26px 'Poppins', sans-serif;
+  }
+}
+
+
+h3 {
+  font: normal normal 500 28px/36px 'Poppins', sans-serif;
+  color: $primary;
+
+  span {
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 20px/30px 'Poppins', sans-serif;
+  }
+}
+
+h4 {
+  font: normal normal 500 22px/30px 'Poppins', sans-serif;
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 18px/30px 'Poppins', sans-serif;
+  }
+}
+
+
+h5 {
+  font: normal normal 500 18px/24px 'Poppins', sans-serif;
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 16px/20px 'Poppins', sans-serif;
+  }
+}
+
+h6 {
+  font: normal normal 500 16px/20px 'Poppins', sans-serif;
+  color: $gray;
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 14px/20px 'Poppins', sans-serif;
+  }
+}
+
+p {
+  color: $gray;
+  font: normal normal 500 14px/24px 'Poppins', sans-serif;
+
+  @media all and (max-width:991px) {
+    font: normal normal 500 14px/20px 'Poppins', sans-serif;
+  }
+}
+
+
+footer {
+  a {
+    font: normal normal normal 14px/1 'Poppins', sans-serif;
+    text-decoration: none;
+    color: $white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    @media all and (max-width:991px) {
+      font: normal normal normal 13px/1 'Poppins', sans-serif;
+    }
+  }
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+.footer-lower-wrapper {
+
+  a,
+  li {
+    @media all and (max-width:991px) {
+      font: normal normal normal 10px/20px 'Poppins', sans-serif;
+    }
+  }
+}
+
+
+form {
+  label {
+    font: normal normal 600 16px/34px 'Poppins', sans-serif !important;
+    color: $secondary;
+
+    @media all and (max-width:991px) {
+      font: normal normal 600 14px/24px 'Poppins', sans-serif !important;
+    }
+
+    &:after {
+      content: '*';
+      color: $danger;
+      margin-left: 4px;
+    }
+  }
+
+  .no-required {
+    &:after {
+      display: none;
+    }
+  }
+}

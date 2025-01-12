@@ -1,0 +1,90 @@
+.form-control,
+.form-select,
+.quill {
+  padding-block: 9px;
+  background-color: $white;
+  box-shadow: none !important;
+  border-color: $formborder;
+  font-size: 14px;
+
+  @media all and (max-width:767px) {
+    font-size: 13px;
+  }
+
+  &:focus {
+    border-color: $formborder;
+  }
+}
+
+::placeholder,
+.ql-editor.ql-blank::before {
+  font: normal normal 500 14px/18px 'Poppins', sans-serif !important;
+  color: $lightgray !important;
+  font-style: normal !important;
+
+  @media all and (max-width:767px) {
+    font: normal normal normal 13px/16px 'Poppins', sans-serif;
+  }
+}
+
+:placeholder-shown {
+  @include textTruncate;
+}
+
+.form-select {
+  font-weight: 500;
+}
+
+.input-group-text {
+  font-size: 14px;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+.ql-toolbar.ql-snow {
+  border-radius: $borderRadius $borderRadius 0 0;
+  border: 1px solid $formborder;
+  box-shadow: $shadowSm;
+}
+
+.quill {
+  border-radius: $borderRadius;
+}
+
+.ql-container.ql-snow {
+  border-radius: 0 0 $borderRadius $borderRadius !important;
+  border: 1px solid $formborder;
+  height: 80px;
+}
+
+
+
+.dropdown-item.active,
+.dropdown-item:hover,
+.dropdown-item:active {
+  background-color: $formborder !important;
+}
+
+.info-image {
+  height: 400px;
+
+  @media all and (max-width:767px) {
+    height: 200px;
+  }
+}
+.active > .page-link, .page-link.active{
+  background-color: #EBEBEB!important;
+}

@@ -1,0 +1,125 @@
+// ******** Layout Styling ********
+html,
+body {
+  height: 100%;
+  // background-color: $bg;
+}
+
+#__next {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: $white 0% 0% no-repeat padding-box;
+  border-bottom: 2px solid #a8a8a840;
+
+  img {
+    mix-blend-mode: darken;
+  }
+
+  a {
+    font: normal normal 500 15px/20px 'Poppins', sans-serif;
+    letter-spacing: 0px;
+    color: $gray;
+  }
+
+  .active {
+    color: $secondary;
+  }
+}
+
+
+footer {
+  background: $primary ;
+}
+
+.border-top-footer {
+  border-top: 0.5px solid $borderDarkColor;
+}
+
+
+.pagination {
+  justify-content: center;
+  border-radius: $borderRadiusSm !important;
+  box-shadow: $shadow;
+
+  .active {
+    background: #EBEBEB 0% 0% no-repeat padding-box;
+  }
+
+  .page-item .page-link {
+    border: 0 !important;
+
+    font: normal normal 500 15px/20px 'Poppins', sans-serif;
+    color: $black;
+  }
+
+  .page-item:first-child .page-link,
+  .page-item:last-child .page-link {
+    background-color: $primary;
+    border-color: $primary;
+  }
+}
+
+//******** sidebar ********
+
+aside {
+  background: $white 0% 0% no-repeat padding-box;
+  box-shadow: $shadow;
+  border: 1px solid $borderLightColor;
+  border-radius: $borderRadiusLg;
+  overflow: hidden;
+}
+
+//******** breadcrumb ********
+.breadcrumb {
+  flex-wrap: nowrap;
+  gap: 0.3rem;
+  @media all and (max-width:575px) {
+    flex-wrap: wrap;
+  }
+}
+
+.breadcrumb-item {
+  a {
+    font-weight: 600;
+    color: $primary;
+    font-size: 14px;
+    ;
+  }
+
+    @include textTruncate();
+
+  &.active {
+    font-weight: 700;
+    font-size: 14px;
+    @include textTruncate();
+  }
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: var(--bs-breadcrumb-divider, "|");
+}
+
+.category-page {
+  nav {
+    .breadcrumb {
+      position: relative;
+
+      &::before {
+        content: '';
+        width: 30px;
+        height: 2px;
+        background-color: $secondary;
+        margin-right: 5px;
+        margin-block: auto;
+
+        @media all and (max-width:767px){
+          display: none;
+        }
+      }
+    }
+  }
+}
