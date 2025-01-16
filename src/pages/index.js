@@ -30,8 +30,9 @@ import bussiness from "@/assets/images/Interior-Designer.png";
 import housePlan from "@/assets/images/HOUSE-PLAN.png";
 import GetOff from "@/components/GetOff";
 import ProjectCard from "@/components/ProjectCard";
+import Pagination from '@/components/Pagination';
 import Architecture from "@/assets/images/Architecture.png";
-import { getBlogs, getallprojects } from "@/service/api";
+import { getBlogs, getallprojects, getPaginatedProjects } from "@/service/api";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/app/features/authSlice";
 import { get } from "react-hook-form";
@@ -86,29 +87,11 @@ export default function Home() {
   const [blogs, setBlogs] = useState([]);
   const dispatch=useDispatch();
   const [isLoading,startLoading,stopLoading]=useLoading();
-   const [projects,setProjects]=useState([]);
-   const [searchTerm,setSearchTerm]=useState('');
-   const [sortTerm,setSortTerm]=useState('');
+  const [projects,setProjects]=useState([]);
+  const [searchTerm,setSearchTerm]=useState('');
+  const [sortTerm,setSortTerm]=useState('');
   const [totalPages, setTotalPages] = useState(1);
-   const [currentPage,setCurrentPage]=useState(1);
-
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
-
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userId = 1; // Replace with dynamic user ID
-        const response = await axios.get(`http://localhost:5001/api/users/${userId}`);
-        setUsername(response.data.username);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Error fetching user data');
-      }
-    };
-
-    fetchUser();
-  }, []);
+  const [currentPage,setCurrentPage]=useState(1);
 
 
   useEffect(() => {
@@ -122,6 +105,36 @@ export default function Home() {
         });
     }
   }, [blogs]);
+
+  // Fetch projects with pagination
+  const loadProjects = async (page) => {
+    startLoading(true);
+    try {
+      const response = await getPaginatedProjects(page);
+      console.log("projects", response);
+      
+      setProjects(response.data.projects); // Set the projects for the page
+      setTotalPages(response.data.totalPages); // Set total pages
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+    } finally {
+      stopLoading(false);
+    }
+  };
+
+  // Initial load and page change effect
+  useEffect(() => {
+    loadProjects(currentPage);
+  }, [currentPage]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+  
+
   //initial page fetching
   const loadRecords = () => {
     startLoading()
@@ -177,7 +190,6 @@ useEffect(() => {
                   {/* User */}
                   <span className="text-danger">254195+</span> <span className="fw-light"> Free & Premium
                   CADFiles
-                  {username ? <span>Username: {username}</span> : <span>{error}</span>}
                   </span>
                 </p>
                 <Link href="/categories" className="btn btn-primary">
@@ -308,25 +320,26 @@ useEffect(() => {
               </div>
             </div>
           </div>
-
+ 
           <div className="row g-4">
             {projects.map((project) => {
               return (
                 <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
                   <ProjectCard {...project} />
+                  {console.log("projectObject: ", project)}
                 </div>
               );
             })}
           </div>
 
           {/* Pagination  */}
-          {/* <Pagination
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            dispatchCurrentPage={getCurrentPage}
             goToPreviousPage={() => handlePageChange(currentPage - 1)}
             goToNextPage={() => handlePageChange(currentPage + 1)}
-          /> */}
+            dispatchCurrentPage={handlePageChange}
+          />
           <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}

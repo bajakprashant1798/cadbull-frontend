@@ -127,7 +127,7 @@ export const getallsubCategories = (searchTerm = "", slug = "") => {
   const params = searchTerm ? { search: searchTerm } : {};
   return axios.get(url, { params });
 };
-
+ 
 // Get all projects based on pagination, search, sort, and type
 export const getallprojects = (page, pageSize, searchTerm, sortTerm, type) => {
   const url = `${process.env.NEXT_PUBLIC_API_MAIN}/projects`;
@@ -146,6 +146,13 @@ export const getallprojects = (page, pageSize, searchTerm, sortTerm, type) => {
   }
 
   return axios.get(url, { params });
+};
+
+// Fetch projects with pagination
+export const getPaginatedProjects = (page, limit = 6) => {
+  return axios.get(`${process.env.NEXT_PUBLIC_API_MAIN}/projects/latest`, {
+    params: { page, limit },
+  });
 };
 
 // Get details of a single project by ID or search term

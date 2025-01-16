@@ -148,7 +148,7 @@ const EditProfile = () => {
   useEffect(() => {
     getUserProfile(token)
       .then((res) => {
-        console.log("profile:", res.data);
+        // console.log("profile:", res.data);
         
         dispatch(loginSuccess({ user: res.data, status: true })); // Update Redux state
         sessionStorage.setItem("userData", JSON.stringify(res.data)); // Update session storage

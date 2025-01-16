@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { handledownload } from "@/service/globalfunction";
 
-const ProjectCard = ({  view_count, work_title, file_type,uuid,photo_url,project_type}) => {
+const ProjectCard = ({  view_count, work_title, file_type,uuid,photo_url,type}) => {
   const router = useRouter();
   const { token } = useSelector((store) => store.logininfo.user);
   const handleviewcount = (event) => {
@@ -71,7 +71,7 @@ const ProjectCard = ({  view_count, work_title, file_type,uuid,photo_url,project
           </div>
         </div>
         <div className='text-end mt-2'>
-        {project_type === "Gold" ? (
+        {type === "Gold" ? (
         <span style={{
           fontWeight: '500',
           fontSize: '14px', // Set the font size to the desired size
