@@ -2,15 +2,10 @@ import Link from "next/link";
 import Icons from "../Icons";
 import logo from "@/assets/images/logo.png";
 import profile from "@/assets/icons/profile.png";
-import { signOut } from "next-auth/react";
-import Google from "next-auth/providers/google";
 import { useSelector } from "react-redux";
-import { store } from "../../../redux/app/store";
 import { loginSuccess, logout } from "../../../redux/app/features/authSlice";
 import { useDispatch } from "react-redux";
-import { Router, useRouter } from "next/router";
-import heart from "@/assets/icons/heart.png";
-import projects from "@/assets/icons/heart.png";
+import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDollarSign,
@@ -23,7 +18,6 @@ import {
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { addNewBreadCrumbPath } from "../../../redux/app/features/breadCrumbSlice";
 
 const links = [
   {

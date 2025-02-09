@@ -7,7 +7,7 @@ import React, { Fragment, useEffect } from "react";
 import { Poppins } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Authprovider from "@/component/Authprovider/Authprovider";
+// import Authprovider from "@/component/Authprovider/Authprovider";
 import { Provider, useDispatch } from "react-redux";
 import { store } from "../../redux/app/store";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -61,7 +61,7 @@ export default function App({ Component, pageProps }) {
   const getLayout = Component.getLayout || ((page) => page);
   return (
     <Fragment>
-      <Authprovider>
+      {/* <Authprovider> */}
       <Provider store={store}>
       <Head>
         <link rel="icon" href="/favicon.ico" />
@@ -77,7 +77,7 @@ export default function App({ Component, pageProps }) {
       {getLayout(<Component {...pageProps} />)}
       <ToastContainer />
       </Provider>
-      </Authprovider>
+      {/* </Authprovider> */}
     </Fragment>
   );
 }

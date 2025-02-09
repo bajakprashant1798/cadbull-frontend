@@ -5,7 +5,7 @@ import Icons from "@/components/Icons";
 import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect } from "react";
-import { signIn, useSession } from "next-auth/react";
+// import {  useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
@@ -26,7 +26,7 @@ const pageTitle = {
 const Register = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const [isLoading,startLoading,stopLoading]=useLoading();
   const isAuthenticated=useSessionStorageData('userData')
 
@@ -228,25 +228,25 @@ const Register = () => {
   };
   
 
-  const handleFacebookSignIn = async () => {
-    try {
-      await signIn("facebook");
-      const socialLoginResponse = await socialLogin(session.user);
-      const userData = socialLoginResponse.data;
-      localStorage.setItem("userData", JSON.stringify(userData));
-      localStorage.setItem("accessToken", userData.accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+  // const handleFacebookSignIn = async () => {
+  //   try {
+  //     await signIn("facebook");
+  //     const socialLoginResponse = await socialLogin(session.user);
+  //     const userData = socialLoginResponse.data;
+  //     localStorage.setItem("userData", JSON.stringify(userData));
+  //     localStorage.setItem("accessToken", userData.accessToken);
+  //     localStorage.setItem("refreshToken", refreshToken);
 
-      dispatch(
-        loginSuccess({
-          user: userData,
-          status: "authenticated",
-        })
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     dispatch(
+  //       loginSuccess({
+  //         user: userData,
+  //         status: "authenticated",
+  //       })
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   // Handle Email Verification
   useEffect(() => {
