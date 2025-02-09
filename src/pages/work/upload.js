@@ -94,18 +94,40 @@ const UploadWork = () => {
     }
   };
 
-  useEffect(()=>{
-     if(categoryAndSubCategory.length===0){
-      getCategoriesWithSubcategories().then((res)=>{
-        dispatch(addCategoryAndSubCategoryData(res))
-        setSubCategory(res[0]?.project_sub_categories)
-        // console.log('api response upload==========',res)
-      }).catch((err)=>{
-        // console.log(err)
-        console.error("❌ Error loading categories:", err);
-      })
-     }
-  },[categoryAndSubCategory])
+  const handleCategoryChange = async (e) => {
+    const selectedCategoryId = e.target.value;
+    setFormData({
+      ...formData,
+      category_id: selectedCategoryId,
+    });
+  
+    try {
+      // Fetch subcategories only when user selects a category
+      const categories = await getCategoriesWithSubcategories();
+      dispatch(addCategoryAndSubCategoryData(categories));
+  
+      const selectedCategory = categories.find(item => item.id == selectedCategoryId);
+      setSubCategory(selectedCategory ? selectedCategory.project_sub_categories : []);
+  
+    } catch (err) {
+      console.error("❌ Error loading categories:", err);
+      toast.error("Failed to load subcategories.");
+    }
+  };
+  
+
+  // useEffect(()=>{
+  //    if(categoryAndSubCategory.length===0){
+  //     getCategoriesWithSubcategories().then((res)=>{
+  //       dispatch(addCategoryAndSubCategoryData(res))
+  //       setSubCategory(res[0]?.project_sub_categories)
+  //       // console.log('api response upload==========',res)
+  //     }).catch((err)=>{
+  //       // console.log(err)
+  //       console.error("❌ Error loading categories:", err);
+  //     })
+  //    }
+  // },[categoryAndSubCategory])
   return (
     <Fragment>
       <Head>
@@ -193,29 +215,16 @@ const UploadWork = () => {
                       className="form-select"
                       aria-label="Category"
                       value={formData.category_id}
-                      onChange={(e) =>{
-                        setFormData({
-                          ...formData,
-                          category_id: e.target.value,
-                        }),
-                        categoryAndSubCategory.filter((item)=>{
-                          if(item.id == e.target.value){
-                            setSubCategory(item.project_sub_categories)
-                            // console.log("sub",item)
-                          }
-                        })
-
-                      }
-                      }
+                      onChange={handleCategoryChange}
                     >
+                      <option value="">Select Category</option>
                       {
-                        categoryAndSubCategory.map((item,index)=>{
-                          return(
-                            <option key={index} value={item.id}>{item.title}</option>
-                          )
-                        })
+                        categoryAndSubCategory.map((item, index) => (
+                          <option key={index} value={item.id}>{item.title}</option>
+                        ))
                       }
                     </select>
+
                   </div>
                   {/* Subcategory */}
                   <div className="col-lg-6">
@@ -227,22 +236,18 @@ const UploadWork = () => {
                       aria-label="Subcategory"
                       value={formData.subcategory_id}
                       onChange={(e) =>
-                        
                         setFormData({
                           ...formData,
                           subcategory_id: e.target.value,
-                          
                         })
-
                       }
-                    >{
-                      subCategory.map((item,index)=>{
-                        return(
+                    >
+                      <option value="">Select Subcategory</option>
+                      {
+                        subCategory?.map((item, index) => (
                           <option key={index} value={item.id}>{item.title}</option>
-                        )
-                      })
-                    }
-            
+                        ))
+                      }
                     </select>
                   </div>
                   {/* Keyword */}
