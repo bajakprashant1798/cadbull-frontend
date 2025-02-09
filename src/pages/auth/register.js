@@ -9,7 +9,6 @@ import { signupApiHandler, socialLogin } from "@/service/api";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
-import { signIn, useSession } from "next-auth/react";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 
@@ -20,7 +19,6 @@ const pageTitle = {
 };
 
 const Register = () => {
-  const { data: session } = useSession();
   //useLoading hook state 
   const [isLoading,startLoading,stopLoading]=useLoading();
   const {

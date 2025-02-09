@@ -5,7 +5,6 @@ import Icons from "@/components/Icons";
 import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect } from "react";
-// import {  useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
