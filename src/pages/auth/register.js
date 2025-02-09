@@ -2,7 +2,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
 import { signupApiHandler, socialLogin } from "@/service/api";
@@ -32,45 +32,128 @@ const Register = () => {
   } = useForm();
   const router = useRouter();
   const dispatch = useDispatch();
+
+  // -------------------------------
+  // Normal Registration Flow
+  // -------------------------------
   const onSubmit = (data) => {
-    startLoading()
+    startLoading();
     const { confirmPassword, ...formData } = data;
-    console.log(formData);
-    
+  
     signupApiHandler(formData)
       .then((res) => {
-        console.log(res);
         stopLoading();
-        toast.success('Registration was successfull',{autoClose:1500})
-         setTimeout(() => {
-          router.push("/auth/login");
-         }, 1500);
+        
+        // ✅ Log the response to check the structure
+        console.log("🔄 Signup Response:", res.data);
+  
+        // ✅ Check if `user` exists before destructuring
+        if (!res.data || !res.data.user) {
+          toast.error("Unexpected response from server.");
+          return;
+        }
+  
+        const { accessToken, refreshToken, user } = res.data;
+  
+        // // ✅ Store tokens and user data
+        // sessionStorage.setItem("accessToken", accessToken);
+        // localStorage.setItem("refreshToken", refreshToken);
+        // sessionStorage.setItem("userData", JSON.stringify(user));
+  
+        // ✅ Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("userData", JSON.stringify(user));
+
+        // ✅ Dispatch Redux login state
+        dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+
+        // ✅ Trigger storage event to sync across tabs
+        window.dispatchEvent(new Event("userLoggedIn"));
+  
+        toast.success("Registration was successful. Redirecting...", { autoClose: 2000 });
+  
+        // ✅ Redirect based on user role
+        setTimeout(() => {
+          if (user.role === 1) {
+            router.push("/admin/dashboard"); // Super Admin
+          } else if (user.role === 5) {
+            router.push("/admin/dashboard/products/view-projects"); // Content Creator
+          } else {
+            router.push("/"); // Default home page
+          }
+        }, 2000);
       })
       .catch((err) => {
         stopLoading();
-        toast.error('Registration failed')
-        console.log(err);
+        if (err.response && err.response.status === 400) {
+          toast.error(err.response.data.message);
+        } else {
+          toast.error("Registration failed. Please try again.");
+        }
+        console.error("Registration Error:", err);
       });
   };
+  
+  
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google");
-
-      const socialLoginResponse = await socialLogin(session.user);
-      const userData = socialLoginResponse.data;
-      sessionStorage.setItem("userData", JSON.stringify(userData));
-
-      dispatch(
-        loginSuccess({
-          user: userData,
-          status: "authenticated",
-        })
-      );
+      // ✅ Redirect user to backend OAuth route
+      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
     } catch (error) {
-      console.error(error);
+      console.error("❌ Google Login Error:", error);
+      toast.error("Google login failed. Please try again.");
     }
   };
+  
+  // -------------------------------
+  // OAuth Redirect Handling (Google Login)
+  // This useEffect will run if the URL has OAuth parameters.
+  // -------------------------------
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Expect the backend to redirect with these names:
+    const accessToken = urlParams.get("accessToken");
+    const refreshToken = urlParams.get("refreshToken");
+    // Use a different variable name to avoid confusion with our Redux token property:
+    const userParam = urlParams.get("user");
+
+    if (accessToken && refreshToken && userParam) {
+      try {
+        // Parse and decode the user data (assuming it was encoded on the backend)
+        const userData = JSON.parse(decodeURIComponent(userParam));
+        console.log("✅ OAuth Callback User Data:", userData);
+
+        // Store tokens and user data consistently
+        // sessionStorage.setItem("accessToken", accessToken);
+        // localStorage.setItem("refreshToken", refreshToken);
+        // ✅ Store tokens and user data in localStorage
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("userData", JSON.stringify(userData));
+
+        // Dispatch Redux login state with accessToken
+        dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
+
+        // ✅ Sync authentication across tabs
+        window.dispatchEvent(new Event("userLoggedIn"));
+
+        // Redirect based on user role
+        if (userData.role === 1) {
+          router.push("/admin/dashboard");
+        } else if (userData.role === 5) {
+          router.push("/admin/products/view-projects");
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("❌ Failed to parse user data:", error);
+        toast.error("Failed to retrieve user details.");
+        router.push("/auth/register");
+      }
+    }
+  }, [router, dispatch]);
 
   return (
     <Fragment>

@@ -5,7 +5,7 @@ function useSessionStorageData(key) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setData(sessionStorage.getItem(key));
+      setData(localStorage.getItem(key));
     }
   }, [key]);
 

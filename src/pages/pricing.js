@@ -1,18 +1,92 @@
 "use client"
 import MainLayout from "@/layouts/MainLayout";
 import offer from "@/assets/images/20-off.png"
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Icons from "@/components/Icons";
 import { handleSubscription } from "@/service/api";
 import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { useRouter } from "next/router";
+import { getUserDetails } from "@/service/api";
+import { useSelector } from "react-redux";
 const progress = '80';
 
 
 const Pricing = () => {
-  const userData= useSessionStorageData("userData");
-  const router=useRouter()
+  const router = useRouter();
+  const userData = useSessionStorageData("userData");
+  const { token } = useSelector((store) => store.logininfo);
+  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState("");
+  const [activeSubscription, setActiveSubscription] = useState(false); // ✅ Check if user has an active plan
+
+// const status = useSelector((store) => store.logininfo)
+useEffect(() => {
+  const fetchUserDetails = async () => {
+    if (!token) return;  // ✅ Prevent unnecessary API calls
+
+    console.log("🔄 Fetching user details with token:", token);
+
+    try {
+      const response = await getUserDetails();
+      if (!response) {
+        console.error("❌ No response from getUserDetails API.");
+        return;
+      }
+
+      console.log(response);
+      
+
+      setUser(response.data);
+      const expDate = new Date(response.data.acc_exp_date);
+      const today = new Date();
+
+      // 🟢 Check if the user has an active subscription
+      if (response.data.acc_exp_date && expDate > today) {
+        setActiveSubscription(true);
+        setMessage(`✅ Your Gold account expires on ${expDate.toDateString()}`);
+      } else {
+        setActiveSubscription(false);
+        setMessage("❌ No active subscription found.");
+      }
+    } catch (error) {
+      console.error("❌ Error fetching user details:", error);
+    }
+  };
+
+  if (token) {
+    fetchUserDetails();
+  }
+}, [token]);  // ✅ Run only when `token` is available
+
+
+  // useEffect(() => {
+  //   console.log("📌 Token from Redux:", token);
+  //   if (token) {
+  //     fetchUserDetails();
+  //   }
+  // }, [token]);
+  
+
+  const purchasePlan = async (priceId) => {
+    if (!userData) {
+      router.push(`/auth/login?redirect=${router.asPath}`);
+      return;
+    }
+    
+    if (activeSubscription) {
+      toast.error("You already have an active subscription. Cancel your current plan first.");
+      return;
+    }
+
+    try {
+      const res = await handleSubscription(priceId, user.id);
+      window.location.href = res.data.url;
+    } catch (err) {
+      console.error("Subscription error:", err);
+    }
+  };
+
   return (<Fragment>
     <section className="py-lg-4 py-3">
       <div className="container">
@@ -20,6 +94,10 @@ const Pricing = () => {
           <div className="col-md-9">
             <div className="text-center">
               <div className="mb-3 mb-md-4">
+              <div>
+                {message && <p className="alert alert-warning text-center">{message}</p>}
+                
+              </div>
                 <h1>Choose Your Pricing Plan</h1>
                 <p>Choose the Right plan. No commission</p>
               </div>
@@ -66,7 +144,7 @@ const Pricing = () => {
                 </div>
                 <div className="my-2">
                   <h4 className="text-primary">
-                    <span className="fw-bold">$15</span>
+                    <span className="fw-bold">$13</span>
                     <small className="fs-5">/ Weekly</small>
                   </h4>
                 </div>
@@ -95,14 +173,15 @@ const Pricing = () => {
                       
                       return
                     }
-                       handleSubscription("price_1NuCnUSBAUwjb2fP6XDa5f1V").then((res)=>{
-                      
-                        window.location.href=res.data
+                       handleSubscription("price_1Qjn9JFy6VKViPpJOwH9hkBl", user.id).then((res)=>{
+                        console.log("API Response:", res.data); // Log response
+                        window.location.href=res.data.url
                        }).catch((err)=>{
                         console.log('error',err)
                        })
                   }}
-                   type="button" className="btn btn-primary">GET STARTED WEEKLY</button>
+                   disabled={activeSubscription}
+                   type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED WEEKLY"}</button>
                 </div>
               </div>
             </div>
@@ -120,7 +199,7 @@ const Pricing = () => {
                 </div>
                 <div className="my-2">
                   <h4 className="text-white">
-                    <span className="fw-bold">$19</span>
+                    <span className="fw-bold">$20</span>
                     <small className="fs-5">/ Month</small>
                   </h4>
                 </div>
@@ -142,14 +221,15 @@ const Pricing = () => {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       return
                     }
-                    handleSubscription("price_1NuColSBAUwjb2fPgI55JSCS").then((res)=>{
+                    handleSubscription("price_1QjnA8Fy6VKViPpJJekatxQZ", user.id).then((res)=>{
                     
-                      window.location.href=res.data
+                      window.location.href=res.data.url
                      }).catch((err)=>{
                       console.log('error',err)
                      })
                   }}
-                  type="button" className="btn btn-light">GET STARTED MONTHLY</button>
+                  disabled={activeSubscription}
+                  type="button" className="btn btn-light">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED MONTHLY"}</button>
                 </div>
               </div>
             </div>
@@ -187,14 +267,15 @@ const Pricing = () => {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       return
                     }
-                    handleSubscription("price_1NuCx4SBAUwjb2fP4QCS6AGs").then((res)=>{
+                    handleSubscription("price_1QjnZ7Fy6VKViPpJmteuIjEM", user.id).then((res)=>{
                     
-                      window.location.href=res.data
+                      window.location.href=res.data.url
                      }).catch((err)=>{
                       console.log('error',err)
                      })
                   }}
-                  type="button" className="btn btn-primary">GET STARTED ANNUAL</button>
+                  disabled={activeSubscription}
+                  type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"}</button>
                 </div>
               </div>
             </div>

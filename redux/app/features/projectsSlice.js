@@ -25,7 +25,7 @@ const initialState = {
 
   subcatfilter: {
     // slug, page, pageSize, searchTerm, sortTerm, type
-    slug: "Bungalows CAD Blocks & CAD Model (693)",
+    slug: "",
     currentPage: 1,
     totalPages: 1,
     searchTerm: "",
@@ -43,7 +43,10 @@ export const projectsSlice = createSlice({
       state.projects = action.payload.projects;
     },
     addAllCategoriesData(state, action) {
-      state.categoriesList = action.payload;
+      state.categoriesList = action.payload || [];
+    },
+    resetCategoriesList: (state) => {
+      state.categoriesList = []; // ✅ Reset when navigating away
     },
     addCategoryAndSubCategoryData:(state,action)=>{
       state.categoryAndSubCategory=action.payload
@@ -158,6 +161,7 @@ export const {
   updatesubcatpagetype,
   resetsubcatfilter,
   addAllSubCategoriesData,
+  resetCategoriesList
 } = projectsSlice.actions;
 export default projectsSlice.reducer;
 

@@ -20,6 +20,8 @@ import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
 import {
   addFavouriteItem,
+  removeFavouriteItem,
+  checkIfFavorited,
   getCategoriesWithSubcategories,
   getallCategories,
   getsimilerllprojects,
@@ -94,11 +96,33 @@ const ViewDrawing = ({}) => {
   const [similarProjectId, setSimilarProjectId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
+  
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
   const { categoryAndSubCategory,categoriesList } = useSelector((store) => store.projectinfo);
   const { id } = router.query;
+
+  const [isFavorited, setIsFavorited] = useState(false);
+  
+    
+  useEffect(() => {
+    const fetchFavoriteStatus = async () => {
+      if (!token || !id) return; // Ensure the user is logged in and ID is available
+  
+      try {
+        const response = await checkIfFavorited(token, id);
+        setIsFavorited(response.data.isFavorited); // Expecting response to be { isFavorited: true/false }
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+  
+    fetchFavoriteStatus();
+  }, [id, token]); // Re-run when `id` or `token` changes
+  
+
+
   //current project fetch
   useEffect(() => {
     const fetchData = async () => {
@@ -108,65 +132,108 @@ const ViewDrawing = ({}) => {
         const singleProjectResponse = await getsingleallprojects("", projectId);
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
+        // console.log("singleProjectData: ", singleProjectData);
+        
         setSimilarProjectId(singleProjectData.product_sub_category_id);
       } catch (error) {
         // console.error("Error fetching project data", error);
       }
     };
 
-    fetchData();
+    // fetchData();
+    if (id) {
+      fetchData();
+    }
   }, [id]);
-  const fetechSimilarProjects = async () => {
-    try {
-        if(!similarProjectId){
-          return
-        }
-      // Fetch similar projects based on sub_category_id
-      const similarProjectsResponse = await getsimilerllprojects(
-        currentPage,
-        2,
-        similarProjectId
-      );
-      const similarProjectsData = similarProjectsResponse.data.projects;
+  // const fetechSimilarProjects = async () => {
+  //   try {
+  //       if(!similarProjectId){
+  //         return
+  //       }
+  //     // Fetch similar projects based on sub_category_id
+  //     const similarProjectsResponse = await getsimilerllprojects(
+  //       currentPage,
+  //       2,
+  //       similarProjectId
+  //     );
+  //     const similarProjectsData = similarProjectsResponse.data.projects;
+  //     if (currentPage === 1) {
+  //       setSimilarProjects(similarProjectsData);
+  //     } else {
+  //       setSimilarProjects([...similarProjects, ...similarProjectsData]);
+  //     }
+  //     setCurrentPage(similarProjectsResponse.data.currentPage);
+  //     setTotalPages(similarProjectsResponse.data.totalPages);
+  //   } catch (error) {}
+  // };
+  // useEffect(() => {
+  //   fetechSimilarProjects();
+  // }, [similarProjectId, currentPage]);
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(getSimilarProjectsPage(1));
+  //   };
+  // }, []);
+
+  // Fetch similar projects
+const fetchSimilarProjects = async () => {
+  try {
+      if (!similarProjectId) return;
+
+      const response = await getsimilerllprojects(currentPage, 9, similarProjectId);
+      console.log("similer project: ", response);
+      
       if (currentPage === 1) {
-        setSimilarProjects(similarProjectsData);
+          setSimilarProjects(response.data.projects);
       } else {
-        setSimilarProjects([...similarProjects, ...similarProjectsData]);
+          setSimilarProjects([...similarProjects, ...response.data.projects]);
       }
-      setCurrentPage(similarProjectsResponse.data.currentPage);
-      setTotalPages(similarProjectsResponse.data.totalPages);
-    } catch (error) {}
-  };
-  useEffect(() => {
-    fetechSimilarProjects();
-  }, [similarProjectId, currentPage]);
-  useEffect(() => {
-    return () => {
+      setTotalPages(response.data.totalPages);
+  } catch (error) {
+      console.error("Error fetching similar projects:", error);
+  }
+};
+
+// Fetch similar projects when the subcategory ID changes
+useEffect(() => {
+  fetchSimilarProjects();
+}, [similarProjectId, currentPage]);
+
+// Reset pagination when the component unmounts
+useEffect(() => {
+  return () => {
       dispatch(getSimilarProjectsPage(1));
-    };
-  }, []);
+  };
+}, []);
 
   const handlePageChange = (currentPage) => {
     dispatch(getSimilarProjectsPage(currentPage));
   };
 
-  const handleLike = () => {
-    if (token) {
-      const requestuuid = { project_uuid: project.uuid };
-      addFavouriteItem(requestuuid, token)
-        .then((res) => {
-          toast.success("Added to Favourite list", { position: "top-right" });
-          dispatch(addedFavouriteItem(res.data.projects));
-        })
-        .catch((err) => {
-          if (err?.response?.status === 401 || err?.response?.status === 400) {
-            toast.error(`${err?.response?.data?.error}`);
-          }
-        });
-    } else {
-      router.push("/auth/login");
+  const handleLike = async () => {
+    if (!token) {
+        router.push("/auth/login");
+        return;
+    }
+    const product_id = id
+    try {
+        if (isFavorited) {
+          // Remove from favorites if already liked
+          await removeFavouriteItem(token, id);
+          setIsFavorited(false);
+          toast.success("Removed from Favorite list", { position: "top-right" });
+        } else {
+          // Add to favorites if not liked
+          await addFavouriteItem({ product_id: id }, token);
+          setIsFavorited(true);
+          toast.success("Added to Favorite list", { position: "top-right" });
+        }
+    } catch (error) {
+        console.error("Error toggling favorite:", error);
+        toast.error("Failed to update favorite status");
     }
   };
+
   useEffect(() => {
     if (categoryAndSubCategory.length === 0) {
       getCategoriesWithSubcategories()
@@ -345,10 +412,11 @@ const ViewDrawing = ({}) => {
                     type="button"
                     className="link-btn"
                   >
-                    <Icons.Like />
+                    {/* <Icons.Like /> */}
+                    {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
                   </button>
                   <button
-                    onClick={() => handledownload(project.uuid, token, router)}
+                    onClick={() => handledownload(project.id, token, router)}
                     type="button"
                     className="link-btn"
                   >
@@ -357,6 +425,7 @@ const ViewDrawing = ({}) => {
                 </div>
               </div>
 
+              {/* Project Image */}
               <div className="mt-4">
                 <div className="bg-light p-3 rounded-2 shadow-sm">
                   <img
@@ -366,7 +435,8 @@ const ViewDrawing = ({}) => {
                   />
                 </div>
               </div>
-
+          
+              {/* Project Description */}
               <div className="py-3 py-md-4">
                 <div className="container">
                   <div className="row">
@@ -378,7 +448,8 @@ const ViewDrawing = ({}) => {
                             subHeading={" "}
                             mainHeadingBold={"Description"}
                           />
-                          {parse(`${project.description}`)}
+                          <p>{parse(`${project.description}`)}</p>
+                          
                         </div>
                       </div>
                     </div>
@@ -474,7 +545,7 @@ const ViewDrawing = ({}) => {
                       <div className=" text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
                         <button
                           onClick={() =>
-                            handledownload(project.uuid, token, router)
+                            handledownload(project.id, token, router)
                           }
                           type="button"
                           className="btn-success-split "
@@ -529,13 +600,14 @@ const ViewDrawing = ({}) => {
                       })}
                     </div>
 
-                    {/* <Pagination
+                    <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
                       dispatchCurrentPage={getSimilarProjectsPage}
                       goToPreviousPage={() => handlePageChange(currentPage - 1)}
                       goToNextPage={() => handlePageChange(currentPage + 1)}
-                    /> */}
+                    />
+
                     <LoadMore
                       currentPage={currentPage}
                       totalPage={totalPages}
@@ -543,6 +615,7 @@ const ViewDrawing = ({}) => {
                         setCurrentPage((prev) => prev + 1);
                       }}
                     />
+
                     {/* <div className="row">
                       <div className="col-md-12">
                         <div className="text-center">

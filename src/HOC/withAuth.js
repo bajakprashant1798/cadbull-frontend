@@ -7,7 +7,7 @@ const withAuth = (WrappedComponent) => {
     const router = useRouter();
 
     useEffect(() => {
-      const storedUserData = sessionStorage.getItem("userData");
+      const storedUserData = localStorage.getItem("userData");
       if (!storedUserData) {
         router.push(`/auth/login?redirect=${router.asPath}`);
       } else {

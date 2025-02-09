@@ -85,6 +85,12 @@ const Like = () => <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41
   </g>
 </svg>
 
+const Dislike = () => <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41" viewBox="0 0 41 41">
+<g id="Group_105" data-name="Group 105" transform="translate(0.119 -0.188)">
+  <circle id="Ellipse_2" data-name="Ellipse 2" cx="20.5" cy="20.5" r="20.5" transform="translate(-0.119 0.188)" fill="#e9e9eb" />
+  <path id="Icon_feather-heart" data-name="Icon feather-heart" d="M22.179,6.156a5.661,5.661,0,0,0-8.008,0L13.08,7.247,11.989,6.156a5.662,5.662,0,1,0-8.008,8.008l1.091,1.091,8.008,8.008,8.008-8.008,1.091-1.091a5.661,5.661,0,0,0,0-8.008Z" transform="translate(7.598 6.591)" fill="#FF0000" />
+</g>
+</svg>
 
 
 // ******************* Save *******************
@@ -316,7 +322,17 @@ const Reload=()=><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
 </svg>
 
+const Active = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="green">
+    <path d="M9 16.2l-4.2-4.2-1.8 1.8 6 6 12-12-1.8-1.8z" />
+  </svg>
+);
 
+const Inactive = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="red">
+    <path d="M18 6L6 18M6 6l12 12" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
 
 
 const Icons = {
@@ -332,6 +348,7 @@ const Icons = {
   Google,
   Email,
   Like, 
+  Dislike,
   Save,
   File,
   Download,
@@ -360,7 +377,9 @@ const Icons = {
   Categories,
   Sort,
   Date,
-  Reload
+  Reload,
+  Active,
+  Inactive
 }
 
 

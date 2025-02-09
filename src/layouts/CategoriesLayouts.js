@@ -83,5 +83,5 @@ const CategoriesLayout = ({
     </Fragment>
   );
 };
-
+ 
 export default CategoriesLayout;

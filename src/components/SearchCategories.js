@@ -21,17 +21,29 @@ const SearchCategories = ({ categories, type }) => {
   );
   const dispatch = useDispatch();
   const { slug } = router.query;
+  console.log("slug: ", slug);
+  
   const [catalog, setCatalog] = useState([categories]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // useEffect(() => {
+  //   console.log("Full URL Path:", router.asPath);
+  //   console.log("Router Query:", router.query);
+  //   console.log("Extracted Slug:", slug);
+  // }, [router]);
+  
+
   async function fetchCategories() {
     if (type === "Categories") {
       try {
         const response = await getallCategories(searchTerm);
-        response.data.forEach((item) => {
+        response.data.categories.forEach((item) => {
           item.url = "categories/sub/";
         });
-        setCatalog(response.data);
-        dispatch(addAllCategoriesData(response.data));
+        console.log("searchcategoreis: ", response.data);
+        
+        setCatalog(response.data.categories);
+        dispatch(addAllCategoriesData(response.data.categories));
       } catch (error) {
         // console.error("Error fetching categories:", error);
       }
@@ -146,9 +158,14 @@ const SearchCategories = ({ categories, type }) => {
             </div>
           </form>
           <ul className="list-unstyled category-list-wrapper mb-0 d-flex flex-column gap-2">
-            {catalog.map((category, index) => {
+            {/* {catalog.map((category, index) => {
               return <CategoriesList key={index} {...category} />;
-            })}
+            })} */}
+            {catalog.length > 0 ? (
+              catalog.map((category, index) => <CategoriesList key={index} {...category} />)
+              ) : (
+                <li className="text-center text-muted">No categories found</li>
+            )}
           </ul>
           <div></div>
         </div>

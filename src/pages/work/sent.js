@@ -3,12 +3,19 @@ import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
 import Link from "next/link";
 import Head from "next/head";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
 import drawing from "@/assets/images/drawing-image.png";
 import deleteIcon from "@/assets/icons/delete.png";
 import downloadIcon from "@/assets/icons/download.png";
 import Pagination from "@/components/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import useSessionStorageData from "@/utils/useSessionStorageData";
+import { downloadProject, getUploadedProjectList, removeProject } from "@/service/api";
+import { addedFavouriteItem } from "../../../redux/app/features/projectsSlice";
+import { downloadFile } from "@/utils/downloadfile";
+import { handledownload } from "@/service/globalfunction";
 
 
 const tableData = [
@@ -57,6 +64,78 @@ const tableData = [
 
 
 const WorkSent = () => {
+
+  const { token } = useSelector((store) => store.logininfo);
+  const [tableData, setTableData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [removeItemTrigger, setRemoveItemTrigger] = useState(0);
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const datas = useSessionStorageData("userData")
+
+  useEffect(() => {
+    if (!tableData || tableData.length === 0) { // ✅ Additional check
+        getUploadedProjectList(token, 1, 10)
+        .then((res) => {
+          console.log("my-projects: ", res);
+          if (Array.isArray(res.data.projects)) {
+            setTableData(res.data.projects);
+          } else {
+            setTableData([]); // ✅ Fallback to empty array
+          }
+          dispatch(addedFavouriteItem(res.data.projects));
+          setCurrentPage(res.data.currentPage);
+          setTotalPages(res.data.totalPages);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [tableData,token, currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    setTableData([]); // Clear previous data before fetching new
+  };
+  
+
+  const handleremoveitem = (id) => {
+    removeProject(token, id)
+      .then((res) => {
+        // ✅ Remove only the deleted project from state instead of clearing everything
+        // setTableData(tableData.filter(project => project.id !== id));
+        // toast.success("Project removed successfully.", { position: "top-right" });
+        setTableData([]);
+        setRemoveItemTrigger(removeItemTrigger + 1);
+        dispatch(deleteFavouriteItem(id));
+        toast.success("Removed Favourite list", { position: "top-right" });
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
+  // const handledownload = (id) => {
+  //   downloadProject(token, id, router)
+  //     .then((res) => {
+  //       console.log("download: ",res);
+        
+  //       const zipUrl = res.data.zip_url;
+  //       downloadFile(zipUrl);
+  //       downloadHistory(token, id)
+  //         .then((res) => {
+  //           console.log("download", res.data);
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+
   return (
     <Fragment>
       <Head>
@@ -92,30 +171,48 @@ const WorkSent = () => {
                   <tbody>
                     {
                       tableData.map(res => {
+                        console.log(res);
+                        
                         return (
                           <tr key={res.id}>
-                            <td><img src={res.drawing.src} width={100} className="table-image" alt="drawing" /></td>
+                            <td><img src={res.thumbnail_url} width={100} className="table-image" alt="drawing" /></td>
                             <td>{res.id}</td>
                             <td>
                               <div className="title-wrapper">
-                                {res.title}
+                                {res.work_title}
                               </div>
                             </td>
-                            <td>{res.fileType}</td>
+                            <td>{res.file_type}</td>
                             <td>
-                              <div className="title-wrapper">{res.categories}</div>
+                              <div className="title-wrapper">{res.project_category_title}</div>
                             </td>
                             <td>
                               <div className="title-wrapper">
-                                {res.subCtegories}
+                                {res.project_sub_category_title}
                               </div></td>
-                            <td>{res.status}</td>
-                            <td>{res.earning}</td>
                             <td>
-                              <div className="d-inline-flex gap-2">
-                                <button type="button" className="link-btn"><img src={downloadIcon.src} alt="download" /></button>
-                                <button type="button" className="link-btn"> <img src={deleteIcon.src} alt="delete" /></button>
-                              </div>
+                              {res.status === "1" ? (
+                                <p className="text-success">Approved</p>
+                              ) : res.status === "2" ? (
+                                <p className="text-danger">Rejected</p>
+                              ) : (
+                                <p className="text-warning">Pending</p>
+                              )}
+                            </td>
+                            <td>
+                            {res.status === "1" ? (
+                              <p className="text-success">$0.25</p>
+                            ) : (
+                              <p className="text-danger">$0</p>
+                            )}
+                            </td>
+                            <td>
+                              {!res.is_approved && 
+                                <div className="d-inline-flex gap-2">  
+                                  <button type="button" onClick={() => handledownload(res.id, token,router)} className="link-btn"><img src={downloadIcon.src} alt="download" /></button>
+                                  <button type="button" onClick={() => handleremoveitem(res.id)} className="link-btn"> <img src={deleteIcon.src} alt="delete" /></button>
+                                </div>
+                              }
                             </td>
                           </tr>
                         )
