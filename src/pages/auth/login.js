@@ -31,12 +31,71 @@ const Register = () => {
   const isAuthenticated=useSessionStorageData('userData')
 
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
+    const storedUserData = localStorage.getItem("userData");
     if (storedUserData) {
       const userData = JSON.parse(storedUserData);
       dispatch(loginSuccess({ user: userData, status: "authenticated" }));
     }
   }, []);
+  
+
+  useEffect(() => {
+    const storedUserDataForRole = localStorage.getItem("userData");
+    console.log("storedUserDataForRole", storedUserDataForRole);
+    
+    if (storedUserDataForRole) {
+      const user = JSON.parse(storedUserDataForRole);
+      console.log("storedUserDataForRole parse", user);
+
+  
+      if (user.role === 1) {
+        router.push("/admin/dashboard"); 
+      } else if (user.role === 5) {
+        router.push("/admin/projects/view-project");
+      } else {
+        router.push("/");
+      }
+    }
+  }, [router]);
+
+  // ✅ Rehydrate tokens after page reload
+  useEffect(() => {
+    const storedAccessToken = localStorage.getItem("accessToken");
+    const storedRefreshToken = localStorage.getItem("refreshToken"); // ✅ Get from localStorage
+
+    if (!storedAccessToken && storedRefreshToken) {
+      console.log("🔄 Attempting to refresh token...");
+      api.post("/auth/refresh-token", {}, {
+        headers: { "x-refresh-token": storedRefreshToken },
+      })
+        .then((res) => {
+          localStorage.setItem("accessToken", res.data.accessToken);
+        })
+        .catch(() => {
+          console.log("❌ Refresh failed, logging out user.");
+          handleLogout();
+        });
+    }
+  }, []);
+
+  // ✅ Handle Logout & Redirect
+  const handleLogout = () => {
+    sessionStorage.clear();
+    
+    // ✅ Remove tokens from localStorage
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userData");
+
+    // ✅ Dispatch event to log out from all open tabs
+    // window.dispatchEvent(new Event("userLoggedOut"));
+
+    // ✅ Redirect to login page
+    setTimeout(() => {
+      window.location.href = "/auth/login";
+    }, 100);
+  };
+  
 
   const {
     handleSubmit,
@@ -49,21 +108,46 @@ const Register = () => {
     startLoading()
     loginApiHandler(data)
       .then((res) => {
-        const { token, user } = res.data;
-        const userData = user;
-        console.log("user: ", res.data);
-        
-        sessionStorage.setItem("userData", JSON.stringify({ user: user, token: token }));
-        sessionStorage.setItem("token", token);
+        const { accessToken, refreshToken, user } = res.data;
 
-        // dispatch(loginSuccess({ user: user, status: "authenticated" }));
-        dispatch(loginSuccess({ user: user, token:token , status: "authenticated" }));
+        if (!accessToken || !refreshToken) {
+          toast.error("Login failed. Please try again.");
+          return;
+        }
+
+        // // ✅ Store accessToken in sessionStorage (Cleared on tab close)
+        // sessionStorage.setItem("accessToken", accessToken);
+        // sessionStorage.setItem("userData", JSON.stringify({ user }));
+
+        // ✅ Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("userData", JSON.stringify(user));
+
+        // // ✅ Store refreshToken in localStorage (Persistent)
+        // localStorage.setItem("refreshToken", refreshToken);
+
+        dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+
+        // ✅ Trigger storage event to sync across tabs
+        window.dispatchEvent(new Event("userLoggedIn"));
+
         stopLoading()
         //  if(router.query.redirect){
         //   router.push(router.query.redirect)
         //    return
         //  }
-         router.push( router.query?.redirect || '/')
+
+        //  router.push( router.query?.redirect || '/')
+
+        // Redirect user based on role
+        if (user.role === 1) {
+          router.push("/admin/dashboard"); // Super Admin
+        } else if (user.role === 5) {
+          router.push("/admin/projects/view-project"); // Content Creator
+        } else {
+          router.push("/"); // Default for other users
+        }
       })
       .catch((err) => {
         stopLoading();
@@ -72,12 +156,87 @@ const Register = () => {
       });
   };
 
+  // ✅ Allow public access to home page after logout
+  useEffect(() => {
+    if (!isAuthenticated && router.pathname.startsWith("/admin")) {
+      router.push("/auth/login"); // ✅ Redirect only for protected pages
+    }
+  }, [router, isAuthenticated]);
+
+  // ✅ Prevent authenticated users from accessing login page
+  // useEffect(() => {
+  //   if (isAuthenticated !== null) {
+  //     router.push("/");
+  //   }
+  // }, [router, isAuthenticated]);
+
+  // ✅ Handle OAuth Redirect (Google Login)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get("accessToken");
+    const refreshToken = urlParams.get("refreshToken");
+    
+    if (accessToken && refreshToken) {
+      // sessionStorage.setItem("accessToken", accessToken);
+      // localStorage.setItem("refreshToken", refreshToken); // ✅ Store refreshToken in localStorage
+
+      // ✅ Store tokens and user data in localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      // IMPORTANT: Use the correct variable name – here, we use accessToken
+      getUserData(accessToken)
+        .then((res) => {
+          const userData = res.data;
+          // sessionStorage.setItem("userData", JSON.stringify({ user: userData }));
+
+          // ✅ Store user data persistently in localStorage
+          localStorage.setItem("userData", JSON.stringify(userData));
+
+          dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
+
+          // ✅ Sync authentication across tabs
+          window.dispatchEvent(new Event("userLoggedIn"));
+    
+          // Redirect based on role:
+          if (userData.role === 1) {
+            router.push("/admin/dashboard");
+          } else if (userData.role === 5) {
+            router.push("/admin/projects/view-projects");
+          } else {
+            router.push("/");
+          }
+        })
+        .catch((error) => {
+          console.error("❌ Failed to fetch user details:", error);
+          toast.error("Failed to retrieve user details.");
+          router.push("/auth/login");
+        });
+    } else {
+      console.error("❌ No token or user data found in URL.");
+    }
+  }, [router]);
+
+  // ✅ Google Login Handler
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google");
+      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
+    } catch (error) {
+      console.error("❌ Google Login Error:", error);
+      toast.error("Google login failed. Please try again.");
+    }
+  };
+  
+
+  const handleFacebookSignIn = async () => {
+    try {
+      await signIn("facebook");
       const socialLoginResponse = await socialLogin(session.user);
       const userData = socialLoginResponse.data;
-      sessionStorage.setItem("userData", JSON.stringify(userData));
+      localStorage.setItem("userData", JSON.stringify(userData));
+      localStorage.setItem("accessToken", userData.accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
       dispatch(
         loginSuccess({
           user: userData,
@@ -89,29 +248,21 @@ const Register = () => {
     }
   };
 
-  const handleFacebookSignIn = async () => {
-    try {
-      await signIn("facebook");
-      const socialLoginResponse = await socialLogin(session.user);
-      const userData = socialLoginResponse.data;
-      sessionStorage.setItem("userData", JSON.stringify(userData));
-      dispatch(
-        loginSuccess({
-          user: userData,
-          status: "authenticated",
-        })
-      );
-    } catch (error) {
-      console.error(error);
+  // Handle Email Verification
+  useEffect(() => {
+    if (router.query.verified) {
+      toast.success("Email verified successfully. Please login.");
     }
-  };
-//!prevent authenticated user to access page again 
-useEffect(()=>{
-  if(isAuthenticated!==null){
-    router.push('/')
-  }
-},
-[router,isAuthenticated])
+  }, [router.query.verified]);
+
+
+  // ✅ Prevent logged-in users from accessing login page, but allow others to access home page freely
+  useEffect(() => {
+    if (isAuthenticated !== null && router.pathname.startsWith("/auth")) {
+      router.push("/");
+    }
+  }, [router, isAuthenticated]);
+
 
   return (
     <Fragment>

@@ -15,7 +15,8 @@ import withAuth from "@/HOC/withAuth";
 import { toast } from "react-toastify";
 
 const WithdrawAmount = () => {
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
+  
   const [balance, setBalance] = useState(0);
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState(""); 
@@ -23,8 +24,9 @@ const WithdrawAmount = () => {
 
   useEffect(() => {
     if (token) {
-      getWalletBalance(token).then((res)=>{
-        setBalance(res.data.amount);
+      getWalletBalance().then((res)=>{        
+        console.log("Balance Response: ", res.data.amount);
+        setBalance(res.data.amount); // ✅ Now subtracts pending withdrawals
       }).catch((err)=>{
           console.log('error',err)
       });
@@ -42,17 +44,30 @@ const WithdrawAmount = () => {
   const handleWithdraw = (e) => {
     e.preventDefault();
 
+    console.log(e , amount);
+    
+    // Validate user input
+    if (isNaN(amount) || amount <= 0) {
+      setError("Invalid amount entered.");
+      return;
+    }
+
     // Validate the input
     if (amount < 10) {
       setError("You must withdraw at least 10 USD.");
+    } else if (amount > balance) {
+      setError("Withdrawal amount cannot exceed available balance.");
     } else {
       // Clear any previous error messages
       setError("");
 
       // Proceed with withdrawal
-      redeemWalletBalance(token, amount)
+      redeemWalletBalance(amount)
         .then((res) => {
-          setBalance(res.data.updatedWallet.amount);
+          console.log("withdraw-amout: ", res);
+          
+          // setBalance(res.data.updatedWallet.amount);
+          setBalance((prevBalance) => prevBalance - amount); // Update balance locally
           toast.success("Withdrawal request submitted successfully.");
         })
         .catch((err) => {
@@ -121,6 +136,7 @@ const WithdrawAmount = () => {
                         <button
                           type="submit"
                           className="btn btn-lg btn-primary w-100 rounded"
+                          disabled={tableData.some((req) => req.status === 0)} // ✅ Disables if pending request exists
                         >
                           Submit Withdrawal
                         </button>
@@ -158,10 +174,14 @@ const WithdrawAmount = () => {
                       <tr key={res.id}>
                         <td>{res.id}</td>
                         <td>
-                          <div className="title-wrapper">{res.amount}</div>
+                          <div className="title-wrapper">${res.amount}</div>
                         </td>
                         <td>
-                          <div className="title-wrapper">{res.status}</div>
+                          {res.status === 0 ? (
+                            <span className="text-warning">Pending</span>
+                          ) : (
+                            <span className="text-success">Approved</span>
+                          )}
                         </td>
                       </tr>
                     );

@@ -107,13 +107,12 @@ export default function Home() {
   }, [blogs]);
 
   // Fetch projects with pagination
-  const loadProjects = async (page) => {
+  const loadProjects = async (page, pageSize = 6) => {
     startLoading(true);
     try {
-      const response = await getPaginatedProjects(page);
-      console.log("projects", response);
+      const response = await getallprojects(page, pageSize, searchTerm, sortTerm);
       
-      setProjects(response.data.projects); // Set the projects for the page
+      setProjects(response.data.products); // Set the projects for the page
       setTotalPages(response.data.totalPages); // Set total pages
     } catch (error) {
       console.error("Failed to fetch projects:", error);
@@ -124,49 +123,69 @@ export default function Home() {
 
   // Initial load and page change effect
   useEffect(() => {
-    loadProjects(currentPage);
-  }, [currentPage]);
+    loadProjects(currentPage, 6);
+  }, [currentPage, searchTerm, sortTerm]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
+      loadProjects(newPage);
     }
   };
-  
-
-  //initial page fetching
-  const loadRecords = () => {
-    startLoading()
-    getallprojects(currentPage,3, searchTerm, sortTerm)
-    .then((response) => {
-      // console.log('total projects',response)
-      if(currentPage == 1)
-        setProjects(response.data?.products)
-      else
-        setProjects([...projects,...response.data?.products])
-      setTotalPages(response.data.totalPages); 
-      stopLoading()
-    })
-    .catch((error) => {
-      stopLoading()
-      // console.error("Error fetching categories:", error);
-    });
-  }
-  useEffect(() => {
-    loadRecords();
-  }, [currentPage]);
-// fetching data when there is sorting plus pagination change 
-useEffect(() => {
-  setCurrentPage(1);
-  loadRecords();
-}, [sortTerm]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadRecords();
+    loadProjects(1);
   };
+  const handleSortChange = (e) => {
+    setSortTerm(e.target.value);
+    setCurrentPage(1);
+  };
+  const handleTypeChange = (e) => {
+    setType(e.target.value);
+    setCurrentPage(1);
+  };
+  useEffect(() => {
+    setCurrentPage(1);
+    loadProjects(1);
+  }, [searchTerm, sortTerm]);
+  
+  
+
+  // //initial page fetching
+  // const loadRecords = () => {
+  //   startLoading()
+  //   getallprojects(currentPage,3, searchTerm, sortTerm)
+  //   .then((response) => {
+  //     // console.log('total projects',response)
+  //     if(currentPage == 1)
+  //       setProjects(response.data?.products)
+  //     else
+  //       setProjects([...projects,...response.data?.products])
+  //     setTotalPages(response.data.totalPages); 
+  //     stopLoading()
+  //   })
+  //   .catch((error) => {
+  //     stopLoading()
+  //     // console.error("Error fetching categories:", error);
+  //   });
+  // }
+  // useEffect(() => {
+  //   loadRecords();
+  // }, [currentPage]);
+// // fetching data when there is sorting plus pagination change 
+// useEffect(() => {
+//   setCurrentPage(1);
+//   loadRecords();
+// }, [sortTerm]);
+
+//   const handleSearch = (e) => {
+//     e.preventDefault();
+//     setCurrentPage(1);
+//     loadRecords();
+//   };
 
   return (
     <Fragment>
@@ -197,7 +216,7 @@ useEffect(() => {
                 </Link>
               </div>
               {/* Form  */}
-              <form className="mx-auto mb-md-5" >
+              <form className="mx-auto mb-md-5" onSubmit={handleSearch}>
                 <div className="input-group mb-3">
                   <span className="input-group-text bg-white">
                     <Icons.Search />
@@ -321,16 +340,23 @@ useEffect(() => {
             </div>
           </div>
  
-          <div className="row g-4">
+          {/* <div className="row g-4">
             {projects.map((project) => {
               return (
                 <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
                   <ProjectCard {...project} />
-                  {console.log("projectObject: ", project)}
                 </div>
               );
             })}
+          </div> */}
+          <div className="row g-4">
+            {projects.slice(0, 9).map((project) => (
+              <div className="col-md-6 col-lg-4" key={project.id}>
+                <ProjectCard {...project} />
+              </div>
+            ))}
           </div>
+
 
           {/* Pagination  */}
           <Pagination
@@ -340,13 +366,13 @@ useEffect(() => {
             goToNextPage={() => handlePageChange(currentPage + 1)}
             dispatchCurrentPage={handlePageChange}
           />
-          <LoadMore
+          {/* <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}
            loadMoreHandler={()=>{
             setCurrentPage((prev)=>prev+1)
            }}
-          />
+          /> */}
         </div>
       </section>
 

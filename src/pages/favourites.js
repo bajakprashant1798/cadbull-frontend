@@ -38,7 +38,7 @@ import { handledownload } from "@/service/globalfunction";
 // }
 
 const Favourites = () => {
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
   const [tableData, setTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -46,11 +46,13 @@ const Favourites = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (tableData.length == 0) {
+    if (!tableData || tableData.length === 0) { // ✅ Additional check
       getFavouriteItems(token)
         .then((res) => {
-          setTableData(res.data.projects);
-          dispatch(addedFavouriteItem(res.data.projects));
+          setTableData(res.data.favorites);
+          console.log(res);
+          
+          dispatch(addedFavouriteItem(res.data.favorites));
           setCurrentPage(res.data.currentPage);
           setTotalPages(res.data.totalPages);
         })
@@ -61,6 +63,8 @@ const Favourites = () => {
   }, [tableData]);
 
   const handleremoveitem = (id) => {
+    console.log(id);
+    
     removeFavouriteItem(token, id)
       .then((res) => {
         setTableData([]);
@@ -74,11 +78,16 @@ const Favourites = () => {
       });
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    setTableData([]); // Clear previous data before fetching new
+  };
+
   // const handledownload = (id) => {
   //   downloadProject(token, id)
   //     .then((res) => {
   //       const zipUrl = res.data.zip_url;
-  //       console.log("zipUrl", zipUrl);
+  //       console.log("zipUrl", zipUrl, res);
   //       downloadFile(zipUrl);
   //       downloadHistory(token, id)
   //         .then((res) => {
@@ -165,25 +174,25 @@ const Favourites = () => {
 
                           <td>
                             <div className="title-wrapper">
-                              {res.project_category.title}
+                              {res.project_category_title}
                             </div>
                           </td>
                           <td>
                             <div className="title-wrapper">
-                              {res.project_sub_category.title}
+                              {res.project_sub_category_title}
                             </div>
                           </td>
                           <td>
                             <div className="d-inline-flex gap-2">
                               <button
-                                onClick={() => handledownload(res.uuid,token)}
+                                onClick={() => handledownload(res.id,token, router)}
                                 type="button"
                                 className="link-btn"
                               >
                                 <img src={downloadIcon.src} alt="download" />
                               </button>
                               <button
-                                onClick={() => handleremoveitem(res.uuid)}
+                                onClick={() => handleremoveitem(res.id)}
                                 type="button"
                                 className="link-btn"
                               >
@@ -204,8 +213,8 @@ const Favourites = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            // goToPreviousPage={() => handlePageChange(currentPage - 1)}
-            // goToNextPage={() => handlePageChange(currentPage + 1)}
+            goToPreviousPage={() => handlePageChange(currentPage - 1)}
+            goToNextPage={() => handlePageChange(currentPage + 1)}
           />
           </> 
           )}       

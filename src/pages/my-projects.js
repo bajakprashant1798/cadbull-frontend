@@ -33,7 +33,7 @@ import withAuth from "@/HOC/withAuth";
 
 
 const myProjects = () => {
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
   const [tableData, setTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -43,10 +43,15 @@ const myProjects = () => {
   const datas = useSessionStorageData("userData")
 
   useEffect(() => {
-    if (tableData.length == 0) {
-        getUploadedProjectList(token,1,2)
+    if (!tableData || tableData.length === 0) { // ✅ Additional check
+        getUploadedProjectList(token, 1, 10)
         .then((res) => {
-          setTableData(res.data.products);
+          console.log("my-projects: ", res);
+          if (Array.isArray(res.data.projects)) {
+            setTableData(res.data.projects);
+          } else {
+            setTableData([]); // ✅ Fallback to empty array
+          }
           dispatch(addedFavouriteItem(res.data.projects));
           setCurrentPage(res.data.currentPage);
           setTotalPages(res.data.totalPages);
@@ -55,12 +60,20 @@ const myProjects = () => {
           console.log(err);
         });
     }
-  }, [tableData,token]);
+  }, [tableData,token, currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    setTableData([]); // Clear previous data before fetching new
+  };
+  
 
   const handleremoveitem = (id) => {
     removeProject(token, id)
       .then((res) => {
-        
+        // ✅ Remove only the deleted project from state instead of clearing everything
+        // setTableData(tableData.filter(project => project.id !== id));
+        // toast.success("Project removed successfully.", { position: "top-right" });
         setTableData([]);
         setRemoveItemTrigger(removeItemTrigger + 1);
         dispatch(deleteFavouriteItem(id));
@@ -162,29 +175,31 @@ const myProjects = () => {
 
                           <td>
                             <div className="title-wrapper">
-                              {res.project_category.title}
+                              {res.project_category_title}
+                              {console.log("project_category: ", res)}
                             </div>
                           </td>
                           <td>
                             <div className="title-wrapper">
-                              {res.project_sub_category.title}
+                              {res.project_sub_category_title}
                             </div>
                           </td>
                           <td>
                             <div className="title-wrapper">
-                              {res.is_approved ?(
-                               <p className="text-success">Approved</p>
-                              ):(<>
-                               <p className="text-warning">Pending</p>
-                              
-                              </>)}
+                            {res.status === "1" ? (
+                                <p className="text-success">Approved</p>
+                            ) : res.status === "2" ? (
+                                <p className="text-danger">Rejected</p>
+                            ) : (
+                                <p className="text-warning">Pending</p>
+                            )}
                             </div>
                           </td>
                           <td>
                            {!res.is_approved &&  <div className="d-inline-flex gap-2">
                               
                               <button
-                                onClick={() => handleremoveitem(res.uuid)}
+                                onClick={() => handleremoveitem(res.id)}
                                 type="button"
                                 className="link-btn"
                               
@@ -204,12 +219,12 @@ const myProjects = () => {
             </div>
           </div>
               
-          <Pagination
+          {/* <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            // goToPreviousPage={() => handlePageChange(currentPage - 1)}
-            // goToNextPage={() => handlePageChange(currentPage + 1)}
-          />
+            goToPreviousPage={() => handlePageChange(currentPage - 1)}
+            goToNextPage={() => handlePageChange(currentPage + 1)}
+          /> */}
           </> 
           )}       
         </div>

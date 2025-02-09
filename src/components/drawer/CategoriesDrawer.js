@@ -36,7 +36,7 @@ const CategoriesDrawer = ( ) => {
           </form>
           <ul className='list-unstyled category-list-wrapper mb-0 d-flex flex-column gap-2'>
             {
-             projectinfo?.categoriesList?.map((category,index) => {
+             (Array.isArray(projectinfo?.categoriesList) ? projectinfo.categoriesList : []).map((category, index) => {
                 return (
                   <CategoriesList key={index} {...category} />
                 )

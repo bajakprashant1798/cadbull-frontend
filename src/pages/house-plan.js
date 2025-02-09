@@ -237,7 +237,7 @@ const HousePlan = () => {
                   {/* <Link href="" className="btn btn-secondary">
                     BROWSE
                   </Link> */}
-                  {!isLoading && (
+                  {/* {!isLoading && (
                     <LoadMore
                       totalPage={totalPages}
                       currentPage={currentPage}
@@ -245,7 +245,7 @@ const HousePlan = () => {
                         setCurrentPage((prev) => prev + 1);
                       }}
                     />
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

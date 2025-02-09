@@ -7,6 +7,7 @@ import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  cancelSubscriptionRequest,
   getPaymentInformation,
   getRedeemRequestList,
   getSubscriptionDetail,
@@ -21,7 +22,7 @@ import CancelSubsConfirm from "@/components/CancelSubsConfirm";
 import { useRouter } from "next/router";
 
 const ManageBilling = () => {
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
   const router=useRouter()
   const [subscribedPlan, setSubscribedPlan] = useState({
     subscription_id: "",
@@ -32,6 +33,7 @@ const ManageBilling = () => {
     expires_at: "",
     cancelled_at: null,
     plan_name: "",
+    invoice_url: "",
   });
   const dispatch = useDispatch();
   // useEffect(() => {
@@ -46,7 +48,7 @@ const ManageBilling = () => {
   // }, []);
   useEffect(()=>{
     if((router.query.session_id && router.query.session_id.trim()!=='') && typeof window !==undefined){
-      const userData=JSON.parse(sessionStorage.getItem('userData')) || {};
+      const userData=JSON.parse(localStorage.getItem('userData')) || {};
      console.log('user Data',userData)
       getPaymentInformation(userData?.id,router.query.session_id).then((res)=>{
         // console.log('api res',res.data)
@@ -73,6 +75,31 @@ const ManageBilling = () => {
       });
     }
 },[router.query])
+
+const handleCancelSubscription = () => {
+  if (!subscribedPlan.subscription_id) {
+    toast.error("No active subscription found.");
+    return;
+  }
+
+  cancelSubscriptionRequest(subscribedPlan.subscription_id, token)
+    .then(response => {
+      console.log("✅ Subscription Cancelled at End of Billing Cycle:", response.data);
+
+      // 🟢 Update UI to show "Cancelled" state
+      setSubscribedPlan(prevState => ({
+        ...prevState,
+        cancelled_at: response.data.cancel_at
+      }));
+
+      toast.success("Your subscription will be cancelled at the end of the billing period.");
+    })
+    .catch(error => {
+      console.error("❌ Error cancelling subscription:", error);
+      toast.error("Failed to cancel subscription. Please try again.");
+    });
+};
+
 
   return (
     <Fragment>
@@ -153,17 +180,50 @@ const ManageBilling = () => {
                             type="button"
                             data-bs-toggle="#exampleModal"
                             className="btn btn-lg btn-primary w-100 rounded"
+                            onClick={() => {
+                              if (subscribedPlan.invoice_url) {
+                                console.log("invoice: ", subscribedPlan.invoice_url);
+                                
+                                window.open(subscribedPlan.invoice_url, "_blank");
+                              } else {
+                                toast.error("Invoice not available yet. Please try again later.");
+                              }
+                            }}
                           >
                             Download Invoice
                           </button>
-                         {subscribedPlan.cancelled_at?<button
-                            type="button"
-                            data-bs-toggle="#exampleModal"
-                            className="btn btn-lg btn-danger w-100 rounded"
-                            disabled
+                         {subscribedPlan.cancelled_at?
+                        //  <button
+                        //     type="button"
+                        //     data-bs-toggle="#exampleModal"
+                        //     className="btn btn-lg btn-danger w-100 rounded"
+                        //     disabled
+                        //   >
+                        //    Subscription Cancelled
+                        //   </button>
+                        <button
+                          type="button"
+                          className="btn btn-lg btn-danger-variant w-100"
+                          onClick={() => {
+                            if (!subscribedPlan.subscription_id) {
+                                toast.error("No active subscription found.");
+                                return;
+                            }
+                            cancelSubscriptionRequest(subscribedPlan.subscription_id, token)
+                                .then(() => {
+                                    toast.success("Subscription cancellation scheduled successfully.");
+                                    setSubscribedPlan({ ...subscribedPlan, cancelled_at: new Date().toISOString() }); // Update UI
+                                })
+                                .catch((err) => {
+                                    console.error("❌ Subscription cancellation failed:", err);
+                                    toast.error("Failed to cancel subscription. Try again later.");
+                                });
+                          }}
+                          disabled={!!subscribedPlan.cancelled_at} // Disable button if already cancelled
                           >
-                           Subscription Cancelled
-                          </button>: <Link
+                              {subscribedPlan.cancelled_at ? "Subscription Cancelled" : "Cancel Subscription"}
+                          </button>
+                          : <Link
                             href={"/"}
                             
                             className="btn btn-lg btn-danger-variant w-100 "

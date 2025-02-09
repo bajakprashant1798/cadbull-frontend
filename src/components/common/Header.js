@@ -67,32 +67,72 @@ const Header = () => {
   const status = useSelector((store) => store.logininfo);
   // const token = useSelector((state) => state.logininfo.token); 
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+
+  // ✅ State to force UI update after logout
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+
+  useEffect(() => {
+    const handleUserLogout = () => {
+      console.log("🔄 Logout event detected, updating UI...");
+      setIsLoggedOut(true);
+      dispatch(logout()); // ✅ Ensure Redux state updates
+    };
+
+    window.addEventListener("userLoggedOut", handleUserLogout);
+
+    return () => {
+      window.removeEventListener("userLoggedOut", handleUserLogout);
+    };
+  }, []);
+  
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
   const [showHamburgerMenuItem, setShowHamburgerMenuItem] = useState(false);
   const dispatch = useDispatch();
   const Router = useRouter();
+  
   const handleLogout = () => {
-    Router.push("/");
-    dispatch(logout());
-    sessionStorage.removeItem("userData");
-    sessionStorage.removeItem('token');
+    console.log("🔴 User manually logging out...");
+    
+    localStorage.removeItem("userData");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    
+    dispatch(logout()); // ✅ Ensure Redux state updates
+    // setUserLoggedOut(true); // ✅ Triggers UI re-render
+    Router.push("/auth/login"); // Redirect to login
   };
 
   useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
-    // console.log("token: ", token);
-    console.log("status: ", status);
-    
-    console.log("storedUserData: ", storedUserData);
-    
-    if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      dispatch(loginSuccess({ user: userData.user, token: userData.token, status: true }));
+    const storedUserData = localStorage.getItem("userData");
+    const storedToken = localStorage.getItem("accessToken");
+  
+    if (!storedToken) {
+      console.warn("❌ Token missing, triggering logout");
+      dispatch(logout());
     }
-    
-  }, []);
+  
+    if (storedUserData && storedToken) {
+      try {
+        // storedUserData is stored as { user: { … } }
+        const parsedData = JSON.parse(storedUserData);
+        const user = parsedData.user || parsedData;
+        dispatch(loginSuccess({ user, accessToken: storedToken, status: "authenticated" }));
+      } catch (error) {
+        console.error("❌ JSON Parse Error in Header.js:", error);
+        localStorage.removeItem("userData");
+        localStorage.removeItem("accessToken");
+      }
+    }
+  }, [dispatch]);
+  
+  
 
   const closeHamburgerMenu = () => {
     setShowHamburgerMenuItem(false);
@@ -160,7 +200,7 @@ const Header = () => {
                 })}
               </ul>
 
-              {isAuthenticated ? (
+              {isAuthenticated && !isLoggedOut ? (
                 <>
                   <div className="dropdown-center mt-3 mt-xl-0">
                     <button
@@ -200,7 +240,7 @@ const Header = () => {
                           <div>
                             <h6 className="lh-sm text-black fw-bold">
                               <small>
-                                {status?.user?.firstname} {status?.user?.last_name}
+                                {status?.user?.firstname} {status?.user?.lastname}
                               </small>
                             </h6>
                             <p className="lh-sm">
@@ -211,6 +251,23 @@ const Header = () => {
                       </li>
                       <li className="dropdown-divider my-1"></li>
                      
+                      {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
+                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                        <li>
+                          <Link
+                            href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
+                            onClick={closeHamburgerMenu}
+                            className="dropdown-item bg-transparent text-black"
+                          >
+                            <FontAwesomeIcon
+                              icon={faUser}
+                              className="fas fa-check"
+                              style={{ color: "gray", marginRight: ".4rem" }}
+                            ></FontAwesomeIcon>
+                            <small>Dashboard</small>
+                          </Link>
+                        </li>
+                      ) : null}
                       <li>
                         <Link
                           href="/profile"
@@ -269,7 +326,7 @@ const Header = () => {
                       </li>
                       <li>
                         <Link
-                          href="/my-projects"
+                          href="/projects"
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
@@ -278,6 +335,32 @@ const Header = () => {
                             style={{ color: "gray", marginRight: ".4rem" }}
                           ></FontAwesomeIcon>
                           <small>My Projects</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/experiences"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFolder}
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Experiences</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/work/sent"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFolder}
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Work Sent</small>
                         </Link>
                       </li>
                       <li>

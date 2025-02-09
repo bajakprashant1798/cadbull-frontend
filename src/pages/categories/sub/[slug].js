@@ -18,6 +18,7 @@ import {
   updatesubcatpage,
   updatesubcatpagetype,
   updatesubcatserachTerm,
+  updatesubcatslug,
   updatesubcatsortTerm,
 } from "../../../../redux/app/features/projectsSlice";
 import { drawings } from "@/pages";
@@ -29,26 +30,49 @@ const CadLandscaping = () => {
   const router = useRouter();
   const [isLoading, startLoading, stopLoading] = useLoading();
   const { slug } = router.query;
+  console.log("🔍 Router Query Slug:", slug); 
+
   const subcat = useSelector((store) => store.projectinfo.subcat);
   const subcatfilter = useSelector((store) => store.projectinfo.subcatfilter);
+  console.log("store.projectinfo: ", subcatfilter);
+  
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
   const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
+
+  // ✅ Update Redux state when a new subcategory is selected
+  useEffect(() => {
+    if (slug) {
+      console.log("🚀 Updating Redux with Slug:", slug); // ✅ Debugging
+      dispatch(updatesubcatslug(slug)); // Update Redux with the new slug
+      dispatch(updatesubcatpage(1)); // Reset pagination when category changes
+    }
+  }, [slug]);
+
   const loadProjects = () => {
     startLoading();
+    console.log("subcatfilter: ",subcatfilter);
+    
+    if (!subcatfilter.slug) {
+      console.error("❌ Skipping API Call: Slug is Empty or Undefined");
+      return;
+  }
+
+  console.log("🚀 Fetching Projects for Slug:", subcatfilter.slug); // ✅ Debugging
+
     getSubCategories(subcatfilter)
       .then((response) => {
-        // console.log("====subcategories res", response.data);
+        console.log(": ", response);
         if (subcatfilter.currentPage === 1) {
-          dispatch(getSubCategory(response.data.projects));
+          dispatch(getSubCategory(response.projects));
         } else {
-          dispatch(getSubCategory([...subcat, ...response.data.projects]));
+          dispatch(getSubCategory([...subcat, ...response.projects]));
         }
         stopLoading();
-        setTotalPages(response.data.totalPages);
+        setTotalPages(response.totalPages);
       })
       .catch((error) => {
         stopLoading();
@@ -236,7 +260,7 @@ const CadLandscaping = () => {
             goToPreviousPage={() => dispatch(updatesubcatpage(subcatfilter.currentPage - 1))}
             goToNextPage={() =>dispatch(updatesubcatpage(subcatfilter.currentPage + 1))}
             /> */}
-            <div className="row mt-4 justify-content-center mt-md-5">
+            {/* <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
                   {!isLoading && (
@@ -252,7 +276,7 @@ const CadLandscaping = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </CategoriesLayout>

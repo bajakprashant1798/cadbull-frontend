@@ -27,7 +27,7 @@ const UploadWork = () => {
   const router = useRouter();
   const QuillNoSSRWrapper = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const { token } = useSelector((store) => store.logininfo.user);
+  const { token } = useSelector((store) => store.logininfo);
   const { categoryAndSubCategory } = useSelector((store) => store.projectinfo);
   const [subCategory, setSubCategory] = useState([]);
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -43,29 +43,55 @@ const UploadWork = () => {
   });
 
   // Function to handle form submission
-  const handleSubmit = (event) => {
-    startLoading();
+  // const handleSubmit = (event) => {
+  //   startLoading();
+  //   event.preventDefault();
+  //   // You can now access formData and perform any necessary actions, such as sending it to the server.
+  //   uploadProjectApiHandler(formData, token)
+  //     .then((res) => {
+  //       // console.log(res);
+  //       toast.success("Project Uploaded Successfully")
+  //       stopLoading();
+  //       router.push("/my-projects");
+  //     })
+  //     .catch((err) => {
+  //       // console.log(err);
+  //       stopLoading();
+  //     });
+  // };
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // You can now access formData and perform any necessary actions, such as sending it to the server.
-    uploadProjectApiHandler(formData, token)
-      .then((res) => {
-        // console.log(res);
-        toast.success("Project Uploaded Successfully")
-        stopLoading();
-        router.push("/my-projects");
-      })
-      .catch((err) => {
-        // console.log(err);
-        stopLoading();
-      });
+  
+    if (!formData.file || !formData.image) {
+      toast.error("Please upload both a project file and an image.");
+      return;
+    }
+  
+    startLoading();
+    console.log("formData: ", formData);
+    
+    try {
+      await uploadProjectApiHandler(formData, token);
+      toast.success("Project uploaded successfully! Pending approval.");
+      stopLoading();
+      router.push("/projects"); // Redirect to user projects page
+    } catch (err) {
+      toast.error("Upload failed. Please try again.");
+      stopLoading();
+    }
   };
+
 
   const handleUploadfile = (file) => {
     setFormData({ ...formData, file: file[0] });
+    toast.success("Project file uploaded!");
   };
 
   const handleUploadImage = (file) => {  
-    setFormData({ ...formData, image: file[0] });
+    if (file.length > 0) {
+      setFormData({ ...formData, image: file[0] });
+      toast.success("Image uploaded!");
+    }
   };
 
   useEffect(()=>{
@@ -76,6 +102,7 @@ const UploadWork = () => {
         // console.log('api response upload==========',res)
       }).catch((err)=>{
         // console.log(err)
+        console.error("❌ Error loading categories:", err);
       })
      }
   },[categoryAndSubCategory])

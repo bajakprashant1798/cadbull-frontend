@@ -65,7 +65,7 @@ const validationSchema = Yup.object().shape({
 
 const DesignerProfile = () => {
   const { token } = useSelector((store) => store.logininfo);
-  console.log("token:", token);
+  // console.log("token:", token);
   
   const [isLoading,startLoading,stopLoading]=useLoading()
   const [existingArchitectProfile,setExistingArchitectProfile]=useState({})

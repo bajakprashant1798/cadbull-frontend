@@ -9,17 +9,19 @@ import { useRouter } from "next/router";
 import { closeDrawerHandler } from "../../redux/app/features/drawerSlice";
 
 function CategoriesList({
-  active,
-  url,
-  icon,
-  title,
-  counts,
-  projectsCount,
-  slug,
-  id,
+  // active,
+  // url,
+  // icon,
+  // title,
+  // counts,
+  // projectsCount,
+  // id,
+  path,
+  active, name, slug, pcount
 }) {
   const dispatch = useDispatch();
   const router= useRouter();
+// console.log("path: ", slug);
 
   return (
     <li
@@ -29,34 +31,76 @@ function CategoriesList({
     >
       {slug ? (
         <Link
-         onClick={(e)=>{
-           dispatch(closeDrawerHandler({drawerType:"category"}))
+        onClick={(e)=>{
+          dispatch(closeDrawerHandler({drawerType:"category"}))
           router.push(`/categories/sub/${slug}`)
-         }}
+        }}
           href={`/categories/sub/${slug}`}
           className="d-inline-flex gap-1 align-items-center"
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}
-          <span className="fw-normal">{title}</span>
+          <span className="fw-normal">{name}</span>
         </Link>
       ) : (
         <div
           id="id"
           style={{ cursor: "pointer" }}
           onClick={(e) => {
-            dispatch(updatesubcatslug(title));
+            dispatch(updatesubcatslug(name));
             dispatch(updatesubcatpage(1));
             dispatch(closeDrawerHandler({drawerType:"subcategory"}))
           }}
           className="d-inline-flex gap-1 align-items-center  "
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}
-          <span className="fw-normal">{title}</span>
+          <span className="fw-normal">{name}</span>
         </div>
       )}
-      <p>{projectsCount}</p>
+      <p>{pcount || 0}</p>
+          
+      
     </li>
   );
 }
 
 export default CategoriesList;
+
+
+
+// {slug ? (
+//   <Link
+//   onClick={(e)=>{
+//     dispatch(closeDrawerHandler({drawerType:"category"}))
+//     router.push(`/categories/sub/${path}`)
+//   }}
+//     href={`/categories/sub/${path}`}
+//     className="d-inline-flex gap-1 align-items-center"
+//   >
+//     {/* <img src={icon.src} alt="icon" width={30} /> */}
+//     <span className="fw-normal">{name}</span>
+//   </Link>
+// ) : (
+//   <div
+//     id="id"
+//     style={{ cursor: "pointer" }}
+//     onClick={(e) => {
+//       dispatch(updatesubcatslug(name));
+//       dispatch(updatesubcatpage(1));
+//       dispatch(closeDrawerHandler({drawerType:"subcategory"}))
+//     }}
+//     className="d-inline-flex gap-1 align-items-center  "
+//   >
+//     {/* <img src={icon.src} alt="icon" width={30} /> */}
+//     <span className="fw-normal">{name}</span>
+//   </div>
+// )}
+// <p>{pcount || 0}</p>
+
+{/* <Link
+        href={`/categories/sub/${path}`} // Category URL
+        className="d-inline-flex gap-1 align-items-center"
+        onClick={(e) => dispatch(closeDrawerHandler({ drawerType: "category" }))}
+      >
+        <span className="fw-normal">{name}</span>
+      </Link>
+      <p>{pcount || 0}</p>  */}

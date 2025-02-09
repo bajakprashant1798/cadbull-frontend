@@ -8,11 +8,12 @@ import ProjectCard from "@/components/ProjectCard";
 import Link from "next/link";
 import icon from "@/assets/icons/categories.png";
 import { useRouter } from "next/router";
-import { getallCategories, getallprojects } from "@/service/api";
+import { getallCategories, getallprojects, getallsubCategories } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
   getProjects,
+  resetCategoriesList,
   updateSortList,
   updatesubcatpage,
   updatesubcatserachTerm,
@@ -35,6 +36,9 @@ const Categories = () => {
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
   const dispatch = useDispatch();
+
+  
+
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
   const loadRecords = useCallback(
@@ -103,6 +107,12 @@ const Categories = () => {
       dispatch(updatesubcatpage(1));
     };
   }, []);
+  useEffect(() => {
+    return () => {
+      dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
+    };
+  }, []);
+  
   const CategoriesProps = showSearchBreadCrumb
     ? {
         title: "Search Results",
