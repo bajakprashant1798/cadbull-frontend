@@ -116,18 +116,18 @@ const UploadWork = () => {
   };
   
 
-  // useEffect(()=>{
-  //    if(categoryAndSubCategory.length===0){
-  //     getCategoriesWithSubcategories().then((res)=>{
-  //       dispatch(addCategoryAndSubCategoryData(res))
-  //       setSubCategory(res[0]?.project_sub_categories)
-  //       // console.log('api response upload==========',res)
-  //     }).catch((err)=>{
-  //       // console.log(err)
-  //       console.error("❌ Error loading categories:", err);
-  //     })
-  //    }
-  // },[categoryAndSubCategory])
+  useEffect(()=>{
+     if(categoryAndSubCategory.length===0){
+      getCategoriesWithSubcategories().then((res)=>{
+        dispatch(addCategoryAndSubCategoryData(res))
+        setSubCategory(res[0]?.project_sub_categories)
+        // console.log('api response upload==========',res)
+      }).catch((err)=>{
+        // console.log(err)
+        console.error("❌ Error loading categories:", err);
+      })
+     }
+  },[])
   return (
     <Fragment>
       <Head>
