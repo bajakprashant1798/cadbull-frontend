@@ -3,6 +3,7 @@ import free from '@/assets/icons/free2.png'
 import save from "@/assets/icons/save.png";
 import heart from "@/assets/icons/heart.png";
 import heart_like from "@/assets/icons/heart_like.png";
+import product from "@/assets/images/product.jpg"
 import Icons from "./Icons";
 import Link from "next/link";
 import { addFavouriteItem, callViewProfileAPI, viewProfile, removeFavouriteItem, getFavouriteItems } from "@/service/api";
@@ -108,7 +109,7 @@ const ProjectCard = ({  view_count, work_title, file_type,id,photo_url,type}) =>
       <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}>
         <div className='project-day-card-image mb-3 position-relative'>
           
-              <img src={photo_url} alt="project" className='w-100 img-fluid' />
+              <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} />
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
             <button onClick={()=>handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
               {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}

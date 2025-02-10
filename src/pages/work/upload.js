@@ -74,7 +74,7 @@ const UploadWork = () => {
       await uploadProjectApiHandler(formData, token);
       toast.success("Project uploaded successfully! Pending approval.");
       stopLoading();
-      router.push("/projects"); // Redirect to user projects page
+      router.push("/work/sent"); // Redirect to user projects page
     } catch (err) {
       toast.error("Upload failed. Please try again.");
       stopLoading();
