@@ -29,8 +29,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("hello1");
-
     const originalRequest = error.config;
 
     // ✅ Handle Timeout Errors
@@ -686,6 +684,44 @@ export const sendNewsletterEmailApi = (id, formData, token) => {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
   });
 };
+
+
+
+/**
+ * ✅ Fetch Users Earnings for Admin Panel
+ * API Route: GET `/admin/users/earnings`
+ */
+export const getUsersEarningsApi = async (filterStatus, page = 1, perPage = 10, token, search = "") => {
+  console.log("📢 API Call: getUsersEarningsApi()");
+  console.log("🔹 Token:", token);
+  console.log("🔹 Query Params:", { filterStatus, page, perPage, search });
+
+  return api.get("/admin/earnings", {
+    params: { status: filterStatus, page, perPage, search },
+    headers: { Authorization: `Bearer ${token}` }, // ✅ Send token
+  });
+};
+
+
+// ✅ Fetch Redeem Requests
+export const getRedeemRequestsApi = async (is_redeem, page = 1, perPage = 10, token) => {
+  return api.get("/admin/redeem-requests", {
+    params: { is_redeem, page, perPage },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// ✅ Toggle Redeem Status
+export const toggleRedeemStatusApi = async (redeemId, userId, redeemMoney, token) => {
+  return api.patch("/admin/redeem-requests/toggle-status", {
+    redeemId,
+    userId,
+    redeemMoney
+  }, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
 
 
 

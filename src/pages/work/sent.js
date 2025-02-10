@@ -16,6 +16,7 @@ import { downloadProject, getUploadedProjectList, removeProject } from "@/servic
 import { addedFavouriteItem } from "../../../redux/app/features/projectsSlice";
 import { downloadFile } from "@/utils/downloadfile";
 import { handledownload } from "@/service/globalfunction";
+import { debounce } from "lodash"; // ✅ Import debounce for optimization
 
 
 const tableData = [
@@ -74,45 +75,50 @@ const WorkSent = () => {
   const dispatch = useDispatch();
   const datas = useSessionStorageData("userData")
 
-  useEffect(() => {
-    if (!tableData || tableData.length === 0) { // ✅ Additional check
-        getUploadedProjectList(token, 1, 10)
-        .then((res) => {
-          console.log("my-projects: ", res);
-          if (Array.isArray(res.data.projects)) {
-            setTableData(res.data.projects);
-          } else {
-            setTableData([]); // ✅ Fallback to empty array
-          }
+  // ✅ Fetch Projects List with Debounce (Optimized API Calls)
+  const fetchProjects = debounce((page) => {
+    console.log("Fetching projects for page:", page);
+    
+    getUploadedProjectList(token, page, 10)
+      .then((res) => {
+        if (res?.data?.projects) {
+          setTableData(res.data.projects);
           dispatch(addedFavouriteItem(res.data.projects));
-          setCurrentPage(res.data.currentPage);
           setTotalPages(res.data.totalPages);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [tableData,token, currentPage]);
+        } else {
+          setTableData([]); // ✅ Handle empty response
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Error fetching projects:", err);
+      });
+  }, 300); // ✅ Delay API calls by 300ms to prevent excessive requests
 
+  // ✅ Fetch Data on Mount and When `currentPage` Changes
+  useEffect(() => {
+    if (token) {
+      fetchProjects(currentPage);
+    }
+  }, [token, currentPage]);
+
+  // ✅ Handle Page Change for Pagination
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    setTableData([]); // Clear previous data before fetching new
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
   
 
+  // ✅ Remove Project (Optimized)
   const handleremoveitem = (id) => {
     removeProject(token, id)
-      .then((res) => {
-        // ✅ Remove only the deleted project from state instead of clearing everything
-        // setTableData(tableData.filter(project => project.id !== id));
-        // toast.success("Project removed successfully.", { position: "top-right" });
-        setTableData([]);
-        setRemoveItemTrigger(removeItemTrigger + 1);
+      .then(() => {
+        setTableData((prev) => prev.filter((project) => project.id !== id)); // ✅ Only remove deleted project
         dispatch(deleteFavouriteItem(id));
-        toast.success("Removed Favourite list", { position: "top-right" });
+        toast.success("Project removed successfully.", { position: "top-right" });
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error("❌ Error removing project:", err);
       });
   };
 
@@ -225,7 +231,15 @@ const WorkSent = () => {
             </div>
           </div>
           {/* Pagination */}
-          <Pagination />
+          {/* ✅ Pagination with working state updates */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPreviousPage={() => handlePageChange(currentPage - 1)}
+            goToNextPage={() => handlePageChange(currentPage + 1)}
+            dispatchCurrentPage={setCurrentPage}
+          />
+
         </div>
       </section>
     </Fragment >

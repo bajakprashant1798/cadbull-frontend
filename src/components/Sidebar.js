@@ -291,14 +291,14 @@ const Sidebar = () => {
 
         {/* Redeem Requests with Dropdown */}
         <li className="nav-item">
-            <Link href="/admin/dashboard" className="nav-link text-white">
+            <Link href="/admin/redeem-request" className="nav-link text-white">
                 <CreditCard size={18} className="me-2" /> Redeem Requests
             </Link>
         </li>
 
         {/* Users Earning with Dropdown */}
         <li className="nav-item">
-            <Link href="/admin/dashboard" className="nav-link text-white">
+            <Link href="/admin/users-earning" className="nav-link text-white">
                 <CreditCard size={18} className="me-2" /> Users Earning
             </Link>
         </li>

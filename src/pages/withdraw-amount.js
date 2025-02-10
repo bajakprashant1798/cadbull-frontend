@@ -34,6 +34,8 @@ const WithdrawAmount = () => {
       getRedeemRequestList(token)
       .then((res) => {
         setTableData(res.data.withdrawRequests);
+        // console.log(res);
+        
       })
       .catch((err) => {
         console.log(err);
@@ -53,7 +55,7 @@ const WithdrawAmount = () => {
     }
 
     // Validate the input
-    if (amount < 10) {
+    if (amount < 1) {
       setError("You must withdraw at least 10 USD.");
     } else if (amount > balance) {
       setError("Withdrawal amount cannot exceed available balance.");
