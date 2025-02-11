@@ -768,6 +768,14 @@ export const getRedeemRequestList = async () => {
   return api.get("/wallet/redeem-requests");
 };
 
+// search result api
+export const getSearchResults = async (query, page = 1, perPage = "", file_type, type) => {
+  return api.get(`/projects/search`, {
+      params: { query, page, perPage, file_type, type },
+  });
+};
+
+
 
 
 

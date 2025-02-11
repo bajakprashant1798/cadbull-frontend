@@ -41,8 +41,10 @@ import LoadMore from "@/components/LoadMore";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { updateSortList } from "../../redux/app/features/projectsSlice";
+import { getserachTerm } from "../../redux/app/features/projectsSlice"; // adjust the path as needed
 
 import axios from 'axios';
+import { useRouter } from "next/router";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -93,6 +95,8 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage,setCurrentPage]=useState(1);
 
+  const router = useRouter();
+
 
   useEffect(() => {
     if (blogs.length === 0) {
@@ -134,11 +138,25 @@ export default function Home() {
     }
   };
 
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   setCurrentPage(1);
+  //   loadProjects(1);
+  // };
+
+  // The search handler dispatches the search term and navigates
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1);
-    loadProjects(1);
+    if (searchTerm.trim()) {
+      // Dispatch the search term to Redux store
+      dispatch(getserachTerm(searchTerm));
+      // Navigate to the search page without query parameters
+      router.push('/categories/search');
+    }
   };
+  
+  
+
   const handleSortChange = (e) => {
     setSortTerm(e.target.value);
     setCurrentPage(1);
