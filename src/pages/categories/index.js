@@ -23,6 +23,8 @@ import { drawings } from "..";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
+import Pagination from "@/components/Pagination";
+
 const Categories = () => {
   const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -46,14 +48,15 @@ const Categories = () => {
       startLoading();
       getallprojects(page, 6, searchedText, sortTerm, sortType)
         .then((response) => {
-          if (page === 1) {
-            setProjects(response.data?.products);
-          } else {
-            setProjects((prevProjects) => [
-              ...prevProjects,
-              ...response.data?.products,
-            ]);
-          }
+          // if (page === 1) {
+          //   setProjects(response.data?.products);
+          // } else {
+          //   setProjects((prevProjects) => [
+          //     ...prevProjects,
+          //     ...response.data?.products,
+          //   ]);
+          // }
+          setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
           stopLoading();
         })
@@ -78,8 +81,15 @@ const Categories = () => {
   // //update sortTerm state by redux state change
   useEffect(() => {
     setCurrentPage(1);
+    // setSortTerm(sortList);
+  }, [searchedText]);
+
+  // Update sortTerm when Redux sortList changes.
+  useEffect(() => {
+    setCurrentPage(1);
     setSortTerm(sortList);
   }, [sortList]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -91,7 +101,7 @@ const Categories = () => {
     setSearchTerm(e.target.value);
   };
   useEffect(() => {
-    if (searchTerm.length == 0) {
+    if (searchTerm.length === 0) {
       setShowSearchBreadCrumb(false);
       setSearchedText("");
       // setCurrentPage(1)
@@ -106,12 +116,12 @@ const Categories = () => {
       dispatch(updatesubcatserachTerm(""));
       dispatch(updatesubcatpage(1));
     };
-  }, []);
+  }, [dispatch]);
   useEffect(() => {
     return () => {
       dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
     };
-  }, []);
+  }, [dispatch]);
   
   const CategoriesProps = showSearchBreadCrumb
     ? {
@@ -130,6 +140,11 @@ const Categories = () => {
         categories: catalog,
         type: "Categories",
       };
+
+    const handlePageChange = (newPage) => {
+      setCurrentPage(newPage);
+    };
+    
 
   return (
     <Fragment>
@@ -251,24 +266,21 @@ const Categories = () => {
               )}
             </div>
 
+            {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  {/* <Link href="" className="btn btn-secondary">
-                    BROWSE
-                  </Link> */}
-                  {!isLoading && (
-                    <LoadMore
-                      totalPage={totalPages}
-                      currentPage={currentPage}
-                      loadMoreHandler={() => {
-                        setCurrentPage((prev) => prev + 1);
-                      }}
-                    />
-                  )}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    goToPreviousPage={() => handlePageChange(currentPage - 1)}
+                    goToNextPage={() => handlePageChange(currentPage + 1)}
+                    dispatchCurrentPage={handlePageChange}
+                  />
                 </div>
               </div>
             </div>
+            
           </div>
         </section>
       </CategoriesLayout>

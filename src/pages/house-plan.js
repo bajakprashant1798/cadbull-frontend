@@ -8,6 +8,7 @@ import {getallprojects } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
+  resetCategoriesList,
   updateSortList,
   updatesubcatpage,
   updatesubcatserachTerm,
@@ -16,6 +17,8 @@ import { drawings } from ".";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
+import Pagination from "@/components/Pagination";
+
 const HousePlan = () => {
   const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -36,14 +39,15 @@ const HousePlan = () => {
       startLoading();
       getallprojects(page, 6, searchedText, sortTerm, sortType)
         .then((response) => {
-          if (page === 1) {
-            setProjects(response.data?.products);
-          } else {
-            setProjects((prevProjects) => [
-              ...prevProjects,
-              ...response.data?.products,
-            ]);
-          }
+          // if (page === 1) {
+          //   setProjects(response.data?.products);
+          // } else {
+          //   setProjects((prevProjects) => [
+          //     ...prevProjects,
+          //     ...response.data?.products,
+          //   ]);
+          // }
+          setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
           stopLoading();
         })
@@ -97,7 +101,15 @@ const HousePlan = () => {
       dispatch(updatesubcatserachTerm(""));
       dispatch(updatesubcatpage(1));
     };
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
+    };
+  }, [dispatch]);
+    
+
   const CategoriesProps = showSearchBreadCrumb
     ? {
         title: "Search Results",
@@ -110,6 +122,10 @@ const HousePlan = () => {
     : {
       title:"Architecture House Plan CAD Drawings CAD Blocks & 21354 Files", description:"Cadbull presents variety of online drawing including DWG drawing, Cad drawing, AutoCAD drawing, 3D Drawing. Wide range of 3D Drawing, DWG drawing, Cad drawing, AutoCAD drawing available as per your need.",categories:catalog, type:"Categories", pageName:"House Plan"
       };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <Fragment>
@@ -231,12 +247,27 @@ const HousePlan = () => {
               )}
             </div>
 
+            {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  {/* <Link href="" className="btn btn-secondary">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    goToPreviousPage={() => handlePageChange(currentPage - 1)}
+                    goToNextPage={() => handlePageChange(currentPage + 1)}
+                    dispatchCurrentPage={handlePageChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="row mt-4 justify-content-center mt-md-5">
+              <div className="col-md-6 col-lg-5 col-xl-4">
+                <div className="text-center">
+                  <Link href="" className="btn btn-secondary">
                     BROWSE
-                  </Link> */}
+                  </Link>
                   {!isLoading && (
                     <LoadMore
                       totalPage={totalPages}
@@ -248,7 +279,7 @@ const HousePlan = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </CategoriesLayout>
