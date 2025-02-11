@@ -238,6 +238,8 @@ useEffect(() => {
     if (categoryAndSubCategory.length === 0) {
       getCategoriesWithSubcategories()
         .then((res) => {
+          console.log("sub", res);
+          
           dispatch(addCategoryAndSubCategoryData(res));
           // console.log('api response upload==========',res)
         })
@@ -247,7 +249,9 @@ useEffect(() => {
     }
     if(categoriesList.length===0){
      getallCategories('').then((res)=>{
-        dispatch(addAllCategoriesData(res.data));
+      console.log("res", res);
+      
+        dispatch(addAllCategoriesData(res.data.categories));
       }).catch((err)=>{
 
       }) 
@@ -256,6 +260,9 @@ useEffect(() => {
   }, [categoryAndSubCategory,categoriesList]);
   const onSearchSubmitHandler = (e) => {
     e.preventDefault();
+    // console.log("selectedCategory", selectedCategory);
+    // console.log("selectedSubCategory", selectedSubCategory);
+    
     if (selectedCategory && selectedSubCategory) {
       dispatch(updatesubcatslug(selectedSubCategory));
       dispatch(updatesubcatpage(1));
@@ -608,13 +615,13 @@ useEffect(() => {
                       goToNextPage={() => handlePageChange(currentPage + 1)}
                     />
 
-                    <LoadMore
+                    {/* <LoadMore
                       currentPage={currentPage}
                       totalPage={totalPages}
                       loadMoreHandler={() => {
                         setCurrentPage((prev) => prev + 1);
                       }}
-                    />
+                    /> */}
 
                     {/* <div className="row">
                       <div className="col-md-12">
@@ -643,13 +650,15 @@ useEffect(() => {
                       <form className="d-flex gap-3 flex-column">
                         Category
                         <div>
-                          <select
+                          {/* <select
                             defaultValue=""
                             className="form-select"
                             aria-label="Category"
                             onChange={(e) => {
-                              categoryAndSubCategory.filter((item) => {
+                              categoryAndSubCategory.forEach((item) => {
                                 if (item.id == e.target.value) {
+                                  console.log("item", categoriesList);
+                                  
                                   setSelectedCategory(item.slug);
                                   setSubCategories(item.project_sub_categories);
                                   // console.log("sub",item)
@@ -667,7 +676,38 @@ useEffect(() => {
                                 );
                               }
                             )}
+                          </select> */}
+                          <select
+                            defaultValue=""
+                            className="form-select"
+                            aria-label="Category"
+                            onChange={(e) => {
+                              const selectedCategoryId = e.target.value;
+                              // Find the category in categoriesList that matches the selected id
+                              const matchingCategory = categoriesList.find(
+                                (cat) => cat.id == selectedCategoryId
+                              );
+                              // If found, update selectedCategory state with the slug
+                              if (matchingCategory) {
+                                setSelectedCategory(matchingCategory.slug);
+                              }
+                              // Also, find the selected category in categoryAndSubCategory to get its subcategories
+                              const selectedCategoryObj = categoryAndSubCategory.find(
+                                (item) => item.id == selectedCategoryId
+                              );
+                              if (selectedCategoryObj) {
+                                setSubCategories(selectedCategoryObj.project_sub_categories);
+                              }
+                            }}
+                          >
+                            <option value="all">All Category</option>
+                            {categoryAndSubCategory.map(({ id, title }) => (
+                              <option value={id} key={id}>
+                                {title}
+                              </option>
+                            ))}
                           </select>
+
                         </div>
                         Select Sub Category
                         <div>
