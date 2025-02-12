@@ -90,7 +90,7 @@ const handleLogout = () => {
   localStorage.removeItem("userData");
 
   // ✅ Ensure logout event is triggered
-  window.dispatchEvent(new Event("userLoggedOut"));
+  // window.dispatchEvent(new Event("userLoggedOut"));
 
   // ✅ Refresh the page ONCE after logout
   if (!localStorage.getItem("logoutReloaded")) {
@@ -157,12 +157,15 @@ export const getUserDetails = () => {
 };
 
 export const forgetPassword = (email) => {
-  return api.post("/user/forgot-password", email);
+  return api.post("/auth/forgot-password", email);
 };
 
 export const resetPassword = (token, newPassword) => {
-  return api.post("/user/reset-password", { token, newPassword });
+  return api.post("/auth/reset-password", { token, password: newPassword }, {
+    headers: { "Content-Type": "application/json" },
+  });
 };
+
 
 export const socialLogin = async (data) => {
   return api.post("/auth/social-auth", data);
@@ -777,6 +780,27 @@ export const getSearchResults = async (query, page = 1, perPage = "", file_type,
 
 
 
+// user project delete
+export const deleteUserProject = async (id) => {
+  return api.delete(`/userProjects/${id}`);
+};
+
+// Expects formData (FormData instance) and a valid token
+export const createUserProject = async (formData, token) => {
+  return api.post("/userProjects", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// User Prjects
+export const getUserProjects = async (page = 1, pageSize = 10) => {
+  return api.get("/userProjects", {
+    params: { page, pageSize },
+  });
+};
 
 
 export default api;

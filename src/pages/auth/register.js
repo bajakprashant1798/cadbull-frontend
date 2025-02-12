@@ -45,6 +45,12 @@ const Register = () => {
         // ✅ Log the response to check the structure
         console.log("🔄 Signup Response:", res.data);
   
+        // ✅ Handle email already exists but not verified case
+        if (res.data.message.includes("not verified")) {
+          toast.warning(res.data.message);
+          return;
+        }
+
         // ✅ Check if `user` exists before destructuring
         if (!res.data || !res.data.user) {
           toast.error("Unexpected response from server.");
@@ -53,34 +59,31 @@ const Register = () => {
   
         const { accessToken, refreshToken, user } = res.data;
   
-        // // ✅ Store tokens and user data
-        // sessionStorage.setItem("accessToken", accessToken);
-        // localStorage.setItem("refreshToken", refreshToken);
-        // sessionStorage.setItem("userData", JSON.stringify(user));
-  
-        // ✅ Store tokens in localStorage
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userData", JSON.stringify(user));
+        
+        // ✅ Store tokens and user data ONLY IF email is verified
+        if (user.is_email_verify === 1) {
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+          localStorage.setItem("userData", JSON.stringify(user));
 
-        // ✅ Dispatch Redux login state
-        dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+          dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+          window.dispatchEvent(new Event("userLoggedIn"));
 
-        // ✅ Trigger storage event to sync across tabs
-        window.dispatchEvent(new Event("userLoggedIn"));
-  
-        toast.success("Registration was successful. Redirecting...", { autoClose: 2000 });
-  
-        // ✅ Redirect based on user role
-        setTimeout(() => {
-          if (user.role === 1) {
-            router.push("/admin/dashboard"); // Super Admin
-          } else if (user.role === 5) {
-            router.push("/admin/dashboard/products/view-projects"); // Content Creator
-          } else {
-            router.push("/"); // Default home page
-          }
-        }, 2000);
+          toast.success("Registration successful. Redirecting...", { autoClose: 2000 });
+
+          setTimeout(() => {
+            if (user.role === 1) {
+              router.push("/admin/dashboard");
+            } else if (user.role === 5) {
+              router.push("/admin/dashboard/products/view-projects");
+            } else {
+              router.push("/");
+            }
+          }, 2000);
+        } else {
+          toast.warning("Please verify your email before register.", { autoClose: 2000 });
+          router.push("/login");
+        }
       })
       .catch((err) => {
         stopLoading();

@@ -77,11 +77,11 @@ const Header = () => {
       dispatch(logout()); // ✅ Ensure Redux state updates
     };
 
-    window.addEventListener("userLoggedOut", handleUserLogout);
+    // window.addEventListener("userLoggedOut", handleUserLogout);
 
-    return () => {
-      window.removeEventListener("userLoggedOut", handleUserLogout);
-    };
+    // return () => {
+    //   window.removeEventListener("userLoggedOut", handleUserLogout);
+    // };
   }, []);
   
   const isAuthenticated = useSelector(

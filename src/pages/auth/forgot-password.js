@@ -6,6 +6,7 @@ import Head from "next/head";
 import { Fragment, useState, useEffect } from "react";
 import PageHeading from "@/components/PageHeading";
 import { forgetPassword } from "@/service/api";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -15,16 +16,17 @@ const ForgotPassword = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const requestData = { email: email };
-    setIsResetting(true);
+    // setIsResetting(true);
 
     forgetPassword(requestData)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    .then((res) => {
+      toast.success(res.data.message);
+    })
+    .catch((err) => {
+      toast.error(err.response?.data?.message || "Something went wrong.");
+    });
   };
+
 
   useEffect(() => {
     let timer;

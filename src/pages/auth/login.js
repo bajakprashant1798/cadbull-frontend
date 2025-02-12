@@ -150,8 +150,19 @@ const Register = () => {
       })
       .catch((err) => {
         stopLoading();
+        // ✅ Check if error response exists and has a message
+        const errorMessage = err.response?.data?.message || "An unexpected error occurred.";
+
+        console.error("Login Error:", err.response?.data || err);
+
+        // ✅ Handle email not verified case safely
+        if (errorMessage.includes("not verified")) {
+          toast.warning(errorMessage);
+          return;
+        }
+    
         toast.error("Please check your email or password ")
-        console.log(err);
+        console.log("login error: ", err);
       });
   };
 
