@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { downloadProject, getUploadedProjectList, removeProject } from "@/service/api";
-import { addedFavouriteItem } from "../../../redux/app/features/projectsSlice";
+import { addedFavouriteItem, deleteFavouriteItem } from "../../../redux/app/features/projectsSlice";
 import { downloadFile } from "@/utils/downloadfile";
 import { handledownload } from "@/service/globalfunction";
 import { debounce } from "lodash"; // ✅ Import debounce for optimization

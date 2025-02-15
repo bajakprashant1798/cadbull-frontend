@@ -11,6 +11,7 @@ import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { sendContactForm } from "@/service/api";
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
     .required("This field is required.")
@@ -58,12 +59,16 @@ const ContactUs = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const contactSubmitHandler=(contactData)=>{
-    // console.log('contact form data',contactData)
-    reset()
-    toast.success('Your query has been recorded');
-    
-  }
+  const contactSubmitHandler = async (contactData) => {
+    try {
+      await sendContactForm(contactData);
+      toast.success('Your query has been sent successfully!');
+      reset(); // Reset the form
+    } catch (error) {
+      console.error("❌ Error sending contact form:", error);
+      toast.error("Failed to send your query. Please try again later.");
+    }
+  };
 
   return (
     <Fragment>

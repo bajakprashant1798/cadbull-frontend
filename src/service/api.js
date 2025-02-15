@@ -305,25 +305,56 @@ export const callViewProfileAPI = async (uuid) => {
 };
 
 export const downloadProject = async (token, id, router) => {
-  return api({
-    url: `/projects/download/${id}`,
-    method: "POST",
-    responseType: "blob",
-    headers: { Authorization: `Bearer ${token}` },
-  }).catch(async (err) => {
-    console.log("🚨 Catching Error:", err);
-    if (err.response?.status === 403) {
-      const blobData = err.response.data;
-      const textData = await blobData.text();
-      const jsonData = JSON.parse(textData);
-      if (jsonData?.redirectUrl) {
-        router.push(jsonData.redirectUrl);
-      } else {
-        console.error("❌ Download error:", err);
+  try {
+    const response = await api.get(`/projects/download/${id}`, {
+      responseType: "blob", // Required to handle file downloads
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 200) {
+      // ✅ Create Download Link
+      const blob = new Blob([response.data]);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `project_${id}.zip`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      return;
+    }
+  } catch (err) {
+    console.error("🚨 Download Error:", err);
+
+    if (err.response) {
+      const status = err.response.status;
+
+      // 🔹 Handle Gold Subscription Redirect (403)
+      if (status === 403) {
+        const blobData = err.response.data;
+        const textData = await blobData.text();
+        try {
+          const jsonData = JSON.parse(textData);
+          if (jsonData?.redirectUrl) {
+            console.warn("🚀 Redirecting to:", jsonData.redirectUrl);
+            router.push(jsonData.redirectUrl);
+          } else {
+            console.error("❌ Error: No redirect URL in response.");
+          }
+        } catch (parseError) {
+          console.error("❌ JSON Parse Error:", parseError);
+        }
+      }
+
+      // 🔹 Handle Unauthorized (401)
+      if (status === 401) {
+        console.warn("❌ Unauthorized. Please log in.");
+        router.push("/auth/login");
       }
     }
-  });
+  }
 };
+
 
 export const downloadHistory = async (token, uuid) => {
   return api.post(`/projects/${uuid}/download-history`, {}, {
@@ -820,5 +851,27 @@ export const getUserProjects = async (page = 1, pageSize = 10) => {
   });
 };
 
+
+// ========================
+// ✅ Contact Us API Endpoint
+// ========================
+
+export const sendContactForm = async (contactData) => {
+  try {
+    const response = await api.post("/contact", contactData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error sending contact form:", error);
+    if (error.response) {
+      throw new Error(error.response.data.error || "Failed to send contact form.");
+    } else {
+      throw new Error("Network error. Please try again.");
+    }
+  }
+};
 
 export default api;
