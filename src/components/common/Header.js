@@ -59,17 +59,39 @@ const links = [
 
 const Header = () => {
   const status = useSelector((store) => store.logininfo);
+  const dispatch = useDispatch();
+  const Router = useRouter();
+  // ✅ State to force UI update after logout
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
   // const token = useSelector((state) => state.logininfo.token); 
+  
+  // ✅ Track Local Storage Token for Changes
+  const [token, setToken] = useState(() => localStorage.getItem("accessToken"));
+
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const storedToken = localStorage.getItem("accessToken");
+      if (!storedToken) {
+        dispatch(logout());
+      }
+      setToken(storedToken);
+    };
+
+    // ✅ Listen for Storage Changes
+    window.addEventListener("storage", checkAuth);
+
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+    };
+  }, [dispatch]);
   
-
-  // ✅ State to force UI update after logout
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
-
   useEffect(() => {
     const handleUserLogout = () => {
       console.log("🔄 Logout event detected, updating UI...");
@@ -87,9 +109,10 @@ const Header = () => {
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
+  console.log("isAuthenticated header", isAuthenticated);
+  
   const [showHamburgerMenuItem, setShowHamburgerMenuItem] = useState(false);
-  const dispatch = useDispatch();
-  const Router = useRouter();
+
   
   const handleLogout = () => {
     console.log("🔴 User manually logging out...");

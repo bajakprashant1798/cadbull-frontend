@@ -11,6 +11,7 @@ import {
   deleteAccount,
   getUserProfile,
   removeFavouriteItem,
+  requestAccountDeletion,
   updateProfilePicture,
   updateProfileWithoutPicture,
   updateUserProfileInfo,
@@ -180,21 +181,35 @@ const EditProfile = () => {
     }
   }, [token]);
 
+  // const removeAccountHandler = async () => {
+  //   try {
+  //     const res = await deleteAccount(token);
+  //     if (res.status === 200) {
+  //       dispatch(logout());
+  //       sessionStorage.removeItem("userData");
+  //       toast.success("Account Removed Successfully");
+  //       Router.push("/");
+  //     } else {
+  //       throw new Error("Failed to remove account");
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.message || "An error occurred while removing the account");
+  //   }
+  // };
+  // Trigger Account Deletion
   const removeAccountHandler = async () => {
     try {
-      const res = await deleteAccount(token);
+      const res = await requestAccountDeletion(token);
       if (res.status === 200) {
-        dispatch(logout());
-        sessionStorage.removeItem("userData");
-        toast.success("Account Removed Successfully");
-        Router.push("/");
+        toast.success("A confirmation email has been sent. Check your inbox.");
       } else {
-        throw new Error("Failed to remove account");
+        throw new Error("Failed to initiate account deletion.");
       }
     } catch (err) {
-      toast.error(err.message || "An error occurred while removing the account");
+      toast.error(err.message || "An error occurred while initiating deletion.");
     }
   };
+
   return (
     <Fragment>
       <Head>
@@ -736,7 +751,8 @@ const EditProfile = () => {
                     <button
                       type="button"
                       className="btn btn-light-secondary w-100"
-                      onClick={() => removeAccountHandler()}
+                      // onClick={() => removeAccountHandler()}
+                      onClick={removeAccountHandler}
                     >
                       Delete Account
                     </button>

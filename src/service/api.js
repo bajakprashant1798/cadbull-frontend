@@ -1,5 +1,7 @@
 // api.js
 import axios from "axios";
+import store from "../../redux/app/store"; // Adjust based on your file structure
+import { logout } from "../../redux/app/features/authSlice";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
@@ -84,6 +86,9 @@ api.interceptors.response.use(
 const handleLogout = () => {
   console.log("🔴 Logging out user due to refresh token expiry...");
 
+  // ✅ Dispatch Redux logout
+  store.dispatch(logout());
+
   // ✅ Remove tokens from storage
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
@@ -93,12 +98,12 @@ const handleLogout = () => {
   // window.dispatchEvent(new Event("userLoggedOut"));
 
   // ✅ Refresh the page ONCE after logout
-  if (!localStorage.getItem("logoutReloaded")) {
-    localStorage.setItem("logoutReloaded", "true");
-    setTimeout(() => {
-      window.location.reload(); // ✅ Ensures Redux state update before reload
-    }, 100);
-  }
+  // if (!localStorage.getItem("logoutReloaded")) {
+  //   localStorage.setItem("logoutReloaded", "true");
+  //   setTimeout(() => {
+  //     window.location.reload(); // ✅ Ensures Redux state update before reload
+  //   }, 100);
+  // }
 
   // ✅ Redirect only if user is on a protected route
   if (window.location.pathname.startsWith("/admin")) {
@@ -193,9 +198,22 @@ export const updateUserProfileInfo = async (userData, token) => {
   });
 };
 
-export const deleteAccount = async () => {
-  return api.delete("/profile");
+// export const deleteAccount = async () => {
+//   return api.delete("/profile");
+// };
+
+// Request Account Deletion
+export const requestAccountDeletion = async (token) => {
+  return api.post(`/delete-account/request`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };
+
+// Confirm Account Deletion
+export const confirmAccountDeletion = async (token) => {
+  return api.get(`/delete-account/confirm/${token}`);
+};
+
 
 // ===================
 // PROJECT API ENDPOINTS

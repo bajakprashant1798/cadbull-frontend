@@ -23,6 +23,8 @@ const authSlice = createSlice({
     },
     logout: (state, action) => {
       state.isAuthenticated = false;
+      console.log("🔴 LOGOUT authslce", state.isAuthenticated);
+      
       state.user = {};
       state.token = "";
       // Clear session storage

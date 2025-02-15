@@ -6,3 +6,5 @@ import { rootReducer } from "./features/rootReducer";
 export const store = configureStore({
   reducer: rootReducer,
 });
+
+export default store; // ✅ Correct Default Export
