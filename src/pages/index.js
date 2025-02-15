@@ -143,7 +143,7 @@ export default function Home() {
   //   setCurrentPage(1);
   //   loadProjects(1);
   // };
-
+ 
   // The search handler dispatches the search term and navigates
   const handleSearch = (e) => {
     e.preventDefault();

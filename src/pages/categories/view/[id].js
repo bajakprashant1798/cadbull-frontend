@@ -256,7 +256,7 @@ useEffect(() => {
 
       }) 
     }
-
+ 
   }, [categoryAndSubCategory,categoriesList]);
   const onSearchSubmitHandler = (e) => {
     e.preventDefault();

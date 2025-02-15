@@ -65,10 +65,17 @@ const Header = () => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   // const token = useSelector((state) => state.logininfo.token); 
   
-  // ✅ Track Local Storage Token for Changes
-  const [token, setToken] = useState(() => localStorage.getItem("accessToken"));
-
-
+  // ✅ Manage token state
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("accessToken");
+      if (!storedToken) {
+        dispatch(logout());
+      }
+      setToken(storedToken);
+    }
+  }, [dispatch]);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
