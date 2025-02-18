@@ -4,11 +4,12 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
-import {getallprojects } from "@/service/api";
+import {getallprojects, getFavouriteItems } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
   resetCategoriesList,
+  setFavouriteList,
   updateSortList,
   updatesubcatpage,
   updatesubcatserachTerm,
@@ -18,6 +19,8 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
+import { debounce } from "lodash";
+
 
 const HousePlan = () => {
   const { sortList } = useSelector((store) => store.projectinfo);
@@ -31,7 +34,50 @@ const HousePlan = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
+
+  const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const dispatch = useDispatch();
+
+  // Retrieve token from login info:
+  const { token } = useSelector((store) => store.logininfo);
+  
+  // Fetch favorites if not already fetched
+  useEffect(() => {
+    if (token && (!favouriteList || favouriteList.length === 0)) {
+      getFavouriteItems(token)
+        .then((favRes) => {
+          dispatch(setFavouriteList(favRes.data.favorites || []));
+        })
+        .catch((error) => {
+          console.error("Error fetching favorites:", error);
+        });
+    }
+  }, [token, favouriteList, dispatch]);
+
+  // Debounce search input so that we don't trigger API calls on every keystroke
+  const debouncedUpdateSearch = useCallback(
+    debounce((value) => {
+      setSearchedText(value);
+      setCurrentPage(1);
+      dispatch(updatesubcatserachTerm(value));
+    }, 500),
+    [dispatch]
+  );
+
+  const handlerSearchInput = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedUpdateSearch(value);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // For an immediate search on submit (if needed)
+    setSearchedText(searchTerm);
+    setCurrentPage(1);
+    dispatch(updatesubcatserachTerm(searchTerm));
+    setShowSearchBreadCrumb(true);
+  };
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
   const loadRecords = useCallback(
@@ -39,14 +85,6 @@ const HousePlan = () => {
       startLoading();
       getallprojects(page, 6, searchedText, sortTerm, sortType)
         .then((response) => {
-          // if (page === 1) {
-          //   setProjects(response.data?.products);
-          // } else {
-          //   setProjects((prevProjects) => [
-          //     ...prevProjects,
-          //     ...response.data?.products,
-          //   ]);
-          // }
           setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
           stopLoading();
@@ -75,15 +113,16 @@ const HousePlan = () => {
     setSortTerm(sortList);
   }, [sortList]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    setShowSearchBreadCrumb(true);
-    setSearchedText(searchTerm);
-  };
-  const handlerSearchInput = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   setCurrentPage(1);
+  //   setShowSearchBreadCrumb(true);
+  //   setSearchedText(searchTerm);
+  // };
+  // const handlerSearchInput = (e) => {
+  //   setSearchTerm(e.target.value);
+  // };
+
   useEffect(() => {
     if (searchTerm.length == 0) {
       setShowSearchBreadCrumb(false);
@@ -150,7 +189,7 @@ const HousePlan = () => {
                           <small className="text-grey fs-12">{`(${projects.length} RESULTS)`}</small>
                         </h5>
                       </>
-                    ) : "All Products"}
+                    ) : setSearchedText("House Plan")}
                   </div>
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-xl-end justify-content-center flex-column flex-md-row">
@@ -236,7 +275,7 @@ const HousePlan = () => {
                       className="col-md-6 col-lg-4 col-xl-4"
                       key={project.id}
                     >
-                      <ProjectCard {...project} />
+                      <ProjectCard {...project} favorites={favouriteList} />
                     </div>
                   ))}
                 </>
@@ -290,5 +329,34 @@ const HousePlan = () => {
 HousePlan.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
+
+export async function getStaticProps() {
+  try {
+    // Fetch initial projects for House Plan (first page)
+    const projectsResponse = await getallprojects(1, 6, "House Plan", "", "");
+    // You can also fetch additional static data (e.g. title/description)
+    return {
+      props: {
+        initialProjects: projectsResponse.data.products || [],
+        initialTotalPages: projectsResponse.data.totalPages || 1,
+        initialTitle: "Architecture House Plan CAD Drawings CAD Blocks & 21354 Files",
+        initialDescription:
+          "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings. Find exactly what you need.",
+      },
+      revalidate: 300, // Revalidate every 5 minutes
+    };
+  } catch (error) {
+    console.error("Error in getStaticProps:", error);
+    return {
+      props: {
+        initialProjects: [],
+        initialTotalPages: 1,
+        initialTitle: "House Plan",
+        initialDescription: "World Largest 2d CAD Library.",
+      },
+      revalidate: 300,
+    };
+  }
+}
 
 export default HousePlan;

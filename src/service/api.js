@@ -312,17 +312,20 @@ export const downloadProject = async (token, id, router) => {
     });
 
     if (response.status === 200) {
-      // ✅ Create Download Link
-      const blob = new Blob([response.data]);
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `project_${id}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-      return;
+      return response; // Return the response blob
     }
+    // if (response.status === 200) {
+    //   // ✅ Create Download Link
+    //   const blob = new Blob([response.data]);
+    //   const link = document.createElement("a");
+    //   link.href = URL.createObjectURL(blob);
+    //   link.setAttribute("download", `project_${id}.zip`);
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   document.body.removeChild(link);
+    //   URL.revokeObjectURL(link.href);
+    //   return;
+    // }
   } catch (err) {
     console.error("🚨 Download Error:", err);
 

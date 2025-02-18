@@ -1,11 +1,16 @@
 import MainLayout from "@/layouts/MainLayout";
 import { Fragment } from "react";
+import Head from "next/head";
 import about from "@/assets/images/about-us.png"
 import aboutmobile from "@/assets/images/about-mobile.png"
 
 const About = () => {
   return (
     <Fragment>
+      <Head>
+        <title>About Us | Cadbull</title>
+        <meta name="description" content="Impress Your Imagination with Cadbull." />
+      </Head>
       <section className="bg-light py-3 py-md-4 category-page company-page">
         <div className="container">
           <div className="row">
@@ -58,6 +63,15 @@ About.getLayout = function getLayout(page) {
       {page}
     </MainLayout>
   )
+}
+
+export async function getStaticProps() {
+  // No dynamic data to fetch here – you can return an empty props object.
+  // Optionally, you could fetch data that rarely changes (e.g. team info).
+  return {
+    props: {},
+    revalidate: 300, // Revalidate every 5 minutes if needed
+  };
 }
 
 

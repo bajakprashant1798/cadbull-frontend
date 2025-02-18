@@ -1,6 +1,6 @@
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import Link from "next/link";
 import Icons from "@/components/Icons";
@@ -33,18 +33,17 @@ import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import Architecture from "@/assets/images/Architecture.png";
 import { getBlogs, getallprojects, getPaginatedProjects } from "@/service/api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../redux/app/features/authSlice";
 import { get } from "react-hook-form";
 import parser from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
-import { updateSortList } from "../../redux/app/features/projectsSlice";
-import { getserachTerm } from "../../redux/app/features/projectsSlice"; // adjust the path as needed
-
-import axios from 'axios';
+import { updateSortList, getserachTerm } from "../../redux/app/features/projectsSlice";
 import { useRouter } from "next/router";
+import { getFavouriteItems } from "@/service/api";
+import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -85,30 +84,63 @@ const categories = [
   { image: category12, title: "Urban Design", count: "56,258+" },
 ];
 
-export default function Home() {
+// A simple debounce helper function
+const debounce = (func, delay) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+
+export default function Home({ initialBlogs, initialProjects, totalPages: initialTotalPages }) {
   const [blogs, setBlogs] = useState([]);
-  const dispatch=useDispatch();
   const [isLoading,startLoading,stopLoading]=useLoading();
   const [projects,setProjects]=useState([]);
   const [searchTerm,setSearchTerm]=useState('');
   const [sortTerm,setSortTerm]=useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage,setCurrentPage]=useState(1);
+  const [searchInput, setSearchInput] = useState('');
+  // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
+  
+  const { token } = useSelector((store) => store.logininfo);
+  const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
+    // console.log("favouriteList index: ", favouriteList);
 
+  const dispatch=useDispatch();
   const router = useRouter();
 
-
+  // Fetch favorites if not already present
   useEffect(() => {
-    if (blogs.length === 0) {
-      getBlogs()
-        .then((response) => {
-          setBlogs(response.data.blogs);
+    if (token && (!favouriteList || favouriteList.length === 0)) {
+      getFavouriteItems(token)
+        .then((favRes) => {
+          dispatch(setFavouriteList(favRes.data.favorites || []));
         })
         .catch((error) => {
-          // console.error("error", error);
+          console.error("Error fetching favorites:", error);
         });
     }
-  }, [blogs]);
+  }, [token, favouriteList, dispatch]);
+
+
+
+  // useEffect(() => {
+  //   if (blogs.length === 0) {
+  //     getBlogs()
+  //       .then((response) => {
+  //         setBlogs(response.data.blogs);
+  //       })
+  //       .catch((error) => {
+  //         // console.error("error", error);
+  //       });
+  //   }
+  // }, [blogs]);
+  
 
   // Fetch projects with pagination
   const loadProjects = async (page, pageSize = 6) => {
@@ -127,6 +159,7 @@ export default function Home() {
 
   // Initial load and page change effect
   useEffect(() => {
+    // Load projects whenever currentPage, searchTerm, or sortTerm change
     loadProjects(currentPage, 6);
   }, [currentPage, searchTerm, sortTerm]);
 
@@ -138,72 +171,47 @@ export default function Home() {
     }
   };
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   setCurrentPage(1);
-  //   loadProjects(1);
-  // };
- 
-  // The search handler dispatches the search term and navigates
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchTerm(value);
+    }, 500),
+    []
+  );
+  // Adjust search handler to use debounce
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      // Dispatch the search term to Redux store
-      dispatch(getserachTerm(searchTerm));
-      // Navigate to the search page without query parameters
-      router.push('/categories/search');
-    }
+    // Update immediately and trigger navigation if needed
+    setSearchTerm(searchInput.trim());
+    dispatch(getserachTerm(searchInput.trim()));
+    router.push('/categories/search');
   };
-  
   
 
-  const handleSortChange = (e) => {
-    setSortTerm(e.target.value);
-    setCurrentPage(1);
-  };
-  const handleTypeChange = (e) => {
-    setType(e.target.value);
-    setCurrentPage(1);
-  };
-  useEffect(() => {
-    setCurrentPage(1);
-    loadProjects(1);
-  }, [searchTerm, sortTerm]);
-  
-  
 
-  // //initial page fetching
-  // const loadRecords = () => {
-  //   startLoading()
-  //   getallprojects(currentPage,3, searchTerm, sortTerm)
-  //   .then((response) => {
-  //     // console.log('total projects',response)
-  //     if(currentPage == 1)
-  //       setProjects(response.data?.products)
-  //     else
-  //       setProjects([...projects,...response.data?.products])
-  //     setTotalPages(response.data.totalPages); 
-  //     stopLoading()
-  //   })
-  //   .catch((error) => {
-  //     stopLoading()
-  //     // console.error("Error fetching categories:", error);
-  //   });
-  // }
+  // // The search handler dispatches the search term and navigates
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (searchTerm.trim()) {
+  //     // Dispatch the search term to Redux store
+  //     dispatch(getserachTerm(searchTerm));
+  //     // Navigate to the search page without query parameters
+  //     router.push('/categories/search');
+  //   }
+  // };
+  
+  // const handleSortChange = (e) => {
+  //   setSortTerm(e.target.value);
+  //   setCurrentPage(1);
+  // };
+  // const handleTypeChange = (e) => {
+  //   setType(e.target.value);
+  //   setCurrentPage(1);
+  // };
   // useEffect(() => {
-  //   loadRecords();
-  // }, [currentPage]);
-// // fetching data when there is sorting plus pagination change 
-// useEffect(() => {
-//   setCurrentPage(1);
-//   loadRecords();
-// }, [sortTerm]);
-
-//   const handleSearch = (e) => {
-//     e.preventDefault();
-//     setCurrentPage(1);
-//     loadRecords();
-//   };
+  //   setCurrentPage(1);
+  //   loadProjects(1);
+  // }, [searchTerm, sortTerm]);
 
   return (
     <Fragment>
@@ -239,12 +247,23 @@ export default function Home() {
                   <span className="input-group-text bg-white">
                     <Icons.Search />
                   </span>
-                  <input
+                  {/* <input
                     type="text"
                     className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
                     placeholder="For e.g. House Design"
                     aria-label="For e.g. House Design"
                     onChange={(e) => {setSearchTerm(e.target.value.trim())}}
+                  /> */}
+                  <input
+                    type="text"
+                    className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
+                    placeholder="For e.g. House Design"
+                    aria-label="For e.g. House Design"
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value);
+                      debouncedSearch(e.target.value.trim());
+                    }}
                   />
                   <span className="input-group-text p-0">
                     <button
@@ -317,9 +336,14 @@ export default function Home() {
                           className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
                           placeholder="For e.g. House Design"
                           aria-label="For e.g. House Design"
-                          onChange={(e) =>
-                           setSearchTerm(e.target.value.trim())
-                          }
+                          // onChange={(e) =>
+                          //  setSearchTerm(e.target.value.trim())
+                          // }
+                          value={searchInput}
+                          onChange={(e) => {
+                            setSearchInput(e.target.value);
+                            debouncedSearch(e.target.value.trim());
+                          }}
                         />
                         <span className="input-group-text p-0">
                           <button
@@ -370,7 +394,7 @@ export default function Home() {
           <div className="row g-4">
             {projects.slice(0, 9).map((project) => (
               <div className="col-md-6 col-lg-4" key={project.id}>
-                <ProjectCard {...project} />
+                <ProjectCard {...project} favorites={favouriteList} />
               </div>
             ))}
           </div>
@@ -781,6 +805,36 @@ export default function Home() {
   );
 }
 
+// Use getStaticProps to pre-render the home page
+export async function getStaticProps() {
+  try {
+    // Fetch the initial data
+    const blogsResponse = await getBlogs();
+    const projectsResponse = await getallprojects(1, 6, '', '');
+    return {
+      props: {
+        initialBlogs: blogsResponse.data.blogs || [],
+        initialProjects: projectsResponse.data.products || [],
+        totalPages: projectsResponse.data.totalPages || 1,
+      },
+      // Regenerate the page every 300 seconds (5 minutes)
+      revalidate: 300,
+    };
+  } catch (error) {
+    console.error("Error in getStaticProps:", error);
+    return {
+      props: {
+        initialBlogs: [],
+        initialProjects: [],
+        totalPages: 1,
+      },
+      revalidate: 300,
+    };
+  }
+}
+
 Home.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
+
+export { debounce };

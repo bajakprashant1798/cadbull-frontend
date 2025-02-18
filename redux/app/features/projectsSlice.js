@@ -22,6 +22,7 @@ const initialState = {
   },
   subcat: [],
   allsubcat: [],
+  favouriteList: [],
 
   subcatfilter: {
     // slug, page, pageSize, searchTerm, sortTerm, type
@@ -94,23 +95,43 @@ export const projectsSlice = createSlice({
     updateSortList(state, action) {
       state.sortList = action.payload;
     },
+    setFavouriteList: (state, action) => {
+      state.favouriteList = action.payload;
+      console.log("projectsSlice favouriteList: ", state.favouriteList);
+      
+    },
+    // Optionally, you may also update favorite list on toggle:
     addedFavouriteItem: (state, action) => {
-      //! checking duplicate item in cart
-      if (
-        state.favouriteList.filter(
-          (cartItem) => cartItem.id === action.payload?.id
-        ).length
-      ) {
+      if (state.favouriteList.some(item => item.id === action.payload?.id)) {
         return;
       }
       state.favouriteList.push(action.payload);
     },
-    updateFavouriteItemList: (state, action) => {},
     deleteFavouriteItem: (state, action) => {
       state.favouriteList = state.favouriteList.filter(
-        (item) => item.uuid !== action.payload
+        (item) => item.id !== action.payload
       );
-    },
+      console.log("deleteFavouriteItem", state.favouriteList);
+      
+    },    
+    
+    // addedFavouriteItem: (state, action) => {
+    //   //! checking duplicate item in cart
+    //   if (
+    //     state.favouriteList.filter(
+    //       (cartItem) => cartItem.id === action.payload?.id
+    //     ).length
+    //   ) {
+    //     return;
+    //   }
+    //   state.favouriteList.push(action.payload);
+    // },
+    updateFavouriteItemList: (state, action) => {},
+    // deleteFavouriteItem: (state, action) => {
+    //   state.favouriteList = state.favouriteList.filter(
+    //     (item) => item.uuid !== action.payload
+    //   );
+    // },
     emptyCart: (state, action) => {
       state.cartData = [];
     },
@@ -161,7 +182,8 @@ export const {
   updatesubcatpagetype,
   resetsubcatfilter,
   addAllSubCategoriesData,
-  resetCategoriesList
+  resetCategoriesList,
+  setFavouriteList
 } = projectsSlice.actions;
 export default projectsSlice.reducer;
 

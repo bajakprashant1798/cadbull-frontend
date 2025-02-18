@@ -8,108 +8,161 @@ import Icons from "./Icons";
 import Link from "next/link";
 import { addFavouriteItem, callViewProfileAPI, viewProfile, removeFavouriteItem, getFavouriteItems } from "@/service/api";
 import { useSelector, useDispatch } from "react-redux";
-import { addedFavouriteItem } from "../../redux/app/features/projectsSlice";
+import { addedFavouriteItem, deleteFavouriteItem } from "../../redux/app/features/projectsSlice";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { handledownload } from "@/service/globalfunction";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
-const ProjectCard = ({  view_count, work_title, file_type,id,photo_url,type}) => {
+const ProjectCard = ({  
+  view_count, 
+  work_title, 
+  file_type,
+  id,
+  photo_url,
+  type,
+  favorites, // Optionally pass favorites list from parent
+}) => {
   const router = useRouter();
   const { token } = useSelector((store) => store.logininfo);
   const [isFavorited, setIsFavorited] = useState(false);
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // Fetch favorite status from the server when component mounts
-    checkFavoriteStatus();
-  }, []);
+  // // Use a custom hook or parent prop for favorites if available.
+  // // If not provided, fall back to fetching on mount.
+  // useEffect(() => {
+  //   if (!favorites && token) {
+  //     checkFavoriteStatus();
+  //   } else if (favorites) {
+  //     setIsFavorited(favorites.some((fav) => fav.id === id));
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [favorites, id, token]);
 
-  const checkFavoriteStatus = async () => {
-    try {
-        const response = await getFavouriteItems(token);
-        // console.log("favoriteProjects: ", response.data.favorites);
-        
-        const favoriteProjects = response.data.favorites;
-        const isLiked = favoriteProjects.some((fav) => fav.id === id);
-        
-        setIsFavorited(isLiked);
-    } catch (error) {
-        console.error("Error checking favorite status:", error);
-    }
-  };
+  // const checkFavoriteStatus = useCallback(async () => {
+  //   try {
+  //     const response = await getFavouriteItems(token);
+  //     const favoriteProjects = response.data.favorites;
+  //     setIsFavorited(favoriteProjects.some((fav) => fav.id === id));
+  //   } catch (error) {
+  //     console.error("Error checking favorite status:", error);
+  //   }
+  // }, [id, token]);
 
-  const handleviewcount = (event) => {
-    if (event.target.tagName == "IMG"){
-      event.preventDefault();
-      return ;
-    }
-    callViewProfileAPI(id).then((res)=>{
-        console.log("view",res.data)
-      }
-      ).catch((err)=>{
-        console.log(err)
-      })
-  }
-
-  const handleLike = async () => {
-    if (!token) {
-        router.push("/auth/login");
-        return;
-    }
-    const product_id = id
-    try {
-        if (isFavorited) {
-          // Remove from favorites if already liked
-          await removeFavouriteItem(token, id);
-          setIsFavorited(false);
-          toast.success("Removed from Favorite list", { position: "top-right" });
-        } else {
-          // Add to favorites if not liked
-          await addFavouriteItem({ product_id: id }, token);
-          setIsFavorited(true);
-          toast.success("Added to Favorite list", { position: "top-right" });
-        }
-    } catch (error) {
-        console.error("Error toggling favorite:", error);
-        toast.error("Failed to update favorite status");
-    }
-  };
-
-  // const handleLike = () => {
-  //   if(token){
-  //   const requestid = {project_id: id};
-  //   console.log("requestid: ",requestid);
-    
-  //   addFavouriteItem(requestid, token)
-  //     .then((res) => {
-  //       console.log("res: productcard - ", res);
-  //       toast.success("Added to Favourite list", { position: "top-right" });
-  //       dispatch(
-  //         addedFavouriteItem(res.data.projects)
-  //        )
+  // const handleviewcount = (event) => {
+  //   if (event.target.tagName == "IMG"){
+  //     event.preventDefault();
+  //     return ;
+  //   }
+  //   callViewProfileAPI(id).then((res)=>{
+  //       console.log("view",res.data)
+  //     }
+  //     ).catch((err)=>{
+  //       console.log(err)
   //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       if(err?.response?.status===401 || err?.response?.status===400){
-  //       toast.error(`${err?.response?.data?.error}`);
-  //       }
-      
-  //     });
-  //   }
-  //   else{
+  // }
+
+  // const handleLike = useCallback(async () => {
+  //   if (!token) {
   //     router.push("/auth/login");
+  //     return;
   //   }
-  // };
+  //   try {
+  //     if (isFavorited) {
+  //       await removeFavouriteItem(token, id);
+  //       setIsFavorited(false);
+  //       toast.success("Removed from Favorite list", { position: "top-right" });
+  //     } else {
+  //       await addFavouriteItem({ product_id: id }, token);
+  //       setIsFavorited(true);
+  //       toast.success("Added to Favorite list", { position: "top-right" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error toggling favorite:", error);
+  //     toast.error("Failed to update favorite status");
+  //   }
+  // }, [token, id, isFavorited, router]);
+
+  // Use the passed favorites to set initial status
+  useEffect(() => {
+    const projectId = Number(id); // if needed
+    if (favorites && Array.isArray(favorites)) {
+      setIsFavorited(favorites.some((fav) => fav.id === projectId));
+    }
+  }, [favorites, id]);
+
+  const handleviewcount = useCallback((event) => {
+    if (event.target.tagName === "IMG") {
+      event.preventDefault();
+      return;
+    }
+    callViewProfileAPI(id)
+      .then((res) => console.log("view", res.data))
+      .catch((err) => console.error(err));
+  }, [id]);
+
+  // const handleLike = useCallback(async () => {
+  //   if (!token) {
+  //     router.push("/auth/login");
+  //     return;
+  //   }
+  //   try {
+  //     if (isFavorited) {
+  //       await removeFavouriteItem(token, id);
+  //       setIsFavorited(false);
+  //       toast.success("Removed from Favorite list", { position: "top-right" });
+  //     } else {
+  //       await addFavouriteItem({ product_id: id }, token);
+  //       setIsFavorited(true);
+  //       toast.success("Added to Favorite list", { position: "top-right" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error toggling favorite:", error);
+  //     toast.error("Failed to update favorite status");
+  //   }
+  // }, [token, id, isFavorited, router]);
   
+  const handleLike = useCallback(async () => {
+    if (!token) {
+      router.push("/auth/login");
+      return;
+    }
+    try {
+      if (isFavorited) {
+        await removeFavouriteItem(token, id);
+        setIsFavorited(false);
+        toast.success("Removed from Favorite list", { position: "top-right" });
+        // Dispatch action to update Redux store:
+        dispatch(deleteFavouriteItem(id));
+      } else {
+        await addFavouriteItem({ product_id: id }, token);
+        setIsFavorited(true);
+        toast.success("Added to Favorite list", { position: "top-right" });
+        // Dispatch action with minimal product info.
+        dispatch(
+          addedFavouriteItem({
+            id,
+            work_title,
+            file_type,
+            photo_url,
+            type,
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorite status");
+    }
+  }, [token, id, isFavorited, router, dispatch, work_title, file_type, photo_url, type]);
+
 
   return (
     <div className='project-day-card h-100'>
       <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}>
         <div className='project-day-card-image mb-3 position-relative'>
           
-              <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} />
+              <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" />
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
             <button onClick={()=>handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
               {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}
@@ -163,4 +216,4 @@ const ProjectCard = ({  view_count, work_title, file_type,id,photo_url,type}) =>
     </div>
   );
 }
-export default ProjectCard;
+export default React.memo(ProjectCard);

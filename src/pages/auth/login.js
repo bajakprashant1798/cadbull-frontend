@@ -14,6 +14,8 @@ import withAuth from "@/HOC/withAuth";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
+import { getFavouriteItems } from "@/service/api";
+import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
 
 
 const pageTitle = {
@@ -127,6 +129,19 @@ const Register = () => {
         // localStorage.setItem("refreshToken", refreshToken);
 
         dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+
+        // Fetch and dispatch favorites after successful login:
+        if (accessToken) {
+          getFavouriteItems(accessToken)
+            .then((favRes) => {
+              dispatch(setFavouriteList(favRes.data.favorites || []));
+              console.log("res from getfav", favRes);
+              
+            })
+            .catch((error) => {
+              console.error("Error fetching favorites:", error);
+            });
+        }
 
         // ✅ Trigger storage event to sync across tabs
         window.dispatchEvent(new Event("userLoggedIn"));

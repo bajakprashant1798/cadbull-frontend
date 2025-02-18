@@ -1,5 +1,5 @@
 import GetOff from "@/components/GetOff";
-import { Fragment, createElement, useEffect, useState } from "react";
+import { Fragment, createElement, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
 import SectionHeading from "@/components/SectionHeading";
@@ -32,6 +32,7 @@ import {
   addAllCategoriesData,
   addCategoryAndSubCategoryData,
   addedFavouriteItem,
+  deleteFavouriteItem,
   getSimilarProjects,
   getSimilarProjectsPage,
   updatesubcatpage,
@@ -103,23 +104,30 @@ const ViewDrawing = ({}) => {
   const { categoryAndSubCategory,categoriesList } = useSelector((store) => store.projectinfo);
   const { id } = router.query;
 
+  const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const [isFavorited, setIsFavorited] = useState(false);
   
-    
+  const projectId = Number(id);
   useEffect(() => {
-    const fetchFavoriteStatus = async () => {
-      if (!token || !id) return; // Ensure the user is logged in and ID is available
+    if (favouriteList && Array.isArray(favouriteList)) {
+      setIsFavorited(favouriteList.some((fav) => fav.id === projectId));
+    }
+  }, [favouriteList, projectId]);
+    
+  // useEffect(() => {
+  //   const fetchFavoriteStatus = async () => {
+  //     if (!token || !id) return; // Ensure the user is logged in and ID is available
   
-      try {
-        const response = await checkIfFavorited(token, id);
-        setIsFavorited(response.data.isFavorited); // Expecting response to be { isFavorited: true/false }
-      } catch (error) {
-        console.error("Error checking favorite status:", error);
-      }
-    };
+  //     try {
+  //       const response = await checkIfFavorited(token, id);
+  //       setIsFavorited(response.data.isFavorited); // Expecting response to be { isFavorited: true/false }
+  //     } catch (error) {
+  //       console.error("Error checking favorite status:", error);
+  //     }
+  //   };
   
-    fetchFavoriteStatus();
-  }, [id, token]); // Re-run when `id` or `token` changes
+  //   fetchFavoriteStatus();
+  // }, [id, token]); // Re-run when `id` or `token` changes
   
 
 
@@ -210,27 +218,39 @@ useEffect(() => {
     dispatch(getSimilarProjectsPage(currentPage));
   };
 
+  // Updated handleLike function with Redux dispatch
   const handleLike = async () => {
     if (!token) {
-        router.push("/auth/login");
-        return;
+      router.push("/auth/login");
+      return;
     }
-    const product_id = id
     try {
-        if (isFavorited) {
-          // Remove from favorites if already liked
-          await removeFavouriteItem(token, id);
-          setIsFavorited(false);
-          toast.success("Removed from Favorite list", { position: "top-right" });
-        } else {
-          // Add to favorites if not liked
-          await addFavouriteItem({ product_id: id }, token);
-          setIsFavorited(true);
-          toast.success("Added to Favorite list", { position: "top-right" });
+      if (isFavorited) {
+        await removeFavouriteItem(token, id);
+        setIsFavorited(false);
+        toast.success("Removed from Favorite list", { position: "top-right" });
+        // Dispatch Redux action to remove favorite using the project id
+        dispatch(deleteFavouriteItem(projectId));
+      } else {
+        await addFavouriteItem({ product_id: id }, token);
+        setIsFavorited(true);
+        toast.success("Added to Favorite list", { position: "top-right" });
+        // Dispatch Redux action to add favorite (using project data)
+        if (project) {
+          dispatch(
+            addedFavouriteItem({
+              id: project.id,
+              work_title: project.work_title,
+              file_type: project.file_type,
+              photo_url: project.photo_url,
+              type: project.type,
+            })
+          );
         }
+      }
     } catch (error) {
-        console.error("Error toggling favorite:", error);
-        toast.error("Failed to update favorite status");
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorite status");
     }
   };
 

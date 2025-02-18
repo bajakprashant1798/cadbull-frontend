@@ -8,12 +8,13 @@ import ProjectCard from "@/components/ProjectCard";
 import Link from "next/link";
 import icon from "@/assets/icons/categories.png";
 import { useRouter } from "next/router";
-import { getallCategories, getallprojects, getallsubCategories } from "@/service/api";
+import { getallCategories, getallprojects, getallsubCategories, getFavouriteItems } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
   getProjects,
   resetCategoriesList,
+  setFavouriteList,
   updateSortList,
   updatesubcatpage,
   updatesubcatserachTerm,
@@ -24,8 +25,9 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
+import { debounce } from "lodash";
 
-const Categories = () => {
+const Categories = ({ initialCategories, initialProjects, totalPages: initialTotalPages }) => {
   const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [catalog, setCatalog] = useState([]);
@@ -38,9 +40,26 @@ const Categories = () => {
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
   const dispatch = useDispatch();
+  const router = useRouter();
+  // Retrieve token from login info:
+  const { token } = useSelector((store) => store.logininfo);
 
-  
+  // Retrieve favorites from Redux:
+  const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
+  console.log("favouriteList cat", favouriteList);
 
+  // Fetch favorites if not already fetched
+  useEffect(() => {
+    if (token && (!favouriteList || favouriteList.length === 0)) {
+      getFavouriteItems(token)
+        .then((favRes) => {
+          dispatch(setFavouriteList(favRes.data.favorites || []));
+        })
+        .catch((error) => {
+          console.error("Error fetching favorites:", error);
+        });
+    }
+  }, [token, favouriteList, dispatch]);
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
   const loadRecords = useCallback(
@@ -78,11 +97,12 @@ const Categories = () => {
     // Reset currentPage to 1 when search term, sort term, or sort type changes
     setCurrentPage(1);
   }, [searchedText]);
+
   // //update sortTerm state by redux state change
-  useEffect(() => {
-    setCurrentPage(1);
-    // setSortTerm(sortList);
-  }, [searchedText]);
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  //   // setSortTerm(sortList);
+  // }, [searchedText]);
 
   // Update sortTerm when Redux sortList changes.
   useEffect(() => {
@@ -90,6 +110,14 @@ const Categories = () => {
     setSortTerm(sortList);
   }, [sortList]);
 
+  // Debounced search
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchedText(value);
+      setCurrentPage(1);
+    }, 500),
+    []
+  );
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -99,6 +127,7 @@ const Categories = () => {
   };
   const handlerSearchInput = (e) => {
     setSearchTerm(e.target.value);
+    debouncedSearch(e.target.value);
   };
   useEffect(() => {
     if (searchTerm.length === 0) {
@@ -108,6 +137,7 @@ const Categories = () => {
       //  loadRecords()
     }
   }, [searchTerm]);
+
   //cleanup states
   useEffect(() => {
     return () => {
@@ -117,11 +147,11 @@ const Categories = () => {
       dispatch(updatesubcatpage(1));
     };
   }, [dispatch]);
-  useEffect(() => {
-    return () => {
-      dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
-    };
-  }, [dispatch]);
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
+  //   };
+  // }, [dispatch]);
   
   const CategoriesProps = showSearchBreadCrumb
     ? {
@@ -255,7 +285,7 @@ const Categories = () => {
                       className="col-md-6 col-lg-4 col-xl-4"
                       key={project.id}
                     >
-                      <ProjectCard {...project} />
+                      <ProjectCard {...project} favorites={favouriteList} />
                     </div>
                   ))}
                 </>
@@ -287,6 +317,35 @@ const Categories = () => {
     </Fragment>
   );
 };
+
+export async function getStaticProps() {
+  try {
+    const blogsResponse = await getallCategories(''); // if needed
+    const projectsResponse = await getallprojects(1, 6, "", "", "");
+    // You might also fetch subcategories here if needed.
+    
+    return {
+      props: {
+        initialCategories: blogsResponse.data.categories || [],
+        initialProjects: projectsResponse.data.products || [],
+        totalPages: projectsResponse.data.totalPages || 1,
+      },
+      // Revalidate every 300 seconds (5 minutes)
+      revalidate: 300,
+    };
+  } catch (error) {
+    console.error("Error in getStaticProps:", error);
+    return {
+      props: {
+        initialCategories: [],
+        initialProjects: [],
+        totalPages: 1,
+      },
+      revalidate: 300,
+    };
+  }
+}
+
 
 Categories.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

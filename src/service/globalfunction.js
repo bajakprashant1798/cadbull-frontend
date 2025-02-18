@@ -20,21 +20,17 @@ export const handledownload = async (id,token,router) => {
         router.push(res.data.redirectUrl);
         return;
       }
+      console.log("res", res);
+      
   
-      if (res?.status !== 200) {
+      if (!res || res?.status !== 200) {
         toast.error("Error downloading file.");
+        console.log(res?.status, res?.data);
+        
         return;
       }
-  
 
-      // // Create a download link for the file
-      // const fileURL = window.URL.createObjectURL(new Blob([res.data]));
-      // const link = document.createElement("a");
-      // link.href = fileURL;
-      // link.setAttribute("download", "project.zip"); // File name for user
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
+      // await downloadProject(token, id, router);
 
       // ✅ Create Download Link Securely
       const fileBlob = new Blob([res.data]);
