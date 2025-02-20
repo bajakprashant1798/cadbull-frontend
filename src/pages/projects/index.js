@@ -107,7 +107,7 @@ const CompletedProjects = () => {
                               {/* <button onClick={() => handleEdit(project)} className="btn btn-sm btn-primary me-2">
                                 <Icons.Edit />
                               </button> */}
-                              <button onClick={() => handleDelete(project.id)} className="btn btn-sm btn-danger">
+                              <button onClick={() => handleDelete(project.id)} className="link-btn">
                                 <Icons.Delete />
                               </button>
                             </td>

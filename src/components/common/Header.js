@@ -277,6 +277,7 @@ const Header = () => {
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
                       {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                        
                         <li>
                           <Link
                             href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
@@ -294,6 +295,20 @@ const Header = () => {
                       ) : null}
                       <li>
                         <Link
+                          href="/profile/edit"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Edit Profile</small>
+                        </Link>
+                      </li>
+                      {/* <li>
+                        <Link
                           href="/profile"
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
@@ -305,7 +320,7 @@ const Header = () => {
                           ></FontAwesomeIcon>
                           <small>Create Architect Profile</small>
                         </Link>
-                      </li>
+                      </li> */}
                       <li>
                         <Link
                           href="/profile/billing"
@@ -320,20 +335,7 @@ const Header = () => {
                           <small>Manage Billing</small>
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          href="/profile/edit"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Edit Profile</small>
-                        </Link>
-                      </li>
+                      
                       <li>
                         <Link
                           href="/favourites"

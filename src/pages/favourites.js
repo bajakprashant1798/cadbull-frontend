@@ -187,17 +187,18 @@ const Favourites = () => {
                               <button
                                 onClick={() => handledownload(res.id,token, router)}
                                 type="button"
-                                className="link-btn"
+                                className="link-btn bg-success p-2 rounded"
                               >
-                                <img src={downloadIcon.src} alt="download" />
+                                {/* <img src={downloadIcon.src} alt="download" /> */}
+                                <Icons.Download />
                               </button>
                               <button
                                 onClick={() => handleremoveitem(res.id)}
                                 type="button"
-                                className="link-btn"
+                                className="link-btn bg-light p-2 rounded"
                               >
                                 {" "}
-                                <img src={deleteIcon.src} alt="delete" />
+                                <Icons.Delete />
                               </button>
                             </div>
                           </td>

@@ -596,12 +596,12 @@ useEffect(() => {
                           </span>
                           <span>Add to libary</span>
                         </button>
-                        <button type="button" className="btn-danger-split">
+                        {/* <button type="button" className="btn-danger-split">
                           <span>
                             <Icons.File />
                           </span>
                           <span>Related Files</span>
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>

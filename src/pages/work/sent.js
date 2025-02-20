@@ -215,8 +215,14 @@ const WorkSent = () => {
                             <td>
                               {!res.is_approved && 
                                 <div className="d-inline-flex gap-2">  
-                                  <button type="button" onClick={() => handledownload(res.id, token,router)} className="link-btn"><img src={downloadIcon.src} alt="download" /></button>
-                                  <button type="button" onClick={() => handleremoveitem(res.id)} className="link-btn"> <img src={deleteIcon.src} alt="delete" /></button>
+                                  <button type="button" onClick={() => handledownload(res.id, token,router)} className="link-btn bg-success p-2 rounded">
+                                    {/* <img src={downloadIcon.src} alt="download" /> */}
+                                    <Icons.Download />
+                                  </button>
+                                  <button type="button" onClick={() => handleremoveitem(res.id)} className="link-btn bg-light p-2 rounded"> 
+                                    {/* <img src={deleteIcon.src} alt="delete" /> */}
+                                    <Icons.Delete />
+                                  </button>
                                 </div>
                               }
                             </td>
