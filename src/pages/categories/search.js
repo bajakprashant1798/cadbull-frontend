@@ -31,17 +31,23 @@ const SearchCategories = () => {
   const [projectType, setProjectType] = useState("");
 
   // Fetch favorites if not already fetched
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
   useEffect(() => {
-    if (token && (!favouriteList || favouriteList.length === 0)) {
+    if (token && !favouritesFetched) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
         })
         .catch((error) => {
           console.error("Error fetching favorites:", error);
+          // Optionally mark as fetched to avoid repeated attempts
+          setFavouritesFetched(true);
         });
     }
-  }, [token, favouriteList, dispatch]);
+  }, [token, favouritesFetched, dispatch]);
+
 
   // Update local input state on every keystroke.
   const handleInputChange = (e) => {

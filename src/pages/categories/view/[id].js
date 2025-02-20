@@ -58,6 +58,7 @@ import {
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
+import product from "@/assets/images/product.jpg"
 
 import parse from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
@@ -379,6 +380,7 @@ useEffect(() => {
                         src={res.image.src}
                         className="img-fluid"
                         alt="icons"
+                        
                       />
                     </a>
                   ))}
@@ -456,9 +458,11 @@ useEffect(() => {
               <div className="mt-4">
                 <div className="bg-light p-3 rounded-2 shadow-sm">
                   <img
-                    src={project.photo_url}
+                    src={project.photo_url || product.src}
                     className="img-fluid"
                     alt="drawing"
+                    onError={(e) => (e.target.src = product.src)} 
+                    loading="lazy" 
                   />
                 </div>
               </div>

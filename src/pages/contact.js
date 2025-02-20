@@ -300,13 +300,13 @@ ContactUs.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export async function getStaticProps() {
-  // For a static page, if you need to fetch any rarely updated data, do it here.
-  return {
-    props: {},
-    revalidate: 300, // Revalidate every 5 minutes (optional)
-  };
-}
+// export async function getStaticProps() {
+//   // For a static page, if you need to fetch any rarely updated data, do it here.
+//   return {
+//     props: {},
+//     revalidate: 300, // Revalidate every 5 minutes (optional)
+//   };
+// }
 
 
 export default ContactUs;

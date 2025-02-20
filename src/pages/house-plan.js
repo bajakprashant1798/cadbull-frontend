@@ -41,18 +41,23 @@ const HousePlan = () => {
   // Retrieve token from login info:
   const { token } = useSelector((store) => store.logininfo);
   
-  // Fetch favorites if not already fetched
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
   useEffect(() => {
-    if (token && (!favouriteList || favouriteList.length === 0)) {
+    if (token && !favouritesFetched) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
         })
         .catch((error) => {
           console.error("Error fetching favorites:", error);
+          // Optionally mark as fetched to avoid repeated attempts
+          setFavouritesFetched(true);
         });
     }
-  }, [token, favouriteList, dispatch]);
+  }, [token, favouritesFetched, dispatch]);
+
 
   // Debounce search input so that we don't trigger API calls on every keystroke
   const debouncedUpdateSearch = useCallback(
@@ -330,33 +335,33 @@ HousePlan.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export async function getStaticProps() {
-  try {
-    // Fetch initial projects for House Plan (first page)
-    const projectsResponse = await getallprojects(1, 6, "House Plan", "", "");
-    // You can also fetch additional static data (e.g. title/description)
-    return {
-      props: {
-        initialProjects: projectsResponse.data.products || [],
-        initialTotalPages: projectsResponse.data.totalPages || 1,
-        initialTitle: "Architecture House Plan CAD Drawings CAD Blocks & 21354 Files",
-        initialDescription:
-          "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings. Find exactly what you need.",
-      },
-      revalidate: 300, // Revalidate every 5 minutes
-    };
-  } catch (error) {
-    console.error("Error in getStaticProps:", error);
-    return {
-      props: {
-        initialProjects: [],
-        initialTotalPages: 1,
-        initialTitle: "House Plan",
-        initialDescription: "World Largest 2d CAD Library.",
-      },
-      revalidate: 300,
-    };
-  }
-}
+// export async function getStaticProps() {
+//   try {
+//     // Fetch initial projects for House Plan (first page)
+//     const projectsResponse = await getallprojects(1, 6, "House Plan", "", "");
+//     // You can also fetch additional static data (e.g. title/description)
+//     return {
+//       props: {
+//         initialProjects: projectsResponse.data.products || [],
+//         initialTotalPages: projectsResponse.data.totalPages || 1,
+//         initialTitle: "Architecture House Plan CAD Drawings CAD Blocks & 21354 Files",
+//         initialDescription:
+//           "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings. Find exactly what you need.",
+//       },
+//       revalidate: 300, // Revalidate every 5 minutes
+//     };
+//   } catch (error) {
+//     console.error("Error in getStaticProps:", error);
+//     return {
+//       props: {
+//         initialProjects: [],
+//         initialTotalPages: 1,
+//         initialTitle: "House Plan",
+//         initialDescription: "World Largest 2d CAD Library.",
+//       },
+//       revalidate: 300,
+//     };
+//   }
+// }
 
 export default HousePlan;

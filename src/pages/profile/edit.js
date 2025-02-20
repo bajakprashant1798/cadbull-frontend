@@ -9,7 +9,9 @@ import PageHeading from "@/components/PageHeading";
 import { useForm } from "react-hook-form";
 import {
   deleteAccount,
+  getArchitectProfileInfo,
   getUserProfile,
+  registerNewArchitechProfile,
   removeFavouriteItem,
   requestAccountDeletion,
   updateProfilePicture,
@@ -22,7 +24,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import withAuth from "@/HOC/withAuth";
 import { useRouter } from "next/router";
-import { logout, updateuserProfilepic } from "../../../redux/app/features/authSlice";
+import { logout, updateuserProfilepic, loginSuccess } from "../../../redux/app/features/authSlice";
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
     .required("This field is required.")
@@ -37,9 +39,9 @@ const validationSchema = Yup.object().shape({
       message: "Please enter a valid email address",
     }),
   paypal: Yup.string().required("This field is required."),
-  phone_no: Yup.string()
-    .required("This field  is required.")
-    .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
+  // phone_no: Yup.string()
+  //   .required("This field  is required.")
+  //   .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
   gender: Yup.string().required("This field  is required."),
 
   
@@ -62,6 +64,7 @@ const EditProfile = () => {
   const profile_pic = user.profile_pic;
   console.log("tokenedit: ", token);
   console.log("useredit: ", user);
+  console.log("profile_pic: ", profile_pic);
   
   const [resetState, setResetState] = useState(false);
   const [profileData, setProfileData] = useState({});
@@ -74,89 +77,202 @@ const EditProfile = () => {
     reset,
     formState: { errors,isDirty },
   } = useForm({
-    defaultValues: {
-      first_name: profileData.first_name,
-      last_name: profileData.last_name,
-      email: profileData.email,
-      address1: profileData.address1,
-      address2: profileData.address2,
-      city: profileData.city,
-      state: profileData.state,
-      dob: profileData.dob,
-      paypal: profileData.paypal,
-      summary: profileData.summary,
-      facebook: profileData.facebook,
-      twiter: profileData.twiter,
-      // phone_no: profileData.phone_no,
-      gender: profileData.gender,
-      occupation: profileData.occupation,
-      interest: profileData.interest,
-      // other_profile:''
-    },
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      // first_name: profileData.first_name,
+      // last_name: profileData.last_name,
+      // email: profileData.email,
+      // address1: profileData.address1,
+      // address2: profileData.address2,
+      // city: profileData.city,
+      // state: profileData.state,
+      // dob: profileData.dob,
+      // paypal: profileData.paypal,
+      // summary: profileData.summary,
+      // facebook: profileData.facebook,
+      // twiter: profileData.twiter,
+      // // phone_no: profileData.phone_no,
+      // gender: profileData.gender,
+      // occupation: profileData.occupation,
+      // interest: profileData.interest,
+      // other_profile:''
+
+      first_name: "",
+      last_name: "",
+      email: "",
+      address1: "",
+      address2: "",
+      city: "",
+      state: "",
+      dob: "",
+      paypal: "",
+      summary: "",
+      facebook: "",
+      twiter: "",
+      gender: "",
+      occupation: "",
+      interest: "",
+    },
+    
   });
 
-  const onSubmitHandler = (updatedProfileData) => {
-    //do nothing if form values is not modified 
-     if(!isDirty) return
-    updateUserProfileInfo(updatedProfileData, token)
+  // onSubmitHandler: if profileData has an id, update; otherwise, create.
+  const onSubmitHandler = (data) => {
+
+    console.log("onSubmitHandler called with data:", data);
+    if (!isDirty) {
+      console.log("Form is not dirty. Submission halted.");
+      return;
+    }
+  
+    updateUserProfileInfo(data, token) // Always call update API, let backend handle upsert
       .then((res) => {
-        // console.log("update profile api res", res.data);
-        // reset(res.data);
-        toast.success("Profile Updated Successfully", {
-          position: "top-center",
-        });
-        setResetState(!resetState)
+        toast.success("Profile Saved Successfully");
+  
+        // Update local state with the new/updated profile.
+        const updatedProfile = res.data.profile || res.data;
+        const updatedUser = res.data.user; // User table data
+  
+        setProfileData(updatedProfile);
+        reset(updatedProfile);
+  
+        // Update localStorage with updated user details (for login persistence)
+        if (updatedUser) {
+          const userData = JSON.parse(localStorage.getItem("userData")) || {};
+          userData.firstname = updatedUser.firstname;
+          userData.lastname = updatedUser.lastname;
+          localStorage.setItem("userData", JSON.stringify(userData));
+          // Dispatch to update Redux state
+          dispatch(loginSuccess({ user: updatedUser, accessToken: token, status: true }));
+        }
       })
       .catch((err) => {
-        toast.error("Profile Updation Failed");
-        // console.log("err", err);
+        toast.error("Profile operation failed");
+        console.error(err);
       });
-    };
+  };
     
+    // useEffect(() => {
+    //   const updateProfilePic = () => {
+    //     if (!file) return;
+    //     updateProfilePicture(token, file)
+    //       .then((res) => {
+    //         // console.log("update profile pic", res.data)
+    //         toast.success("Profile Picture Updated Successfully");
+    //         const storedUserData = localStorage.getItem("userData");
+    //          if(storedUserData){
+    //             const oldDetails= JSON.parse(storedUserData);
+    //             oldDetails.profile_pic = res.data.profile_pic_url;
+    //             localStorage.setItem('userData',JSON.stringify(oldDetails))
+    //             // console.log("edit profile pic url: ", oldDetails, res.data.profile_pic_url);
+    //             // console.log("profile_pic: ", profile_pic);
+                
+    //          }
+             
+    //         dispatch(updateuserProfilepic(res.data.profile_pic_url));
+    //       })
+    //       .catch((err) => {
+    //         if (err.response?.status === 404) {
+    //           toast.error("Please create a profile before uploading a picture.");
+    //         } else {
+    //           toast.error("Profile Picture Updation Failed");
+    //         }
+    //       });
+    //   };
+    
+    //   updateProfilePic();
+    // }, [file]); // Change the dependency to [file]
+
     useEffect(() => {
       const updateProfilePic = () => {
         if (!file) return;
-        updateProfilePicture(token, file)
-          .then((res) => {
-            // console.log("update profile pic", res.data)
-            toast.success("Profile Picture Updated Successfully");
-            const storedUserData = sessionStorage.getItem("userData");
-             if(storedUserData){
-                const oldDetails= JSON.parse(storedUserData);
+    
+        // If profile doesn't exist, create one first before updating picture
+        const updatePic = () => {
+          updateProfilePicture(token, file)
+            .then((res) => {
+              toast.success("Profile Picture Updated Successfully");
+              const storedUserData = localStorage.getItem("userData");
+              if (storedUserData) {
+                const oldDetails = JSON.parse(storedUserData);
                 oldDetails.profile_pic = res.data.profile_pic_url;
-                sessionStorage.setItem('userData',JSON.stringify(oldDetails))
-                // console.log("edit profile pic url: ", oldDetails, res.data.profile_pic_url);
-                // console.log("profile_pic: ", profile_pic);
-                
-             }
-             
-            dispatch(updateuserProfilepic(res.data.profile_pic_url));
-          })
-          .catch((err) => {
-            if (err.response?.status === 404) {
-              toast.error("Please create a profile before uploading a picture.");
-            } else {
-              toast.error("Profile Picture Updation Failed");
-            }
-          });
+                localStorage.setItem("userData", JSON.stringify(oldDetails));
+              }
+              dispatch(updateuserProfilepic(res.data.profile_pic_url));
+            })
+            .catch((err) => {
+              if (err.response?.status === 404) {
+                toast.error("Please create a profile before uploading a picture.");
+              } else {
+                toast.error("Profile Picture Updation Failed");
+              }
+            });
+        };
+    
+        if (profileData && profileData.id) {
+          // If profile exists, update picture directly
+          updatePic();
+        } else {
+          // Otherwise, create a profile first (you might call registerNewArchitechProfile here)
+          registerNewArchitechProfile({}, token)
+            .then((res) => {
+              // Update local state and then update the profile picture
+              setProfileData(res.data);
+              reset(res.data);
+              updatePic();
+            })
+            .catch((err) => {
+              toast.error("Profile creation failed. Unable to upload picture.");
+            });
+        }
       };
     
       updateProfilePic();
-    }, [file]); // Change the dependency to [file]
+    }, [file]);
     
 
-  useEffect(() => {
-    getUserProfile(token)
-      .then((res) => {
-        // console.log("profile:", res.data);
+  // useEffect(() => {
+  //   getUserProfile(token)
+  //     .then((res) => {
+  //       // console.log("profile:", res.data);
         
-        dispatch(loginSuccess({ user: res.data, status: true })); // Update Redux state
-        sessionStorage.setItem("userData", JSON.stringify(res.data)); // Update session storage
-      })
-      .catch((err) => console.error(err));
-  }, [resetState, profile_pic]);
+  //       dispatch(loginSuccess({ user: res.data, status: true })); // Update Redux state
+  //       localStorage.setItem("userData", JSON.stringify(res.data)); // Update session storage
+  //     })
+  //     .catch((err) => console.error(err));
+  // }, [resetState, profile_pic]);
 
+  // Fetch the profile when the component mounts (or when resetState changes)
+  // Fetch profile data when component mounts or when resetState changes
+  useEffect(() => {
+    getArchitectProfileInfo(token)
+      .then((res) => {
+        console.log("getArchitectProfileInfo", res.data);
+        setProfileData(res.data);
+        reset(res.data);
+        // Optionally update redux state or session/local storage
+        // dispatch(loginSuccess({ user: res.data, token, status: true }));
+        // localStorage.setItem("userData", JSON.stringify(res.data));
+        // console.log("userData", res.data);
+        // console.log("profileData", profileData);
+        
+        // setExistingArchitectProfile(res.data); // Set existing profile data
+      })
+      .catch((err) => {
+        if (err.response?.status === 404) {
+          toast.info("No profile found. Please create one.");
+        } else {
+          toast.error("Error fetching profile data.");
+          console.error(err);
+        }
+      });
+  }, [token,  dispatch, reset]);
+
+
+  useEffect(() => {
+    console.log("Updated profileData:", profileData);
+  }, [profileData]);
+  
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -186,7 +302,7 @@ const EditProfile = () => {
   //     const res = await deleteAccount(token);
   //     if (res.status === 200) {
   //       dispatch(logout());
-  //       sessionStorage.removeItem("userData");
+  //       localStorage.removeItem("userData");
   //       toast.success("Account Removed Successfully");
   //       Router.push("/");
   //     } else {
@@ -209,7 +325,12 @@ const EditProfile = () => {
       toast.error(err.message || "An error occurred while initiating deletion.");
     }
   };
+  {console.log("handleSubmit(onSubmitHandler)", handleSubmit(onSubmitHandler));
+  }
 
+  useEffect(() => {
+    console.log("Validation errors:", errors);
+  }, [errors])
   return (
     <Fragment>
       <Head>
@@ -234,6 +355,7 @@ const EditProfile = () => {
               className="needs-validation"
               onSubmit={handleSubmit(onSubmitHandler)}
             >
+              
               <div className="form-wrapper rounded-xxl p-3 p-md-4 p-lg-5 mb-md-4 mb-3">
                 <div className="row g-3">
                   {/* Upload Profile Image */}
@@ -270,7 +392,7 @@ const EditProfile = () => {
                       {/* Profile Detail  */}
                       <div>
                         <h4 className="text-primary">
-                          {profileData.name} <span className="fw-bold">{profileData.last_name}</span>
+                          {profileData.first_name} <span className="fw-bold">{profileData.last_name}</span>
                         </h4>
                         <p>
                           manage your personal information, password and more
@@ -725,6 +847,7 @@ const EditProfile = () => {
                     <button
                       type="submit"
                       className="btn btn-secondary w-100 rounded-2"
+                      onClick={() => console.log("Submit button clicked")}
                     >
                       Save Change
                     </button>

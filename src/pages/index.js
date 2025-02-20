@@ -35,7 +35,7 @@ import Architecture from "@/assets/images/Architecture.png";
 import { getBlogs, getallprojects, getPaginatedProjects } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../redux/app/features/authSlice";
-import { get } from "react-hook-form";
+import { get, set } from "react-hook-form";
 import parser from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
 import useLoading from "@/utils/useLoading";
@@ -70,18 +70,18 @@ export const drawings = [
   { img: BIM1, type: "Other", description: "Other", value: "Other" },
 ]
 const categories = [
-  { image: category1, title: "3d Drawing", count: "20,000+" },
-  { image: category2, title: "CAD Architecture", count: "25,256+" },
-  { image: category3, title: "CAD Landscape", count: "2,987+" },
-  { image: category4, title: "CAD Machinery", count: "56,258+" },
-  { image: category5, title: "Detail", count: "56,258+" },
-  { image: category6, title: "DWG Blocks", count: "48,654+" },
-  { image: category7, title: "Electrical CAD", count: "56,258+" },
-  { image: category8, title: "Furnitures", count: "56,258+" },
-  { image: category9, title: "Interior Design", count: "56,258+" },
-  { image: category10, title: "Projects", count: "56,258+" },
-  { image: category11, title: "Structure Detail", count: "56,258+" },
-  { image: category12, title: "Urban Design", count: "56,258+" },
+  { image: category1, title: "3d Drawings", slug: "3d-Drawings", count: "20,000+" },
+  { image: category2, title: "CAD Architecture", slug: "Cad-Architecture", count: "25,256+" },
+  { image: category3, title: "CAD Landscape", slug: "Cad-Landscaping", count: "2,987+" },
+  { image: category4, title: "CAD Machinery", slug: "Autocad-Machinery-Blocks-&-DWG-Models", count: "56,258+" },
+  { image: category5, title: "Detail", slug: "Detail", count: "56,258+" },
+  { image: category6, title: "DWG Blocks", slug: "DWG-Blocks", count: "48,654+" },
+  { image: category7, title: "Electrical CAD", slug: "Electrical-Cad", count: "56,258+" },
+  { image: category8, title: "Furnitures", slug: "Autocad-Furniture-Blocks--&-DWG-Models", count: "56,258+" },
+  { image: category9, title: "Interior Design", slug: "Interior-design", count: "56,258+" },
+  { image: category10, title: "Projects", slug: "Projects", count: "56,258+" },
+  { image: category11, title: "Structure Detail", slug: "Structure-detail", count: "56,258+" },
+  { image: category12, title: "Urban Design", slug: "Urban-design", count: "56,258+" },
 ];
 
 // A simple debounce helper function
@@ -96,7 +96,7 @@ const debounce = (func, delay) => {
 };
 
 
-export default function Home({ initialBlogs, initialProjects, totalPages: initialTotalPages }) {
+export default function Home() {
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
   const [projects,setProjects]=useState([]);
@@ -106,7 +106,7 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
   const [currentPage,setCurrentPage]=useState(1);
   const [searchInput, setSearchInput] = useState('');
   // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
-  
+
   const { token } = useSelector((store) => store.logininfo);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
     // console.log("favouriteList index: ", favouriteList);
@@ -114,19 +114,22 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
   const dispatch=useDispatch();
   const router = useRouter();
 
-  // Fetch favorites if not already present
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
   useEffect(() => {
-    if (token && (!favouriteList || favouriteList.length === 0)) {
+    if (token && !favouritesFetched) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
         })
         .catch((error) => {
           console.error("Error fetching favorites:", error);
+          // Optionally mark as fetched to avoid repeated attempts
+          setFavouritesFetched(true);
         });
     }
-  }, [token, favouriteList, dispatch]);
-
+  }, [token, favouritesFetched, dispatch]);
 
 
   // useEffect(() => {
@@ -156,6 +159,10 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
       stopLoading(false);
     }
   };
+  
+  useEffect(() => {
+    loadProjects(currentPage, 6);
+  }, [currentPage, searchTerm, sortTerm]);
 
   // Initial load and page change effect
   useEffect(() => {
@@ -435,19 +442,24 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
           </div>
           <div className="row g-4 justify-content-center">
             {categories.map((category, index) => {
+              // Convert title to a slug (e.g., "3d Drawing" -> "3d-drawing")
+              // const slug = category.slug.replace(/\s+/g, "-");
+              const slug = category.slug
               return (
                 <div className="col-lg-3 col-md-4 col-sm-6 col-10" key={index}>
-                  <div className="d-flex align-items-center gap-2 category-wrapper">
-                    <img
-                      src={category.image.src}
-                      alt="icon"
-                      className="img-fluid"
-                    />
-                    <div>
-                      <h6 className="mb-1">{category.title}</h6>
-                      <p>{category.count}</p>
+                  <Link href={`/categories/sub/${slug}`}>
+                    <div className="d-flex align-items-center gap-2 category-wrapper">
+                      <img
+                        src={category.image.src}
+                        alt="icon"
+                        className="img-fluid"
+                      />
+                      <div>
+                        <h6 className="mb-1">{category.title}</h6>
+                        <p>{category.count}</p>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               );
             })}
@@ -567,7 +579,9 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
                   At every stage, we could supervise your project – controlling
                   all the details and consulting the builders.
                 </p>
-                <button className="btn btn-light">GET IN TOUCH</button>
+                <Link href="/contact" passHref>
+                  <button className="btn btn-light">GET IN TOUCH</button>
+                </Link>
               </div>
             </div>
           </div>
@@ -731,15 +745,18 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
             </div>
             <div className="col-lg-3">
               <div className="text-center">
-                <button className="btn btn-danger">GET YOUR HOUSE PLAN</button>
+                <Link href="/house-plan" passHref>
+                  <button className="btn btn-danger">GET YOUR HOUSE PLAN</button>
+                </Link>
               </div>
+              
             </div>
           </div>
         </div>
       </section>
 
       {/* Project of the Day  */}
-      <section className="py-md-5 py-3">
+      {/* <section className="py-md-5 py-3">
         <div className="container">
           <div className="row mb-4 mb-md-5">
             <div className="col-md-12">
@@ -797,7 +814,7 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
             })}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Get Off */}
       <GetOff />
@@ -806,32 +823,32 @@ export default function Home({ initialBlogs, initialProjects, totalPages: initia
 }
 
 // Use getStaticProps to pre-render the home page
-export async function getStaticProps() {
-  try {
-    // Fetch the initial data
-    const blogsResponse = await getBlogs();
-    const projectsResponse = await getallprojects(1, 6, '', '');
-    return {
-      props: {
-        initialBlogs: blogsResponse.data.blogs || [],
-        initialProjects: projectsResponse.data.products || [],
-        totalPages: projectsResponse.data.totalPages || 1,
-      },
-      // Regenerate the page every 300 seconds (5 minutes)
-      revalidate: 300,
-    };
-  } catch (error) {
-    console.error("Error in getStaticProps:", error);
-    return {
-      props: {
-        initialBlogs: [],
-        initialProjects: [],
-        totalPages: 1,
-      },
-      revalidate: 300,
-    };
-  }
-}
+// export async function getStaticProps() {
+//   try {
+//     // Fetch the initial data
+//     const blogsResponse = await getBlogs();
+//     const projectsResponse = await getallprojects(1, 6, '', '');
+//     return {
+//       props: {
+//         initialBlogs: blogsResponse.data.blogs || [],
+//         initialProjects: projectsResponse.data.products || [],
+//         totalPages: projectsResponse.data.totalPages || 1,
+//       },
+//       // Regenerate the page every 300 seconds (5 minutes)
+//       revalidate: 300,
+//     };
+//   } catch (error) {
+//     console.error("Error in getStaticProps:", error);
+//     return {
+//       props: {
+//         initialBlogs: [],
+//         initialProjects: [],
+//         totalPages: 1,
+//       },
+//       revalidate: 300,
+//     };
+//   }
+// }
 
 Home.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

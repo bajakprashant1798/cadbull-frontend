@@ -27,7 +27,7 @@ import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
 import { debounce } from "lodash";
 
-const Categories = ({ initialCategories, initialProjects, totalPages: initialTotalPages }) => {
+const Categories = () => {
   const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [catalog, setCatalog] = useState([]);
@@ -49,17 +49,23 @@ const Categories = ({ initialCategories, initialProjects, totalPages: initialTot
   console.log("favouriteList cat", favouriteList);
 
   // Fetch favorites if not already fetched
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
   useEffect(() => {
-    if (token && (!favouriteList || favouriteList.length === 0)) {
+    if (token && !favouritesFetched) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
         })
         .catch((error) => {
           console.error("Error fetching favorites:", error);
+          // Optionally mark as fetched to avoid repeated attempts
+          setFavouritesFetched(true);
         });
     }
-  }, [token, favouriteList, dispatch]);
+  }, [token, favouritesFetched, dispatch]);
+
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
   const loadRecords = useCallback(
@@ -87,10 +93,11 @@ const Categories = ({ initialCategories, initialProjects, totalPages: initialTot
     [searchedText, sortTerm, sortType]
   ); // Dependency array
 
+  
   useEffect(() => {
     // Load records when the component mounts or when filtering/sorting conditions change
     loadRecords(currentPage);
-  }, [loadRecords, currentPage]); // Call loadRecords whenever it changes or currentPage changes
+  }, [loadRecords, currentPage, searchedText, sortTerm, sortType]); // Call loadRecords whenever it changes or currentPage changes
 
   // Handle changes to search term, sort term, and sort type
   useEffect(() => {
@@ -199,7 +206,7 @@ const Categories = ({ initialCategories, initialProjects, totalPages: initialTot
                           <small className="text-grey fs-12">{`(${projects.length} RESULTS)`}</small>
                         </h5>
                       </>
-                    ) : null}
+                    ) : `All Projects`}
                   </div>
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-xl-end justify-content-center flex-column flex-md-row">
@@ -318,33 +325,33 @@ const Categories = ({ initialCategories, initialProjects, totalPages: initialTot
   );
 };
 
-export async function getStaticProps() {
-  try {
-    const blogsResponse = await getallCategories(''); // if needed
-    const projectsResponse = await getallprojects(1, 6, "", "", "");
-    // You might also fetch subcategories here if needed.
+// export async function getStaticProps() {
+//   try {
+//     const blogsResponse = await getallCategories(''); // if needed
+//     const projectsResponse = await getallprojects(1, 6, "", "", "");
+//     // You might also fetch subcategories here if needed.
     
-    return {
-      props: {
-        initialCategories: blogsResponse.data.categories || [],
-        initialProjects: projectsResponse.data.products || [],
-        totalPages: projectsResponse.data.totalPages || 1,
-      },
-      // Revalidate every 300 seconds (5 minutes)
-      revalidate: 300,
-    };
-  } catch (error) {
-    console.error("Error in getStaticProps:", error);
-    return {
-      props: {
-        initialCategories: [],
-        initialProjects: [],
-        totalPages: 1,
-      },
-      revalidate: 300,
-    };
-  }
-}
+//     return {
+//       props: {
+//         initialCategories: blogsResponse.data.categories || [],
+//         initialProjects: projectsResponse.data.products || [],
+//         totalPages: projectsResponse.data.totalPages || 1,
+//       },
+//       // Revalidate every 300 seconds (5 minutes)
+//       revalidate: 300,
+//     };
+//   } catch (error) {
+//     console.error("Error in getStaticProps:", error);
+//     return {
+//       props: {
+//         initialCategories: [],
+//         initialProjects: [],
+//         totalPages: 1,
+//       },
+//       revalidate: 300,
+//     };
+//   }
+// }
 
 
 Categories.getLayout = function getLayout(page) {

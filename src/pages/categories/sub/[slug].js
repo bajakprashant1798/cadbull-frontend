@@ -49,15 +49,23 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch favorites if not loaded
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
   useEffect(() => {
-    if (token && (!favouriteList || favouriteList.length === 0)) {
+    if (token && !favouritesFetched) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
         })
-        .catch((error) => console.error("Error fetching favorites:", error));
+        .catch((error) => {
+          console.error("Error fetching favorites:", error);
+          // Optionally mark as fetched to avoid repeated attempts
+          setFavouritesFetched(true);
+        });
     }
-  }, [token, favouriteList, dispatch]);
+  }, [token, favouritesFetched, dispatch]);
+
 
   // Update Redux with the new slug and reset pagination
   useEffect(() => {

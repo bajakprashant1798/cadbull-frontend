@@ -11,7 +11,13 @@ const api = axios.create({
 });
 
 // ✅ Helper Functions to Retrieve Tokens
-const getAccessToken = () => localStorage.getItem("accessToken");
+const getAccessToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("access_token");
+  }
+  return null;
+};
+
 const getRefreshToken = () => localStorage.getItem("refreshToken"); // ✅ From localStorage
 
 // ✅ Request Interceptor: Attach Authorization Header
@@ -131,26 +137,11 @@ export const loginApiHandler = (user) => {
   return api.post("/auth/signin", user);
 };
 
-export const updateProfileWithoutPicture = (user, token) => {
-  return api.patch("/users/profile", { user }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
 
-export const updateProfilePicture = (token, file) => {
-  const formData = new FormData();
-  formData.append("profile_photo", file);
-  return api.put("/profile/photo", formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
 
 export const getUserProfile = () => {
   // No need to pass token manually—the interceptor adds the access token.
-  return api.get("/user/profile");
+  return api.get("/profile");
 };
 
 export const getUserData = () => {
@@ -192,11 +183,7 @@ export const sendOtpApiHandler = async (mobile) => {
   return api.post("/auth/send-otp", { phone_number: mobile });
 };
 
-export const updateUserProfileInfo = async (userData, token) => {
-  return api.put("/profile", userData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
+
 
 // export const deleteAccount = async () => {
 //   return api.delete("/profile");
@@ -314,18 +301,6 @@ export const downloadProject = async (token, id, router) => {
     if (response.status === 200) {
       return response; // Return the response blob
     }
-    // if (response.status === 200) {
-    //   // ✅ Create Download Link
-    //   const blob = new Blob([response.data]);
-    //   const link = document.createElement("a");
-    //   link.href = URL.createObjectURL(blob);
-    //   link.setAttribute("download", `project_${id}.zip`);
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   document.body.removeChild(link);
-    //   URL.revokeObjectURL(link.href);
-    //   return;
-    // }
   } catch (err) {
     console.error("🚨 Download Error:", err);
 
@@ -336,16 +311,23 @@ export const downloadProject = async (token, id, router) => {
       if (status === 403) {
         const blobData = err.response.data;
         const textData = await blobData.text();
+        // try {
+        //   const jsonData = JSON.parse(textData);
+        //   if (jsonData?.redirectUrl) {
+        //     console.warn("🚀 Redirecting to:", jsonData.redirectUrl);
+        //     router.push(jsonData.redirectUrl);
+        //   } else {
+        //     console.error("❌ Error: No redirect URL in response.");
+        //   }
+        // } catch (parseError) {
+        //   console.error("❌ JSON Parse Error:", parseError);
+        // }
         try {
           const jsonData = JSON.parse(textData);
-          if (jsonData?.redirectUrl) {
-            console.warn("🚀 Redirecting to:", jsonData.redirectUrl);
-            router.push(jsonData.redirectUrl);
-          } else {
-            console.error("❌ Error: No redirect URL in response.");
-          }
+          throw new Error(jsonData.message || "Download limit reached.");
         } catch (parseError) {
           console.error("❌ JSON Parse Error:", parseError);
+          throw new Error("Download limit reached.");
         }
       }
 
@@ -353,6 +335,7 @@ export const downloadProject = async (token, id, router) => {
       if (status === 401) {
         console.warn("❌ Unauthorized. Please log in.");
         router.push("/auth/login");
+        throw new Error("Unauthorized. Please log in.");
       }
     }
   }
@@ -408,6 +391,11 @@ export const uploadProjectApiHandler = async (formData, token) => {
     }
   }
 };
+// export const updateUserProfileInfo(data, token) {
+//   return api.put("/profile", data, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+// };
 
 export const getSubscriptionDetail = (token) => {
   return api.get("/subscription/user/plan", {
@@ -421,6 +409,7 @@ export const cancelSubscriptionRequest = (subscriptionId, token) => {
   });
 };
 
+// profile api
 export const registerNewArchitechProfile = (profileData, token) => {
   return api.post("/profile", profileData, {
     headers: { Authorization: `Bearer ${token}` },
@@ -432,6 +421,30 @@ export const getArchitectProfileInfo = (token) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+export const updateUserProfileInfo = async (userData, token) => {
+  return api.put("/profile", userData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateProfilePicture = (token, file) => {
+  const formData = new FormData();
+  formData.append("profile_photo", file);
+  return api.put("/profile/photo", formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const updateProfileWithoutPicture = (user, token) => {
+  return api.patch("/profile", { user }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+// profile api
 
 export const getCategoriesWithSubcategories = async () => {
   try {
