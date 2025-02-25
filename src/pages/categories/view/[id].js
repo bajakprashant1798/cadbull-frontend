@@ -612,7 +612,7 @@ useEffect(() => {
                         <div className="mb-4 mb-md-5 ps-5">
                           <SectionHeading
                             subHeading={"find Latest"}
-                            mainHeading={"Similar"}
+                            mainHeading={"Related"}
                             mainHeadingBold={"Files"}
                           />
                         </div>
