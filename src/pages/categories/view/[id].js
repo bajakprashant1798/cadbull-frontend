@@ -631,13 +631,20 @@ useEffect(() => {
                       })}
                     </div>
 
-                    <Pagination
+                    {/* <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
                       dispatchCurrentPage={getSimilarProjectsPage}
                       goToPreviousPage={() => handlePageChange(currentPage - 1)}
                       goToNextPage={() => handlePageChange(currentPage + 1)}
+                    /> */}
+
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
                     />
+
 
                     {/* <LoadMore
                       currentPage={currentPage}

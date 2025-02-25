@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Edit, Trash, ChevronUp, ChevronDown } from "lucide-react";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 
 const TableComponent = ({ fetchData, deleteHandler, editPath, columnName, showEdit = true, data = [], setData }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -110,7 +110,7 @@ const TableComponent = ({ fetchData, deleteHandler, editPath, columnName, showEd
       </div>
 
       {/* Pagination */}
-      <Pagination
+      <PaginationAdmin
         currentPage={currentPage}
         totalPages={totalPages}
         totalEntries={totalEntries}

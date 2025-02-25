@@ -40,7 +40,7 @@ import parser from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
-import { updateSortList, getserachTerm } from "../../redux/app/features/projectsSlice";
+import { updateSortList, getserachTerm, setProducts } from "../../redux/app/features/projectsSlice";
 import { useRouter } from "next/router";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
@@ -106,6 +106,7 @@ export default function Home() {
   const [currentPage,setCurrentPage]=useState(1);
   const [searchInput, setSearchInput] = useState('');
   // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
+  const [productCount, setProductCount] = useState(0);
 
   const { token } = useSelector((store) => store.logininfo);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
@@ -131,6 +132,20 @@ export default function Home() {
     }
   }, [token, favouritesFetched, dispatch]);
 
+  useEffect(() => {
+    // We assume your API returns an object with a property like `totalProducts`
+    getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
+      .then((response) => {
+        // Use total count from the API response (adjust field name accordingly)
+        const count = response.data.totalProducts || 0;
+        setProductCount(count);
+      })
+      .catch((error) => {
+        console.error("Error fetching product count:", error);
+      });
+  }, [token]);
+
+
 
   // useEffect(() => {
   //   if (blogs.length === 0) {
@@ -153,7 +168,8 @@ export default function Home() {
       
       setProjects(response.data.products); // Set the projects for the page
       setTotalPages(response.data.totalPages); // Set total pages
-    } catch (error) {
+      // setProductCount(response.data.totalPages * (pageSize - 1)); // Set total products
+      } catch (error) {
       console.error("Failed to fetch projects:", error);
     } finally {
       stopLoading(false);
@@ -246,7 +262,7 @@ export default function Home() {
                 </p>
                 <p className="mb-3 mb-md-5">
                   {/* User */}
-                  <span className="text-danger">254195+</span> <span className="fw-light"> Free & Premium
+                  <span className="text-danger">{productCount}+</span> <span className="fw-light"> Free & Premium
                   CADFiles
                   </span>
                 </p>

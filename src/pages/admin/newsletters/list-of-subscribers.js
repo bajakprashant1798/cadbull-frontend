@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { getSubscribersApi, deleteSubscriberApi } from "@/service/api";
 import { useRouter } from "next/router";
 import { Edit, Trash } from "lucide-react";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
@@ -109,7 +109,7 @@ const ListSubscribers = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
+        <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
           goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}

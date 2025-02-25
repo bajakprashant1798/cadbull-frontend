@@ -23,6 +23,7 @@ const initialState = {
   subcat: [],
   allsubcat: [],
   favouriteList: [],
+  totalProductCount: 0,
 
   subcatfilter: {
     // slug, page, pageSize, searchTerm, sortTerm, type
@@ -154,6 +155,10 @@ export const projectsSlice = createSlice({
     resetsubcatfilter: (state, action) => {
       state.subcatfilter = initialState.subcatfilter;
     },
+
+    setProducts(state, action) {
+      state.totalProductCount = action.payload.totalProductCount;
+    },
   },
 });
 export const {
@@ -183,7 +188,8 @@ export const {
   resetsubcatfilter,
   addAllSubCategoriesData,
   resetCategoriesList,
-  setFavouriteList
+  setFavouriteList,
+  setProducts,
 } = projectsSlice.actions;
 export default projectsSlice.reducer;
 

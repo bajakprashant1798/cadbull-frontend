@@ -16,6 +16,8 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import withAuth from "@/HOC/withAuth";
 import { drawings } from "..";
+import TagsInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css";
 
 // const QuillNoSSRWrapper = dynamic(import('react-quill'), {
 //   ssr: false,
@@ -31,6 +33,8 @@ const UploadWork = () => {
   const { categoryAndSubCategory } = useSelector((store) => store.projectinfo);
   const [subCategory, setSubCategory] = useState([]);
   const [isLoading, startLoading, stopLoading] = useLoading();
+  const [tags, setTags] = useState([]);
+
   const [formData, setFormData] = useState({
     file: null,
     work_title: "",
@@ -62,8 +66,8 @@ const UploadWork = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    if (!formData.file || !formData.image) {
-      toast.error("Please upload both a project file and an image.");
+    if (!formData.file) {
+      toast.error("Please upload both a project file.");
       return;
     }
   
@@ -84,15 +88,15 @@ const UploadWork = () => {
 
   const handleUploadfile = (file) => {
     setFormData({ ...formData, file: file[0] });
-    toast.success("Project file uploaded!");
+    toast.success("Zip file uploaded!");
   };
 
-  const handleUploadImage = (file) => {  
-    if (file.length > 0) {
-      setFormData({ ...formData, image: file[0] });
-      toast.success("Image uploaded!");
-    }
-  };
+  // const handleUploadImage = (file) => {  
+  //   if (file.length > 0) {
+  //     setFormData({ ...formData, image: file[0] });
+  //     toast.success("Image uploaded!");
+  //   }
+  // };
 
   const handleCategoryChange = async (e) => {
     const selectedCategoryId = e.target.value;
@@ -248,9 +252,9 @@ const UploadWork = () => {
                   {/* Keyword */}
                   <div className="col-lg-6">
                     <div>
-                      <label htmlFor="keyword">Keyword</label>
+                      <label htmlFor="keyword">5 Keywords</label>
                     </div>
-                    <input
+                    {/* <input
                       type="text"
                       className="form-control"
                       placeholder="Enter Your Keyword"
@@ -261,30 +265,52 @@ const UploadWork = () => {
                           keyword: e.target.value,
                         })
                       }
+                    /> */}
+                    <TagsInput
+                      className="form-control tags-input"
+                      value={tags}                // local state for tags
+                      onChange={(newTags) => {
+                        // Limit to 5 tags
+                        if (newTags.length <= 5) {
+                          setTags(newTags);
+                          // Also update the formData (if you are using it for submission)
+                          setFormData({
+                            ...formData,
+                            keyword: newTags.join(","),
+                          });
+                        } else {
+                          toast.error("You can only add up to 5 tags.");
+                        }
+                      }}
+                      onlyUnique
+                      inputProps={{ placeholder: "Add tag" }}
                     />
                   </div>
                 </div>
-                <div className="mb-4 mb-md-5">
+                {/* <div className="mb-4 mb-md-5">
                   <div>
                     <label className="mb-2">Upload Image</label>
                   </div>
                   <UploadFiles callback={handleUploadImage} />
-                </div>
+                </div> */}
 
                 <div className="mb-4 mb-md-5">
+                  <div>
+                    <label className="mb-2">Upload File</label>
+                  </div>
                   <UploadFiles
                     acceptedFiles=" .zip file only"
                   callback={handleUploadfile}
                   />
                 </div>
                 <div className="text-end">
-      <button
-        className={`btn btn-secondary col-12 col-sm-4 col-md-3 ${isLoading ? 'spinning' : ''}`}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Uploading...' : 'SUBMIT WORK'}
-      </button>
-    </div>
+                <button
+                  className={`btn btn-secondary col-12 col-sm-4 col-md-3 ${isLoading ? 'spinning' : ''}`}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Uploading...' : 'SUBMIT WORK'}
+                </button>
+              </div>
               </form>
             </div>
           </div>

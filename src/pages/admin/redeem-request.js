@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getRedeemRequestsApi, toggleRedeemStatusApi } from "@/service/api";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
@@ -119,7 +119,7 @@ const RedeemRequests = () => {
           </div>
 
           {/* ✅ Pagination */}
-          <Pagination
+          <PaginationAdmin
             currentPage={currentPage}
             totalPages={totalPages}
             goToPreviousPage={() => setCurrentPage(currentPage - 1)}

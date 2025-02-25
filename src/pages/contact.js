@@ -5,13 +5,14 @@ import upload from "@/assets/icons/upload.png";
 import flag from "@/assets/icons/flag.png";
 import contact from "@/assets/icons/contact.png";
 import Head from "next/head";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { sendContactForm } from "@/service/api";
+import { getallprojects, sendContactForm } from "@/service/api";
+import { useSelector } from "react-redux";
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
     .required("This field is required.")
@@ -50,6 +51,11 @@ const contactDetail = [
 ];
 
 const ContactUs = () => {
+
+  const [productCount, setProductCount] = useState(null);
+  const token = useSelector((store) => store.logininfo.token);
+
+  // State for the contact form
   const {
     register,
     handleSubmit,
@@ -70,6 +76,23 @@ const ContactUs = () => {
     }
   };
 
+  useEffect(() => {
+    // We assume your API returns an object with a property like `totalProducts`
+    getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
+      .then((response) => {
+        // Use total count from the API response (adjust field name accordingly)
+        const count = response.data.totalProducts || 0;
+        setProductCount(count);
+      })
+      .catch((error) => {
+        console.error("Error fetching product count:", error);
+      });
+  }, [token]);
+
+
+  // You can format productCount as needed (for example, using commas)
+  // const formattedCount = productCount.toLocaleString();
+
   return (
     <Fragment>
       <Head>
@@ -83,7 +106,7 @@ const ContactUs = () => {
               <PageHeading
                 title={"Contact Us"}
                 description={
-                  "Choose from 254195+ Free & Premium CAD Files with new additions published every second month."
+                  `Choose from ${productCount}+ Free & Premium CAD Files with new additions published every second month.`
                 }
               />
 

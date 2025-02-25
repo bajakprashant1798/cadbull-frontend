@@ -135,26 +135,29 @@ useEffect(() => {
       <div className="container py-md-5">
         <div className="row gy-4 align-items-center">
           {/* 1 */}
-          <div className="col-lg-4 col-md-6">
+          <div className="col-lg-3 col-md-6">
             <div className="pricing-card">
-              <div className="h-100 inner-wrapper" style={{ borderTopColor: '#1D1D5' }}>
+              <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
-                  <h5 className="text-primary">Starter</h5>
+                  <h5 className="text-primary">Silver Plan</h5>
                   {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
-                <div className="my-2">
+                <div className="my-2 mb-3">
                   <h4 className="text-primary">
                     <span className="fw-bold">$13</span>
-                    <small className="fs-5">/ Weekly</small>
+                    <small className="fs-5">/ 15 Days</small>
                   </h4>
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <p className="text-primary fw-medium">Ideal for individual creators.</p>
-                </div>
+                </div> */}
                 <div>
                   <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
-                    <li><Icons.ListBullet /><span className="ms-1">75.000+ free files</span></li>
-                    <li><Icons.ListBullet /><span className="ms-1">1.50.000+ gold files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Upto 200 files/day</span></li>
                   </ul>
                 </div>
@@ -187,30 +190,83 @@ useEffect(() => {
             </div>
           </div>
           {/* 2  */}
-          <div className="col-lg-4 col-md-6">
+          <div className="col-lg-3 col-md-6">
+            <div className="pricing-card">
+              <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
+                <div className="d-flex justify-content-between">
+                  <h5 className="text-primary">Gold Plan</h5>
+                  {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
+                </div>
+                <div className="my-2 mb-3">
+                  <h4 className="text-primary">
+                    <span className="fw-bold">$20</span>
+                    <small className="fs-5">/ Month</small>
+                  </h4>
+                </div>
+                {/* <div className="mb-3">
+                  <p className="text-primary fw-medium">Ideal for individual creators.</p>
+                </div> */}
+                <div>
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
+                    <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 250 files/day</span></li>
+                  </ul>
+                </div>
+                <div>
+                  <button
+                  
+                  onClick={()=>{
+                    if(userData ===null){
+                      // toast.error('Login is required');
+                      router.push(`/auth/login?redirect=${router.asPath}`)
+                      return
+                    }
+                    handleSubscription("price_1QjnA8Fy6VKViPpJJekatxQZ", user.id).then((res)=>{
+                    
+                      window.location.href=res.data.url
+                     }).catch((err)=>{
+                      console.log('error',err)
+                     })
+                  }}
+                  disabled={activeSubscription}
+                  type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 3  */}
+          <div className="col-lg-3 col-md-6">
             <div className="pricing-card">
               <div className="header-wrapper" style={{ background: '#3D6098' }}>
                 <h5 className="text-white">MOST POPULAR</h5>
               </div>
               <div className="h-100 inner-wrapper py-5" style={{ borderTopColor: '#4A4A4A', background: '#4A4A4A' }}>
                 <div className="d-flex justify-content-between">
-                  <h5 className="text-white">Pro</h5>
+                  <h5 className="text-white">Platinum Plan</h5>
                   {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
-                <div className="my-2">
+                <div className="my-2 mb-3">
                   <h4 className="text-white">
-                    <span className="fw-bold">$20</span>
-                    <small className="fs-5">/ Month</small>
+                    <span className="fw-bold">$50</span>
+                    <small className="fs-5">/ 3 Months</small>
                   </h4>
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <p className="text-white fw-medium">Ideal for individual creators.</p>
-                </div>
+                </div> */}
                 <div>
                   <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
-                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">75.000+ free files</span></li>
-                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">1.50.000+ gold files</span></li>
-                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 200 files/day</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 300 files/day</span></li>
                   </ul>
                 </div>
                 <div className="pb-5">
@@ -234,28 +290,31 @@ useEffect(() => {
               </div>
             </div>
           </div>
-          {/* 3  */}
-          <div className="col-lg-4 col-md-6">
+          {/* 4  */}
+          <div className="col-lg-3 col-md-6">
             <div className="pricing-card">
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
-                  <h5 className="text-primary">Enterprice</h5>
+                  <h5 className="text-primary">Dimond Plan</h5>
                   {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
-                <div className="my-2">
+                <div className="my-2 mb-3">
                   <h4 className="text-primary">
                     <span className="fw-bold">$99</span>
-                    <small className="fs-5">/ Annual</small>
+                    <small className="fs-5">/ Year</small>
                   </h4>
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <p className="text-primary fw-medium">Ideal for individual creators.</p>
-                </div>
+                </div> */}
                 <div>
                   <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
-                    <li><Icons.ListBullet /><span className="ms-1">75.000+ free files</span></li>
-                    <li><Icons.ListBullet /><span className="ms-1">1.50.000+ gold files</span></li>
-                    <li><Icons.ListBullet /><span className="ms-1">Upto 300 files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 400 files/day</span></li>
                   </ul>
                 </div>
                 <div>

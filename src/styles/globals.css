@@ -932,6 +932,9 @@ select:-webkit-autofill:focus {
   font: normal normal 600 16px/1 "Poppins", sans-serif;
   color: #1A1A1A;
 }
+/* .category-wrapper:hover h6 {
+  color: #3D6098;
+} */
 @media all and (max-width: 767px) {
   .category-wrapper h6 {
     font: normal normal 600 14px/1 "Poppins", sans-serif;

@@ -175,10 +175,10 @@ const ProjectCard = ({
           <p className='ps-3 work-title'>{work_title}</p>
           <div>
             <span className='badge bg-secondary text-white'>{file_type}</span>
-            <div className='d-flex gap-1 mt-2 align-items-center'>
+            {/* <div className='d-flex gap-1 mt-2 align-items-center'>
               <span><Icons.Eye /></span>
               <span className="text-grey">{view_count}</span>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className='text-end mt-2'>

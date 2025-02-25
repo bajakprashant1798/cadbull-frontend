@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getUsersEarningsApi } from "@/service/api";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
@@ -145,7 +145,7 @@ const UsersEarning = () => {
           </div>
 
           {/* Pagination */}
-          <Pagination
+          <PaginationAdmin
             currentPage={currentPage}
             totalPages={totalPages}
             goToPreviousPage={() => handlePageChange(currentPage - 1)}

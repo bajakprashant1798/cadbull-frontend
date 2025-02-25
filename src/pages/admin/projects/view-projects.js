@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getProjectsApi, getAdminCategoriesWithSubcategories } from "@/service/api";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
 
@@ -168,7 +168,7 @@ const ViewProjects = () => {
                 </div>
 
                 {/* Pagination */}
-                <Pagination
+                <PaginationAdmin
                     currentPage={searchParams.page}
                     totalPages={totalPages}
                     goToPreviousPage={() => setSearchParams({ ...searchParams, page: Math.max(1, searchParams.page - 1) })}

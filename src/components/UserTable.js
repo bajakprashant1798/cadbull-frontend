@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api"; // Import toggleUserStatus API
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
@@ -184,7 +184,7 @@ const UserTable = ({ role, title }) => {
         </div>
 
         {/* Pagination */}
-        <Pagination
+        <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
           goToPreviousPage={() => handlePageChange(currentPage - 1)}

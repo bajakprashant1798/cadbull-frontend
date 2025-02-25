@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getCategoriesApi } from "@/service/api";
-import Pagination from "@/components/Pagination";
+import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import { CheckCircle, XCircle, Edit, ChevronUp, ChevronDown } from "lucide-react";
 import { toggleCategoryStatusApi } from "@/service/api";
@@ -132,7 +132,7 @@ const CategoryTable = ({ status, title }) => {
         </div>
 
         {/* Pagination */}
-        <Pagination
+        <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
           goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
