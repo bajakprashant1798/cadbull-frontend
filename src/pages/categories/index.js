@@ -178,9 +178,13 @@ const Categories = () => {
         type: "Categories",
       };
 
-    const handlePageChange = (newPage) => {
+    const handlePageChange = useCallback((newPage) => {
+      // Optionally validate that newPage is within bounds
+      if(newPage < 1 || newPage > totalPages) return;
       setCurrentPage(newPage);
-    };
+      // Now call your API (or dispatch a Redux action) to load projects for newPage.
+    }, [totalPages]);
+  
     
 
   return (
@@ -307,12 +311,19 @@ const Categories = () => {
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  <Pagination
+                  {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
+                    onPageChange={handlePageChange}
                     goToPreviousPage={() => handlePageChange(currentPage - 1)}
                     goToNextPage={() => handlePageChange(currentPage + 1)}
                     dispatchCurrentPage={handlePageChange}
+                  /> */}
+
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               </div>

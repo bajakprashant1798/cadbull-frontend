@@ -146,7 +146,7 @@ export default function Home() {
   
 
   // Fetch projects with pagination
-  const loadProjects = async (page, pageSize = 6) => {
+  const loadProjects = async (page, pageSize = 9) => {
     startLoading(true);
     try {
       const response = await getallprojects(page, pageSize, searchTerm, sortTerm);
@@ -160,23 +160,29 @@ export default function Home() {
     }
   };
   
-  useEffect(() => {
-    loadProjects(currentPage, 6);
-  }, [currentPage, searchTerm, sortTerm]);
+  // useEffect(() => {
+  //   loadProjects(currentPage, 3);
+  // }, [currentPage, searchTerm, sortTerm]);
 
   // Initial load and page change effect
   useEffect(() => {
     // Load projects whenever currentPage, searchTerm, or sortTerm change
-    loadProjects(currentPage, 6);
+    loadProjects(currentPage, 9);
   }, [currentPage, searchTerm, sortTerm]);
 
   // Handle page change
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-      loadProjects(newPage);
-    }
-  };
+  // const handlePageChange = (newPage) => {
+  //   if (newPage >= 1 && newPage <= totalPages) {
+  //     setCurrentPage(newPage);
+  //     loadProjects(newPage);
+  //   }
+  // };
+  const handlePageChange = useCallback((newPage) => {
+    // Optionally validate that newPage is within bounds
+    if(newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    // Now call your API (or dispatch a Redux action) to load projects for newPage.
+  }, [totalPages]);
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -245,7 +251,7 @@ export default function Home() {
                   </span>
                 </p>
                 <Link href="/categories" className="btn btn-primary">
-                  VIEW PROJECTS
+                  Explore Files
                 </Link>
               </div>
               {/* Form  */}
@@ -408,13 +414,21 @@ export default function Home() {
 
 
           {/* Pagination  */}
-          <Pagination
+          {/* <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
+            onPageChange={handlePageChange}
             goToPreviousPage={() => handlePageChange(currentPage - 1)}
             goToNextPage={() => handlePageChange(currentPage + 1)}
             dispatchCurrentPage={handlePageChange}
+          /> */}
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
+
           {/* <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}
@@ -573,7 +587,7 @@ export default function Home() {
             <div className="col-md-12">
               <div className="text-center">
                 <h3 className="text-white mb-2 mb-md-3">
-                  Get Incredible CAD Plan Design Right Now!
+                  Get Incredible Files Right Now!
                 </h3>
                 <p className="mb-4 mb-md-5 text-white">
                   At every stage, we could supervise your project – controlling
@@ -683,7 +697,7 @@ export default function Home() {
       </section>
 
       {/* Showcase Your Business */}
-      <section className="py-3 py-md-4">
+      {/* <section className="py-3 py-md-4">
         <div className="container">
           <div className="row rounded-xl bg-secondary p-4 p-md-5 align-items-center">
             <div className="col-lg-5">
@@ -713,7 +727,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Architecture House Plan */}
       <section className="py-3 py-md-4">
@@ -817,7 +831,7 @@ export default function Home() {
       </section> */}
 
       {/* Get Off */}
-      <GetOff />
+      {/* <GetOff /> */}
     </Fragment>
   );
 }

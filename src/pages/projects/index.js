@@ -125,6 +125,7 @@ const CompletedProjects = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
+            onPageChange={handlePageChange}
             goToPreviousPage={() => handlePageChange(currentPage - 1)}
             goToNextPage={() => handlePageChange(currentPage + 1)}
             dispatchCurrentPage={handlePageChange}

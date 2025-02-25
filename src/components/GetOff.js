@@ -1,4 +1,5 @@
 import secure from "@/assets/icons/secure.svg";
+import Link from "next/link";
 
 const GetOff = () => {
   return (
@@ -11,7 +12,9 @@ const GetOff = () => {
                 <h1 className='text-white fw-bolder mb-2 fs-1'>Get 20% Off</h1>
                 <h5 className='text-white mb-3'>ON ANNUAL PLAN</h5>
               </div>
-              <button className='btn btn-light'>BUY NOW</button>
+              <Link href='/pricing'>
+                <button className='btn btn-light'>BUY NOW</button>
+              </Link>
             </div>
           </div>
           <div className="col-lg-5">

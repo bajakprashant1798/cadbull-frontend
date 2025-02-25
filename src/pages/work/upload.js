@@ -147,12 +147,7 @@ const UploadWork = () => {
           <div className="row justify-content-center">
             <div className="col-md-12 col-lg-9 col-xl-7">
               <form onSubmit={handleSubmit}>
-                <div className="mb-4 mb-md-5">
-                  <UploadFiles
-                    acceptedFiles=" .zip file only"
-                  callback={handleUploadfile}
-                  />
-                </div>
+                
                 <div className="row mb-4 mb-md-5 g-3">
                   {/* Work Title */}
                   <div className="col-lg-12">
@@ -274,6 +269,13 @@ const UploadWork = () => {
                     <label className="mb-2">Upload Image</label>
                   </div>
                   <UploadFiles callback={handleUploadImage} />
+                </div>
+
+                <div className="mb-4 mb-md-5">
+                  <UploadFiles
+                    acceptedFiles=" .zip file only"
+                  callback={handleUploadfile}
+                  />
                 </div>
                 <div className="text-end">
       <button

@@ -167,9 +167,12 @@ const HousePlan = () => {
       title:"Architecture House Plan CAD Drawings CAD Blocks & 21354 Files", description:"Cadbull presents variety of online drawing including DWG drawing, Cad drawing, AutoCAD drawing, 3D Drawing. Wide range of 3D Drawing, DWG drawing, Cad drawing, AutoCAD drawing available as per your need.",categories:catalog, type:"Categories", pageName:"House Plan"
       };
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = useCallback((newPage) => {
+    // Optionally validate that newPage is within bounds
+    if(newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
-  };
+    // Now call your API (or dispatch a Redux action) to load projects for newPage.
+  }, [totalPages]);
 
   return (
     <Fragment>
@@ -295,12 +298,19 @@ const HousePlan = () => {
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  <Pagination
+                  {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
+                    onPageChange={handlePageChange}
                     goToPreviousPage={() => handlePageChange(currentPage - 1)}
                     goToNextPage={() => handlePageChange(currentPage + 1)}
                     dispatchCurrentPage={handlePageChange}
+                  /> */}
+
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               </div>

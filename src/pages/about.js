@@ -11,7 +11,8 @@ const About = () => {
         <title>About Us | Cadbull</title>
         <meta name="description" content="Impress Your Imagination with Cadbull." />
       </Head>
-      <section className="bg-light py-3 py-md-4 category-page company-page">
+      {/* py-md-4 removed from below classname */}
+      <section className="bg-light py-5  category-page company-page">
         <div className="container">
           <div className="row">
             <div className="col-md-12">

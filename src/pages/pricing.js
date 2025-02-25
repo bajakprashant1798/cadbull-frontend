@@ -103,7 +103,7 @@ useEffect(() => {
               </div>
             </div>
             </div>
-            <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-5">
+            {/* <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-5">
               <div className="switch-wraper d-flex gap-2 justify-content-start justify-content-sm-center align-items-center mb-3 mb-md-4 position-relative">
                 <p className="text-primary fw-semibold">Pay Monthly</p>
                 <div className="form-check form-switch mb-0 py-0" style={{ minHeight: "unset" }}>
@@ -117,7 +117,7 @@ useEffect(() => {
                     className="img-fluid" />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="col-sm-11 col-md-10 col-lg-9 col-xl-8">
               <div className="pricing-slider text-start mb-5">
                 <p className="mb-2 text-grey">Number of monthly visitors</p>
@@ -140,7 +140,7 @@ useEffect(() => {
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#1D1D5' }}>
                 <div className="d-flex justify-content-between">
                   <h5 className="text-primary">Starter</h5>
-                  <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button>
+                  {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
                 <div className="my-2">
                   <h4 className="text-primary">
@@ -195,7 +195,7 @@ useEffect(() => {
               <div className="h-100 inner-wrapper py-5" style={{ borderTopColor: '#4A4A4A', background: '#4A4A4A' }}>
                 <div className="d-flex justify-content-between">
                   <h5 className="text-white">Pro</h5>
-                  <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button>
+                  {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
                 <div className="my-2">
                   <h4 className="text-white">
@@ -240,7 +240,7 @@ useEffect(() => {
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
                   <h5 className="text-primary">Enterprice</h5>
-                  <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button>
+                  {/* <button type="button" className="btn-pricing"><span className="me-1">Auto-Renewal</span><Icons.Renewal /></button> */}
                 </div>
                 <div className="my-2">
                   <h4 className="text-primary">

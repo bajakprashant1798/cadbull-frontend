@@ -131,15 +131,15 @@ const CompanyProfile = () => {
                       <h6 className="text-primary fw-semibold lh-sm">500</h6>
                       <p className="text-grey">Projects</p>
                     </div>
-                    <div>
+                    {/* <div>
                       <h6 className="text-primary fw-semibold lh-sm">48.7 m</h6>
                       <p className="text-grey">Project views</p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
                 {/* Buttons  */}
-                <div>
+                {/* <div>
                   <ul className="list-unstyled mb-0 d-flex gap-2 mb-4">
                     <li>
                       <button type="primary" className="btn-profile active" data-bs-toggle="modal" data-bs-target="#exampleModal">Contact</button>
@@ -164,7 +164,7 @@ const CompanyProfile = () => {
                       <img src={award2.src} width={70} alt="award" className="img-fluid object-fit-contain" />
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -173,8 +173,8 @@ const CompanyProfile = () => {
             <div className="col-md-12">
               <div className="d-flex justify-content-between gap-4 gap-md-2 flex flex-column flex-md-row">
                 <div className="nav nav-pills flex-nowrap" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                  <button className="nav-link active" id="v-pills-image-tab" data-bs-toggle="pill" data-bs-target="#v-pills-image" type="button" role="tab" aria-controls="v-pills-image" aria-selected="true">Image (500)</button>
-                  <button className="nav-link" id="v-pills-cad-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cad" type="button" role="tab" aria-controls="v-pills-cad" aria-selected="false">CAD File (360)</button>
+                  {/* <button className="nav-link " id="v-pills-image-tab" data-bs-toggle="pill" data-bs-target="#v-pills-image" type="button" role="tab" aria-controls="v-pills-image" aria-selected="true">Image (500)</button> */}
+                  <button className="nav-link active" id="v-pills-cad-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cad" type="button" role="tab" aria-controls="v-pills-cad" aria-selected="false">CAD File (360)</button>
                 </div>
                   <div className='d-lg-none'>
                     <ul className='list-unstyled gap-1 gap-md-3 justify-content-center d-flex gap-3 gap-md-2 align-items-center justify-content-md-center mb-md-0'>
@@ -221,7 +221,7 @@ const CompanyProfile = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="tab-content" id="v-pills-tabContent">
-                <div className="tab-pane fade show active" id="v-pills-image" role="tabpanel" aria-labelledby="v-pills-image-tab" tabIndex="0">
+                {/* <div className="tab-pane fade " id="v-pills-image" role="tabpanel" aria-labelledby="v-pills-image-tab" tabIndex="0">
                   <div className="row g-4">
                     {
                       projects.map((project) => {
@@ -253,8 +253,8 @@ const CompanyProfile = () => {
                       })
                     }
                   </div>
-                </div>
-                <div className="tab-pane fade" id="v-pills-cad" role="tabpanel" aria-labelledby="v-pills-cad-tab" tabIndex="0">
+                </div> */}
+                <div className="tab-pane fade show active" id="v-pills-cad" role="tabpanel" aria-labelledby="v-pills-cad-tab" tabIndex="0">
                   <div className="row g-4">
                     {
                       projects.map((project) => {
@@ -273,7 +273,7 @@ const CompanyProfile = () => {
                                   <h6 className="text-primary fw-bold">{project.title}</h6>
                                   <div className="d-flex flex-column gap-1">
                                     <span className='badge bg-secondary text-white'>{project.type}</span>
-                                    <span className="mt-auto"> <Icons.Eye /> 365</span>
+                                    {/* <span className="mt-auto"> <Icons.Eye /> 365</span> */}
                                   </div>
                                 </div>
                               </div>
@@ -295,7 +295,7 @@ const CompanyProfile = () => {
         </div>
       </section>
 
-      <section className="py-3 py-md-4">
+      {/* <section className="py-3 py-md-4">
         <div className="container">
           <div className="row mb-3">
             <div className="col-md-12">
@@ -352,7 +352,7 @@ const CompanyProfile = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </Fragment>
   );
 }

@@ -293,20 +293,22 @@ const Header = () => {
                           </Link>
                         </li>
                       ) : null}
+
                       <li>
                         <Link
-                          href="/profile/edit"
+                          href="/profile/company"
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
                           <FontAwesomeIcon
-                            icon={faPenToSquare}
+                            icon={faUser}
                             className="fas fa-check"
                             style={{ color: "gray", marginRight: ".4rem" }}
                           ></FontAwesomeIcon>
-                          <small>Edit Profile</small>
+                          <small>My Profile</small>
                         </Link>
                       </li>
+
                       {/* <li>
                         <Link
                           href="/profile"
@@ -321,6 +323,22 @@ const Header = () => {
                           <small>Create Architect Profile</small>
                         </Link>
                       </li> */}
+
+                      <li>
+                        <Link
+                          href="/profile/edit"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Edit Profile</small>
+                        </Link>
+                      </li>
+                      
                       <li>
                         <Link
                           href="/profile/billing"
@@ -386,7 +404,7 @@ const Header = () => {
                             icon={faFolder}
                             style={{ color: "gray", marginRight: ".4rem" }}
                           ></FontAwesomeIcon>
-                          <small>Work Sent</small>
+                          <small>Sent Work</small>
                         </Link>
                       </li>
                       <li>
@@ -400,7 +418,7 @@ const Header = () => {
                             className="fas fa-check"
                             style={{ color: "gray", marginRight: ".4rem" }}
                           ></FontAwesomeIcon>
-                          <small>Upload Works</small>
+                          <small>Upload Files</small>
                         </Link>
                       </li>
                       <li>

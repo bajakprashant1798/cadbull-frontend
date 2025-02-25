@@ -238,9 +238,18 @@ const WorkSent = () => {
           </div>
           {/* Pagination */}
           {/* ✅ Pagination with working state updates */}
+          {/* <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPreviousPage={() => handlePageChange(currentPage - 1)}
+            goToNextPage={() => handlePageChange(currentPage + 1)}
+            dispatchCurrentPage={setCurrentPage}
+          /> */}
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
+            onPageChange={handlePageChange}
             goToPreviousPage={() => handlePageChange(currentPage - 1)}
             goToNextPage={() => handlePageChange(currentPage + 1)}
             dispatchCurrentPage={setCurrentPage}

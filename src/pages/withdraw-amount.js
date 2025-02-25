@@ -83,7 +83,7 @@ const WithdrawAmount = () => {
   return (
     <Fragment>
       <Head>
-        <title>Withdraw Amount | Cadbull</title>
+        <title>Withdraw Money | Cadbull</title>
         <meta name="description" content="World Largest 2D CAD Library." />
       </Head>
       <section className="py-lg-5 py-4 auth-page">
@@ -91,8 +91,8 @@ const WithdrawAmount = () => {
           <div className="row">
             <div className="col-md-12">
               <PageHeading
-                title={"Withdraw Amount"}
-                description={"How much amount would you like to Withdraw?"}
+                title={"Withdraw Money"}
+                description={"How much amount would you like to Money?"}
               />
             </div>
           </div>
@@ -115,7 +115,7 @@ const WithdrawAmount = () => {
                   {/* Withdrawal Amount  */}
                   <div className="col-lg-12 col-xl-12">
                     <div>
-                      <label>Withdrawal Amount</label>
+                      <label>Withdrawal Money</label>
                     </div>
                     <input
                       onChange={(e) => setAmount(e.target.value)}
