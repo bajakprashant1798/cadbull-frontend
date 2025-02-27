@@ -26,6 +26,7 @@ import {
   getallCategories,
   getsimilerllprojects,
   getsingleallprojects,
+  getFavouriteItems,
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -35,6 +36,7 @@ import {
   deleteFavouriteItem,
   getSimilarProjects,
   getSimilarProjectsPage,
+  setFavouriteList,
   updatesubcatpage,
   updatesubcatslug,
 } from "../../../../redux/app/features/projectsSlice";
@@ -107,6 +109,25 @@ const ViewDrawing = ({}) => {
 
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  // At the top, add a state to track whether favorites have been fetched
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
+
+  // Fetch favorites if not already loaded
+  useEffect(() => {
+    if (token && !favouritesFetched) {
+      getFavouriteItems(token)
+        .then((favRes) => {
+          dispatch(setFavouriteList(favRes.data.favorites || []));
+          setFavouritesFetched(true);
+        })
+        .catch((error) => {
+          console.error("Error fetching favorites:", error);
+          setFavouritesFetched(true);
+        });
+    }
+  }, [token, favouritesFetched, dispatch]);
+
   
   const projectId = Number(id);
   useEffect(() => {
@@ -189,15 +210,21 @@ const fetchSimilarProjects = async () => {
   try {
       if (!similarProjectId) return;
 
-      const response = await getsimilerllprojects(currentPage, 12, similarProjectId);
+      const response = await getsimilerllprojects(1, 12, similarProjectId);
       console.log("similer project: ", response);
       
-      if (currentPage === 1) {
-          setSimilarProjects(response.data.projects);
-      } else {
-          setSimilarProjects([...similarProjects, ...response.data.projects]);
-      }
-      setTotalPages(response.data.totalPages);
+      // if (currentPage === 1) {
+      //     setSimilarProjects(response.data.projects);
+      // } else {
+      //     setSimilarProjects([...similarProjects, ...response.data.projects]);
+      // }
+      // setTotalPages(response.data.totalPages);
+
+      // Exclude the current project (if it happens to appear in the similar list)
+      const filteredProjects = response.data.projects.filter(
+        (proj) => proj.id !== Number(id)
+      );
+    setSimilarProjects(filteredProjects);
   } catch (error) {
       console.error("Error fetching similar projects:", error);
   }
@@ -206,7 +233,7 @@ const fetchSimilarProjects = async () => {
 // Fetch similar projects when the subcategory ID changes
 useEffect(() => {
   fetchSimilarProjects();
-}, [similarProjectId, currentPage]);
+}, [similarProjectId]);
 
 // Reset pagination when the component unmounts
 useEffect(() => {
@@ -639,11 +666,11 @@ useEffect(() => {
                       goToNextPage={() => handlePageChange(currentPage + 1)}
                     /> */}
 
-                    <Pagination
+                    {/* <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
                       onPageChange={handlePageChange}
-                    />
+                    /> */}
 
 
                     {/* <LoadMore
