@@ -189,7 +189,7 @@ const fetchSimilarProjects = async () => {
   try {
       if (!similarProjectId) return;
 
-      const response = await getsimilerllprojects(currentPage, 9, similarProjectId);
+      const response = await getsimilerllprojects(currentPage, 12, similarProjectId);
       console.log("similer project: ", response);
       
       if (currentPage === 1) {

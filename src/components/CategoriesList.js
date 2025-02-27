@@ -39,7 +39,7 @@ function CategoriesList({
           className="d-inline-flex gap-1 align-items-center"
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}
-          <span className="fw-normal">{name}</span>
+          <span className="fw-normal categories-name-font-size">{name}</span>
         </Link>
       ) : (
         <div
@@ -53,10 +53,10 @@ function CategoriesList({
           className="d-inline-flex gap-1 align-items-center  "
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}
-          <span className="fw-normal">{name}</span>
+          <span className="fw-normal ">{name}</span>
         </div>
       )}
-      <p>{pcount || 0}</p>
+      <p className="categories-pcount-font-size">{pcount || 0}</p>
           
       
     </li>

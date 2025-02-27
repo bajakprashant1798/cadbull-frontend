@@ -484,7 +484,7 @@ export const getBlogs = async () => {
 // ========================
 // ✅ Get Subcategories for Projects Page (Public API)
 // ========================
-export const getSubCategories = async ({ slug, currentPage, pageSize = 12, searchTerm, sortTerm, type }) => {
+export const getSubCategories = async ({ slug, currentPage, pageSize, searchTerm, sortTerm, type }) => {
   try {
     const url = `/categories/sub/${slug}/projects`;
     const params = { page: currentPage, perPage: pageSize };

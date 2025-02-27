@@ -183,8 +183,11 @@ useEffect(() => {
                         console.log('error',err)
                        })
                   }}
-                   disabled={activeSubscription}
-                   type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED WEEKLY"}</button>
+                  //  disabled={activeSubscription}
+                   type="button" className="btn btn-primary">
+                    {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED WEEKLY"} */}
+                    BUY NOW
+                  </button>
                 </div>
               </div>
             </div>
@@ -232,8 +235,11 @@ useEffect(() => {
                       console.log('error',err)
                      })
                   }}
-                  disabled={activeSubscription}
-                  type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"}</button>
+                  // disabled={activeSubscription}
+                  type="button" className="btn btn-primary">
+                    {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
+                    BUY NOW
+                  </button>
                 </div>
               </div>
             </div>
@@ -284,8 +290,11 @@ useEffect(() => {
                       console.log('error',err)
                      })
                   }}
-                  disabled={activeSubscription}
-                  type="button" className="btn btn-light">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED MONTHLY"}</button>
+                  // disabled={activeSubscription}
+                  type="button" className="btn btn-light">
+                    {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED MONTHLY"} */}
+                    BUY NOW
+                    </button>
                 </div>
               </div>
             </div>
@@ -333,8 +342,11 @@ useEffect(() => {
                       console.log('error',err)
                      })
                   }}
-                  disabled={activeSubscription}
-                  type="button" className="btn btn-primary">{activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"}</button>
+                  // disabled={activeSubscription}
+                  type="button" className="btn btn-primary">
+                    {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
+                    BUY NOW
+                  </button>
                 </div>
               </div>
             </div>

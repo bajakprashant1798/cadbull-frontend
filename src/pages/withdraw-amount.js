@@ -47,6 +47,12 @@ const WithdrawAmount = () => {
     e.preventDefault();
 
     console.log(e , amount);
+
+    // Check if there is any pending request.
+    if (tableData.some((req) => req.status === 0)) {
+      toast.info("Your last withdrawal request is still pending approval. Once approved, you can request a new withdrawal.");
+      return;
+    }
     
     // Validate user input
     if (isNaN(amount) || amount <= 0) {
@@ -138,7 +144,7 @@ const WithdrawAmount = () => {
                         <button
                           type="submit"
                           className="btn btn-lg btn-primary w-100 rounded"
-                          disabled={tableData.some((req) => req.status === 0)} // ✅ Disables if pending request exists
+                          // disabled={tableData.some((req) => req.status === 0)} // ✅ Disables if pending request exists
                         >
                           Submit Withdrawal
                         </button>

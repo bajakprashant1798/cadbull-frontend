@@ -167,6 +167,7 @@ const SearchCategories = ({ categories, type }) => {
                 <li className="text-center text-muted">No categories found</li>
             )}
           </ul>
+          
           <div></div>
         </div>
       </aside>

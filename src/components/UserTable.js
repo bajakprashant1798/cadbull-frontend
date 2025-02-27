@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api"; // Import toggleUserStatus API
+import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api"; // Import your API calls
 import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
@@ -8,56 +8,58 @@ import { toast } from "react-toastify";
 
 const UserTable = ({ role, title }) => {
   const { token } = useSelector((store) => store.logininfo);
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]); // Store filtered users
+  const [users, setUsers] = useState([]); // All users fetched from API
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState(""); // Active or Inactive
+  const [filterStatus, setFilterStatus] = useState(""); // Active ("1") or Inactive ("0")
+  const [goldFilter, setGoldFilter] = useState("all"); // "all", "gold", "non-gold"
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
-  // ✅ Sorting State
+  // Sorting state
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc"); // 'asc' or 'desc'
 
+  // Fetch users from API (fetch all users; if your API is paginated you may need to adjust this)
   useEffect(() => {
     if (token) {
-      fetchUsers();
+      getUsersByRoleApi(role, "", filterStatus, 1, 1000, token)
+        .then((res) => {
+          // Assume res.data.users is an array of all users for the given role
+          setUsers(res.data.users);
+        })
+        .catch((err) => console.error("Error fetching users:", err));
     }
-  }, [role, filterStatus, currentPage, entriesPerPage, token]);
+  }, [role, filterStatus, token]);
 
-  const fetchUsers = () => {
-    getUsersByRoleApi(role, "", filterStatus, currentPage, entriesPerPage, token)
-      .then((res) => {
-        setUsers(res.data.users);
-        setFilteredUsers(res.data.users); // ✅ Initialize filtered users for search
-        setTotalPages(res.data.totalPages);
-      })
-      .catch((err) => console.error("Error fetching users:", err));
-  };
+  // Compute filtered users based on search term and gold subscription filter
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = searchTerm
+      ? user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
 
-  const handlePageChange = (newPage) => setCurrentPage(newPage);
-
-  // ✅ Handle Sorting Logic
-  const handleSort = (column) => {
-    if (sortColumn === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortOrder("asc");
+    // Gold filter: assume user.acc_exp_date is available (a string in a valid date format)
+    let matchesGold = true;
+    if (goldFilter !== "all") {
+      if (!user.acc_exp_date) {
+        matchesGold = goldFilter === "non-gold";
+      } else {
+        const expDate = new Date(user.acc_exp_date);
+        const today = new Date();
+        matchesGold = goldFilter === "gold" ? expDate > today : expDate <= today;
+      }
     }
-  };
 
+    return matchesSearch && matchesGold;
+  });
+
+  // Sorting: sort filtered users
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     if (!sortColumn) return 0;
 
-    let valueA = a[sortColumn];
-    let valueB = b[sortColumn];
-
-    // Handle undefined or null values
-    if (valueA == null) valueA = "";
-    if (valueB == null) valueB = "";
+    let valueA = a[sortColumn] ?? "";
+    let valueB = b[sortColumn] ?? "";
 
     if (typeof valueA === "string") {
       valueA = valueA.toLowerCase();
@@ -69,26 +71,38 @@ const UserTable = ({ role, title }) => {
     return 0;
   });
 
-  // ✅ Search Functionality (Search by Email)
+  // Compute total pages based on the length of the sorted (filtered) users array
   useEffect(() => {
-    if (!searchTerm) {
-      setFilteredUsers(users); // Reset filter if search is empty
-    } else {
-      const lowerSearch = searchTerm.toLowerCase();
-      const filtered = users.filter(
-        (user) => user.email.toLowerCase().includes(lowerSearch) // 🔥 Only search by email
-      );
-      setFilteredUsers(filtered);
-    }
-  }, [searchTerm, users]);
+    const pages = Math.ceil(sortedUsers.length / entriesPerPage) || 1;
+    setTotalPages(pages);
 
-  // ✅ Toggle User Status (Activate/Deactivate)
+    // If the current page is now beyond the new total pages, adjust it.
+    if (currentPage > pages) {
+      setCurrentPage(1);
+    }
+  }, [sortedUsers, entriesPerPage, currentPage]);
+
+  // Compute the users to display on the current page (client-side pagination)
+  const paginatedUsers = sortedUsers.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
+  // Sorting handler
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
+
+  // Toggle user status handler
   const handleToggleStatus = async (id) => {
     try {
-      const res = await toggleUserStatusApi(id, token);
+      await toggleUserStatusApi(id, token);
       toast.success("User status updated successfully! ✅");
-
-      // ✅ Update the users list dynamically after status change
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === id ? { ...user, status: user.status === "1" ? "0" : "1" } : user
@@ -97,6 +111,13 @@ const UserTable = ({ role, title }) => {
     } catch (error) {
       console.error("Error updating user status:", error);
       toast.error("Failed to update user status. ❌");
+    }
+  };
+
+  // Pagination handler
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -114,15 +135,32 @@ const UserTable = ({ role, title }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select className="form-control w-25" onChange={(e) => setFilterStatus(e.target.value)}>
+          <select
+            className="form-control w-25"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
           </select>
-          <select className="form-control w-25" onChange={(e) => setEntriesPerPage(e.target.value)}>
-            <option value="10">10 entries</option>
-            <option value="20">20 entries</option>
-            <option value="50">50 entries</option>
+          <select
+            className="form-control w-25"
+            value={goldFilter}
+            onChange={(e) => setGoldFilter(e.target.value)}
+          >
+            <option value="all">All Accounts</option>
+            <option value="gold">Gold Accounts</option>
+            <option value="non-gold">Non Gold Accounts</option>
+          </select>
+          <select
+            className="form-control w-25"
+            value={entriesPerPage}
+            onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+          >
+            <option value={10}>10 entries</option>
+            <option value={20}>20 entries</option>
+            <option value={50}>50 entries</option>
           </select>
         </div>
 
@@ -131,19 +169,34 @@ const UserTable = ({ role, title }) => {
           <table className="table table-striped table-hover">
             <thead>
               <tr>
-                <th onClick={() => handleSort("username")} style={{ cursor: "pointer" }}>
+                <th
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSort("username")}
+                >
                   Username {sortColumn === "username" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th onClick={() => handleSort("firstname")} style={{ cursor: "pointer" }}>
+                <th
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSort("firstname")}
+                >
                   Name {sortColumn === "firstname" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th onClick={() => handleSort("email")} style={{ cursor: "pointer" }}>
+                <th
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSort("email")}
+                >
                   Email {sortColumn === "email" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th onClick={() => handleSort("phone")} style={{ cursor: "pointer" }}>
+                <th
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSort("phone")}
+                >
                   Phone {sortColumn === "phone" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th onClick={() => handleSort("country")} style={{ cursor: "pointer" }}>
+                <th
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleSort("country")}
+                >
                   Country {sortColumn === "country" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
                 <th>Status</th>
@@ -151,7 +204,7 @@ const UserTable = ({ role, title }) => {
               </tr>
             </thead>
             <tbody>
-              {sortedUsers.map((user) => (
+              {paginatedUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.username}</td>
                   <td>{user.firstname} {user.lastname}</td>
@@ -159,7 +212,6 @@ const UserTable = ({ role, title }) => {
                   <td>{user.phone}</td>
                   <td>{user.country}</td>
                   <td>
-                    {/* ✅ Clickable Icon to Toggle Status */}
                     <button
                       className="btn btn-link p-0"
                       onClick={() => handleToggleStatus(user.id)}
@@ -173,7 +225,10 @@ const UserTable = ({ role, title }) => {
                     </button>
                   </td>
                   <td>
-                    <button className="btn btn-primary btn-sm" onClick={() => router.push(`/admin/users/edit?id=${user.id}`)}>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => router.push(`/admin/users/edit?id=${user.id}`)}
+                    >
                       <Icons.Edit />
                     </button>
                   </td>
@@ -183,7 +238,7 @@ const UserTable = ({ role, title }) => {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Controls */}
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}

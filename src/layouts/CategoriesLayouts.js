@@ -79,7 +79,7 @@ const CategoriesLayout = ({
       </section>
 
       {/* Get Off  */}
-      <GetOff />
+      {/* <GetOff /> */}
     </Fragment>
   );
 };

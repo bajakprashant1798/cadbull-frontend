@@ -109,14 +109,20 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
       stopLoading();
       return;
     }
-    getSubCategories(subcatfilter)
+    // Merge in pageSize: 9 so that the API call uses 9 products per page
+    const filterWithPageSize = { ...subcatfilter, pageSize: 9 };
+    getSubCategories(filterWithPageSize)
       .then((response) => {
-        if (subcatfilter.currentPage === 1) {
-          dispatch(getSubCategory(response.projects));
-        } else {
-          dispatch(getSubCategory([...subcat, ...response.projects]));
-        }
+        // if (subcatfilter.currentPage === 1) {
+        //   dispatch(getSubCategory(response.projects));
+        // } else {
+        //   dispatch(getSubCategory([...subcat, ...response.projects]));
+        // }
+        // Always replace the current projects
+        dispatch(getSubCategory(response.projects));
         setTotalPages(response.totalPages);
+        console.log("response: ", response);
+        
         stopLoading();
       })
       .catch((error) => {
@@ -159,6 +165,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
     setCurrentPage(newPage);
     dispatch(updatesubcatpage(newPage));
   };
+
+  // const handlePageChange = useCallback((newPage) => {
+  //   // Optionally validate that newPage is within bounds
+  //   if(newPage < 1 || newPage > totalPages) return;
+  //   setCurrentPage(newPage);
+  //   dispatch(updatesubcatpage(newPage));
+  //   // Now call your API (or dispatch a Redux action) to load projects for newPage.
+  // }, [totalPages]);
 
   return (
     <Fragment>
@@ -286,12 +300,17 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  <Pagination
+                  {/* <Pagination
                     currentPage={subcatfilter.currentPage}
                     totalPages={totalPages}
                     dispatchCurrentPage={updatesubcatpage}
                     goToPreviousPage={() => dispatch(updatesubcatpage(subcatfilter.currentPage - 1))}
                     goToNextPage={() => dispatch(updatesubcatpage(subcatfilter.currentPage + 1))}
+                  /> */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               </div>

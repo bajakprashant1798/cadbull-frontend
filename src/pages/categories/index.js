@@ -71,7 +71,7 @@ const Categories = () => {
   const loadRecords = useCallback(
     (page) => {
       startLoading();
-      getallprojects(page, 6, searchedText, sortTerm, sortType)
+      getallprojects(page, 9, searchedText, sortTerm, sortType)
         .then((response) => {
           // if (page === 1) {
           //   setProjects(response.data?.products);
