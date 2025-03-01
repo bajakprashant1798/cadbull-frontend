@@ -253,6 +253,14 @@ export const getFavouriteItems = (token) => {
   });
 };
 
+export const getPaginatedFavouriteItems = (token, page = 1, pageSize = 10) => {
+  return api.get("/favorites/paginated", {
+    params: { page, pageSize },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+
 export const removeFavouriteItem = (token, id) => {
   return api.delete(`/favorites/${id}`, {
     headers: { Authorization: `Bearer ${token}` },

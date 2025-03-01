@@ -335,7 +335,7 @@ useEffect(() => {
         <meta name="twitter:description" content={project?.description} />
         <meta name="twitter:image" content={project?.photo_url} />
       </Head>
-      <section className="bg-light py-md-5 py-4 category-page">
+      <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
         <div className="container">
           <div className="row">
             <div className="col-md-12">

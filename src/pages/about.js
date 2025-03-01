@@ -36,8 +36,43 @@ const About = () => {
             </div>
             <div className="col-md-9">
             <div className="text-center">
-                <img src={about.src} className="img-fluid d-md-inline d-none" alt="about" />
-                <img src={aboutmobile.src} className="img-fluid d-inline d-md-none mt-4" alt="about" />
+                {/* <img src={about.src} className="img-fluid d-md-inline d-none" alt="about" /> */}
+                {/* <img src={aboutmobile.src} className="img-fluid d-inline d-md-none mt-4" alt="about" /> */}
+
+                <section class="about-statistics py-5">
+                  <div class="container">
+                    <div class="row justify-content-center">
+                      <div class="col-md-12">
+                        <div class="statistics-wrapper d-flex flex-wrap justify-content-center text-center">
+                          <div class="stat-item">
+                            <div class="stat-circle">
+                              <h3>300K+</h3>
+                              <p>Downloadable Files</p>
+                            </div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-circle">
+                              <h3>2.5M</h3>
+                              <p>Registered Users</p>
+                            </div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-circle">
+                              <h3>700K+</h3>
+                              <p>Visits Each Month</p>
+                            </div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-circle">
+                              <h3>100M+</h3>
+                              <p>Total Visits Since Launch</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
             </div>
             </div>
           </div>

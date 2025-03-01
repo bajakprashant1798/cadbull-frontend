@@ -13,7 +13,7 @@ import {
   addFavouriteItem,
   downloadHistory,
   downloadProject,
-  getFavouriteItems,
+  getPaginatedFavouriteItems,
   removeFavouriteItem,
   useFileDownloader,
 } from "@/service/api";
@@ -46,8 +46,8 @@ const Favourites = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!tableData || tableData.length === 0) { // ✅ Additional check
-      getFavouriteItems(token)
+    if (token) { // ✅ Additional check
+      getPaginatedFavouriteItems(token, currentPage, 10)
         .then((res) => {
           setTableData(res.data.favorites);
           console.log(res);
@@ -60,7 +60,7 @@ const Favourites = () => {
           console.log(err);
         });
     }
-  }, [tableData]);
+  }, [token, currentPage, removeItemTrigger, dispatch]);
 
   const handleremoveitem = (id) => {
     console.log(id);
@@ -79,28 +79,11 @@ const Favourites = () => {
   };
 
   const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
-    setTableData([]); // Clear previous data before fetching new
+    // Optionally clear previous data to show a loading state
+    setTableData([]);
   };
-
-  // const handledownload = (id) => {
-  //   downloadProject(token, id)
-  //     .then((res) => {
-  //       const zipUrl = res.data.zip_url;
-  //       console.log("zipUrl", zipUrl, res);
-  //       downloadFile(zipUrl);
-  //       downloadHistory(token, id)
-  //         .then((res) => {
-  //           console.log("download", res.data);
-  //         })
-  //         .catch((err) => {
-  //           console.log(err);
-  //         });
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
   return (
     <Fragment>
@@ -215,9 +198,6 @@ const Favourites = () => {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            goToPreviousPage={() => handlePageChange(currentPage - 1)}
-            goToNextPage={() => handlePageChange(currentPage + 1)}
-            dispatchCurrentPage={handlePageChange}
           />
           </> 
           )}       

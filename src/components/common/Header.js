@@ -202,33 +202,11 @@ const Header = () => {
               className={` collapse navbar-collapse ${showHamburgerMenuItem?"show":''} `}
               id="navbarSupportedContent"
             >
-              <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
-                {links.map((link, index) => {
-                  return (
-                    <li className="" key={index}>
-                      <Link
-                       onClick={()=>{
-                        closeHamburgerMenu();
-                        //  if(link.url==='/categories'){
-                        //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
-                        //  }
-                       }}
-                        className={`${
-                          link.url === Router.asPath ? "active" : ""
-                        }`}
-                        aria-current="page"
-                        href={link.url}
-                      >
-                        {link.title}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
 
+              {/* small screen device resposive */}
               {isAuthenticated && !isLoggedOut ? (
                 <>
-                  <div className="dropdown-center mt-3 mt-xl-0">
+                  <div className="dropdown-center dt-d-none mt-3 mt-xl-0">
                     <button
                       className="dropdown-toggle border-0 bg-transparent"
                       type="button"
@@ -468,6 +446,276 @@ const Header = () => {
                   </Link>
                 </>
               )}
+              {/* small screen device responsive */}
+
+              <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
+                {links.map((link, index) => {
+                  return (
+                    <li className="" key={index}>
+                      <Link
+                       onClick={()=>{
+                        closeHamburgerMenu();
+                        //  if(link.url==='/categories'){
+                        //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
+                        //  }
+                       }}
+                        className={`${
+                          link.url === Router.asPath ? "active" : ""
+                        }`}
+                        aria-current="page"
+                        href={link.url}
+                      >
+                        {link.title}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* desktop device responsive */}
+              {isAuthenticated && !isLoggedOut ? (
+                <>
+                  <div className="dropdown-center mb-d-none mt-3 mt-xl-0">
+                    <button
+                      className="dropdown-toggle border-0 bg-transparent"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      {status?.user?.profile_pic == null ? (
+                        <img src={profile.src} alt="profile" width={30}  />
+                      ) : (
+                        <img
+                          src={status?.user?.profile_pic}
+                          alt="profile"
+                          width={30}
+                          style={{borderRadius:"50%"}}
+                        />
+                      )} 
+                    </button>
+                    <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
+                      <li>
+                        <Link
+                          href="/profile"
+                          className="dropdown-item d-flex gap-2 align-items-center"
+                          onClick={closeHamburgerMenu}
+                        >
+                          {status?.user?.profile_pic == null ? (
+                            <img src={profile.src} alt="profile" width={30} />
+                          ) : (
+                            <img
+                              src={status?.user?.profile_pic}
+                              alt="profile"
+                              width={30}
+                              style={{borderRadius:"50%"}}
+                            />
+                          )}
+                          <div>
+                            <h6 className="lh-sm text-black fw-bold">
+                              <small>
+                                {status?.user?.firstname} {status?.user?.lastname}
+                              </small>
+                            </h6>
+                            <p className="lh-sm">
+                              <small>{status?.user?.email}</small>
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                      <li className="dropdown-divider my-1"></li>
+                     
+                      {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
+                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                        
+                        <li>
+                          <Link
+                            href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
+                            onClick={closeHamburgerMenu}
+                            className="dropdown-item bg-transparent text-black"
+                          >
+                            <FontAwesomeIcon
+                              icon={faUser}
+                              className="fas fa-check"
+                              style={{ color: "gray", marginRight: ".4rem" }}
+                            ></FontAwesomeIcon>
+                            <small>Dashboard</small>
+                          </Link>
+                        </li>
+                      ) : null}
+
+                      <li>
+                        <Link
+                          href={`/profile/author/${status?.user?.profileId}`}
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faUser}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>My Profile</small>
+                        </Link>
+                      </li>
+
+                      {/* <li>
+                        <Link
+                          href="/profile"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faUser}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Create Architect Profile</small>
+                        </Link>
+                      </li> */}
+
+                      <li>
+                        <Link
+                          href="/profile/edit"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Edit Profile</small>
+                        </Link>
+                      </li>
+                      
+                      <li>
+                        <Link
+                          href="/profile/billing"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faDollarSign}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Manage Billing</small>
+                        </Link>
+                      </li>
+                      
+                      <li>
+                        <Link
+                          href="/favourites"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Favourites</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/projects"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFolder}
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>My Projects</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/experiences"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFolder}
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Experiences</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/work/sent"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faFolder}
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Sent Work</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/work/upload"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faUpload}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>Upload Files</small>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/withdraw-amount"
+                          onClick={closeHamburgerMenu}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faWallet}
+                            className="fas fa-check"
+                            style={{ color: "gray", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+                          <small>My Wallet</small>
+                        </Link>
+                      </li>
+                      {/* <li><Link href="/contact" className="dropdown-item bg-transparent text-black"><small>Contact Us</small></Link></li> */}
+                      <li className="dropdown-divider my-1"></li>
+                      <li>
+                        <button
+                          onClick={() =>{ 
+                            handleLogout()
+                           closeHamburgerMenu()}}
+                          className="dropdown-item bg-transparent text-black"
+                        >
+                          <FontAwesomeIcon
+                            icon={faSignOut}
+                            className="ml-1"
+                            style={{ color: "red", marginRight: ".4rem" }}
+                          ></FontAwesomeIcon>
+
+                          <small>Logout</small>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={"/auth/login"}
+                    className="d-none btn btn-secondary d-xl-inline-flex gap-1 align-items-center"
+                  >
+                    <Icons.User /> <span>LOGIN</span>
+                  </Link>
+                </>
+              )}
+              {/* desktop device responsive */}
             </div>
           </div>
         </nav>
