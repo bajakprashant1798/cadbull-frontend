@@ -17,8 +17,8 @@ import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
-import ReCAPTCHA from "react-google-recaptcha";
-import RecaptchaComponent from "@/components/RecaptchaComponent";
+// import ReCAPTCHA from "react-google-recaptcha";
+// import RecaptchaComponent from "@/components/RecaptchaComponent";
 
 
 const pageTitle = {
@@ -364,14 +364,13 @@ const Register = () => {
             </a>
           </div>
 
-          <div className="col-lg-12">
-            {/* Add reCAPTCHA */}
+          {/* <div className="col-lg-12">
             <RecaptchaComponent
               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
               onChange={(value) => setCaptchaValue(value)}
               ref={recaptchaRef}
             />
-          </div>
+          </div> */}
 
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">
