@@ -24,7 +24,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
 import withAuth from "@/HOC/withAuth";
 import { useRouter } from "next/router";
-import { logout, updateuserProfilepic, loginSuccess } from "../../../redux/app/features/authSlice";
+import { logout, updateuserProfilepic, loginSuccess, updateUserProfileId } from "../../../redux/app/features/authSlice";
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
     .required("This field is required.")
@@ -141,9 +141,20 @@ const EditProfile = () => {
           const userData = JSON.parse(localStorage.getItem("userData")) || {};
           userData.firstname = updatedUser.firstname;
           userData.lastname = updatedUser.lastname;
+            
+          if (updatedUser.profile_pic) {
+            userData.profile_pic = updatedUser.profile_pic;
+          }
+          if (updatedProfile.profileId) {
+            userData.profileId = updatedProfile.profileId;
+          }
           localStorage.setItem("userData", JSON.stringify(userData));
+          console.log("Updated userData:", userData);
+          
           // Dispatch to update Redux state
           dispatch(loginSuccess({ user: updatedUser, accessToken: token, status: true }));
+          // dispatch(updateuserProfilepic(updatedUser.profile_pic));
+          dispatch(updateUserProfileId({ profileId: updatedProfile.profileId }));
         }
       })
       .catch((err) => {
@@ -196,9 +207,14 @@ const EditProfile = () => {
               if (storedUserData) {
                 const oldDetails = JSON.parse(storedUserData);
                 oldDetails.profile_pic = res.data.profile_pic_url;
+                // If the response now includes a profileId, update it too:
+                if (res.data.profileId) {
+                  oldDetails.profileId = res.data.profileId;
+                }
                 localStorage.setItem("userData", JSON.stringify(oldDetails));
               }
               dispatch(updateuserProfilepic(res.data.profile_pic_url));
+              dispatch(updateUserProfileId({ profileId: res.data.profileId }));
             })
             .catch((err) => {
               if (err.response?.status === 404) {

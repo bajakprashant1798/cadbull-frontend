@@ -17,7 +17,8 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.accessToken;
-      // console.log("state.user:", state.user);
+      console.log("state.user:", state.user);
+      console.log("state.token:", state.token);
       // sessionStorage.setItem("token", action.payload.token);  // ✅ Store token
       // sessionStorage.setItem("userData", JSON.stringify(action.payload.user)); //
     },
@@ -37,8 +38,14 @@ const authSlice = createSlice({
     updateuserProfilepic: (state, action) => {
       state.user.profile_pic = action.payload;
     },
+    // Update profile data including profile_pic and profileId
+    updateUserProfileId: (state, action) => {
+      if (state.user) {
+        state.user.profileId = action.payload.profileId;
+      }
+    },
   },
 });
-export const { loginSuccess, logout, setUpdatedUser, updateuserProfilepic } =
+export const { loginSuccess, logout, setUpdatedUser, updateuserProfilepic, updateUserProfileId } =
   authSlice.actions;
 export default authSlice.reducer;

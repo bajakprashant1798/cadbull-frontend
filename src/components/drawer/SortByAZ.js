@@ -1,4 +1,11 @@
-const SortByAZ = () => {
+const SortByAZ = ({onSortChange}) => {
+
+  const handleRadioChange = (e) => {
+    // When a radio button is clicked, send the new order:
+    // For example, "asc" for A to Z, "desc" for Z to A.
+    onSortChange(e.target.value);
+  };
+  
   return (
 
     <div className="offcanvas offcanvas-bottom" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop3" aria-labelledby="staticBackdropLabel">
@@ -14,7 +21,7 @@ const SortByAZ = () => {
               <h6 className='m-0 text-primary fw-bold lh-sm'>A to Z </h6>
             </div>
             <div>
-              <input className="form-check-input shadow-none" type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
+              <input className="form-check-input shadow-none" onChange={handleRadioChange} type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
             </div>
           </li>
           <li className="d-flex justify-content-between align-items-center">
@@ -22,7 +29,7 @@ const SortByAZ = () => {
               <h6 className='m-0 text-primary fw-bold lh-sm'>Z to A</h6>
             </div> 
             <div>
-              <input className="form-check-input shadow-none" type="radio" name="flexRadioDefault" id="flexRadioDefault2"/>
+              <input className="form-check-input shadow-none" onChange={handleRadioChange} type="radio" name="flexRadioDefault" id="flexRadioDefault2"/>
             </div>
           </li>
         </ul>

@@ -35,34 +35,44 @@ export default function App({ Component, pageProps }) {
       : null;
   }, [router.events]);
 
-  // // ✅ Sync Authentication Across Tabs
-  // useEffect(() => {
-  //   const syncAuthAcrossTabs = (event) => {
-  //     if (event.key === "userLoggedIn") {
-  //       const storedUser = JSON.parse(localStorage.getItem("userData"));
-  //       const storedAccessToken = localStorage.getItem("accessToken");
-
-  //       if (storedUser && storedAccessToken) {
-  //         dispatch(loginSuccess({ user: storedUser, accessToken: storedAccessToken, status: "authenticated" }));
-  //       }
-  //     }
-
-  //     if (event.key === "userLoggedOut") {
-  //       dispatch(logout());
-  //       router.push("/auth/login"); // Redirect to login page
-  //     }
-  //   };
-
-  //   window.addEventListener("storage", syncAuthAcrossTabs);
-  //   return () => window.removeEventListener("storage", syncAuthAcrossTabs);
-  // }, [dispatch, router]);
   
+  // Create a component to rehydrate state from localStorage
+function RehydrateState() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const storedUserData = localStorage.getItem("userData");
+    const storedToken = localStorage.getItem("accessToken");
+
+    if (storedUserData && storedToken) {
+      try {
+        const parsedData = JSON.parse(storedUserData);
+        // Dispatch loginSuccess so that the Redux state is rehydrated
+        dispatch(
+          loginSuccess({
+            user: parsedData,
+            accessToken: storedToken,
+            status: "authenticated",
+          })
+        );
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        dispatch(logout());
+      }
+    } else {
+      dispatch(logout());
+    }
+  }, [dispatch]);
+
+  return null;
+}
   
   const getLayout = Component.getLayout || ((page) => page);
   return (
     <Fragment>
       {/* <Authprovider> */}
       <Provider store={store}>
+      <RehydrateState />
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />

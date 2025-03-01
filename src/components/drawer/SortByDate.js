@@ -1,4 +1,19 @@
+import { useState } from "react";
+
 const SortByDate = () => {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const handleFromChange = (e) => {
+    setFrom(e.target.value);
+    onDateChange(e.target.value, to);
+  };
+
+  const handleToChange = (e) => {
+    setTo(e.target.value);
+    onDateChange(from, e.target.value);
+  };
+
   return (
 
     <div className="offcanvas offcanvas-bottom" data-bs-backdrop="static" tabIndex="-1" id="staticBackdrop4" aria-labelledby="staticBackdropLabel">
@@ -10,11 +25,11 @@ const SortByDate = () => {
       <div className="offcanvas-body sort-by-wrapper d-flex flex-column gap-3">
         <div>
           <label className="mb-1 fw-semibold" htmlFor="">TO</label>
-          <input type="date" className="form-control shadow-none" />
+          <input type="date" className="form-control shadow-none" value={from} onChange={handleFromChange} />
         </div>
         <div>
           <label className="mb-1 fw-semibold" htmlFor="">From</label>
-          <input type="date" className="form-control shadow-none" />
+          <input type="date" className="form-control shadow-none" value={to} onChange={handleToChange} />
         </div>
       </div>
     </div>

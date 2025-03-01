@@ -148,6 +148,8 @@ const Header = () => {
         const parsedData = JSON.parse(storedUserData);
         const user = parsedData.user || parsedData;
         dispatch(loginSuccess({ user, accessToken: storedToken, status: "authenticated" }));
+        console.log("userinheader", user, storedToken);
+        
       } catch (error) {
         console.error("❌ JSON Parse Error in Header.js:", error);
         localStorage.removeItem("userData");
@@ -155,8 +157,8 @@ const Header = () => {
       }
     }
   }, [dispatch]);
-  
-  
+
+    
 
   const closeHamburgerMenu = () => {
     setShowHamburgerMenuItem(false);
@@ -296,7 +298,7 @@ const Header = () => {
 
                       <li>
                         <Link
-                          href="/profile/company"
+                          href={`/profile/author/${status?.user?.profileId}`}
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
