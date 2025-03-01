@@ -97,51 +97,8 @@ const projects = [
   }
 ]
 
-const CompanyProfile = ({profileId}) => {
-  const [profile, setProfile] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [loadingProducts, setLoadingProducts] = useState(true);
-
-  // Fetch company profile info
-  const fetchProfile = async () => {
-    try {
-      const res = await getCompanyProfile(profileId);
-      setProfile(res.data.profile);
-    } catch (error) {
-      console.error("Error fetching profile", error);
-    } finally {
-      setLoadingProfile(false);
-    }
-  };
-
-  // Fetch company products with search query support
-  const fetchProducts = async (query = "") => {
-    setLoadingProducts(true);
-    try {
-      const res = await getCompanyProducts(profileId, { page: 1, pageSize: 12, search: query });
-      setProducts(res.data.products);
-    } catch (error) {
-      console.error("Error fetching products", error);
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
-
-  // Debounced version of fetchProducts
-  const debouncedFetchProducts = useCallback(debounce(fetchProducts, 500), [profileId]);
-
-  useEffect(() => {
-    fetchProfile();
-    fetchProducts();
-  }, [profileId]);
-
-  // When searchQuery changes, use debounced fetch
-  useEffect(() => {
-    debouncedFetchProducts(searchQuery);
-  }, [searchQuery, debouncedFetchProducts]);
-
+const CompanyProfile = () => {
+  
   return (
     <Fragment>
       <Head>
