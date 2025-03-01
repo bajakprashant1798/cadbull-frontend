@@ -199,12 +199,18 @@ const SearchCategories = () => {
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
-                  <Pagination
+                  {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
                     goToPreviousPage={() => handlePageChange(currentPage - 1)}
                     goToNextPage={() => handlePageChange(currentPage + 1)}
                     dispatchCurrentPage={handlePageChange}
+                  /> */}
+
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               </div>

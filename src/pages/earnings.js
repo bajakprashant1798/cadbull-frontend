@@ -108,7 +108,7 @@ const EarningsStatement = () => {
             </div>
           </div>
           {/* Pagination */}
-          <Pagination />
+          {/* <Pagination /> */}
         </div>
       </section>
     </Fragment >

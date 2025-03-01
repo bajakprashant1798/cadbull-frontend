@@ -183,7 +183,7 @@ const GardenCADBlocks = () => {
               }
             </div>
 
-            <Pagination />
+            {/* <Pagination /> */}
             {/* <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
