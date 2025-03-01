@@ -1,10 +1,11 @@
 "use client";
+import React from "react";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
 import Link from "next/link";
 import Head from "next/head";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
@@ -16,6 +17,8 @@ import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
+import ReCAPTCHA from "react-google-recaptcha";
+import RecaptchaComponent from "@/components/RecaptchaComponent";
 
 
 const pageTitle = {
@@ -30,6 +33,10 @@ const Register = () => {
   // const { data: session } = useSession();
   const [isLoading,startLoading,stopLoading]=useLoading();
   const isAuthenticated=useSessionStorageData('userData')
+  const [captchaValue, setCaptchaValue] = useState(null);
+
+  // Set up reCAPTCHA reference if needed
+  const recaptchaRef = React.createRef();
 
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
@@ -105,6 +112,11 @@ const Register = () => {
   } = useForm();
 
   const onSubmit = (data) => {
+    // Ensure the captcha is solved
+    if (!captchaValue) {
+      toast.error("Please verify that you are not a robot.");
+      return;
+    }
     // Handle form submission here
     startLoading()
     loginApiHandler(data)
@@ -351,6 +363,16 @@ const Register = () => {
               Forgot your password?
             </a>
           </div>
+
+          <div className="col-lg-12">
+            {/* Add reCAPTCHA */}
+            <RecaptchaComponent
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              onChange={(value) => setCaptchaValue(value)}
+              ref={recaptchaRef}
+            />
+          </div>
+
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">
               <button disabled={isLoading?true:false} type="submit" className="btn btn-lg btn-secondary w-100">
