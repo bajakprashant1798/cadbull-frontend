@@ -1,6 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import profile from "@/assets/images/profile-arch.png"
 import award1 from "@/assets/images/award-1.png"
 import award2 from "@/assets/images/award-2.png";
