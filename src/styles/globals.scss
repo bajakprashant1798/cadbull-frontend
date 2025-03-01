@@ -620,6 +620,7 @@ table {
   h3 {
     font-family: 'Poppins', sans-serif;
   }
+  border-bottom: 1px black solid;
 }
 
 
@@ -865,4 +866,18 @@ table {
 
 .category-drawer {
   --bs-offcanvas-height: 100vh;
+}
+
+
+.copy-link-size {
+  background-color: #E4E4E4;
+  border-radius: 20%;
+  padding: 5px;
+}
+
+.download-btn-sm {
+  @media all and (max-width:575px) {
+    max-width: 100%;
+    width: 100%;
+  }
 }

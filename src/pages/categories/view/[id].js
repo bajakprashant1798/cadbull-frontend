@@ -4,9 +4,9 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import SectionHeading from "@/components/SectionHeading";
 import FileDescription from "@/components/FileDescription";
-import autoCad from "@/assets/images/filetype/dwg.png";
+import autoCad from "@/assets/images/filetype/file_white.png";
 import cad from "@/assets/images/filetype/cad.png";
-import goldblocks from "@/assets/images/filetype/dwg-yellow.png";
+import goldblocks from "@/assets/images/filetype/file.png";
 import drawing1 from "@/assets/images/drawing-image.png";
 import ProjectCard from "@/components/ProjectCard";
 import ad_1 from "@/assets/images/ad-1.png";
@@ -57,6 +57,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
+import { FaLink } from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
@@ -112,21 +113,32 @@ const ViewDrawing = ({}) => {
 
   // At the top, add a state to track whether favorites have been fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);
+  
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setFavouritesFetched(false);
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   // Fetch favorites if not already loaded
   useEffect(() => {
-    if (token && !favouritesFetched) {
+    if (token) {
       getFavouriteItems(token)
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
-          setFavouritesFetched(true);
+          // setFavouritesFetched(true);
         })
         .catch((error) => {
           console.error("Error fetching favorites:", error);
-          setFavouritesFetched(true);
+          // setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [token, dispatch, id]);
 
   
   const projectId = Number(id);
@@ -134,23 +146,7 @@ const ViewDrawing = ({}) => {
     if (favouriteList && Array.isArray(favouriteList)) {
       setIsFavorited(favouriteList.some((fav) => fav.id === projectId));
     }
-  }, [favouriteList, projectId]);
-    
-  // useEffect(() => {
-  //   const fetchFavoriteStatus = async () => {
-  //     if (!token || !id) return; // Ensure the user is logged in and ID is available
-  
-  //     try {
-  //       const response = await checkIfFavorited(token, id);
-  //       setIsFavorited(response.data.isFavorited); // Expecting response to be { isFavorited: true/false }
-  //     } catch (error) {
-  //       console.error("Error checking favorite status:", error);
-  //     }
-  //   };
-  
-  //   fetchFavoriteStatus();
-  // }, [id, token]); // Re-run when `id` or `token` changes
-  
+  }, [favouriteList, projectId, id]);
 
 
   //current project fetch
@@ -162,7 +158,7 @@ const ViewDrawing = ({}) => {
         const singleProjectResponse = await getsingleallprojects("", projectId);
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
-        // console.log("singleProjectData: ", singleProjectData);
+        console.log("singleProjectData: ", singleProjectData);
         
         setSimilarProjectId(singleProjectData.product_sub_category_id);
       } catch (error) {
@@ -175,35 +171,7 @@ const ViewDrawing = ({}) => {
       fetchData();
     }
   }, [id]);
-  // const fetechSimilarProjects = async () => {
-  //   try {
-  //       if(!similarProjectId){
-  //         return
-  //       }
-  //     // Fetch similar projects based on sub_category_id
-  //     const similarProjectsResponse = await getsimilerllprojects(
-  //       currentPage,
-  //       2,
-  //       similarProjectId
-  //     );
-  //     const similarProjectsData = similarProjectsResponse.data.projects;
-  //     if (currentPage === 1) {
-  //       setSimilarProjects(similarProjectsData);
-  //     } else {
-  //       setSimilarProjects([...similarProjects, ...similarProjectsData]);
-  //     }
-  //     setCurrentPage(similarProjectsResponse.data.currentPage);
-  //     setTotalPages(similarProjectsResponse.data.totalPages);
-  //   } catch (error) {}
-  // };
-  // useEffect(() => {
-  //   fetechSimilarProjects();
-  // }, [similarProjectId, currentPage]);
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(getSimilarProjectsPage(1));
-  //   };
-  // }, []);
+  
 
   // Fetch similar projects
 const fetchSimilarProjects = async () => {
@@ -213,14 +181,7 @@ const fetchSimilarProjects = async () => {
       const response = await getsimilerllprojects(1, 12, similarProjectId);
       console.log("similer project: ", response);
       
-      // if (currentPage === 1) {
-      //     setSimilarProjects(response.data.projects);
-      // } else {
-      //     setSimilarProjects([...similarProjects, ...response.data.projects]);
-      // }
-      // setTotalPages(response.data.totalPages);
-
-      // Exclude the current project (if it happens to appear in the similar list)
+      
       const filteredProjects = response.data.projects.filter(
         (proj) => proj.id !== Number(id)
       );
@@ -233,7 +194,7 @@ const fetchSimilarProjects = async () => {
 // Fetch similar projects when the subcategory ID changes
 useEffect(() => {
   fetchSimilarProjects();
-}, [similarProjectId]);
+}, [similarProjectId, router.query.id]);
 
 // Reset pagination when the component unmounts
 useEffect(() => {
@@ -258,7 +219,7 @@ useEffect(() => {
         setIsFavorited(false);
         toast.success("Removed from Favorite list", { position: "top-right" });
         // Dispatch Redux action to remove favorite using the project id
-        dispatch(deleteFavouriteItem(projectId));
+        dispatch(deleteFavouriteItem(id));
       } else {
         await addFavouriteItem({ product_id: id }, token);
         setIsFavorited(true);
@@ -281,6 +242,39 @@ useEffect(() => {
       toast.error("Failed to update favorite status");
     }
   };
+
+  // New handler for "Add to libary" button
+  const handleAddToLibrary = async () => {
+    if (!token) {
+      router.push("/auth/login");
+      return;
+    }
+    if (isFavorited) {
+      toast.info("Product is already in library", { position: "top-right" });
+      return;
+    }
+    try {
+      await addFavouriteItem({ product_id: id }, token);
+      setIsFavorited(true);
+      toast.success("Added to Favorite list", { position: "top-right" });
+      // Dispatch Redux action to add favorite (using project data)
+      if (project) {
+        dispatch(
+          addedFavouriteItem({
+            id: project.id,
+            work_title: project.work_title,
+            file_type: project.file_type,
+            photo_url: project.photo_url,
+            type: project.type,
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error adding to library:", error);
+      toast.error("Failed to update favorite status");
+    }
+  };
+
 
   useEffect(() => {
     if (categoryAndSubCategory.length === 0) {
@@ -360,14 +354,14 @@ useEffect(() => {
                     </li>
                     {project?.product_category_title && (
                       <li className="breadcrumb-item">
-                        <Link onClick={(e) => e.preventDefault()} href="">
+                        <Link  href={`/categories/sub/${project?.category_path}`}>
                           {project?.product_category_title}
                         </Link>
                       </li>
                     )}
                     {project?.product_subcategory_title && (
                       <li className="breadcrumb-item">
-                        <Link onClick={(e) => e.preventDefault()} href="">
+                        <Link  href={`/categories/sub/${project?.subcategory_path}`}>
                           {project?.product_subcategory_title}
                         </Link>
                       </li>
@@ -401,14 +395,15 @@ useEffect(() => {
                         );
                         toast.success("Link Copied Successfully");
                       }}
-                      className="link-button"
+                      className="link-button copy-link-size"
                     >
-                      <img
+                      {/* <img
                         src={res.image.src}
                         className="img-fluid"
                         alt="icons"
                         
-                      />
+                      /> */}
+                      <FaLink size={22} />
                     </a>
                   ))}
                   {/* facebook share  */}
@@ -416,7 +411,7 @@ useEffect(() => {
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <FacebookIcon size={42} borderRadius={"10"} />
+                    <FacebookIcon size={32} borderRadius={"10"} />
                   </FacebookShareButton>
                   {/* twitter share  */}
                   <TwitterShareButton
@@ -424,7 +419,7 @@ useEffect(() => {
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <TwitterIcon size={42} borderRadius={"10"} />
+                    <TwitterIcon size={32} borderRadius={"10"} />
                   </TwitterShareButton>
                   {/* // pinterest share  */}
                   <PinterestShareButton
@@ -432,34 +427,34 @@ useEffect(() => {
                     media={project?.photo_url}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <PinterestIcon size={42} borderRadius={"10"} />
+                    <PinterestIcon size={32} borderRadius={"10"} />
                   </PinterestShareButton>
                   {/* email share  */}
                   <EmailShareButton
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <EmailIcon size={42} borderRadius={"10"} />
+                    <EmailIcon size={32} borderRadius={"10"} />
                   </EmailShareButton>
                   {/* what's app share */}
                   <WhatsappShareButton
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <WhatsappIcon size={42} borderRadius={"10"} />
+                    <WhatsappIcon size={32} borderRadius={"10"} />
                   </WhatsappShareButton>
                   {/* facebook messanger share  */}
                   <FacebookMessengerShareButton
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <FacebookMessengerIcon size={42} borderRadius={"10"} />
+                    <FacebookMessengerIcon size={32} borderRadius={"10"} />
                   </FacebookMessengerShareButton>
                   <LinkedinShareButton
                     title={project?.work_title}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
-                    <LinkedinIcon size={42} borderRadius={"10"} />
+                    <LinkedinIcon size={32} borderRadius={"10"} />
                   </LinkedinShareButton>
                 </div>
                 <div className="d-none d-md-inline-flex gap-3 align-items-center">
@@ -517,25 +512,25 @@ useEffect(() => {
                       bgColor={"#20325A"}
                       image={autoCad}
                       type={"File Type:"}
-                      title={"AutoCAD Drawing file"}
+                      title={project?.file_type}
                     />
                     <FileDescription
                       bgColor={"#3D6098"}
                       image={cad}
                       type={"Category::"}
-                      title={"Cad Landscaping"}
+                      title={project?.product_category_title}
                     />
                     <FileDescription
                       bgColor={"#5B5B5B"}
                       image={cad}
                       type={"Sub Category::"}
-                      title={"Garden CAD Blocks"}
+                      title={project?.product_subcategory_title}
                     />
                     <FileDescription
                       bgColor={"#E9E9EB"}
                       image={goldblocks}
-                      type={"Gold FIle::"}
-                      title={"Garden CAD Blocks"}
+                      type={"type:"}
+                      title={project?.type}
                       className={"text-primary"}
                     />
                   </div>
@@ -545,35 +540,31 @@ useEffect(() => {
                       <div className="bg-white shadow-sm p-2 p-md-5">
                         <div className="row justify-content-between align-items-center">
                           <div className="col-md-7">
-                            <div className="d-flex gap-md-3 gap-2">
+                            <div className="d-flex align-items-center gap-md-3 gap-2">
                               <div className="flex-shrink-0">
-                                <Icons.Avatar />
+                                {project?.profile_pic ? (
+                                  <img
+                                    src={project.profile_pic}
+                                    alt="Profile"
+                                    className="rounded-circle"
+                                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                                  />
+                                ) : (
+                                  <Icons.Avatar />
+                                )}
                               </div>
                               <div>
                                 <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                  <span>Viddhi Chajjed </span>
-                                  <img
-                                    src={india.src}
-                                    width={22}
-                                    alt="flag"
-                                  />{" "}
+                                  <span>{project?.first_name} </span>
+                                  
                                 </h6>
                                 <p>
-                                  {" "}
-                                  <small className="text-primary mb-2">
-                                    February 17, 2023 AT 2:40 AM
-                                  </small>
-                                  c
+                                  {project?.last_name}
                                 </p>
-                                <p className="d-none d-md-block">
-                                  This architectural drawing is a 2D block of
-                                  garden benches in AutoCAD drawing, CAD file,
-                                  and dwg file. For more details and information
-                                  download the drawing file.
-                                </p>
+                                
                                 <div className=" mt-1 d-md-none text-start text-md-end">
                                   <Link
-                                    href="/profile"
+                                    href={`/profile/author/${project?.profileId}`} 
                                     className="btn btn-primary"
                                   >
                                     View Profile
@@ -583,16 +574,16 @@ useEffect(() => {
                             </div>
                           </div>
                           <div className="d-none d-md-block col-md-3 text-start text-md-end">
-                            <Link href="/profile" className="btn btn-primary">
+                            <Link href={`/profile/author/${project?.profileId}`} className="btn btn-primary">
                               View Profile
                             </Link>
                           </div>
-                          <p className="d-md-none mt-3">
+                          {/* <p className="d-md-none mt-3">
                             This architectural drawing is a 2D block of garden
                             benches in AutoCAD drawing, CAD file, and dwg file.
                             For more details and information download the
                             drawing file.
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>
@@ -600,7 +591,7 @@ useEffect(() => {
 
                   <div className="row justify-content-center">
                     <div className="col-md-12 col-12 text-center">
-                      <div className=" text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
+                      <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
                         <button
                           onClick={() =>
                             handledownload(project.id, token, router)
@@ -614,7 +605,7 @@ useEffect(() => {
                           <span>Download</span>
                         </button>
                         <button
-                          onClick={() => handleLike()}
+                          onClick={() => handleAddToLibrary()}
                           type="button"
                           className="btn-primary-split"
                         >
@@ -652,47 +643,12 @@ useEffect(() => {
                             className="col-md-6 col-lg-6 col-xxl-4"
                             key={project.id}
                           >
-                            <ProjectCard {...project} />
+                            <ProjectCard {...project} favorites={favouriteList} />
                           </div>
                         );
                       })}
                     </div>
 
-                    {/* <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      dispatchCurrentPage={getSimilarProjectsPage}
-                      goToPreviousPage={() => handlePageChange(currentPage - 1)}
-                      goToNextPage={() => handlePageChange(currentPage + 1)}
-                    /> */}
-
-                    {/* <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={handlePageChange}
-                    /> */}
-
-
-                    {/* <LoadMore
-                      currentPage={currentPage}
-                      totalPage={totalPages}
-                      loadMoreHandler={() => {
-                        setCurrentPage((prev) => prev + 1);
-                      }}
-                    /> */}
-
-                    {/* <div className="row">
-                      <div className="col-md-12">
-                        <div className="text-center">
-                          <Link
-                            href={"/categories"}
-                            className="btn btn-secondary"
-                          >
-                            BROWSE
-                          </Link>
-                        </div>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -708,33 +664,7 @@ useEffect(() => {
                       <form className="d-flex gap-3 flex-column">
                         Category
                         <div>
-                          {/* <select
-                            defaultValue=""
-                            className="form-select"
-                            aria-label="Category"
-                            onChange={(e) => {
-                              categoryAndSubCategory.forEach((item) => {
-                                if (item.id == e.target.value) {
-                                  console.log("item", categoriesList);
-                                  
-                                  setSelectedCategory(item.slug);
-                                  setSubCategories(item.project_sub_categories);
-                                  // console.log("sub",item)
-                                }
-                              });
-                            }}
-                          >
-                            <option value="all">All Category</option>
-                            {categoryAndSubCategory.map(
-                              ({ id, title, slug }, index) => {
-                                return (
-                                  <option value={id} key={id}>
-                                    {title}
-                                  </option>
-                                );
-                              }
-                            )}
-                          </select> */}
+                          
                           <select
                             defaultValue=""
                             className="form-select"
@@ -787,19 +717,7 @@ useEffect(() => {
                             })}
                           </select>
                         </div>
-                        {/* Category */}
-                        {/* <div>
-                          <select
-                            defaultValue=""
-                            className="form-select"
-                            aria-label="Category"
-                          >
-                            <option value="0">All Category</option>
-                            <option value="1">Category 1</option>
-                            <option value="2">Category 2</option>
-                            <option value="3">Category 3</option>
-                          </select>
-                        </div> */}
+                        
                         <div className="mt-2obbs">
                           <button
                             onClick={onSearchSubmitHandler}
