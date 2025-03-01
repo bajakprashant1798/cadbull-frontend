@@ -204,7 +204,7 @@ const Header = () => {
             >
 
               {/* small screen device resposive */}
-              {isAuthenticated && !isLoggedOut ? (
+              {isAuthenticated && !isLoggedOut && (
                 <>
                   <div className="dropdown-center dt-d-none mt-3 mt-xl-0">
                     <button
@@ -436,16 +436,7 @@ const Header = () => {
                     </ul>
                   </div>
                 </>
-              ) : (
-                <>
-                  <Link
-                    href={"/auth/login"}
-                    className="d-none btn btn-secondary d-xl-inline-flex gap-1 align-items-center"
-                  >
-                    <Icons.User /> <span>LOGIN</span>
-                  </Link>
-                </>
-              )}
+              ) }
               {/* small screen device responsive */}
 
               <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
