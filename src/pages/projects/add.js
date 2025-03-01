@@ -105,7 +105,7 @@ const AddProjects = () => {
           </div>
 
           {/* Pagination  */}
-          <Pagination />
+          {/* <Pagination /> */}
         </div>
       </ProjectsLayout>
     </Fragment>
