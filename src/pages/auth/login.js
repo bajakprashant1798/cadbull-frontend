@@ -33,10 +33,10 @@ const Register = () => {
   // const { data: session } = useSession();
   const [isLoading,startLoading,stopLoading]=useLoading();
   const isAuthenticated=useSessionStorageData('userData')
-  const [captchaValue, setCaptchaValue] = useState(null);
+  // const [captchaValue, setCaptchaValue] = useState(null);
 
-  // Set up reCAPTCHA reference if needed
-  const recaptchaRef = React.createRef();
+  // // Set up reCAPTCHA reference if needed
+  // const recaptchaRef = React.createRef();
 
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData");
@@ -95,9 +95,6 @@ const Register = () => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userData");
 
-    // ✅ Dispatch event to log out from all open tabs
-    // window.dispatchEvent(new Event("userLoggedOut"));
-
     // ✅ Redirect to login page
     setTimeout(() => {
       window.location.href = "/auth/login";
@@ -112,11 +109,11 @@ const Register = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    // Ensure the captcha is solved
-    if (!captchaValue) {
-      toast.error("Please verify that you are not a robot.");
-      return;
-    }
+    //// Ensure the captcha is solved
+    // if (!captchaValue) {
+    //   toast.error("Please verify that you are not a robot.");
+    //   return;
+    // }
     // Handle form submission here
     startLoading()
     loginApiHandler(data)
@@ -128,17 +125,10 @@ const Register = () => {
           return;
         }
 
-        // // ✅ Store accessToken in sessionStorage (Cleared on tab close)
-        // sessionStorage.setItem("accessToken", accessToken);
-        // sessionStorage.setItem("userData", JSON.stringify({ user }));
-
         // ✅ Store tokens in localStorage
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userData", JSON.stringify(user));
-
-        // // ✅ Store refreshToken in localStorage (Persistent)
-        // localStorage.setItem("refreshToken", refreshToken);
 
         dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
 
@@ -159,12 +149,6 @@ const Register = () => {
         window.dispatchEvent(new Event("userLoggedIn"));
 
         stopLoading()
-        //  if(router.query.redirect){
-        //   router.push(router.query.redirect)
-        //    return
-        //  }
-
-        //  router.push( router.query?.redirect || '/')
 
         // Redirect user based on role
         if (user.role === 1) {
@@ -200,13 +184,6 @@ const Register = () => {
     }
   }, [router, isAuthenticated]);
 
-  // ✅ Prevent authenticated users from accessing login page
-  // useEffect(() => {
-  //   if (isAuthenticated !== null) {
-  //     router.push("/");
-  //   }
-  // }, [router, isAuthenticated]);
-
   // ✅ Handle OAuth Redirect (Google Login)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -214,9 +191,6 @@ const Register = () => {
     const refreshToken = urlParams.get("refreshToken");
     
     if (accessToken && refreshToken) {
-      // sessionStorage.setItem("accessToken", accessToken);
-      // localStorage.setItem("refreshToken", refreshToken); // ✅ Store refreshToken in localStorage
-
       // ✅ Store tokens and user data in localStorage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
@@ -225,8 +199,7 @@ const Register = () => {
       getUserData(accessToken)
         .then((res) => {
           const userData = res.data;
-          // sessionStorage.setItem("userData", JSON.stringify({ user: userData }));
-
+          
           // ✅ Store user data persistently in localStorage
           localStorage.setItem("userData", JSON.stringify(userData));
 
