@@ -294,6 +294,14 @@
     }
   }
 
+  @media (max-width: 991px) {
+    .project-day-card-description .work-title {
+      /* Apply a gradient mask so that the bottom of the text fades out */
+      -webkit-mask-image: linear-gradient(180deg, black 25%, transparent);
+      mask-image: linear-gradient(180deg, black 25%, transparent);
+    }
+  }
+
   .project-day-card-link {
     position: relative;
 
