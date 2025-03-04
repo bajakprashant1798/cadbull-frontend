@@ -255,12 +255,12 @@ export default function Home() {
         <div className="container py-3 py-md-5">
           <div className="row">
             <div className="col-md-12">
-              <div className="text-center mb-md-5 mb-4">
+              <div className="text-center mb-md-5 mb-5">
                 <p className="mb-3 fw-light text-primary">
                   World Largest 2d <br />
                   <span className="fw-bold">CAD Library.</span>
                 </p>
-                <p className="mb-3 mb-md-5">
+                <p className="mb-4 mb-md-5">
                   {/* User */}
                   <span className="text-danger">{productCount}+</span> <span className="fw-light"> Free & Premium
                   CADFiles

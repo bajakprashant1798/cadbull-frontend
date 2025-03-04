@@ -9,7 +9,7 @@ import Link from "next/link";
 import icon from "@/assets/icons/categories.png";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
-import { getFavouriteItems, getSubCategories, getallsubCategories } from "@/service/api";
+import { getFavouriteItems, getSubCategories, getallCategories, getallsubCategories } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
@@ -50,6 +50,22 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
 
   // Fetch favorites if not loaded
   const [favouritesFetched, setFavouritesFetched] = useState(false);
+  
+  // State for main categories
+  const [mainCategories, setMainCategories] = useState([]);
+
+  // Fetch main categories on mount
+  useEffect(() => {
+    getallCategories("")
+      .then((res) => {
+        if (res.data.categories) {
+          setMainCategories(res.data.categories);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching main categories:", err);
+      });
+  }, []);
 
   useEffect(() => {
     if (token && !favouritesFetched) {
@@ -149,7 +165,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
         title: "Search Results",
         description:
           "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
-        categories: [],
+          mainCategories: mainCategories,
+          subCategories: subcat,
+          slug: slug,
         type: "Sub Categories",
         pageName: "Search Results",
       }
@@ -157,7 +175,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
         title: slug ? makeTitle(slug) : "Sub Categories",
         description:
           "Improving the aesthetic appearance of an area by changing its contours, adding ornamental features, or planting trees and shrubs.",
-        categories: [],
+          mainCategories: mainCategories,
+          subCategories: subcat,
+          slug: slug,
         type: "Sub Categories",
       };
 

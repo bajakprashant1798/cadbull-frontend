@@ -55,6 +55,8 @@ function RehydrateState() {
             status: "authenticated",
           })
         );
+        console.log("parsedData", parsedData);
+        
       } catch (error) {
         console.error("Error parsing stored user data:", error);
         dispatch(logout());

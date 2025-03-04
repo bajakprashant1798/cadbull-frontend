@@ -17,7 +17,9 @@ const CategoriesLayout = ({
   children,
   title,
   description,
-  categories,
+  mainCategories, // Array of main categories
+  subCategories,  // Array of subcategories
+  slug,           // Current slug (if any)
   type,
   pageName = "Categories",
 }) => {
@@ -63,7 +65,7 @@ const CategoriesLayout = ({
       </section>
 
       {/* Categories  */}
-      <section className="py-lg-5 py-4">
+      {/* <section className="py-lg-5 py-4">
         <div className="container">
           <div className="row">
             <div className="col-xl-3">
@@ -73,6 +75,47 @@ const CategoriesLayout = ({
                 url="categories/sub/"
               />
             </div>
+            <div className="col-xl-9">{children}</div>
+          </div>
+        </div>
+      </section> */}
+
+      {/* Main Section with Left Sidebar */}
+      <section className="py-lg-5 py-4">
+        <div className="container">
+          <div className="row">
+            {/* Left Sidebar */}
+            <div className="col-xl-3">
+              {slug ? (
+                // If slug exists, show Subcategories first then Main Categories
+                <>
+                  <div className="mb-4">
+                    <SearchCategories
+                      categories={subCategories}
+                      type="Sub Categories"
+                      url="categories/sub/"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <SearchCategories
+                      categories={mainCategories}
+                      type="Categories"
+                      url="categories/"
+                    />
+                  </div>
+                </>
+              ) : (
+                // Otherwise, show only main categories
+                <div className="mb-4">
+                  <SearchCategories
+                    categories={mainCategories}
+                    type="Categories"
+                    url="categories/"
+                  />
+                </div>
+              )}
+            </div>
+            {/* Right Column */}
             <div className="col-xl-9">{children}</div>
           </div>
         </div>

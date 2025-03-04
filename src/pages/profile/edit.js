@@ -17,6 +17,9 @@ import {
   updateProfilePicture,
   updateProfileWithoutPicture,
   updateUserProfileInfo,
+  getCountries,
+  getOccupations,
+  getInterests,
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
@@ -42,6 +45,9 @@ const validationSchema = Yup.object().shape({
   // phone_no: Yup.string()
   //   .required("This field  is required.")
   //   .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
+  zipcode:Yup.string()
+      .required("This field  is required.")
+      .matches(/^\d{6}$/, "Zip code must be 6 digits."),
   gender: Yup.string().required("This field  is required."),
 
   
@@ -70,6 +76,10 @@ const EditProfile = () => {
   const [profileData, setProfileData] = useState({});
   const [file, setFile] = useState(null);
 
+  // States for dynamic dropdown lists
+  const [countriesList, setCountriesList] = useState([]);
+  const [occupationsList, setOccupationsList] = useState([]);
+  const [interestsList, setInterestsList] = useState([]);
 
   const {
     register,
@@ -112,26 +122,61 @@ const EditProfile = () => {
       gender: "",
       occupation: "",
       interest: "",
+      country: "", // New field for country
+      zipcode: "",
+
+      facebook: "",
+      linkedin: "",
+      instagram: "",
+      pinterest: "",
+      x: "",
+      youtube: "",
     },
     
   });
 
   // onSubmitHandler: if profileData has an id, update; otherwise, create.
   const onSubmitHandler = (data) => {
-
     console.log("onSubmitHandler called with data:", data);
     if (!isDirty) {
       console.log("Form is not dirty. Submission halted.");
       return;
     }
   
-    updateUserProfileInfo(data, token) // Always call update API, let backend handle upsert
+    // Combine individual social fields into an array
+    const socialNetworks = [];
+    if (data.facebook) {
+      socialNetworks.push({ social_network_name: "facebook", social_network_id: data.facebook });
+    }
+    if (data.twiter) {
+      socialNetworks.push({ social_network_name: "twitter", social_network_id: data.twiter });
+    }
+    if (data.instagram) {
+      socialNetworks.push({ social_network_name: "instagram", social_network_id: data.instagram });
+    }
+    if (data.linkedin) {
+      socialNetworks.push({ social_network_name: "linkedin", social_network_id: data.linkedin });
+    }
+    if (data.pinterest) {
+      socialNetworks.push({ social_network_name: "pinterest", social_network_id: data.pinterest });
+    }
+    if (data.youtube) {
+      socialNetworks.push({ social_network_name: "youtube", social_network_id: data.youtube });
+    }
+  
+    // Prepare payload by including the socialNetworks array
+    const payload = {
+      ...data,
+      socialNetworks,
+    };
+  
+    updateUserProfileInfo(payload, token) // This calls your upsert API endpoint
       .then((res) => {
         toast.success("Profile Saved Successfully");
   
         // Update local state with the new/updated profile.
         const updatedProfile = res.data.profile || res.data;
-        const updatedUser = res.data.user; // User table data
+        const updatedUser = res.data.user; // Data from the users table
   
         setProfileData(updatedProfile);
         reset(updatedProfile);
@@ -141,20 +186,21 @@ const EditProfile = () => {
           const userData = JSON.parse(localStorage.getItem("userData")) || {};
           userData.firstname = updatedUser.firstname;
           userData.lastname = updatedUser.lastname;
-            
+
           if (updatedUser.profile_pic) {
             userData.profile_pic = updatedUser.profile_pic;
           }
-          if (updatedProfile.profileId) {
-            userData.profileId = updatedProfile.profileId;
+
+          if (updatedProfile.profileId || updatedProfile.id) {
+            // Assign profileId from updatedProfile.profileId or updatedProfile.id
+            userData.profileId = updatedProfile.profileId || updatedProfile.id;
           }
           localStorage.setItem("userData", JSON.stringify(userData));
           console.log("Updated userData:", userData);
-          
+  
           // Dispatch to update Redux state
           dispatch(loginSuccess({ user: updatedUser, accessToken: token, status: true }));
-          // dispatch(updateuserProfilepic(updatedUser.profile_pic));
-          dispatch(updateUserProfileId({ profileId: updatedProfile.profileId }));
+          dispatch(updateUserProfileId({ profileId: updatedProfile.profileId || updatedProfile.id }));
         }
       })
       .catch((err) => {
@@ -162,7 +208,45 @@ const EditProfile = () => {
         console.error(err);
       });
   };
+  
     
+
+  // Fetch dynamic dropdown data: Countries, Occupations, Interests
+  const handleCountryFocus = () => {
+    if (!Array.isArray(countriesList) || countriesList.length === 0) {
+      getCountries()
+        .then((res) => {
+          // Use res.data.countries if it exists; otherwise assume res.data is an array.
+          const data = res.data.countries ? res.data.countries : res.data;
+          setCountriesList(Array.isArray(data) ? data : []);
+        })
+        .catch((err) => console.error("Error fetching countries:", err));
+    }
+  };
+  
+  const handleOccupationsFocus = () => {
+    if (!Array.isArray(occupationsList) || occupationsList.length === 0) {
+      getOccupations()
+        .then((res) => {
+          const data = res.data.occupations ? res.data.occupations : res.data;
+          setOccupationsList(Array.isArray(data) ? data : []);
+        })
+        .catch((err) => console.error("Error fetching occupations:", err));
+    }
+  };
+  
+  const handleInterestsFocus = () => {
+    if (!Array.isArray(interestsList) || interestsList.length === 0) {
+      getInterests()
+        .then((res) => {
+          const data = res.data.interests ? res.data.interests : res.data;
+          setInterestsList(Array.isArray(data) ? data : []);
+        })
+        .catch((err) => console.error("Error fetching interests:", err));
+    }
+  };
+  
+
     // useEffect(() => {
     //   const updateProfilePic = () => {
     //     if (!file) return;
@@ -263,16 +347,19 @@ const EditProfile = () => {
   useEffect(() => {
     getArchitectProfileInfo(token)
       .then((res) => {
-        console.log("getArchitectProfileInfo", res.data);
-        setProfileData(res.data);
-        reset(res.data);
-        // Optionally update redux state or session/local storage
-        // dispatch(loginSuccess({ user: res.data, token, status: true }));
-        // localStorage.setItem("userData", JSON.stringify(res.data));
-        // console.log("userData", res.data);
-        // console.log("profileData", profileData);
-        
-        // setExistingArchitectProfile(res.data); // Set existing profile data
+        const profile = res.data;
+        // Transform socialNetworks array to individual keys
+        let socialDefaults = {};
+        if (profile.socialNetworks && Array.isArray(profile.socialNetworks)) {
+          profile.socialNetworks.forEach((item) => {
+            // Use the social_network_name as key and id as value
+            socialDefaults[item.social_network_name] = item.social_network_id;
+          });
+        }
+        // Merge social defaults with the rest of the profile data
+        const formDefaults = { ...profile, ...socialDefaults };
+        setProfileData(formDefaults);
+        reset(formDefaults);
       })
       .catch((err) => {
         if (err.response?.status === 404) {
@@ -282,7 +369,8 @@ const EditProfile = () => {
           console.error(err);
         }
       });
-  }, [token,  dispatch, reset]);
+  }, [token, dispatch, reset]);
+  
 
 
   useEffect(() => {
@@ -611,7 +699,7 @@ const EditProfile = () => {
                       <Icons.Building />
                       <label>City</label>
                     </div>
-                    <select
+                    {/* <select
                       // defaultValue="Gujrat"
                       {...register("city")}
                       name="city"
@@ -624,7 +712,16 @@ const EditProfile = () => {
                       <option value="mohali">Mohali</option>
                       <option value="shimla">Shimla</option>
                       <option value="gujrat">Gujrat</option>
-                    </select>
+                    </select> */}
+
+                    <input
+                        type="text"
+                        {...register("city")}
+                        name="city"
+                        className={`form-control ${errors.city ? "is-invalid" : ""}`}
+                        placeholder="Enter Your City"
+                        defaultValue={profileData.city}
+                    />
                     {errors.city?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
@@ -638,7 +735,7 @@ const EditProfile = () => {
                       <Icons.Building />
                       <label>State</label>
                     </div>
-                    <select
+                    {/* <select
                       // defaultValue="Ahmedabad"
                       {...register("state")}
                       name="state"
@@ -651,7 +748,15 @@ const EditProfile = () => {
                       <option value="punjab">Punjab</option>
                       <option value="himanchal">Himachal</option>
                       <option value="ahmedabad">Ahmedabad</option>
-                    </select>
+                    </select> */}
+                    <input
+                        type="text"
+                        {...register("state")}
+                        name="state"
+                        className={`form-control ${errors.state ? "is-invalid" : ""}`}
+                        placeholder="Enter Your State"
+                        defaultValue={profileData.state}
+                    />
                     {errors.state?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
@@ -708,61 +813,106 @@ const EditProfile = () => {
                       </div>
                     )}
                   </div>
-                  {/* Occupation */}
+
+                  {/* Country Dropdown */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      {/* <Icons.Globe /> */}
+                      <label>Country</label>
+                    </div>
+                    <select
+                      {...register("country")}
+                      name="country"
+                      onFocus={handleCountryFocus}
+                      className={`form-select ${errors.country ? "is-invalid" : ""}`}
+                      aria-label="Country"
+                      // defaultValue={profileData.country || ""}
+                    >
+                      <option value="">Select Country</option>
+                      {countriesList.map((country, index) => (
+                        <option key={index} value={country.country}>
+                          {country.country}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.country?.message && (
+                      <div className="invalid-feedback text-danger">{errors.country?.message}</div>
+                    )}
+                  </div>
+
+                  {/* Occupation Dropdown */}
                   <div className="col-lg-6 col-md-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
                       <Icons.User />
                       <label>Occupation</label>
                     </div>
                     <select
-                      // defaultValue="Architect"
                       {...register("occupation")}
                       name="occupation"
-                      className={` form-select  ${
-                        errors.occupation ? "is-invalid" : ""
-                      }`}
-                      aria-label="State"
+                      onFocus={handleOccupationsFocus} // still fetch options on focus if needed
+                      className={`form-select ${errors.occupation ? "is-invalid" : ""}`}
+                      aria-label="Occupation"
+                      // The field’s value is controlled by react-hook-form (which is currently an empty string)
                     >
                       <option value="">Select Occupation</option>
-                      <option value="Architect">Architect</option>
-                      <option value="Designer">Designer</option>
+                      {occupationsList.map((occ) => (
+                        <option key={occ.id} value={occ.occupation}>
+                          {occ.occupation}
+                        </option>
+                      ))}
                     </select>
                     {errors.occupation?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.occupation?.message}{" "}
-                      </div>
+                      <div className="invalid-feedback text-danger">{errors.occupation?.message}</div>
                     )}
                   </div>
-                  {/* Interest */}
+
+                  {/* Interest Dropdown */}
                   <div className="col-lg-6 col-md-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
                       <Icons.Interest />
                       <label>Interest</label>
                     </div>
                     <select
-                      // defaultValue="Academics community"
                       {...register("interest")}
                       name="interest"
-                      className={` form-select  ${
-                        errors.interest ? "is-invalid" : ""
-                      }`}
-                      aria-label="State"
+                      onFocus={handleInterestsFocus}
+                      className={`form-select ${errors.interest ? "is-invalid" : ""}`}
+                      aria-label="Interest"
                     >
                       <option value="">Select Interest</option>
-                      <option value="Academics community">
-                        Academics community
-                      </option>
-                      <option value="Academics community">
-                        Academics community
-                      </option>
+                      {interestsList.map((int) => (
+                        <option key={int.id} value={int.interest}>
+                          {int.interest}
+                        </option>
+                      ))}
                     </select>
                     {errors.interest?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.interest?.message}{" "}
-                      </div>
+                      <div className="invalid-feedback text-danger">{errors.interest?.message}</div>
                     )}
+                  </div>
+
+                  {/* Zipcode  */}
+                  <div className="col-lg-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <Icons.Zipcode />
+                      <label>Zipcode</label>
+                    </div>
+                    <input
+                      type="text"
+                      {...register("zipcode")}
+                      name="zipcode"
+                      className={`form-control  ${
+                        errors.zipcode ? "is-invalid" : ""
+                      }`}
+                      placeholder="Enter Your Zipcode"
+                      // value="362720"
+                    />
+                      {errors.zipcode?.message && (
+                        <div className="invalid-feedback text-danger">
+                          {" "}
+                          {errors.zipcode?.message}{" "}
+                        </div>
+                      )}
                   </div>
                   {/* Summary */}
                   <div className="col-lg-12">
@@ -832,8 +982,91 @@ const EditProfile = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Add another social profile * */}
+
+                  {/* Instagram * */}
                   <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <label className="no-required">Instagram</label>
+                    </div>
+                    <div className="input-group">
+                      <input
+                        type="url"
+                        {...register("instagram")}
+                        name="instagram"
+                        className="form-control border-end-0"
+                        placeholder="Add Instagram Link"
+                        // value="https:www.Instagram.com/login"
+                      />
+                      <div className="input-group-text ps-0 bg-white">
+                        {" "}
+                        <Icons.Instagram />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* LinkedIn * */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <label className="no-required">LinkedIn</label>
+                    </div>
+                    <div className="input-group">
+                      <input
+                        type="url"
+                        {...register("linkedin")}
+                        name="linkedin"
+                        className="form-control border-end-0"
+                        placeholder="Add Twitter Link"
+                        // value="https:www.LinkedIn.com/login"
+                      />
+                      <div className="input-group-text ps-0 bg-white">
+                        {" "}
+                        <Icons.LinkedIn />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pinterest * */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <label className="no-required">Pinterest</label>
+                    </div>
+                    <div className="input-group">
+                      <input
+                        type="url"
+                        {...register("pinterest")}
+                        name="pinterest"
+                        className="form-control border-end-0"
+                        placeholder="Add Pinterest Link"
+                        // value="https:www.pinterest.com/login"
+                      />
+                      <div className="input-group-text ps-0 bg-white">
+                        {" "}
+                        <Icons.Pinterest />
+                      </div>
+                    </div>
+                  </div>
+                  {/* YouTube * */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <label className="no-required">YouTube</label>
+                    </div>
+                    <div className="input-group">
+                      <input
+                        type="url"
+                        {...register("youtube")}
+                        name="youtube"
+                        className="form-control border-end-0"
+                        placeholder="Add YouTube Link"
+                        // value="https:www.youtube.com/login"
+                      />
+                      <div className="input-group-text ps-0 bg-white">
+                        {" "}
+                        <Icons.Youtube />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Add another social profile * */}
+                  {/* <div className="col-lg-6 col-md-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
                       <label className="no-required">
                         Add another social profile
@@ -853,7 +1086,7 @@ const EditProfile = () => {
                         <Icons.AddOutline />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               {/* Buttons  */}

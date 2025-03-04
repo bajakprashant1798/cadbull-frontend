@@ -38,7 +38,11 @@
   padding: 20px 5px !important;
 }
 
-
+@media (max-width: 1199px) {
+  .b-bottom-md {
+    border-bottom: 2px solid $formborder;
+  }
+}
 @media (min-width: 1400px) {
 
   .container,
@@ -149,6 +153,9 @@
 
 .logo {
   max-width: 140px;
+  @media all and (max-width:767px) {
+    max-width: 115px;
+  }
 }
 
 // ******** Hero Section ********
@@ -163,7 +170,7 @@
     }
 
     @media all and (max-width:767px) {
-      font: normal normal 600 10px/13px 'Poppins', sans-serif;
+      font: normal normal 600 24px/30px 'Poppins', sans-serif;
     }
   }
 

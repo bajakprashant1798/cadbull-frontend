@@ -442,7 +442,7 @@ const Header = () => {
               <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
                 {links.map((link, index) => {
                   return (
-                    <li className="" key={index}>
+                    <li className="b-bottom-md" key={index}>
                       <Link
                        onClick={()=>{
                         closeHamburgerMenu();

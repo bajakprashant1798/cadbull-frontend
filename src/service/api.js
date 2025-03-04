@@ -472,8 +472,6 @@ export const getCompanyProducts = (
   });
 };
 
-
-
 // profile api
 
 export const getCategoriesWithSubcategories = async () => {
@@ -828,7 +826,19 @@ export const toggleRedeemStatusApi = async (redeemId, userId, redeemMoney, token
 
 // ✅ Fetch Occupations
 export const getOccupations = async () => {
-  return api.get("/occupations");
+  return api.get("/profile/occupations");
+};
+
+// ✅ Fetch countries
+export const getCountries = async () => {
+  return api.get("/profile/countries");
+};
+
+// ✅ Fetch interests
+export const getInterests = (page = 1, perPage = 10, search = "") => {
+  return api.get("/profile/interests", {
+    params: { page, perPage, search },
+  });
 };
 
 // ✅ Add Experience

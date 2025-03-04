@@ -501,7 +501,7 @@ body {
 }
 
 header {
-  background: #fff 0% 0% no-repeat padding-box;
+  background: #f9f9f9 0% 0% no-repeat padding-box;
   border-bottom: 2px solid rgba(168, 168, 168, 0.2509803922);
 }
 header img {
