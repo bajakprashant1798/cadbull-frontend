@@ -48,8 +48,12 @@ api.interceptors.response.use(
     // ✅ If Access Token Expired & No Retry Attempt Yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
 
-      if (!localStorage.getItem("userData")) {
-        // No user data means the user is not logged in; do not try to refresh.
+      // Check if the user is authenticated
+      const isAuthenticated = localStorage.getItem("userData");
+
+      if (!isAuthenticated) {
+        // If the user is not authenticated, reject the request without attempting to refresh the token
+        console.log("❌ User is not authenticated. Skipping token refresh.");
         return Promise.reject(error);
       }
 
