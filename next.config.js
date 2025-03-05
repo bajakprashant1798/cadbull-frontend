@@ -4,6 +4,7 @@
 // }
 
 // module.exports = nextConfig
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -11,7 +12,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://cadbull-backend.onrender.com/api/:path*',
+        destination: 'http://localhost:5001/api/:path*',
       },
     ];
   },
