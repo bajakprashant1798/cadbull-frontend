@@ -52,31 +52,6 @@ const OAuthCallback = () => {
       toast.error("Failed to retrieve user details.");
       router.replace("/auth/login");
     }
-
-    // // Instead of extracting tokens from the URL, we fetch the user data.
-    // getUserData({ withCredentials: true })
-    //   .then((res) => {
-    //     // Use res.data directly (because getUserData returns the user object)
-    //     const userData = res.data;
-    //     console.log("Fetched user data:", userData);
-    //     // Optionally store non-sensitive user info in localStorage
-    //     localStorage.setItem("userData", JSON.stringify(userData));
-    //     dispatch(loginSuccess({ user: userData, status: "authenticated" }));
-    //     toast.success("Login successful!");
-    //     // Redirect based on user role
-    //     if (userData.role === 1) {
-    //       router.replace("/admin/dashboard");
-    //     } else if (userData.role === 5) {
-    //       router.replace("/admin/projects/view-project");
-    //     } else {
-    //       router.replace("/");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("❌ Failed to fetch user details:", error);
-    //     toast.error("Failed to retrieve user details.");
-    //     router.replace("/auth/login");
-    //   });
   }, [router, dispatch]);
   
 

@@ -59,92 +59,31 @@ const Login = () => {
   }, [isAuthenticated, router]);
 
   // Effect to try to rehydrate user data ONLY if we are not already authenticated.
-  useEffect(() => {
-    // Only attempt rehydration if there’s no authenticated user already.
-    if (!isAuthenticated) {
-      getUserData()
-        .then((res) => {
-          // Update Redux state only if we actually get valid user data.
-          console.log("userData login: ", res);
-          
-          if (res.data && res.data.user) {
-            dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
-            // Redirect based on role if needed
-            const { role } = res.data.user;
-            if (role === 1) router.push("/admin/dashboard");
-            else if (role === 5) router.push("/admin/projects/view-project");
-            else router.push("/");
-          }
-        })
-        .catch((err) => {
-          // If not authenticated, simply log and allow the login form to render.
-          console.warn("User not authenticated yet", err);
-        });
-    }
-  }, [dispatch, router, isAuthenticated]);
-
   // useEffect(() => {
-  //   const storedUserData = localStorage.getItem("userData");
-  //   if (storedUserData) {
-  //     const userData = JSON.parse(storedUserData);
-  //     dispatch(loginSuccess({ user: userData, status: "authenticated" }));
-  //   }
-  // }, []);
-  
-
-  // useEffect(() => {
-  //   const storedUserDataForRole = localStorage.getItem("userData");
-  //   console.log("storedUserDataForRole", storedUserDataForRole);
-    
-  //   if (storedUserDataForRole) {
-  //     const user = JSON.parse(storedUserDataForRole);
-  //     console.log("storedUserDataForRole parse", user);
-
-  
-  //     if (user.role === 1) {
-  //       router.push("/admin/dashboard"); 
-  //     } else if (user.role === 5) {
-  //       router.push("/admin/projects/view-project");
-  //     } else {
-  //       router.push("/");
-  //     }
-  //   }
-  // }, [router]);
-
-  // ✅ Rehydrate tokens after page reload
-  // useEffect(() => {
-  //   const storedAccessToken = localStorage.getItem("accessToken");
-  //   const storedRefreshToken = localStorage.getItem("refreshToken"); // ✅ Get from localStorage
-
-  //   if (!storedAccessToken && storedRefreshToken) {
-  //     console.log("🔄 Attempting to refresh token...");
-  //     api.post("/auth/refresh-token", {}, {
-  //       headers: { "x-refresh-token": storedRefreshToken },
-  //     })
+  //   // Only attempt rehydration if there’s no authenticated user already.
+  //   if (!isAuthenticated) {
+  //     getUserData()
   //       .then((res) => {
-  //         localStorage.setItem("accessToken", res.data.accessToken);
+  //         // Update Redux state only if we actually get valid user data.
+  //         console.log("userData login: ", res);
+          
+  //         if (res.data && res.data.user) {
+  //           dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
+  //           // Redirect based on role if needed
+  //           const { role } = res.data.user;
+  //           if (role === 1) router.push("/admin/dashboard");
+  //           else if (role === 5) router.push("/admin/projects/view-project");
+  //           else router.push("/");
+  //         }
   //       })
-  //       .catch(() => {
-  //         console.log("❌ Refresh failed, logging out user.");
-  //         handleLogout();
+  //       .catch((err) => {
+  //         // If not authenticated, simply log and allow the login form to render.
+  //         console.warn("User not authenticated yet", err);
   //       });
   //   }
-  // }, []);
+  // }, [dispatch, router, isAuthenticated]);
 
-  // // ✅ Handle Logout & Redirect
-  // const handleLogout = () => {
-  //   sessionStorage.clear();
-    
-  //   // ✅ Remove tokens from localStorage
-  //   localStorage.removeItem("accessToken");
-  //   localStorage.removeItem("refreshToken");
-  //   localStorage.removeItem("userData");
-
-  //   // ✅ Redirect to login page
-  //   setTimeout(() => {
-  //     window.location.href = "/auth/login";
-  //   }, 100);
-  // };
+  
   
 
   const {
