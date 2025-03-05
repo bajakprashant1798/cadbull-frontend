@@ -12,7 +12,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://cadbull-backend.onrender.com/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_MAIN}/:path*`,
       },
     ];
   },

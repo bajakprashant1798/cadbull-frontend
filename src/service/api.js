@@ -5,7 +5,8 @@ import { logout } from "../../redux/app/features/authSlice";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
-  baseURL: '/api',
+  // baseURL: process.env.NEXT_PUBLIC_API_MAIN,
+  baseURL: "/api",
   withCredentials: true, // Allows sending cookies if needed
   timeout: 20000, // 20 seconds
 });
