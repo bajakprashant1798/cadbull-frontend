@@ -102,9 +102,9 @@ const Login = () => {
     startLoading()
     loginApiHandler(data)
       .then((res) => {
-        const { accessToken, refreshToken, user } = res.data;
+        const { user } = res.data;
 
-        if (!accessToken || !refreshToken) {
+        if (!user) {
           toast.error("Login failed. Please try again.");
           return;
         }
@@ -122,7 +122,7 @@ const Login = () => {
 
         // Fetch and dispatch favorites after successful login:
         // if (accessToken) {
-          getFavouriteItems(accessToken)
+          getFavouriteItems()
             .then((favRes) => {
               dispatch(setFavouriteList(favRes.data.favorites || []));
               console.log("res from getfav", favRes);
