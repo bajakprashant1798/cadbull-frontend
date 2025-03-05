@@ -8,7 +8,11 @@ import { toggleCategoryStatusApi } from "@/service/api";
 import { toast } from "react-toastify";
 
 const CategoryTable = ({ status, title }) => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
+  
   const [categories, setCategories] = useState([]);
   const [parentCategoryMap, setParentCategoryMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +24,7 @@ const CategoryTable = ({ status, title }) => {
   const router = useRouter();
 
   const handleToggleStatus = (id) => {
-    toggleCategoryStatusApi(id, token)
+    toggleCategoryStatusApi(id)
       .then((res) => {
         toast.success("Category status updated!");
         fetchCategories(); // ✅ Refresh categories after update
@@ -31,8 +35,8 @@ const CategoryTable = ({ status, title }) => {
   };
 
   useEffect(() => {
-    if (token) fetchCategories();
-  }, [status, token, searchTerm, currentPage, entriesPerPage, sortColumn, sortOrder]);
+    if (isAuthenticated) fetchCategories();
+  }, [status, isAuthenticated, searchTerm, currentPage, entriesPerPage, sortColumn, sortOrder]);
 
   const fetchCategories = () => {
     getCategoriesApi(status, currentPage, entriesPerPage, searchTerm, sortColumn, sortOrder)

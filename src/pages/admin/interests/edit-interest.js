@@ -9,20 +9,23 @@ import { toast } from "react-toastify";
 const EditInterest = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
-    if (id && token) {
-      getInterestByIdApi(id, token)
+    if (id && isAuthenticated) {
+      getInterestByIdApi(id)
         .then((res) => reset(res.data.interest))
         .catch(() => toast.error("Error fetching interest details"));
     }
-  }, [id, token, reset]);
+  }, [id, isAuthenticated, reset]);
 
   const onSubmit = async (data) => {
     try {
-      await editInterestApi(id, data, token);
+      await editInterestApi(id, data);
       toast.success("Interest updated successfully!");
       router.push("/admin/interests/list-of-interests");
     } catch (error) {

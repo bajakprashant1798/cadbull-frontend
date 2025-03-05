@@ -11,30 +11,31 @@ const EditUser = () => {
   const router = useRouter();
   const { id } = router.query;
   const dispatch = useDispatch();
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const { register, handleSubmit, reset } = useForm();
   
-  const [storedToken, setStoredToken] = useState(null);
+  // const [storedToken, setStoredToken] = useState(null);
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // ✅ Load token from sessionStorage safely
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const sessionToken = sessionStorage.getItem("accessToken");
-      setStoredToken(sessionToken);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const sessionToken = sessionStorage.getItem("accessToken");
+  //     setStoredToken(sessionToken);
+  //   }
+  // }, []);
 
   // ✅ Restore Redux token if missing
-  useEffect(() => {
-    if (!token && storedToken) {
-      const savedUser = sessionStorage.getItem("userData");
-      if (savedUser) {
-        dispatch(loginSuccess({ user: JSON.parse(savedUser), token: storedToken }));
-      }
-    }
-  }, [dispatch, token, storedToken]);
+  // useEffect(() => {
+  //   if (!token && storedToken) {
+  //     const savedUser = localStorage.getItem("userData");
+  //     if (savedUser) {
+  //       dispatch(loginSuccess({ user: JSON.parse(savedUser), token: storedToken }));
+  //     }
+  //   }
+  // }, [dispatch, token, storedToken]);
 
   // ✅ Fetch user data
   useEffect(() => {
@@ -42,14 +43,14 @@ const EditUser = () => {
 
     const fetchUserData = async () => {
       try {
-        const authToken = token || storedToken;
-        if (!authToken) {
+        // const authToken = token || storedToken;
+        if (!isAuthenticated) {
           toast.error("Token is missing, please login again.");
           return router.push("/auth/login");
         }
 
-        console.log("Fetching user with token:", authToken);
-        const response = await api.getUserByIdApi(id, authToken);
+        // console.log("Fetching user with token:", authToken);
+        const response = await api.getUserByIdApi(id);
 
         if (response.data?.user) {
           reset(response.data.user);
@@ -66,22 +67,22 @@ const EditUser = () => {
     };
 
     fetchUserData();
-  }, [id, reset, token, storedToken, router]);
+  }, [id, reset, isAuthenticated,  router]);
 
   // ✅ Fetch country list
   useEffect(() => {
-    const authToken = token || storedToken;
-    if (!authToken) return;
+    // const authToken = token || storedToken;
+    if (!isAuthenticated) return;
     
-    api.getCountriesApi(authToken)
+    api.getCountriesApi()
       .then((res) => setCountries(res.data.countries))
       .catch((err) => console.error("❌ Error fetching countries:", err));
-  }, [token, storedToken]);
+  }, [ isAuthenticated]);
 
   const onSubmit = async (data) => {
     try {
-      const authToken = token || storedToken;
-      await api.updateUserApi(id, data, authToken);
+      // const authToken = token || storedToken;
+      await api.updateUserApi(id, data);
       toast.success("User updated successfully!");
       router.push("/admin/users/view-users");
     } catch (error) {

@@ -10,30 +10,30 @@ const api = axios.create({
   timeout: 20000, // 20 seconds
 });
 
-// ✅ Helper Functions to Retrieve Tokens
-const getAccessToken = () => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token");
-  }
-  return null;
-};
+//// ✅ Helper Functions to Retrieve Tokens
+// const getAccessToken = () => {
+//   if (typeof window !== "undefined") {
+//     return localStorage.getItem("access_token");
+//   }
+//   return null;
+// };
 
-const getRefreshToken = () => localStorage.getItem("refreshToken"); // ✅ From localStorage
+// const getRefreshToken = () => localStorage.getItem("refreshToken"); // ✅ From localStorage
 
-// ✅ Request Interceptor: Attach Authorization Header
-api.interceptors.request.use(
-  (config) => {
-    const accessToken = getAccessToken();
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+//// ✅ Request Interceptor: Attach Authorization Header
+// api.interceptors.request.use(
+//   (config) => {
+//     const accessToken = getAccessToken();
+//     if (accessToken) {
+//       config.headers["Authorization"] = `Bearer ${accessToken}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 
-// ✅ Response Interceptor: Refresh Token Handling
-// ✅ Response Interceptor: Refresh Token Handling
+//// ✅ Response Interceptor: Refresh Token Handling
+//// ✅ Response Interceptor: Refresh Token Handling
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -47,33 +47,42 @@ api.interceptors.response.use(
 
     // ✅ If Access Token Expired & No Retry Attempt Yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+
+      if (!localStorage.getItem("userData")) {
+        // No user data means the user is not logged in; do not try to refresh.
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {
-        console.log("hello");
-        const refreshToken = localStorage.getItem("refreshToken");
 
-        if (!refreshToken) {
-          console.error("❌ No Refresh Token Found in Storage. Redirecting to login...");
-          handleLogout();
-          return Promise.reject(error);
-        }
+        // const refreshToken = localStorage.getItem("refreshToken");
 
-        console.log("🔄 Refreshing Token with:", refreshToken);
+        // if (!refreshToken) {
+        //   console.error("❌ No Refresh Token Found in Storage. Redirecting to login...");
+        //   handleLogout();
+        //   return Promise.reject(error);
+        // }
 
+        // console.log("🔄 Refreshing Token with:", refreshToken);
+
+        // Call refresh endpoint (cookies are automatically sent)
+        console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
         // ✅ Send Refresh Token in Headers
         const refreshResponse = await axios.post(
           `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
           {},
-          { headers: { "x-refresh-token": refreshToken } }
+          // { headers: { "x-refresh-token": refreshToken } }
+          { withCredentials: true }
         );
 
         const newAccessToken = refreshResponse.data.accessToken;
         console.log("✅ New Access Token Received:", newAccessToken);
 
-        // ✅ Store New Access Token
-        localStorage.setItem("accessToken", newAccessToken);
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        //// ✅ Store New Access Token
+        // localStorage.setItem("accessToken", newAccessToken);
+        // originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
         // ✅ Retry Original Request with New Token
         return api(originalRequest);
@@ -88,34 +97,44 @@ api.interceptors.response.use(
   }
 );
 
-// ✅ Logout function (Ensures proper redirect to `/`)
+// Helper logout function – it dispatches the logout action and clears any client-stored data.
 const handleLogout = () => {
-  console.log("🔴 Logging out user due to refresh token expiry...");
-
-  // ✅ Dispatch Redux logout
   store.dispatch(logout());
-
-  // ✅ Remove tokens from storage
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("userData");
-
-  // ✅ Ensure logout event is triggered
-  // window.dispatchEvent(new Event("userLoggedOut"));
-
-  // ✅ Refresh the page ONCE after logout
-  // if (!localStorage.getItem("logoutReloaded")) {
-  //   localStorage.setItem("logoutReloaded", "true");
-  //   setTimeout(() => {
-  //     window.location.reload(); // ✅ Ensures Redux state update before reload
-  //   }, 100);
-  // }
-
-  // ✅ Redirect only if user is on a protected route
-  if (window.location.pathname.startsWith("/admin")) {
-    window.location.href = "/auth/login";
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("userData");
   }
 };
+
+
+// // ✅ Logout function (Ensures proper redirect to `/`)
+// const handleLogout = () => {
+//   console.log("🔴 Logging out user due to refresh token expiry...");
+
+  
+//   // ✅ Dispatch Redux logout
+//   store.dispatch(logout());
+
+//   // ✅ Remove tokens from storage
+//   localStorage.removeItem("accessToken");
+//   localStorage.removeItem("refreshToken");
+//   localStorage.removeItem("userData");
+
+//   // ✅ Ensure logout event is triggered
+//   // window.dispatchEvent(new Event("userLoggedOut"));
+
+//   // ✅ Refresh the page ONCE after logout
+//   // if (!localStorage.getItem("logoutReloaded")) {
+//   //   localStorage.setItem("logoutReloaded", "true");
+//   //   setTimeout(() => {
+//   //     window.location.reload(); // ✅ Ensures Redux state update before reload
+//   //   }, 100);
+//   // }
+
+//   // ✅ Redirect only if user is on a protected route
+//   if (window.location.pathname.startsWith("/admin")) {
+//     window.location.href = "/auth/login";
+//   }
+// };
 
 
 
@@ -137,6 +156,10 @@ export const loginApiHandler = (user) => {
   return api.post("/auth/signin", user);
 };
 
+// In your service/api.js (or a separate auth helper file)
+export const logoutApiHandler = async () => {
+  return api.post("/auth/logout");
+};
 
 
 export const getUserProfile = () => {
@@ -145,7 +168,7 @@ export const getUserProfile = () => {
 };
 
 export const getUserData = () => {
-  return api.get("/users/user-profile");
+  return api.get("/users/user-data");
 };
 
 export const getUserDetails = () => {
@@ -190,10 +213,8 @@ export const sendOtpApiHandler = async (mobile) => {
 // };
 
 // Request Account Deletion
-export const requestAccountDeletion = async (token) => {
-  return api.post(`/delete-account/request`, {}, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const requestAccountDeletion = async () => {
+  return api.post(`/delete-account/request`);
 };
 
 // Confirm Account Deletion
@@ -238,33 +259,29 @@ export const getsimilerllprojects = (page, pageSize, id = "") => {
   return api.get(`/projects/sub/${id}`, { params });
 };
 
-export const addFavouriteItem = (product_id, token) => {
+export const addFavouriteItem = (product_id) => {
   return api.post("/favorites/toggle", { product_id }, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
 };
 
-export const getFavouriteItems = (token) => {
-  return api.get("/favorites", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getFavouriteItems = () => {
+  return api.get("/favorites");
 };
 
-export const getPaginatedFavouriteItems = (token, page = 1, pageSize = 10) => {
+export const getPaginatedFavouriteItems = ( page = 1, pageSize = 10) => {
   return api.get("/favorites/paginated", {
     params: { page, pageSize },
-    headers: { Authorization: `Bearer ${token}` },
+    // headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 
-export const removeFavouriteItem = (token, id) => {
-  return api.delete(`/favorites/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const removeFavouriteItem = ( id) => {
+  return api.delete(`/favorites/${id}`);
 };
 
 export const checkIfFavorited = async (token, id) => {
@@ -299,11 +316,11 @@ export const callViewProfileAPI = async (uuid) => {
   }
 };
 
-export const downloadProject = async (token, id, router) => {
+export const downloadProject = async ( id, router) => {
   try {
     const response = await api.get(`/projects/download/${id}`, {
       responseType: "blob", // Required to handle file downloads
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
     });
 
     if (response.status === 200) {
@@ -350,10 +367,8 @@ export const downloadProject = async (token, id, router) => {
 };
 
 
-export const downloadHistory = async (token, uuid) => {
-  return api.post(`/projects/${uuid}/download-history`, {}, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const downloadHistory = async ( uuid) => {
+  return api.post(`/projects/${uuid}/download-history`, {});
 };
 
 export const handleSubscription = async (priceId, userId) => {
@@ -364,7 +379,7 @@ export const getPaymentInformation = async (userId, sessionId) => {
   return api.post("/subscription/store", { userId, sessionId });
 };
 
-export const uploadProjectApiHandler = async (formData, token) => {
+export const uploadProjectApiHandler = async (formData) => {
   try {
     const data = new FormData();
     data.append("file", formData.file);
@@ -381,7 +396,7 @@ export const uploadProjectApiHandler = async (formData, token) => {
     data.append("keyword", formData.keyword);
     const response = await api.post("/projects/upload", data, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        // Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
       onUploadProgress: (progressEvent) => {
@@ -405,43 +420,33 @@ export const uploadProjectApiHandler = async (formData, token) => {
 //   });
 // };
 
-export const getSubscriptionDetail = (token) => {
-  return api.get("/subscription/user/plan", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getSubscriptionDetail = () => {
+  return api.get("/subscription/user/plan");
 };
 
-export const cancelSubscriptionRequest = (subscriptionId, token) => {
-  return api.post("/subscription/cancel-subscription", { subscriptionId }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const cancelSubscriptionRequest = (subscriptionId) => {
+  return api.post("/subscription/cancel-subscription", { subscriptionId });
 };
 
 // profile api
-export const registerNewArchitechProfile = (profileData, token) => {
-  return api.post("/profile", profileData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const registerNewArchitechProfile = (profileData) => {
+  return api.post("/profile", profileData);
 };
 
-export const getArchitectProfileInfo = (token) => {
-  return api.get("/profile", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getArchitectProfileInfo = () => {
+  return api.get("/profile");
 };
 
-export const updateUserProfileInfo = async (userData, token) => {
-  return api.put("/profile", userData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateUserProfileInfo = async (userData) => {
+  return api.put("/profile", userData);
 };
 
-export const updateProfilePicture = (token, file) => {
+export const updateProfilePicture = ( file) => {
   const formData = new FormData();
   formData.append("profile_photo", file);
   return api.put("/profile/photo", formData, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data",
     },
   });
@@ -454,21 +459,18 @@ export const updateProfileWithoutPicture = (user, token) => {
 };
 
 // Use GET instead of PATCH for retrieving data
-export const getCompanyProfile = (profileId, token) => {
-  return api.get(`/profile/author/${profileId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getCompanyProfile = (profileId) => {
+  return api.get(`/profile/author/${profileId}`);
 };
 
 export const getCompanyProducts = (
   profileId,
-  { page = 1, pageSize = 12, search = "", sort, from, to } = {},
-  token
+  { page = 1, pageSize = 12, search = "", sort, from, to } = {}
 ) => {
   console.log("api call back", profileId, page, pageSize, search, sort, from, to);
   return api.get(`/profile/author/${profileId}/products`, {
     params: { page, pageSize, search, sort, from, to },
-    headers: { Authorization: `Bearer ${token}` },
+    // headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -484,10 +486,10 @@ export const getCategoriesWithSubcategories = async () => {
   }
 };
 
-export const getUploadedProjectList = async (token, page = 1, pageSize = 10) => {
+export const getUploadedProjectList = async ( page = 1, pageSize = 10) => {
   try {
     const response = await api.get(`/projects/uploaded/list?pageSize=${pageSize}&page=${page}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      // headers: { Authorization: `Bearer ${token}` },
       timeout: 10000,
     });
     return response;
@@ -497,10 +499,8 @@ export const getUploadedProjectList = async (token, page = 1, pageSize = 10) => 
   }
 };
 
-export const removeProject = async (token, id) => {
-  return api.delete(`/projects/remove/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const removeProject = async ( id) => {
+  return api.delete(`/projects/remove/${id}`);
 };
 
 export const getBlogs = async () => {
@@ -696,11 +696,7 @@ export const deleteSubscriberApi = async (id) => {
 // ----------------- Admin Project ----------------- //
 // ✅ Add Project (With File Upload)
 export const addProjectApi = async (formData) => {
-  return api.post("/admin/projects", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return api.post("/admin/projects", formData);
 };
 
 // ✅ Fetch Projects with Pagination
@@ -734,11 +730,7 @@ export const updateProjectApi = async (id, data) => {
     formData.append("image", data.image[0]);
   }
 
-  return api.put(`/admin/projects/${id}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  return api.put(`/admin/projects/${id}`, formData);
 };
 
 // ✅ Delete Project
@@ -757,27 +749,25 @@ export const getAdminCategoriesWithSubcategories = async () => {
 // ==========================
 
 // ✅ Save a new newsletter email
-export const saveNewsletterEmailApi = async (data, token) => {
+export const saveNewsletterEmailApi = async (data) => {
   return api.post("/admin/newsletter-email", data, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
       "Content-Type": "multipart/form-data", // Since we're uploading an image
     },
   });
 };
 
 // ✅ Fetch all saved newsletter emails
-export const getNewsletterEmailsApi = async (token) => {
-  return api.get("/admin/newsletter-email", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getNewsletterEmailsApi = async () => {
+  return api.get("/admin/newsletter-email");
 };
 
 // ✅ Send a saved newsletter email to subscribers
 // ✅ Send newsletter email to subscribers (With Image)
-export const sendNewsletterEmailApi = (id, formData, token) => {
+export const sendNewsletterEmailApi = (id, formData) => {
   return api.post(`/admin/newsletter-email/send/${id}`, formData, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
@@ -794,27 +784,25 @@ export const getUsersEarningsApi = async (filterStatus, page = 1, perPage = 10, 
 
   return api.get("/admin/earnings", {
     params: { status: filterStatus, page, perPage, search },
-    headers: { Authorization: `Bearer ${token}` }, // ✅ Send token
+    // headers: { Authorization: `Bearer ${token}` }, // ✅ Send token
   });
 };
 
 
 // ✅ Fetch Redeem Requests
-export const getRedeemRequestsApi = async (is_redeem, page = 1, perPage = 10, token) => {
+export const getRedeemRequestsApi = async (is_redeem, page = 1, perPage = 10) => {
   return api.get("/admin/redeem-requests", {
     params: { is_redeem, page, perPage },
-    headers: { Authorization: `Bearer ${token}` },
+    // headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 // ✅ Toggle Redeem Status
-export const toggleRedeemStatusApi = async (redeemId, userId, redeemMoney, token) => {
+export const toggleRedeemStatusApi = async (redeemId, userId, redeemMoney) => {
   return api.patch("/admin/redeem-requests/toggle-status", {
     redeemId,
     userId,
     redeemMoney
-  }, {
-    headers: { Authorization: `Bearer ${token}` }
   });
 };
 
@@ -891,11 +879,11 @@ export const deleteUserProject = async (id) => {
 };
 
 // Expects formData (FormData instance) and a valid token
-export const createUserProject = async (formData, token) => {
+export const createUserProject = async (formData) => {
   return api.post("/userProjects", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
     },
   });
 };

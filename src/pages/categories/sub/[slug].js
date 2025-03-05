@@ -39,6 +39,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   const subcatfilter = useSelector((store) => store.projectinfo.subcatfilter);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
 
   // Local state for search input
   const [searchText, setSearchText] = useState("");
@@ -68,8 +71,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   }, []);
 
   useEffect(() => {
-    if (token && !favouritesFetched) {
-      getFavouriteItems(token)
+    if (isAuthenticated && !favouritesFetched) {
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
@@ -80,7 +83,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
           setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [isAuthenticated, favouritesFetched, dispatch]);
 
 
   // Update Redux with the new slug and reset pagination

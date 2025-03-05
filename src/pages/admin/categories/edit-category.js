@@ -9,12 +9,15 @@ import { toast } from "react-toastify";
 const EditCategory = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const { register, handleSubmit, reset } = useForm();
   const [parentCategories, setParentCategories] = useState([]);
 
   useEffect(() => {
-    if (id && token) {
+    if (id && isAuthenticated) {
       getCategoryByIdApi(id)
         .then((res) => reset(res.data.category))
         .catch(() => toast.error("Error fetching category details"));
@@ -23,11 +26,11 @@ const EditCategory = () => {
         .then((res) => setParentCategories(res.data.categories))
         .catch(() => toast.error("Error fetching parent categories"));
     }
-  }, [id, token, reset]);
+  }, [id, isAuthenticated, reset]);
 
   const onSubmit = async (data) => {
     try {
-      await editCategoryApi(id, data, token);
+      await editCategoryApi(id, data);
       toast.success("Category updated successfully!");
       router.push("/admin/categories/all-categories");
     } catch (error) {

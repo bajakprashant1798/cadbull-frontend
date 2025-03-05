@@ -24,9 +24,12 @@ const ProjectCard = ({
   favorites, // Optionally pass favorites list from parent
 }) => {
   const router = useRouter();
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [isFavorited, setIsFavorited] = useState(false);
 
+  console.log("isAuthenticated for projectCard", isAuthenticated);
+  
   const dispatch = useDispatch();
 
   // // Use a custom hook or parent prop for favorites if available.
@@ -124,19 +127,19 @@ const ProjectCard = ({
   // }, [token, id, isFavorited, router]);
   
   const handleLike = useCallback(async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       router.push("/auth/login");
       return;
     }
     try {
       if (isFavorited) {
-        await removeFavouriteItem(token, id);
+        await removeFavouriteItem( id);
         setIsFavorited(false);
         toast.success("Removed from Favorite list", { position: "top-right" });
         // Dispatch action to update Redux store:
         dispatch(deleteFavouriteItem(id));
       } else {
-        await addFavouriteItem({ product_id: id }, token);
+        await addFavouriteItem({ product_id: id });
         setIsFavorited(true);
         toast.success("Added to Favorite list", { position: "top-right" });
         // Dispatch action with minimal product info.
@@ -154,7 +157,7 @@ const ProjectCard = ({
       console.error("Error toggling favorite:", error);
       toast.error("Failed to update favorite status");
     }
-  }, [token, id, isFavorited, router, dispatch, work_title, file_type, photo_url, type]);
+  }, [isAuthenticated, id, isFavorited, router, dispatch, work_title, file_type, photo_url, type]);
 
 
   return (
@@ -168,7 +171,7 @@ const ProjectCard = ({
               {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}
               {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
             </button>
-            <button onClick={()=>handledownload(id,token,router)} className='border-0 bg-transparent p-0 shadow-none'><img src={save.src} className='border-0' alt='icon' loading="lazy" /></button>
+            <button onClick={()=>handledownload(id,isAuthenticated,router)} className='border-0 bg-transparent p-0 shadow-none'><img src={save.src} className='border-0' alt='icon' loading="lazy" /></button>
           </div>
         </div>
         <div className='project-day-card-description d-flex justify-content-between'>

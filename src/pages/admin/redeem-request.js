@@ -6,7 +6,8 @@ import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const RedeemRequests = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [requests, setRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState(0); // Default: Payment Not Completed
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -16,16 +17,16 @@ const RedeemRequests = () => {
   // ✅ Fetch Redeem Requests (With Debounce)
   useEffect(() => {
     const delayFetch = setTimeout(() => {
-      if (token) {
+      if (isAuthenticated) {
         fetchRedeemRequests();
       }
     }, 500); // ⏳ Delay API call by 500ms
 
     return () => clearTimeout(delayFetch);
-  }, [filterStatus, currentPage, entriesPerPage, token]);
+  }, [filterStatus, currentPage, entriesPerPage, isAuthenticated]);
 
   const fetchRedeemRequests = () => {
-    getRedeemRequestsApi(filterStatus, currentPage, entriesPerPage, token)
+    getRedeemRequestsApi(filterStatus, currentPage, entriesPerPage)
       .then((res) => {
         setRequests(res.data.requests);
         setTotalPages(res.data.totalPages);
@@ -35,7 +36,7 @@ const RedeemRequests = () => {
 
   const handleToggleRedeem = async (redeemId, userId, redeemMoney) => {
     try {
-      const res = await toggleRedeemStatusApi(redeemId, userId, redeemMoney, token);
+      const res = await toggleRedeemStatusApi(redeemId, userId, redeemMoney);
       const newStatus = res.data.newStatus;
 
       toast.success("✅ Redeem status updated successfully!");

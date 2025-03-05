@@ -9,7 +9,7 @@ import Pagination from "@/components/Pagination";
 import { getOccupations, addExperience, getExperiences } from "@/service/api"; // Import API functions
 
 const Experiences = () => {
-  const { token } = useSelector((store) => store.logininfo); // Get user token
+  // const { token } = useSelector((store) => store.logininfo); // Get user token
   const [occupations, setOccupations] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ const Experiences = () => {
 
   const fetchOccupations = async () => {
     try {
-      const response = await getOccupations(token);
+      const response = await getOccupations();
       setOccupations(response.data.occupations);
     } catch (error) {
       console.error("❌ Error fetching occupations:", error);
@@ -37,7 +37,7 @@ const Experiences = () => {
 
   const fetchExperiences = async () => {
     try {
-      const response = await getExperiences(token);
+      const response = await getExperiences();
       setExperiences(response.data.experiences);
     } catch (error) {
       console.error("❌ Error fetching experiences:", error);
@@ -52,7 +52,7 @@ const Experiences = () => {
     }
 
     try {
-      await addExperience(formData, token);
+      await addExperience(formData);
       toast.success("Experience added successfully!");
       setFormData({ company_name: "", occupation: "", from: "", to: "", post: "" }); // Reset Form
       fetchExperiences(); // Refresh the table

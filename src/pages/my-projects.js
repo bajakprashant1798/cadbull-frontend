@@ -33,7 +33,8 @@ import withAuth from "@/HOC/withAuth";
 
 
 const myProjects = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [tableData, setTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -44,7 +45,7 @@ const myProjects = () => {
 
   useEffect(() => {
     if (!tableData || tableData.length === 0) { // ✅ Additional check
-        getUploadedProjectList(token, 1, 10)
+        getUploadedProjectList( 1, 10)
         .then((res) => {
           console.log("my-projects: ", res);
           if (Array.isArray(res.data.projects)) {
@@ -60,7 +61,7 @@ const myProjects = () => {
           console.log(err);
         });
     }
-  }, [tableData,token, currentPage]);
+  }, [tableData,isAuthenticated, currentPage]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -69,7 +70,7 @@ const myProjects = () => {
   
 
   const handleremoveitem = (id) => {
-    removeProject(token, id)
+    removeProject( id)
       .then((res) => {
         // ✅ Remove only the deleted project from state instead of clearing everything
         // setTableData(tableData.filter(project => project.id !== id));
@@ -85,11 +86,11 @@ const myProjects = () => {
   };
 
   const handledownload = (id) => {
-    downloadProject(token, id)
+    downloadProject( id)
       .then((res) => {
         const zipUrl = res.data.zip_url;
         downloadFile(zipUrl);
-        downloadHistory(token, id)
+        downloadHistory( id)
           .then((res) => {
             console.log("download", res.data);
           })

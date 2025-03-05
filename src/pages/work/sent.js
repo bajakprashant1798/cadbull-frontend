@@ -65,7 +65,7 @@ const tableData = [
 
 
 const WorkSent = () => {
-
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated); 
   const { token } = useSelector((store) => store.logininfo);
   const [tableData, setTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +79,7 @@ const WorkSent = () => {
   const fetchProjects = debounce((page) => {
     console.log("Fetching projects for page:", page);
     
-    getUploadedProjectList(token, page, 10)
+    getUploadedProjectList( page, 10)
       .then((res) => {
         if (res?.data?.projects) {
           setTableData(res.data.projects);
@@ -96,10 +96,10 @@ const WorkSent = () => {
 
   // ✅ Fetch Data on Mount and When `currentPage` Changes
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       fetchProjects(currentPage);
     }
-  }, [token, currentPage]);
+  }, [isAuthenticated, currentPage]);
 
   // ✅ Handle Page Change for Pagination
   const handlePageChange = (newPage) => {
@@ -111,7 +111,7 @@ const WorkSent = () => {
 
   // ✅ Remove Project (Optimized)
   const handleremoveitem = (id) => {
-    removeProject(token, id)
+    removeProject( id)
       .then(() => {
         setTableData((prev) => prev.filter((project) => project.id !== id)); // ✅ Only remove deleted project
         dispatch(deleteFavouriteItem(id));
@@ -215,7 +215,7 @@ const WorkSent = () => {
                             <td>
                               {!res.is_approved && 
                                 <div className="d-inline-flex gap-2">  
-                                  <button type="button" onClick={() => handledownload(res.id, token,router)} className="link-btn bg-success p-2 rounded">
+                                  <button type="button" onClick={() => handledownload(res.id, isAuthenticated,router)} className="link-btn bg-success p-2 rounded">
                                     {/* <img src={downloadIcon.src} alt="download" /> */}
                                     <Icons.Download />
                                   </button>

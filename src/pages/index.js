@@ -108,7 +108,8 @@ export default function Home() {
   // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
   const [productCount, setProductCount] = useState(0);
 
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
     // console.log("favouriteList index: ", favouriteList);
 
@@ -118,8 +119,11 @@ export default function Home() {
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
-    if (token && !favouritesFetched) {
-      getFavouriteItems(token)
+    console.log("isAuthenticated index:",isAuthenticated);
+    
+    if ( !favouritesFetched && isAuthenticated ) {
+      console.log("isAuthenticated index:",isAuthenticated);
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
@@ -130,7 +134,7 @@ export default function Home() {
           setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [ favouritesFetched, dispatch]);
 
   useEffect(() => {
     // We assume your API returns an object with a property like `totalProducts`
@@ -143,7 +147,7 @@ export default function Home() {
       .catch((error) => {
         console.error("Error fetching product count:", error);
       });
-  }, [token]);
+  }, []);
 
 
 

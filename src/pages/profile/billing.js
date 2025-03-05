@@ -22,7 +22,8 @@ import CancelSubsConfirm from "@/components/CancelSubsConfirm";
 import { useRouter } from "next/router";
 
 const ManageBilling = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const router=useRouter()
   const [subscribedPlan, setSubscribedPlan] = useState({
     subscription_id: "",
@@ -52,7 +53,7 @@ const ManageBilling = () => {
      console.log('user Data',userData)
       getPaymentInformation(userData?.id,router.query.session_id).then((res)=>{
         // console.log('api res',res.data)
-      getSubscriptionDetail(userData?.token)
+      getSubscriptionDetail()
       .then((subRes) => {
         console.log("subscribed plan res", subRes.data);
         setSubscribedPlan(subRes.data.plan);
@@ -65,7 +66,7 @@ const ManageBilling = () => {
        })
     }
     else{
-      getSubscriptionDetail(token)
+      getSubscriptionDetail()
       .then((subRes) => {
         console.log("subscribed plan res", subRes.data);
         setSubscribedPlan(subRes.data.plan);
@@ -82,7 +83,7 @@ const handleCancelSubscription = () => {
     return;
   }
 
-  cancelSubscriptionRequest(subscribedPlan.subscription_id, token)
+  cancelSubscriptionRequest(subscribedPlan.subscription_id)
     .then(response => {
       console.log("✅ Subscription Cancelled at End of Billing Cycle:", response.data);
 
@@ -209,7 +210,7 @@ const handleCancelSubscription = () => {
                                 toast.error("No active subscription found.");
                                 return;
                             }
-                            cancelSubscriptionRequest(subscribedPlan.subscription_id, token)
+                            cancelSubscriptionRequest(subscribedPlan.subscription_id)
                                 .then(() => {
                                     toast.success("Subscription cancellation scheduled successfully.");
                                     setSubscribedPlan({ ...subscribedPlan, cancelled_at: new Date().toISOString() }); // Update UI
@@ -252,7 +253,7 @@ const handleCancelSubscription = () => {
         </div>
       </section>
       <Modal>
-        <CancelSubsConfirm subscriptionId={subscribedPlan.subscription_id} token={token} />
+        <CancelSubsConfirm subscriptionId={subscribedPlan.subscription_id}/>
       </Modal>
     </Fragment>
   );

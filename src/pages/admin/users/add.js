@@ -25,7 +25,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const AddUser = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [countries, setCountries] = useState([]); // Store fetched countries
   const [isLoading, startLoading, stopLoading] = useLoading();
 
@@ -40,20 +41,20 @@ const AddUser = () => {
 
   // ✅ Fetch countries when the component loads
   useEffect(() => {
-    getCountriesApi(token)
+    getCountriesApi()
       .then((res) => {
         console.log("🔍 Countries API Response:", res.data); // Log response
         setCountries(res.data.countries);
       })
       .catch((err) => console.error("❌ Error fetching countries:", err));
-  }, [token]);
+  }, [isAuthenticated]);
   
 
   const addUserHandler = (data) => {
     if (!isDirty) return;
 
     startLoading();
-    addNewUserApi(data, token)
+    addNewUserApi(data)
       .then(() => {
         stopLoading();
         toast.success("User added successfully!");

@@ -40,12 +40,15 @@ const HousePlan = () => {
 
   // Retrieve token from login info:
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
-    if (token && !favouritesFetched) {
-      getFavouriteItems(token)
+    if (isAuthenticated && !favouritesFetched) {
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
@@ -56,7 +59,7 @@ const HousePlan = () => {
           setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [isAuthenticated, favouritesFetched, dispatch]);
 
 
   // Debounce search input so that we don't trigger API calls on every keystroke

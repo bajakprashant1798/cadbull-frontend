@@ -3,8 +3,8 @@ import { downloadHistory, downloadProject } from "./api";
 import { toast } from "react-toastify";
 
 
-export const handledownload = async (id,token,router) => {
-  if (!token) {
+export const handledownload = async (id,isAuthenticated,router) => {
+  if (!isAuthenticated) {
     toast.warning("Please login to download the file");
     console.error("❌ No token found, redirecting to login...");
     router.push("/auth/login"); // Redirect to login if not authenticated
@@ -12,7 +12,7 @@ export const handledownload = async (id,token,router) => {
   }
  
   try {
-      const res = await downloadProject(token, id, router);
+      const res = await downloadProject( id, router);
 
       // If response is empty, the request was likely redirected, so stop execution
       if (res?.status === 403 && res?.data?.redirectUrl) {

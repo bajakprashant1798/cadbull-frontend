@@ -15,7 +15,8 @@ import withAuth from "@/HOC/withAuth";
 import { toast } from "react-toastify";
 
 const WithdrawAmount = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   
   const [balance, setBalance] = useState(0);
   const [amount, setAmount] = useState(0);
@@ -23,7 +24,7 @@ const WithdrawAmount = () => {
   const [tableData, setTableData] = useState([]); 
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       getWalletBalance().then((res)=>{        
         console.log("Balance Response: ", res.data.amount);
         setBalance(res.data.amount); // ✅ Now subtracts pending withdrawals
@@ -31,7 +32,7 @@ const WithdrawAmount = () => {
           console.log('error',err)
       });
          
-      getRedeemRequestList(token)
+      getRedeemRequestList()
       .then((res) => {
         setTableData(res.data.withdrawRequests);
         // console.log(res);
@@ -41,7 +42,7 @@ const WithdrawAmount = () => {
         console.log(err);
       });
     }
-  }, [token,balance]);
+  }, [isAuthenticated,balance]);
 
   const handleWithdraw = (e) => {
     e.preventDefault();

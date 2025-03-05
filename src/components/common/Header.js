@@ -18,6 +18,9 @@ import {
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { getUserData, logoutApiHandler } from "@/service/api";
+import { persistor } from "../../../redux/app/store";
+import { resetProjectState } from "../../../redux/app/features/projectsSlice";
 
 const links = [
   {
@@ -66,97 +69,138 @@ const Header = () => {
   // const token = useSelector((state) => state.logininfo.token); 
   
   // ✅ Manage token state
-  const [token, setToken] = useState(null);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("accessToken");
-      if (!storedToken) {
-        dispatch(logout());
-      }
-      setToken(storedToken);
-    }
-  }, [dispatch]);
+  // const [token, setToken] = useState(null);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedToken = localStorage.getItem("accessToken");
+  //     if (!storedToken) {
+  //       dispatch(logout());
+  //     }
+  //     setToken(storedToken);
+  //   }
+  // }, [dispatch]);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
 
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const storedToken = localStorage.getItem("accessToken");
-      if (!storedToken) {
-        dispatch(logout());
-      }
-      setToken(storedToken);
-    };
+  // useEffect(() => {
+  //   const checkAuth = () => {
+  //     const storedToken = localStorage.getItem("accessToken");
+  //     if (!storedToken) {
+  //       dispatch(logout());
+  //     }
+  //     setToken(storedToken);
+  //   };
 
-    // ✅ Listen for Storage Changes
-    window.addEventListener("storage", checkAuth);
+  //   // ✅ Listen for Storage Changes
+  //   window.addEventListener("storage", checkAuth);
 
-    return () => {
-      window.removeEventListener("storage", checkAuth);
-    };
-  }, [dispatch]);
+  //   return () => {
+  //     window.removeEventListener("storage", checkAuth);
+  //   };
+  // }, [dispatch]);
   
-  useEffect(() => {
-    const handleUserLogout = () => {
-      console.log("🔄 Logout event detected, updating UI...");
-      setIsLoggedOut(true);
-      dispatch(logout()); // ✅ Ensure Redux state updates
-    };
+  // useEffect(() => {
+  //   const handleUserLogout = () => {
+  //     console.log("🔄 Logout event detected, updating UI...");
+  //     setIsLoggedOut(true);
+  //     dispatch(logout()); // ✅ Ensure Redux state updates
+  //   };
 
-    // window.addEventListener("userLoggedOut", handleUserLogout);
+  //   // window.addEventListener("userLoggedOut", handleUserLogout);
 
-    // return () => {
-    //   window.removeEventListener("userLoggedOut", handleUserLogout);
-    // };
-  }, []);
+  //   // return () => {
+  //   //   window.removeEventListener("userLoggedOut", handleUserLogout);
+  //   // };
+  // }, []);
   
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
-  console.log("isAuthenticated header", isAuthenticated);
   
   const [showHamburgerMenuItem, setShowHamburgerMenuItem] = useState(false);
 
   
-  const handleLogout = () => {
-    console.log("🔴 User manually logging out...");
+  // const handleLogout = () => {
+  //   console.log("🔴 User manually logging out...");
     
-    localStorage.removeItem("userData");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  //   localStorage.removeItem("userData");
+  //   localStorage.removeItem("accessToken");
+  //   localStorage.removeItem("refreshToken");
     
-    dispatch(logout()); // ✅ Ensure Redux state updates
-    // setUserLoggedOut(true); // ✅ Triggers UI re-render
-    Router.push("/auth/login"); // Redirect to login
+  //   dispatch(logout()); // ✅ Ensure Redux state updates
+  //   // setUserLoggedOut(true); // ✅ Triggers UI re-render
+  //   Router.push("/auth/login"); // Redirect to login
+  // };
+
+  const handleLogout = async () => {
+    // Prevent duplicate logout calls
+    if (isLoggedOut) return;
+    setIsLoggedOut(true);
+    
+    try {
+      // Call the backend logout endpoint so cookies are cleared
+      await logoutApiHandler();
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    } finally {
+      // Clear client-side state and storage
+      localStorage.removeItem("userData");
+      // localStorage.removeItem("accessToken");
+      // localStorage.removeItem("refreshToken");
+      dispatch(logout());
+      dispatch(resetProjectState());
+      Router.push("/auth/login");
+      setIsLoggedOut(false);
+    }
   };
 
+
+  // Rehydrate Redux state by calling getUserData if not already authenticated.
   useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    const storedToken = localStorage.getItem("accessToken");
-  
-    if (!storedToken) {
-      console.warn("❌ Token missing, triggering logout");
-      dispatch(logout());
+    // Only call if the Redux state doesn't show an authenticated user.
+    if (!isAuthenticated) {
+      getUserData()
+        .then((res) => {
+          if (res.data && res.data.user) {
+            dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching user data:", err);
+          // dispatch(logout());
+        });
     }
+  }, [isAuthenticated, dispatch]);
+
+  // useEffect(() => {
+  //   const storedUserData = localStorage.getItem("userData");
+  //   // const storedToken = localStorage.getItem("accessToken");
   
-    if (storedUserData && storedToken) {
-      try {
-        // storedUserData is stored as { user: { … } }
-        const parsedData = JSON.parse(storedUserData);
-        const user = parsedData.user || parsedData;
-        dispatch(loginSuccess({ user, accessToken: storedToken, status: "authenticated" }));
-        console.log("userinheader", user, storedToken);
+  //   // if (!storedToken) {
+  //   //   console.warn("❌ Token missing, triggering logout");
+  //   //   dispatch(logout());
+  //   // }
+  
+  //   if (storedUserData ) {
+  //     try {
+  //       // storedUserData is stored as { user: { … } }
+  //       const parsedData = JSON.parse(storedUserData);
+  //       const user = parsedData.user || parsedData;
+  //       dispatch(loginSuccess({ user,  status: "authenticated" }));
+  //       console.log("userinheader", user, storedToken);
         
-      } catch (error) {
-        console.error("❌ JSON Parse Error in Header.js:", error);
-        localStorage.removeItem("userData");
-        localStorage.removeItem("accessToken");
-      }
-    }
-  }, [dispatch]);
+  //     } catch (error) {
+  //       console.error("❌ JSON Parse Error in Header.js:", error);
+  //       console.log("isLoggedOut from header");
+        
+  //       localStorage.removeItem("userData");
+  //       // localStorage.removeItem("accessToken");
+  //     }
+  //   }
+  // }, [dispatch]);
 
     
 

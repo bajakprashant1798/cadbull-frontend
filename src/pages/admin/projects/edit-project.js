@@ -10,7 +10,10 @@ import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
 
 const EditProject = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const dispatch = useDispatch();
   const { register, handleSubmit, setValue, watch } = useForm();
   const router = useRouter();
@@ -21,25 +24,25 @@ const EditProject = () => {
   const [tags, setTags] = useState([]);
   const [projectDetails, setProjectDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [storedToken, setStoredToken] = useState(null);
+  // const [storedToken, setStoredToken] = useState(null);
 
   // ✅ Load token from sessionStorage safely
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const sessionToken = sessionStorage.getItem("accessToken");
-      setStoredToken(sessionToken);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const sessionToken = sessionStorage.getItem("accessToken");
+  //     setStoredToken(sessionToken);
+  //   }
+  // }, []);
 
   // ✅ Restore Redux token if missing
-  useEffect(() => {
-    if (!token && storedToken) {
-      const savedUser = sessionStorage.getItem("userData");
-      if (savedUser) {
-        dispatch(loginSuccess({ user: JSON.parse(savedUser), token: storedToken }));
-      }
-    }
-  }, [dispatch, token, storedToken]);
+  // useEffect(() => {
+  //   if (!token && storedToken) {
+  //     const savedUser = sessionStorage.getItem("userData");
+  //     if (savedUser) {
+  //       dispatch(loginSuccess({ user: JSON.parse(savedUser), token: storedToken }));
+  //     }
+  //   }
+  // }, [dispatch, token, storedToken]);
 
   // ✅ Fetch Categories & Project Data
   useEffect(() => {
@@ -48,22 +51,22 @@ const EditProject = () => {
     const fetchProjectData = async () => {
       try {
         setLoading(true);
-        const authToken = token || storedToken;
-        if (!authToken) {
+        // const authToken = token || storedToken;
+        if (!isAuthenticated) {
           toast.error("Token is missing, please login again.");
           return router.push("/auth/login");
         }
 
-        console.log("Fetching project with token:", authToken);
+        // console.log("Fetching project with token:", authToken);
 
         // ✅ Fetch categories and project details simultaneously
         const [categoriesRes, projectRes] = await Promise.all([
-          api.getAdminCategoriesWithSubcategories(authToken),
-          api.getProjectByIdApi(id, authToken),
+          api.getAdminCategoriesWithSubcategories(),
+          api.getProjectByIdApi(id),
         ]);
 
-        console.log("✅ Categories Response:", categoriesRes.data);
-        console.log("✅ Project Response:", projectRes.data);
+        // console.log("✅ Categories Response:", categoriesRes.data);
+        // console.log("✅ Project Response:", projectRes.data);
 
         if (!categoriesRes.data || !Array.isArray(categoriesRes.data)) {
           throw new Error("Invalid categories response");
@@ -94,7 +97,7 @@ const EditProject = () => {
     };
 
     fetchProjectData();
-  }, [id, token, storedToken]);
+  }, [id, isAuthenticated]);
 
   // ✅ Handle Category Selection
   const handleCategoryChange = (e) => {
@@ -125,7 +128,7 @@ const EditProject = () => {
 
       console.log("🚀 Sending Updated Project Data:", updatedData);
 
-      await updateProjectApi(id, updatedData, token);
+      await updateProjectApi(id, updatedData);
       toast.success("Project updated successfully!");
       router.push("/admin/projects/view-projects");
     } catch (error) {

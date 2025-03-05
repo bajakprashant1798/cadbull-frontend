@@ -7,7 +7,8 @@ import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
 
 const UserTable = ({ role, title }) => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [users, setUsers] = useState([]); // All users fetched from API
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState(""); // Active ("1") or Inactive ("0")
@@ -23,15 +24,15 @@ const UserTable = ({ role, title }) => {
 
   // Fetch users from API (fetch all users; if your API is paginated you may need to adjust this)
   useEffect(() => {
-    if (token) {
-      getUsersByRoleApi(role, "", filterStatus, 1, 1000, token)
+    if (isAuthenticated) {
+      getUsersByRoleApi(role, "", filterStatus, 1, 1000)
         .then((res) => {
           // Assume res.data.users is an array of all users for the given role
           setUsers(res.data.users);
         })
         .catch((err) => console.error("Error fetching users:", err));
     }
-  }, [role, filterStatus, token]);
+  }, [role, filterStatus, isAuthenticated]);
 
   // Compute filtered users based on search term and gold subscription filter
   const filteredUsers = users.filter((user) => {
@@ -101,7 +102,7 @@ const UserTable = ({ role, title }) => {
   // Toggle user status handler
   const handleToggleStatus = async (id) => {
     try {
-      await toggleUserStatusApi(id, token);
+      await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
       setUsers((prevUsers) =>
         prevUsers.map((user) =>

@@ -6,24 +6,26 @@ import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const EditSubscriber = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const router = useRouter();
   const { id } = router.query; // Get subscriber ID from URL
-console.log("id: ", id);
 
   const [form, setForm] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(true);
 
   // ✅ Fetch Subscriber Data
   useEffect(() => {
-    if (id && token) {
+    if (id && isAuthenticated) {
       fetchSubscriberData();
     }
-  }, [id, token]);
+  }, [id, isAuthenticated]);
 
   const fetchSubscriberData = async () => {
     try {
-      const res = await getSubscriberByIdApi(id, token);
+      const res = await getSubscriberByIdApi(id);
       console.log("res: ", res);
       
       setForm({ name: res.data.subscriber.name, email: res.data.subscriber.email });
@@ -38,7 +40,7 @@ console.log("id: ", id);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateSubscriberApi(id, form, token);
+      await updateSubscriberApi(id, form);
       toast.success("Subscriber updated successfully!");
       router.push("/admin/newsletters/list-of-subscribers"); // Redirect after update
     } catch (error) {

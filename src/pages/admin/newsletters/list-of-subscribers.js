@@ -8,7 +8,10 @@ import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const ListSubscribers = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const [subscribers, setSubscribers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -17,14 +20,14 @@ const ListSubscribers = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       fetchSubscribers();
     }
-  }, [searchTerm, currentPage, entriesPerPage, token]);
+  }, [searchTerm, currentPage, entriesPerPage, isAuthenticated]);
 
   const fetchSubscribers = async () => {
     try {
-      const res = await getSubscribersApi(searchTerm, currentPage, entriesPerPage, token);
+      const res = await getSubscribersApi(searchTerm, currentPage, entriesPerPage);
       setSubscribers(res.data.subscribers);
       setTotalPages(res.data.totalPages);
     } catch (error) {
@@ -35,7 +38,7 @@ const ListSubscribers = () => {
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this subscriber?")) return;
     try {
-      await deleteSubscriberApi(id, token);
+      await deleteSubscriberApi(id);
       toast.success("Subscriber deleted successfully");
       fetchSubscribers();
     } catch (error) {

@@ -10,13 +10,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
 import { useForm, Controller } from "react-hook-form";
-import { loginApiHandler, socialLogin, getUserProfile, } from "@/service/api";
+import { loginApiHandler, socialLogin, getUserProfile, getUserData, } from "@/service/api";
 import withAuth from "@/HOC/withAuth";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
+
 // import ReCAPTCHA from "react-google-recaptcha";
 // import RecaptchaComponent from "@/components/RecaptchaComponent";
 
@@ -27,79 +28,123 @@ const pageTitle = {
     "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
 };
 
-const Register = () => {
+const Login = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   // const { data: session } = useSession();
   const [isLoading,startLoading,stopLoading]=useLoading();
-  const isAuthenticated=useSessionStorageData('userData')
+  // const isAuthenticated=useSessionStorageData('userData')
+
+  //// Get isAuthenticated from Redux:
+  const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
+
   // const [captchaValue, setCaptchaValue] = useState(null);
 
   // // Set up reCAPTCHA reference if needed
   // const recaptchaRef = React.createRef();
 
-  useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      dispatch(loginSuccess({ user: userData, status: "authenticated" }));
-    }
-  }, []);
-  
 
+  // Immediately redirect if localStorage already has user data
   useEffect(() => {
-    const storedUserDataForRole = localStorage.getItem("userData");
-    console.log("storedUserDataForRole", storedUserDataForRole);
-    
-    if (storedUserDataForRole) {
-      const user = JSON.parse(storedUserDataForRole);
-      console.log("storedUserDataForRole parse", user);
-
-  
-      if (user.role === 1) {
-        router.push("/admin/dashboard"); 
-      } else if (user.role === 5) {
-        router.push("/admin/projects/view-project");
-      } else {
-        router.push("/");
-      }
+    if (typeof window !== "undefined" && localStorage.getItem("userData")) {
+      router.replace("/");
     }
   }, [router]);
 
-  // ✅ Rehydrate tokens after page reload
+  // Also, if Redux state is updated to "authenticated", redirect away from the login page
   useEffect(() => {
-    const storedAccessToken = localStorage.getItem("accessToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken"); // ✅ Get from localStorage
+    if (isAuthenticated === true) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
 
-    if (!storedAccessToken && storedRefreshToken) {
-      console.log("🔄 Attempting to refresh token...");
-      api.post("/auth/refresh-token", {}, {
-        headers: { "x-refresh-token": storedRefreshToken },
-      })
+  // Effect to try to rehydrate user data ONLY if we are not already authenticated.
+  useEffect(() => {
+    // Only attempt rehydration if there’s no authenticated user already.
+    if (!isAuthenticated) {
+      getUserData()
         .then((res) => {
-          localStorage.setItem("accessToken", res.data.accessToken);
+          // Update Redux state only if we actually get valid user data.
+          console.log("userData login: ", res);
+          
+          if (res.data && res.data.user) {
+            dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
+            // Redirect based on role if needed
+            const { role } = res.data.user;
+            if (role === 1) router.push("/admin/dashboard");
+            else if (role === 5) router.push("/admin/projects/view-project");
+            else router.push("/");
+          }
         })
-        .catch(() => {
-          console.log("❌ Refresh failed, logging out user.");
-          handleLogout();
+        .catch((err) => {
+          // If not authenticated, simply log and allow the login form to render.
+          console.warn("User not authenticated yet", err);
         });
     }
-  }, []);
+  }, [dispatch, router, isAuthenticated]);
 
-  // ✅ Handle Logout & Redirect
-  const handleLogout = () => {
-    sessionStorage.clear();
+  // useEffect(() => {
+  //   const storedUserData = localStorage.getItem("userData");
+  //   if (storedUserData) {
+  //     const userData = JSON.parse(storedUserData);
+  //     dispatch(loginSuccess({ user: userData, status: "authenticated" }));
+  //   }
+  // }, []);
+  
+
+  // useEffect(() => {
+  //   const storedUserDataForRole = localStorage.getItem("userData");
+  //   console.log("storedUserDataForRole", storedUserDataForRole);
     
-    // ✅ Remove tokens from localStorage
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userData");
+  //   if (storedUserDataForRole) {
+  //     const user = JSON.parse(storedUserDataForRole);
+  //     console.log("storedUserDataForRole parse", user);
 
-    // ✅ Redirect to login page
-    setTimeout(() => {
-      window.location.href = "/auth/login";
-    }, 100);
-  };
+  
+  //     if (user.role === 1) {
+  //       router.push("/admin/dashboard"); 
+  //     } else if (user.role === 5) {
+  //       router.push("/admin/projects/view-project");
+  //     } else {
+  //       router.push("/");
+  //     }
+  //   }
+  // }, [router]);
+
+  // ✅ Rehydrate tokens after page reload
+  // useEffect(() => {
+  //   const storedAccessToken = localStorage.getItem("accessToken");
+  //   const storedRefreshToken = localStorage.getItem("refreshToken"); // ✅ Get from localStorage
+
+  //   if (!storedAccessToken && storedRefreshToken) {
+  //     console.log("🔄 Attempting to refresh token...");
+  //     api.post("/auth/refresh-token", {}, {
+  //       headers: { "x-refresh-token": storedRefreshToken },
+  //     })
+  //       .then((res) => {
+  //         localStorage.setItem("accessToken", res.data.accessToken);
+  //       })
+  //       .catch(() => {
+  //         console.log("❌ Refresh failed, logging out user.");
+  //         handleLogout();
+  //       });
+  //   }
+  // }, []);
+
+  // // ✅ Handle Logout & Redirect
+  // const handleLogout = () => {
+  //   sessionStorage.clear();
+    
+  //   // ✅ Remove tokens from localStorage
+  //   localStorage.removeItem("accessToken");
+  //   localStorage.removeItem("refreshToken");
+  //   localStorage.removeItem("userData");
+
+  //   // ✅ Redirect to login page
+  //   setTimeout(() => {
+  //     window.location.href = "/auth/login";
+  //   }, 100);
+  // };
   
 
   const {
@@ -125,15 +170,19 @@ const Register = () => {
           return;
         }
 
-        // ✅ Store tokens in localStorage
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        console.log("user: login ", user);
+        
+        //// ✅ Store tokens in localStorage
+        // localStorage.setItem("accessToken", accessToken);
+        // localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userData", JSON.stringify(user));
 
-        dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+        // dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+
+        dispatch(loginSuccess({ user, status: "authenticated" }));
 
         // Fetch and dispatch favorites after successful login:
-        if (accessToken) {
+        // if (accessToken) {
           getFavouriteItems(accessToken)
             .then((favRes) => {
               dispatch(setFavouriteList(favRes.data.favorites || []));
@@ -143,7 +192,7 @@ const Register = () => {
             .catch((error) => {
               console.error("Error fetching favorites:", error);
             });
-        }
+        // }
 
         // ✅ Trigger storage event to sync across tabs
         window.dispatchEvent(new Event("userLoggedIn"));
@@ -177,55 +226,67 @@ const Register = () => {
       });
   };
 
-  // ✅ Allow public access to home page after logout
-  useEffect(() => {
-    if (!isAuthenticated && router.pathname.startsWith("/admin")) {
-      router.push("/auth/login"); // ✅ Redirect only for protected pages
-    }
-  }, [router, isAuthenticated]);
+  // // ✅ Allow public access to home page after logout
+  // useEffect(() => {
+  //   if (!isAuthenticated && router.pathname.startsWith("/admin")) {
+  //     router.push("/auth/login"); // ✅ Redirect only for protected pages
+  //   }
+  // }, [router, isAuthenticated]);
+
+
+  // Optionally, prevent logged-in users from accessing the login page.
+  // useEffect(() => {
+  //   const storedUserData = localStorage.getItem("userData");
+  //   if (storedUserData) {
+  //     const user = JSON.parse(storedUserData);
+  //     if (user.role === 1) router.push("/admin/dashboard");
+  //     else if (user.role === 5) router.push("/admin/projects/view-project");
+  //     else router.push("/");
+  //   }
+  // }, [router]);
 
   // ✅ Handle OAuth Redirect (Google Login)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get("accessToken");
-    const refreshToken = urlParams.get("refreshToken");
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const accessToken = urlParams.get("accessToken");
+  //   const refreshToken = urlParams.get("refreshToken");
     
-    if (accessToken && refreshToken) {
-      // ✅ Store tokens and user data in localStorage
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+  //   if (accessToken && refreshToken) {
+  //     // ✅ Store tokens and user data in localStorage
+  //     localStorage.setItem("accessToken", accessToken);
+  //     localStorage.setItem("refreshToken", refreshToken);
 
-      // IMPORTANT: Use the correct variable name – here, we use accessToken
-      getUserData(accessToken)
-        .then((res) => {
-          const userData = res.data;
+  //     // IMPORTANT: Use the correct variable name – here, we use accessToken
+  //     getUserData(accessToken)
+  //       .then((res) => {
+  //         const userData = res.data;
           
-          // ✅ Store user data persistently in localStorage
-          localStorage.setItem("userData", JSON.stringify(userData));
+  //         // ✅ Store user data persistently in localStorage
+  //         localStorage.setItem("userData", JSON.stringify(userData));
 
-          dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
+  //         dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
 
-          // ✅ Sync authentication across tabs
-          window.dispatchEvent(new Event("userLoggedIn"));
+  //         // ✅ Sync authentication across tabs
+  //         window.dispatchEvent(new Event("userLoggedIn"));
     
-          // Redirect based on role:
-          if (userData.role === 1) {
-            router.push("/admin/dashboard");
-          } else if (userData.role === 5) {
-            router.push("/admin/projects/view-projects");
-          } else {
-            router.push("/");
-          }
-        })
-        .catch((error) => {
-          console.error("❌ Failed to fetch user details:", error);
-          toast.error("Failed to retrieve user details.");
-          router.push("/auth/login");
-        });
-    } else {
-      console.error("❌ No token or user data found in URL.");
-    }
-  }, [router]);
+  //         // Redirect based on role:
+  //         if (userData.role === 1) {
+  //           router.push("/admin/dashboard");
+  //         } else if (userData.role === 5) {
+  //           router.push("/admin/projects/view-projects");
+  //         } else {
+  //           router.push("/");
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("❌ Failed to fetch user details:", error);
+  //         toast.error("Failed to retrieve user details.");
+  //         router.push("/auth/login");
+  //       });
+  //   } else {
+  //     console.error("❌ No token or user data found in URL.");
+  //   }
+  // }, [router]);
 
   // ✅ Google Login Handler
   const handleGoogleSignIn = async () => {
@@ -267,11 +328,11 @@ const Register = () => {
 
 
   // ✅ Prevent logged-in users from accessing login page, but allow others to access home page freely
-  useEffect(() => {
-    if (isAuthenticated !== null && router.pathname.startsWith("/auth")) {
-      router.push("/");
-    }
-  }, [router, isAuthenticated]);
+  // useEffect(() => {
+  //   if (isAuthenticated !== null && router.pathname.startsWith("/auth")) {
+  //     router.push("/");
+  //   }
+  // }, [router, isAuthenticated]);
 
 
   return (
@@ -401,8 +462,8 @@ const Register = () => {
   );
 };
 
-Register.getLayout = function getLayout(page) {
+Login.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default Register;
+export default Login;

@@ -30,6 +30,7 @@ const UploadWork = () => {
   const QuillNoSSRWrapper = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const { token } = useSelector((store) => store.logininfo);
+  
   const { categoryAndSubCategory } = useSelector((store) => store.projectinfo);
   const [subCategory, setSubCategory] = useState([]);
   const [isLoading, startLoading, stopLoading] = useLoading();
@@ -75,7 +76,7 @@ const UploadWork = () => {
     console.log("formData: ", formData);
     
     try {
-      await uploadProjectApiHandler(formData, token);
+      await uploadProjectApiHandler(formData);
       toast.success("Project uploaded successfully! Pending approval.");
       stopLoading();
       router.push("/work/sent"); // Redirect to user projects page

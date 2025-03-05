@@ -6,13 +6,13 @@ import { addInterestApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const AddInterest = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
   const { register, handleSubmit, reset } = useForm();
   const router = useRouter();
 
   const onSubmit = async (data) => {
     try {
-      await addInterestApi(data, token);
+      await addInterestApi(data);
       toast.success("Interest added successfully!");
       reset();
       router.push("/admin/interests/list-of-interests");

@@ -64,7 +64,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const DesignerProfile = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   // console.log("token:", token);
   
   const [isLoading,startLoading,stopLoading]=useLoading()
@@ -87,7 +88,7 @@ const DesignerProfile = () => {
       ? updateUserProfileInfo // If profile exists, call update API
       : registerNewArchitechProfile; // If profile doesn't exist, call create API
 
-      apiCall(profileData, token)
+      apiCall(profileData)
       .then((res) => {
         stopLoading();
         if (existingArchitectProfile?.first_name) {
@@ -116,7 +117,7 @@ const DesignerProfile = () => {
   useEffect(() => {
     if (Object.keys(existingArchitectProfile).length === 0) {
        
-      getArchitectProfileInfo(token)
+      getArchitectProfileInfo()
         .then((res) => {
           const profileData = res.data;
           reset(profileData); // Populate form with fetched data
@@ -132,7 +133,7 @@ const DesignerProfile = () => {
           }
         });
     }
-  }, [existingArchitectProfile, token, reset]);
+  }, [existingArchitectProfile, isAuthenticated, reset]);
 
   //  useEffect(()=>{
 

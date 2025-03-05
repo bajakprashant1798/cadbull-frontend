@@ -101,7 +101,10 @@ const ViewDrawing = ({}) => {
   const [similarProjectId, setSimilarProjectId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
@@ -127,8 +130,8 @@ const ViewDrawing = ({}) => {
 
   // Fetch favorites if not already loaded
   useEffect(() => {
-    if (token) {
-      getFavouriteItems(token)
+    if (isAuthenticated) {
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           // setFavouritesFetched(true);
@@ -138,7 +141,7 @@ const ViewDrawing = ({}) => {
           // setFavouritesFetched(true);
         });
     }
-  }, [token, dispatch, id]);
+  }, [isAuthenticated, dispatch, id]);
 
   
   const projectId = Number(id);
@@ -209,19 +212,19 @@ useEffect(() => {
 
   // Updated handleLike function with Redux dispatch
   const handleLike = async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       router.push("/auth/login");
       return;
     }
     try {
       if (isFavorited) {
-        await removeFavouriteItem(token, id);
+        await removeFavouriteItem( id);
         setIsFavorited(false);
         toast.success("Removed from Favorite list", { position: "top-right" });
         // Dispatch Redux action to remove favorite using the project id
         dispatch(deleteFavouriteItem(id));
       } else {
-        await addFavouriteItem({ product_id: id }, token);
+        await addFavouriteItem({ product_id: id });
         setIsFavorited(true);
         toast.success("Added to Favorite list", { position: "top-right" });
         // Dispatch Redux action to add favorite (using project data)
@@ -245,7 +248,7 @@ useEffect(() => {
 
   // New handler for "Add to libary" button
   const handleAddToLibrary = async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       router.push("/auth/login");
       return;
     }
@@ -254,7 +257,7 @@ useEffect(() => {
       return;
     }
     try {
-      await addFavouriteItem({ product_id: id }, token);
+      await addFavouriteItem({ product_id: id });
       setIsFavorited(true);
       toast.success("Added to Favorite list", { position: "top-right" });
       // Dispatch Redux action to add favorite (using project data)
@@ -467,7 +470,7 @@ useEffect(() => {
                     {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
                   </button>
                   <button
-                    onClick={() => handledownload(project.id, token, router)}
+                    onClick={() => handledownload(project.id, isAuthenticated, router)}
                     type="button"
                     className="link-btn"
                   >
@@ -594,7 +597,7 @@ useEffect(() => {
                       <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
                         <button
                           onClick={() =>
-                            handledownload(project.id, token, router)
+                            handledownload(project.id, router)
                           }
                           type="button"
                           className="btn-success-split "

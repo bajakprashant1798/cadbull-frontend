@@ -66,11 +66,13 @@ const validationSchema = Yup.object().shape({
 const EditProfile = () => {
   const Router = useRouter();
   const dispatch = useDispatch();
-  const { token, user } = useSelector((state) => state.logininfo || {});
+  const { user } = useSelector((state) => state.logininfo || {});
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
+
   const profile_pic = user.profile_pic;
-  console.log("tokenedit: ", token);
-  console.log("useredit: ", user);
-  console.log("profile_pic: ", profile_pic);
+  // console.log("tokenedit: ", token);
+  // console.log("useredit: ", user);
+  // console.log("profile_pic: ", profile_pic);
   
   const [resetState, setResetState] = useState(false);
   const [profileData, setProfileData] = useState({});
@@ -170,7 +172,7 @@ const EditProfile = () => {
       socialNetworks,
     };
   
-    updateUserProfileInfo(payload, token) // This calls your upsert API endpoint
+    updateUserProfileInfo(payload) // This calls your upsert API endpoint
       .then((res) => {
         toast.success("Profile Saved Successfully");
   
@@ -199,7 +201,7 @@ const EditProfile = () => {
           console.log("Updated userData:", userData);
   
           // Dispatch to update Redux state
-          dispatch(loginSuccess({ user: updatedUser, accessToken: token, status: true }));
+          dispatch(loginSuccess({ user: updatedUser, status: true }));
           dispatch(updateUserProfileId({ profileId: updatedProfile.profileId || updatedProfile.id }));
         }
       })
@@ -284,7 +286,7 @@ const EditProfile = () => {
     
         // If profile doesn't exist, create one first before updating picture
         const updatePic = () => {
-          updateProfilePicture(token, file)
+          updateProfilePicture( file)
             .then((res) => {
               toast.success("Profile Picture Updated Successfully");
               const storedUserData = localStorage.getItem("userData");
@@ -314,7 +316,7 @@ const EditProfile = () => {
           updatePic();
         } else {
           // Otherwise, create a profile first (you might call registerNewArchitechProfile here)
-          registerNewArchitechProfile({}, token)
+          registerNewArchitechProfile({})
             .then((res) => {
               // Update local state and then update the profile picture
               setProfileData(res.data);
@@ -345,7 +347,7 @@ const EditProfile = () => {
   // Fetch the profile when the component mounts (or when resetState changes)
   // Fetch profile data when component mounts or when resetState changes
   useEffect(() => {
-    getArchitectProfileInfo(token)
+    getArchitectProfileInfo()
       .then((res) => {
         const profile = res.data;
         // Transform socialNetworks array to individual keys
@@ -369,7 +371,7 @@ const EditProfile = () => {
           console.error(err);
         }
       });
-  }, [token, dispatch, reset]);
+  }, [isAuthenticated, dispatch, reset]);
   
 
 
@@ -396,10 +398,10 @@ const EditProfile = () => {
   // }, [resetState]);
 
   useEffect(() => {
-    if (!token) {
+    if (!isAuthenticated) {
       Router.push("/auth/login"); // Redirect to login if user is not logged in
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   // const removeAccountHandler = async () => {
   //   try {
@@ -419,7 +421,7 @@ const EditProfile = () => {
   // Trigger Account Deletion
   const removeAccountHandler = async () => {
     try {
-      const res = await requestAccountDeletion(token);
+      const res = await requestAccountDeletion();
       if (res.status === 200) {
         toast.success("A confirmation email has been sent. Check your inbox.");
       } else {

@@ -8,17 +8,21 @@ import { toast } from "react-toastify";
 
 const AddCategory = () => {
   const router = useRouter();
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
+  
   const { register, handleSubmit, reset } = useForm();
   const [parentCategories, setParentCategories] = useState([]);
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       getCategoriesApi("")
         .then((res) => setParentCategories(res.data.categories))
         .catch(() => toast.error("Error fetching parent categories"));
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   const onSubmit = async (data) => {
     try {

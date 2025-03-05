@@ -9,7 +9,10 @@ import TagsField from "@/components/TagsField";
 
 
 const AddProject = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const { register, handleSubmit, setValue, watch, reset } = useForm();
   const router = useRouter();
   const [categories, setCategories] = useState([]);
@@ -19,21 +22,21 @@ const AddProject = () => {
 
   // ✅ Fetch Categories on Component Mount
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       fetchCategories();
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   // ✅ Fetch Categories Using New Admin API
   const fetchCategories = async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       toast.error("❌ Missing authentication token");
       return;
     }
   
     try {
       console.log("🚀 Fetching categories for admin panel...");
-      const res = await getAdminCategoriesWithSubcategories(token);
+      const res = await getAdminCategoriesWithSubcategories();
       console.log("✅ Categories Fetched:", res);
       setCategories(res.data);
     } catch (error) {
@@ -93,7 +96,7 @@ const AddProject = () => {
 
         console.log("✅ FormData AFTER Append:", [...formData.entries()]);
 
-        await addProjectApi(formData, token);
+        await addProjectApi(formData);
         toast.success("Project added successfully!");
         reset();
         router.push("/admin/projects/view-projects");

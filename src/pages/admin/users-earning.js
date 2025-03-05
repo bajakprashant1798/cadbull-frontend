@@ -10,6 +10,7 @@ import { debounce } from "lodash"; // ✅ Import lodash debounce
 
 const UsersEarning = () => {
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,7 +27,7 @@ const UsersEarning = () => {
   const fetchUsersEarnings = useCallback(
     debounce(() => {
       console.log("🔄 Fetching users earnings...");
-      getUsersEarningsApi(filterStatus, currentPage, entriesPerPage, token)
+      getUsersEarningsApi(filterStatus, currentPage, entriesPerPage)
         .then((res) => {
           setUsers(res.data.users);
           setFilteredUsers(res.data.users);
@@ -34,7 +35,7 @@ const UsersEarning = () => {
         })
         .catch((err) => console.error("❌ Error fetching users earnings:", err));
     }, 500), // ✅ Delay API call by 500ms
-    [filterStatus, currentPage, entriesPerPage, token]
+    [filterStatus, currentPage, entriesPerPage, isAuthenticated]
   );
 
   useEffect(() => {

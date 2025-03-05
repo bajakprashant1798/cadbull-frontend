@@ -6,7 +6,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import TableComponent from "@/components/TableComponent";
 
 const ListOccupations = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
   const [occupations, setOccupations] = useState([]); // ✅ State to hold occupations
 
   // ✅ Fetch Occupations API Function with Pagination
@@ -28,7 +28,7 @@ const ListOccupations = () => {
   // ✅ Delete Occupation & Remove from UI
   const deleteOccupation = async (id) => {
     try {
-      await deleteOccupationApi(id, token);
+      await deleteOccupationApi(id);
       setOccupations((prev) => prev.filter((occ) => occ.id !== id)); // ✅ Remove instantly
       toast.success("Occupation deleted successfully!");
     } catch (error) {

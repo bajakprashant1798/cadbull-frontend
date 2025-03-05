@@ -6,7 +6,10 @@ import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const ViewProjects = () => {
-    const { token } = useSelector((store) => store.logininfo);
+    // const { token } = useSelector((store) => store.logininfo);
+    const isAuthenticated = useSelector(
+        (store) => store.logininfo.isAuthenticated
+    );
     const router = useRouter();
 
     const [projects, setProjects] = useState([]);
@@ -25,11 +28,11 @@ const ViewProjects = () => {
     });
 
     useEffect(() => {
-        if (token) {
+        if (isAuthenticated) {
             fetchProjects();
             fetchCategories();
         }
-    }, [searchParams, token]);
+    }, [searchParams, isAuthenticated]);
 
     // ✅ Fetch Projects with Search & Pagination
     const fetchProjects = () => {
@@ -41,7 +44,7 @@ const ViewProjects = () => {
             searchParams.subcategory_id,
             searchParams.page,
             searchParams.perPage,
-            token
+            
         )
             .then((res) => {
                 setProjects(res.data.projects || []);

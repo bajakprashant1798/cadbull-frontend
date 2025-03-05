@@ -17,6 +17,9 @@ const SearchCategories = () => {
   );
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const dispatch = useDispatch();
 
   // Two separate states: one for the raw input and one for the debounced query.
@@ -34,8 +37,8 @@ const SearchCategories = () => {
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
-    if (token && !favouritesFetched) {
-      getFavouriteItems(token)
+    if (isAuthenticated && !favouritesFetched) {
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
@@ -46,7 +49,7 @@ const SearchCategories = () => {
           setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [isAuthenticated, favouritesFetched, dispatch]);
 
 
   // Update local input state on every keystroke.

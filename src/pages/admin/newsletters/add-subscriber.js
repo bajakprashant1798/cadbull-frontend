@@ -6,13 +6,14 @@ import { addSubscriberApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const AddSubscriber = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  
   const { register, handleSubmit, reset } = useForm();
   const router = useRouter();
 
   const onSubmit = async (data) => {
     try {
-      await addSubscriberApi(data, token);
+      await addSubscriberApi(data);
       toast.success("Subscriber added successfully!");
       reset();
       router.push("/admin/newsletters/list-of-subscribers");

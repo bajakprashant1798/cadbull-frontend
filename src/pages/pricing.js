@@ -16,6 +16,7 @@ const Pricing = () => {
   const router = useRouter();
   const userData = useSessionStorageData("userData");
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [activeSubscription, setActiveSubscription] = useState(false); // ✅ Check if user has an active plan
@@ -23,9 +24,9 @@ const Pricing = () => {
 // const status = useSelector((store) => store.logininfo)
 useEffect(() => {
   const fetchUserDetails = async () => {
-    if (!token) return;  // ✅ Prevent unnecessary API calls
+    if (!isAuthenticated) return;  // ✅ Prevent unnecessary API calls
 
-    console.log("🔄 Fetching user details with token:", token);
+    // console.log("🔄 Fetching user details with token:", token);
 
     try {
       const response = await getUserDetails();
@@ -54,10 +55,10 @@ useEffect(() => {
     }
   };
 
-  if (token) {
+  if (isAuthenticated) {
     fetchUserDetails();
   }
-}, [token]);  // ✅ Run only when `token` is available
+}, [isAuthenticated]);  // ✅ Run only when `token` is available
 
 
   // useEffect(() => {

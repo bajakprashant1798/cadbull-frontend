@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const ChangePassword = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,7 +22,7 @@ const ChangePassword = () => {
 
     setLoading(true);
     try {
-      await changePasswordApi({ currentPassword, newPassword }, token);
+      await changePasswordApi({ currentPassword, newPassword });
       toast.success("Password changed successfully!");
       setCurrentPassword("");
       setNewPassword("");

@@ -62,12 +62,14 @@ const Register = () => {
         
         // ✅ Store tokens and user data ONLY IF email is verified
         if (user.is_email_verify === 1) {
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
+          // Since tokens are stored in HTTP‑only cookies, we do not store them in localStorage.
+          // You may choose to store non-sensitive user data if needed.
           localStorage.setItem("userData", JSON.stringify(user));
 
-          dispatch(loginSuccess({ user, accessToken, status: "authenticated" }));
+          // Dispatch login success without token
+          dispatch(loginSuccess({ user, status: "authenticated" }));
           window.dispatchEvent(new Event("userLoggedIn"));
+
 
           toast.success("Registration successful. Redirecting...", { autoClose: 2000 });
 
@@ -82,7 +84,7 @@ const Register = () => {
           }, 2000);
         } else {
           toast.warning("Please verify your email before register.", { autoClose: 2000 });
-          router.push("/login");
+          router.push("/auth/login");
         }
       })
       .catch((err) => {
@@ -112,49 +114,49 @@ const Register = () => {
   // OAuth Redirect Handling (Google Login)
   // This useEffect will run if the URL has OAuth parameters.
   // -------------------------------
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    // Expect the backend to redirect with these names:
-    const accessToken = urlParams.get("accessToken");
-    const refreshToken = urlParams.get("refreshToken");
-    // Use a different variable name to avoid confusion with our Redux token property:
-    const userParam = urlParams.get("user");
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   // Expect the backend to redirect with these names:
+  //   const accessToken = urlParams.get("accessToken");
+  //   const refreshToken = urlParams.get("refreshToken");
+  //   // Use a different variable name to avoid confusion with our Redux token property:
+  //   const userParam = urlParams.get("user");
 
-    if (accessToken && refreshToken && userParam) {
-      try {
-        // Parse and decode the user data (assuming it was encoded on the backend)
-        const userData = JSON.parse(decodeURIComponent(userParam));
-        console.log("✅ OAuth Callback User Data:", userData);
+  //   if (accessToken && refreshToken && userParam) {
+  //     try {
+  //       // Parse and decode the user data (assuming it was encoded on the backend)
+  //       const userData = JSON.parse(decodeURIComponent(userParam));
+  //       console.log("✅ OAuth Callback User Data:", userData);
 
-        // Store tokens and user data consistently
-        // sessionStorage.setItem("accessToken", accessToken);
-        // localStorage.setItem("refreshToken", refreshToken);
-        // ✅ Store tokens and user data in localStorage
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("userData", JSON.stringify(userData));
+  //       // Store tokens and user data consistently
+  //       // sessionStorage.setItem("accessToken", accessToken);
+  //       // localStorage.setItem("refreshToken", refreshToken);
+  //       // ✅ Store tokens and user data in localStorage
+  //       localStorage.setItem("accessToken", accessToken);
+  //       localStorage.setItem("refreshToken", refreshToken);
+  //       localStorage.setItem("userData", JSON.stringify(userData));
 
-        // Dispatch Redux login state with accessToken
-        dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
+  //       // Dispatch Redux login state with accessToken
+  //       dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
 
-        // ✅ Sync authentication across tabs
-        window.dispatchEvent(new Event("userLoggedIn"));
+  //       // ✅ Sync authentication across tabs
+  //       window.dispatchEvent(new Event("userLoggedIn"));
 
-        // Redirect based on user role
-        if (userData.role === 1) {
-          router.push("/admin/dashboard");
-        } else if (userData.role === 5) {
-          router.push("/admin/products/view-projects");
-        } else {
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("❌ Failed to parse user data:", error);
-        toast.error("Failed to retrieve user details.");
-        router.push("/auth/register");
-      }
-    }
-  }, [router, dispatch]);
+  //       // Redirect based on user role
+  //       if (userData.role === 1) {
+  //         router.push("/admin/dashboard");
+  //       } else if (userData.role === 5) {
+  //         router.push("/admin/products/view-projects");
+  //       } else {
+  //         router.push("/");
+  //       }
+  //     } catch (error) {
+  //       console.error("❌ Failed to parse user data:", error);
+  //       toast.error("Failed to retrieve user details.");
+  //       router.push("/auth/register");
+  //     }
+  //   }
+  // }, [router, dispatch]);
 
   return (
     <Fragment>

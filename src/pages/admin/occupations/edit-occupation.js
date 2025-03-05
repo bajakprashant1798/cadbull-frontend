@@ -9,20 +9,23 @@ import AdminLayout from "@/layouts/AdminLayout";
 const EditOccupation = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
   const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
-    if (id && token) {
-      getOccupationByIdApi(id, token)
+    if (id && isAuthenticated) {
+      getOccupationByIdApi(id)
         .then((res) => reset(res.data.occupation))
         .catch(() => toast.error("Error fetching occupation"));
     }
-  }, [id, token, reset]);
+  }, [id, isAuthenticated, reset]);
 
   const onSubmit = async (data) => {
     try {
-      await editOccupationApi(id, data, token);
+      await editOccupationApi(id, data);
       toast.success("Occupation updated successfully!");
       router.push("/admin/occupations/list-of-occupations");
     } catch (error) {

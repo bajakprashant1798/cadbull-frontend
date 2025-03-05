@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   error: false,
   user: {},
-  token: "",
+  // token: "",
   cart: [],
   isAuthenticated: false,
 };
@@ -16,24 +16,19 @@ const authSlice = createSlice({
       // console.log("Updating state with:", action.payload);
       state.isAuthenticated = true;
       state.user = action.payload.user;
-      state.token = action.payload.accessToken;
-      console.log("state.user:", state.user);
-      console.log("state.token:", state.token);
-      // sessionStorage.setItem("token", action.payload.token);  // ✅ Store token
-      // sessionStorage.setItem("userData", JSON.stringify(action.payload.user)); //
+      console.log("state.isAuthenticate: ", state.isAuthenticated);
+      
+      // state.token = action.payload.accessToken;
+
+      // console.log("state.user:", state.user);
+      // console.log("state.token:", state.token);
     },
     logout: (state, action) => {
       state.isAuthenticated = false;
-      console.log("🔴 LOGOUT authslce", state.isAuthenticated);
-      
       state.user = {};
-      state.token = "";
-      // Clear session storage
+
       localStorage.removeItem("userData");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      // sessionStorage.clear();
-      // window.location.href = "/";
+
     },
     updateuserProfilepic: (state, action) => {
       state.user.profile_pic = action.payload;

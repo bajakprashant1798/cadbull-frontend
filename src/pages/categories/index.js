@@ -43,6 +43,9 @@ const Categories = () => {
   const router = useRouter();
   // Retrieve token from login info:
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector(
+    (store) => store.logininfo.isAuthenticated
+  );
 
   // Retrieve favorites from Redux:
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
@@ -52,8 +55,8 @@ const Categories = () => {
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
-    if (token && !favouritesFetched) {
-      getFavouriteItems(token)
+    if (isAuthenticated && !favouritesFetched) {
+      getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));
           setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
@@ -64,7 +67,7 @@ const Categories = () => {
           setFavouritesFetched(true);
         });
     }
-  }, [token, favouritesFetched, dispatch]);
+  }, [isAuthenticated, favouritesFetched, dispatch]);
 
 
   // Memoize the loadRecords function to prevent re-creation on re-renders

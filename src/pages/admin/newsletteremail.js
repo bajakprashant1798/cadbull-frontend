@@ -5,7 +5,7 @@ import { saveNewsletterEmailApi, getNewsletterEmailsApi, sendNewsletterEmailApi 
 import AdminLayout from "@/layouts/AdminLayout";
 
 const NewsletterEmail = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -19,7 +19,7 @@ const NewsletterEmail = () => {
   // ✅ Fetch saved newsletter emails
   const fetchEmails = async () => {
     try {
-      const response = await getNewsletterEmailsApi(token);
+      const response = await getNewsletterEmailsApi();
       setEmails(response.data.emails);
     } catch (error) {
       console.error("❌ Error fetching emails:", error);
@@ -39,7 +39,7 @@ const NewsletterEmail = () => {
     if (image) formData.append("emailimage", image);
 
     try {
-      await saveNewsletterEmailApi(formData, token);
+      await saveNewsletterEmailApi(formData);
       toast.success("Newsletter email saved!");
       fetchEmails();
       setTitle("");
@@ -59,7 +59,7 @@ const NewsletterEmail = () => {
         formData.append("emailimage", emailImage);
       }
 
-      await sendNewsletterEmailApi(id, formData, token);
+      await sendNewsletterEmailApi(id, formData);
       toast.success("Newsletter sent to subscribers!");
     } catch (error) {
       toast.error("Error sending email.");

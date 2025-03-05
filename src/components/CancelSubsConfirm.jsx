@@ -3,10 +3,10 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { closeModalHandler } from "../../redux/app/features/modalSlice";
 import { cancelSubscriptionRequest } from "@/service/api";
-export default function CancelSubsConfirm({subscriptionId,token}) {
+export default function CancelSubsConfirm({subscriptionId}) {
     const dispatch=useDispatch()
     const handleCancellationReq=()=>{
-      cancelSubscriptionRequest(subscriptionId,token).then((res)=>{
+      cancelSubscriptionRequest(subscriptionId).then((res)=>{
         console.log('cancel subscription result ',res.data);
         dispatch(closeModalHandler())
         toast.success("Your subscription has been canceled")

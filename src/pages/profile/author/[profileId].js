@@ -31,6 +31,7 @@ const CompanyProfile = () => {
   // Get profileId from router query
   const { profileId } = useRouter().query;
   const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
   // State for profile and products
   const [profile, setProfile] = useState(null);
@@ -51,7 +52,7 @@ const CompanyProfile = () => {
   // Fetch profile info
   const fetchProfile = async () => {
     try {
-      const res = await getCompanyProfile(profileId, token);
+      const res = await getCompanyProfile(profileId);
       setProfile(res.data.profile);
     } catch (error) {
       console.error("Error fetching profile", error);
@@ -71,8 +72,7 @@ const CompanyProfile = () => {
           pageSize: 12,
           search: "", // Update if you add search functionality later
           sort: sortOrder, // "asc" for A→Z, "desc" for Z→A. Leave empty for default sorting.
-        },
-        token
+        }
       );
       setProducts(res.data.products);
       setTotalProducts(res.data.totalProducts);
@@ -90,7 +90,7 @@ const CompanyProfile = () => {
       fetchProfile();
       fetchProducts();
     }
-  }, [profileId, token, sortOrder, currentPage]);
+  }, [profileId, isAuthenticated, sortOrder, currentPage]);
 
   // Handle page change
   const handlePageChange = (newPage) => {

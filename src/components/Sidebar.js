@@ -4,6 +4,8 @@ import { Briefcase, Users, Layers, Folder, Mail, Search, CreditCard, Settings, L
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/app/features/authSlice"
 import { useRouter } from "next/router";
+import { resetProjectState } from "../../redux/app/features/projectsSlice";
+import { logoutApiHandler } from "@/service/api";
 
 const Sidebar = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -20,20 +22,39 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  // const handleLogout = async () => {
+  //   dispatch(logout());
+  
+  //   // ✅ Clear session storage
+  //   sessionStorage.removeItem("userData");
+  //   sessionStorage.removeItem("token");
+  
+  //   // ✅ Ensure proper redirection with Next.js router
+  //   router.replace("/auth/login");
+  
+  //   // ✅ Hard reload fallback if router.replace doesn't work
+  //   setTimeout(() => {
+  //     window.location.href = "/auth/login";
+  //   }, 500);
+  // };
+
   const handleLogout = async () => {
-    dispatch(logout());
-  
-    // ✅ Clear session storage
-    sessionStorage.removeItem("userData");
-    sessionStorage.removeItem("token");
-  
-    // ✅ Ensure proper redirection with Next.js router
-    router.replace("/auth/login");
-  
-    // ✅ Hard reload fallback if router.replace doesn't work
-    setTimeout(() => {
-      window.location.href = "/auth/login";
-    }, 500);
+    // Prevent duplicate logout calls
+    
+    try {
+      // Call the backend logout endpoint so cookies are cleared
+      await logoutApiHandler();
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    } finally {
+      // Clear client-side state and storage
+      localStorage.removeItem("userData");
+      // localStorage.removeItem("accessToken");
+      // localStorage.removeItem("refreshToken");
+      dispatch(logout());
+      dispatch(resetProjectState());
+      router.push("/auth/login");
+    }
   };
     
 

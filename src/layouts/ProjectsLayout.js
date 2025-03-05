@@ -74,7 +74,7 @@ const ProjectsLayout = ({ children }) => {
       data.append("image", formValues.image); // Must match backend (.single("image"))
 
       // Call the API handler (createUserProject expects FormData and token)
-      await createUserProject(data, token);
+      await createUserProject(data);
       toast.success("Project uploaded successfully! Pending approval.");
       // Reset the form if needed
       setFormValues({

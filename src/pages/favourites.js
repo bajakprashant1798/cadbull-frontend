@@ -38,7 +38,8 @@ import { handledownload } from "@/service/globalfunction";
 // }
 
 const Favourites = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [tableData, setTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -46,8 +47,8 @@ const Favourites = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (token) { // ✅ Additional check
-      getPaginatedFavouriteItems(token, currentPage, 10)
+    if (isAuthenticated) { // ✅ Additional check
+      getPaginatedFavouriteItems( currentPage, 10)
         .then((res) => {
           setTableData(res.data.favorites);
           console.log(res);
@@ -60,12 +61,12 @@ const Favourites = () => {
           console.log(err);
         });
     }
-  }, [token, currentPage, removeItemTrigger, dispatch]);
+  }, [isAuthenticated, currentPage, removeItemTrigger, dispatch]);
 
   const handleremoveitem = (id) => {
     console.log(id);
     
-    removeFavouriteItem(token, id)
+    removeFavouriteItem( id)
       .then((res) => {
         setTableData([]);
         setRemoveItemTrigger(removeItemTrigger + 1);
@@ -168,7 +169,7 @@ const Favourites = () => {
                           <td>
                             <div className="d-inline-flex gap-2">
                               <button
-                                onClick={() => handledownload(res.id,token, router)}
+                                onClick={() => handledownload(res.id,isAuthenticated, router)}
                                 type="button"
                                 className="link-btn bg-success p-2 rounded"
                               >

@@ -6,7 +6,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import TableComponent from "@/components/TableComponent";
 
 const ListInterests = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
   const [interests, setInterests] = useState([]); // ✅ State to hold interests
 
   // ✅ Fetch Interests API Function
@@ -27,7 +27,7 @@ const ListInterests = () => {
   // ✅ Delete Interest & Remove from UI
   const deleteInterest = async (id) => {
     try {
-      await deleteInterestApi(id, token);
+      await deleteInterestApi(id);
       setInterests((prev) => prev.filter((interest) => interest.id !== id)); // ✅ Remove instantly
       toast.success("Interest deleted successfully!");
     } catch (error) {

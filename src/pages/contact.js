@@ -54,6 +54,7 @@ const ContactUs = () => {
 
   const [productCount, setProductCount] = useState(null);
   const token = useSelector((store) => store.logininfo.token);
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
   // State for the contact form
   const {
@@ -87,7 +88,7 @@ const ContactUs = () => {
       .catch((error) => {
         console.error("Error fetching product count:", error);
       });
-  }, [token]);
+  }, [isAuthenticated]);
 
 
   // You can format productCount as needed (for example, using commas)

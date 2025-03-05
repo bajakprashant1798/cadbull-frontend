@@ -5,12 +5,12 @@ import { toast } from "react-toastify";
 import AdminLayout from "@/layouts/AdminLayout";
 
 const AddOccupation = () => {
-  const { token } = useSelector((store) => store.logininfo);
+  // const { token } = useSelector((store) => store.logininfo);
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = async (data) => {
     try {
-      await addOccupationApi(data, token);
+      await addOccupationApi(data);
       toast.success("Occupation added successfully!");
       reset();
     } catch (error) {

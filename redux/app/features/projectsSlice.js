@@ -41,6 +41,10 @@ export const projectsSlice = createSlice({
   name: "projects",
   initialState,
   reducers: {
+    resetProjectState: (state) => {
+      state.favouriteList = [];
+      // Reset any other project-specific data if needed
+    },
     getProjects(state, action) {
       state.projects = action.payload.projects;
     },
@@ -190,6 +194,7 @@ export const {
   resetCategoriesList,
   setFavouriteList,
   setProducts,
+  resetProjectState,
 } = projectsSlice.actions;
 export default projectsSlice.reducer;
 
