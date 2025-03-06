@@ -19,6 +19,7 @@ app.prepare().then(() => {
 
     // If the request URL starts with /api, proxy it to your backend API.
     if (parsedUrl.pathname.startsWith("/api")) {
+        console.log("Proxying request:", req.url);
       // You can optionally rewrite the path. For example, if your backend expects the route without the /api prefix:
       createProxyMiddleware({
         target: API_TARGET,
