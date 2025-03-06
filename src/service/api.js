@@ -5,12 +5,35 @@ import { logout } from "../../redux/app/features/authSlice";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_API_MAIN,
-  baseURL: "/api",
+  baseURL: process.env.NEXT_PUBLIC_API_MAIN,
+  // baseURL: "/api"
   withCredentials: true, // Allows sending cookies if needed
   timeout: 20000, // 20 seconds
 });
 
+//// ✅ Helper Functions to Retrieve Tokens
+// const getAccessToken = () => {
+//   if (typeof window !== "undefined") {
+//     return localStorage.getItem("access_token");
+//   }
+//   return null;
+// };
+
+// const getRefreshToken = () => localStorage.getItem("refreshToken"); // ✅ From localStorage
+
+//// ✅ Request Interceptor: Attach Authorization Header
+// api.interceptors.request.use(
+//   (config) => {
+//     const accessToken = getAccessToken();
+//     if (accessToken) {
+//       config.headers["Authorization"] = `Bearer ${accessToken}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+//// ✅ Response Interceptor: Refresh Token Handling
 //// ✅ Response Interceptor: Refresh Token Handling
 api.interceptors.response.use(
   (response) => response,
@@ -39,11 +62,23 @@ api.interceptors.response.use(
 
       try {
 
+        // const refreshToken = localStorage.getItem("refreshToken");
+
+        // if (!refreshToken) {
+        //   console.error("❌ No Refresh Token Found in Storage. Redirecting to login...");
+        //   handleLogout();
+        //   return Promise.reject(error);
+        // }
+
+        // console.log("🔄 Refreshing Token with:", refreshToken);
+
         // Call refresh endpoint (cookies are automatically sent)
-        console.log("Calling refresh endpoint at:", "/api/auth/refresh-token");
+        console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
+        // ✅ Send Refresh Token in Headers
         const refreshResponse = await axios.post(
-          "/api/auth/refresh-token",
+          `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
           {},
+          // { headers: { "x-refresh-token": refreshToken } }
           { withCredentials: true }
         );
 
