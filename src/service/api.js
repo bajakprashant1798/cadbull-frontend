@@ -5,8 +5,8 @@ import { logout } from "../../redux/app/features/authSlice";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_MAIN,
-  // baseURL: "/api"
+  // baseURL: process.env.NEXT_PUBLIC_API_MAIN,
+  baseURL: "/api",
   withCredentials: true, // Allows sending cookies if needed
   timeout: 20000, // 20 seconds
 });
@@ -62,32 +62,25 @@ api.interceptors.response.use(
 
       try {
 
-        // const refreshToken = localStorage.getItem("refreshToken");
-
-        // if (!refreshToken) {
-        //   console.error("❌ No Refresh Token Found in Storage. Redirecting to login...");
-        //   handleLogout();
-        //   return Promise.reject(error);
-        // }
-
-        // console.log("🔄 Refreshing Token with:", refreshToken);
-
-        // Call refresh endpoint (cookies are automatically sent)
-        console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
-        // ✅ Send Refresh Token in Headers
+        console.log("Calling refresh endpoint at:", "/api/auth/refresh-token");
         const refreshResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
+          "/api/auth/refresh-token",
           {},
-          // { headers: { "x-refresh-token": refreshToken } }
           { withCredentials: true }
         );
+        
+        // // Call refresh endpoint (cookies are automatically sent)
+        // console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
+        // // ✅ Send Refresh Token in Headers
+        // const refreshResponse = await axios.post(
+        //   `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
+        //   {},
+        //   // { headers: { "x-refresh-token": refreshToken } }
+        //   { withCredentials: true }
+        // );
 
         const newAccessToken = refreshResponse.data.accessToken;
         console.log("✅ New Access Token Received:", newAccessToken);
-
-        //// ✅ Store New Access Token
-        // localStorage.setItem("accessToken", newAccessToken);
-        // originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
         // ✅ Retry Original Request with New Token
         return api(originalRequest);
