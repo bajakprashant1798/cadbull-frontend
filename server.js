@@ -5,7 +5,7 @@ const { parse } = require("url");
 const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-const dev = process.env.NODE_ENV !== "production";
+const dev = true;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
@@ -24,7 +24,7 @@ app.prepare().then(() => {
         target: API_TARGET,
         changeOrigin: true,
         secure: true,
-        pathRewrite: { "^/api": "" }, // remove /api prefix when forwarding
+        // pathRewrite: { "^/api": "" }, // remove /api prefix when forwarding
         logLevel: "debug",
       })(req, res, (err) => {
         if (err) {
