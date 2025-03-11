@@ -11,29 +11,6 @@ const api = axios.create({
   timeout: 20000, // 20 seconds
 });
 
-//// ✅ Helper Functions to Retrieve Tokens
-// const getAccessToken = () => {
-//   if (typeof window !== "undefined") {
-//     return localStorage.getItem("access_token");
-//   }
-//   return null;
-// };
-
-// const getRefreshToken = () => localStorage.getItem("refreshToken"); // ✅ From localStorage
-
-//// ✅ Request Interceptor: Attach Authorization Header
-// api.interceptors.request.use(
-//   (config) => {
-//     const accessToken = getAccessToken();
-//     if (accessToken) {
-//       config.headers["Authorization"] = `Bearer ${accessToken}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-//// ✅ Response Interceptor: Refresh Token Handling
 //// ✅ Response Interceptor: Refresh Token Handling
 api.interceptors.response.use(
   (response) => response,
@@ -49,14 +26,14 @@ api.interceptors.response.use(
     // ✅ If Access Token Expired & No Retry Attempt Yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
 
-      // Check if the user is authenticated
-      const isAuthenticated = localStorage.getItem("userData");
+      // // Check if the user is authenticated
+      // const isAuthenticated = localStorage.getItem("userData");
 
-      if (!isAuthenticated) {
-        // If the user is not authenticated, reject the request without attempting to refresh the token
-        console.log("❌ User is not authenticated. Skipping token refresh.");
-        return Promise.reject(error);
-      }
+      // if (!isAuthenticated) {
+      //   // If the user is not authenticated, reject the request without attempting to refresh the token
+      //   console.log("❌ User is not authenticated. Skipping token refresh.");
+      //   return Promise.reject(error);
+      // }
 
       originalRequest._retry = true;
 
@@ -68,7 +45,7 @@ api.interceptors.response.use(
         //   {},
         //   { withCredentials: true }
         // );
-
+        // console.log(" User is authenticated. refresh.");
         // Call refresh endpoint (cookies are automatically sent)
         console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
         // ✅ Send Refresh Token in Headers
@@ -102,39 +79,6 @@ const handleLogout = () => {
     localStorage.removeItem("userData");
   }
 };
-
-
-// // ✅ Logout function (Ensures proper redirect to `/`)
-// const handleLogout = () => {
-//   console.log("🔴 Logging out user due to refresh token expiry...");
-
-  
-//   // ✅ Dispatch Redux logout
-//   store.dispatch(logout());
-
-//   // ✅ Remove tokens from storage
-//   localStorage.removeItem("accessToken");
-//   localStorage.removeItem("refreshToken");
-//   localStorage.removeItem("userData");
-
-//   // ✅ Ensure logout event is triggered
-//   // window.dispatchEvent(new Event("userLoggedOut"));
-
-//   // ✅ Refresh the page ONCE after logout
-//   // if (!localStorage.getItem("logoutReloaded")) {
-//   //   localStorage.setItem("logoutReloaded", "true");
-//   //   setTimeout(() => {
-//   //     window.location.reload(); // ✅ Ensures Redux state update before reload
-//   //   }, 100);
-//   // }
-
-//   // ✅ Redirect only if user is on a protected route
-//   if (window.location.pathname.startsWith("/admin")) {
-//     window.location.href = "/auth/login";
-//   }
-// };
-
-
 
 
 
