@@ -25,17 +25,22 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
-import { debounce } from "lodash";
+import { debounce, set } from "lodash";
 
-const Categories = () => {
+const Categories = ({
+  initialCategories,
+  initialProjects,
+  totalPages: initialTotalPages,
+  initialFavourites
+}) => {
   const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
-  const [catalog, setCatalog] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [catalog, setCatalog] = useState(initialCategories || []);
+  const [projects, setProjects] = useState(initialProjects || []);
   const [sortTerm, setSortTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
   const [currentPage, setCurrentPage] = useState(1);
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
@@ -54,20 +59,28 @@ const Categories = () => {
   // Fetch favorites if not already fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
+  // csr setup
+  // useEffect(() => {
+  //   if (isAuthenticated && !favouritesFetched) {
+  //     getFavouriteItems()
+  //       .then((favRes) => {
+  //         dispatch(setFavouriteList(favRes.data.favorites || []));
+  //         setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching favorites:", error);
+  //         // Optionally mark as fetched to avoid repeated attempts
+  //         setFavouritesFetched(true);
+  //       });
+  //   }
+  // }, [isAuthenticated, favouritesFetched, dispatch]);
+
+  // ssg setup
   useEffect(() => {
-    if (isAuthenticated && !favouritesFetched) {
-      getFavouriteItems()
-        .then((favRes) => {
-          dispatch(setFavouriteList(favRes.data.favorites || []));
-          setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
-        })
-        .catch((error) => {
-          console.error("Error fetching favorites:", error);
-          // Optionally mark as fetched to avoid repeated attempts
-          setFavouritesFetched(true);
-        });
+    if (isAuthenticated && initialFavourites?.length > 0) {
+      dispatch(setFavouriteList(initialFavourites));
     }
-  }, [isAuthenticated, favouritesFetched, dispatch]);
+  }, [isAuthenticated, initialFavourites, dispatch]);
 
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
@@ -339,33 +352,38 @@ const Categories = () => {
   );
 };
 
-// export async function getStaticProps() {
-//   try {
-//     const blogsResponse = await getallCategories(''); // if needed
-//     const projectsResponse = await getallprojects(1, 6, "", "", "");
-//     // You might also fetch subcategories here if needed.
-    
-//     return {
-//       props: {
-//         initialCategories: blogsResponse.data.categories || [],
-//         initialProjects: projectsResponse.data.products || [],
-//         totalPages: projectsResponse.data.totalPages || 1,
-//       },
-//       // Revalidate every 300 seconds (5 minutes)
-//       revalidate: 300,
-//     };
-//   } catch (error) {
-//     console.error("Error in getStaticProps:", error);
-//     return {
-//       props: {
-//         initialCategories: [],
-//         initialProjects: [],
-//         totalPages: 1,
-//       },
-//       revalidate: 300,
-//     };
-//   }
-// }
+// pages/categories/index.js
+
+export async function getStaticProps() {
+  try {
+    const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
+      getallCategories(""),             // Fetch all categories
+      getallprojects(1, 9, "", "", ""), // Fetch first page of projects
+      getFavouriteItems()               // Fetch favorites if needed (optional, only if token is not required)
+    ]);
+
+    return {
+      props: {
+        initialCategories: categoriesRes?.data?.categories || [],
+        initialProjects: projectsRes?.data?.products || [],
+        totalPages: projectsRes?.data?.totalPages || 1,
+        initialFavourites: favouritesRes?.data?.favorites || []
+      },
+      revalidate: 300 // Rebuild page every 5 mins
+    };
+  } catch (err) {
+    console.error("❌ Error in getStaticProps:", err);
+    return {
+      props: {
+        initialCategories: [],
+        initialProjects: [],
+        totalPages: 1,
+        initialFavourites: []
+      },
+      revalidate: 300
+    };
+  }
+}
 
 
 Categories.getLayout = function getLayout(page) {

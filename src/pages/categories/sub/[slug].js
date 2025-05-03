@@ -200,7 +200,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   return (
     <Fragment>
       <Head>
-        <title>Cad Landscaping | Cadbull</title>
+        <title>{makeTitle(slug || initialSlug)} | Cadbull</title>
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <CategoriesLayout {...CategoriesProps}>
@@ -344,6 +344,41 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
     </Fragment>
   );
 };
+
+export async function getStaticPaths() {
+  const res = await getallCategories("");
+  const categories = res?.data?.categories || [];
+
+  const paths = categories.map((cat) => ({
+    params: { slug: cat.slug },
+  }));
+
+  return {
+    paths,
+    fallback: "blocking", // For uncached slugs
+  };
+}
+
+export async function getStaticProps({ params }) {
+  try {
+    const slug = params.slug;
+    const initialData = await getSubCategories({ slug, currentPage: 1, pageSize: 9 });
+
+    return {
+      props: {
+        initialProjects: initialData.projects || [],
+        initialTotalPages: initialData.totalPages || 1,
+        initialSlug: slug,
+      },
+      revalidate: 300, // Rebuild every 5 mins
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+}
+
 
 CadLandscaping.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

@@ -27,6 +27,9 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import withAuth from "@/HOC/withAuth";
 import { handledownload } from "@/service/globalfunction";
+import cookie from 'cookie';
+import { parse } from 'cookie';
+
 
 // {
 //   drawing: drawing,
@@ -37,15 +40,20 @@ import { handledownload } from "@/service/globalfunction";
 //   subCtegories: "Public garden CAD Blocks & CAD Model",
 // }
 
-const Favourites = () => {
+const Favourites = ({ initialData, currentPage: initialPage, totalPages: initialTotalPages }) => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
-  const [tableData, setTableData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [tableData, setTableData] = useState(initialData || []);
+  const [currentPage, setCurrentPage] = useState(initialPage || 1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
   const [removeItemTrigger, setRemoveItemTrigger] = useState(0);
   const router = useRouter();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(addedFavouriteItem(initialData)); // ✅ Optional: Load into Redux
+  }, [dispatch, initialData]);
+  
   useEffect(() => {
     if (isAuthenticated) { // ✅ Additional check
       getPaginatedFavouriteItems( currentPage, 10)
@@ -207,6 +215,40 @@ const Favourites = () => {
     </Fragment>
   );
 };
+
+export async function getServerSideProps({ req }) {
+  const cookies = parse(req.headers.cookie || '');
+  const accessToken = cookies.accessToken;
+
+  if (!accessToken) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+
+  const page = 1;
+  try {
+    const response = await getPaginatedFavouriteItems(page, 10, accessToken);
+    return {
+      props: {
+        initialData: response.data.favorites,
+        currentPage: response.data.currentPage,
+        totalPages: response.data.totalPages
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        initialData: [],
+        currentPage: 1,
+        totalPages: 1
+      },
+    };
+  }
+}
 
 Favourites.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

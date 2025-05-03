@@ -96,17 +96,27 @@ const debounce = (func, delay) => {
 };
 
 
-export default function Home() {
+export default function Home({ initialProjects, totalPages: initialTotalPages, totalProducts }) {
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
-  const [projects,setProjects]=useState([]);
+  
   const [searchTerm,setSearchTerm]=useState('');
   const [sortTerm,setSortTerm]=useState('');
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage,setCurrentPage]=useState(1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
+  
   const [searchInput, setSearchInput] = useState('');
   // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
-  const [productCount, setProductCount] = useState(0);
+
+  //// csr setup
+  // const [projects,setProjects]=useState([]);
+  // const [productCount, setProductCount] = useState(0);
+  // const [currentPage,setCurrentPage]=useState(1);
+
+
+  // ssg setup
+  const [projects, setProjects] = useState(initialProjects);
+  const [productCount, setProductCount] = useState(totalProducts);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
@@ -856,33 +866,33 @@ export default function Home() {
   );
 }
 
-// Use getStaticProps to pre-render the home page
-// export async function getStaticProps() {
-//   try {
-//     // Fetch the initial data
-//     const blogsResponse = await getBlogs();
-//     const projectsResponse = await getallprojects(1, 6, '', '');
-//     return {
-//       props: {
-//         initialBlogs: blogsResponse.data.blogs || [],
-//         initialProjects: projectsResponse.data.products || [],
-//         totalPages: projectsResponse.data.totalPages || 1,
-//       },
-//       // Regenerate the page every 300 seconds (5 minutes)
-//       revalidate: 300,
-//     };
-//   } catch (error) {
-//     console.error("Error in getStaticProps:", error);
-//     return {
-//       props: {
-//         initialBlogs: [],
-//         initialProjects: [],
-//         totalPages: 1,
-//       },
-//       revalidate: 300,
-//     };
-//   }
-// }
+// --- SSR/SSG Block: Fetch Projects & Total Count ---
+export async function getStaticProps() {
+  try {
+    const projectsResponse = await getallprojects(1, 9, '', '');
+    const totalProducts = projectsResponse.data.totalProducts || 0;
+
+    return {
+      props: {
+        initialProjects: projectsResponse.data.products || [],
+        totalPages: projectsResponse.data.totalPages || 1,
+        totalProducts
+      },
+      revalidate: 300, // ISR every 5 minutes
+    };
+  } catch (error) {
+    console.error("Error loading home data:", error);
+    return {
+      props: {
+        initialProjects: [],
+        totalPages: 1,
+        totalProducts: 0,
+      },
+      revalidate: 300,
+    };
+  }
+}
+
 
 Home.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

@@ -27,6 +27,7 @@ import {
   getsimilerllprojects,
   getsingleallprojects,
   getFavouriteItems,
+  getallprojects, // ✅ Add this here
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -91,10 +92,10 @@ const social = [
   // { image: pinit, url: "/" },
 ];
 
-const ViewDrawing = ({}) => {
+const ViewDrawing = ({ initialProject, initialSimilar }) => {
   const dispatch = useDispatch();
-  const [project, setProject] = useState([]);
-  const [similarProjects, setSimilarProjects] = useState([]);
+  const [project, setProject] = useState( initialProject || []);
+  const [similarProjects, setSimilarProjects] = useState( initialSimilar || []);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -770,6 +771,40 @@ useEffect(() => {
     </Fragment>
   );
 };
+
+
+export async function getStaticPaths() {
+  const res = await getallprojects(1, 100); // Or popular projects only
+  const paths = res.data.products.map((proj) => ({
+    params: { id: proj.id.toString() },
+  }));
+
+  return {
+    paths,
+    fallback: "blocking", // or "true" if you want loading spinner
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const id = params.id;
+  try {
+    const projectRes = await getsingleallprojects("", id);
+    const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+    
+    return {
+      props: {
+        initialProject: projectRes.data,
+        initialSimilar: similarRes.data.projects || [],
+      },
+      revalidate: 300,
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
+}
+
 
 ViewDrawing.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

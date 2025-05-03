@@ -126,7 +126,7 @@ const WithdrawAmount = () => {
                     </div>
                     <input
                       onChange={(e) => setAmount(e.target.value)}
-                      type="text"
+                      type="number"
                       className="form-control"
                       placeholder="Enter Your Withdrawal Amount"
                     />

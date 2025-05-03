@@ -101,6 +101,14 @@ About.getLayout = function getLayout(page) {
   )
 }
 
+export async function getStaticProps() {
+  // No dynamic data to fetch, but enabling SSG + ISR
+  return {
+    props: {},         // You can add props later if needed
+    revalidate: 300,   // Regenerate page every 5 minutes
+  };
+}
+
 // export async function getStaticProps() {
 //   // No dynamic data to fetch here – you can return an empty props object.
 //   // Optionally, you could fetch data that rarely changes (e.g. team info).
@@ -109,6 +117,5 @@ About.getLayout = function getLayout(page) {
 //     revalidate: 300, // Revalidate every 5 minutes if needed
 //   };
 // }
-
 
 export default About;
