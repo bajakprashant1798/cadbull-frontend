@@ -40,7 +40,7 @@ import { parse } from 'cookie';
 //   subCtegories: "Public garden CAD Blocks & CAD Model",
 // }
 
-const Favourites = ({ initialData, currentPage: initialPage, totalPages: initialTotalPages }) => {
+const Favourites = ({ initialData, currentPage: initialPage, totalPages: initialTotalPages, accessToken }) => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [tableData, setTableData] = useState(initialData || []);
@@ -50,6 +50,8 @@ const Favourites = ({ initialData, currentPage: initialPage, totalPages: initial
   const router = useRouter();
   const dispatch = useDispatch();
 
+  console.log(accessToken, "accessToken in favourite page");
+  
   useEffect(() => {
     dispatch(addedFavouriteItem(initialData)); // ✅ Optional: Load into Redux
   }, [dispatch, initialData]);
@@ -220,6 +222,8 @@ export async function getServerSideProps({ req }) {
   const cookies = parse(req.headers.cookie || '');
   const accessToken = cookies.accessToken;
 
+  console.log("accessToken token", accessToken);
+  
   if (!accessToken) {
     return {
       redirect: {
@@ -236,7 +240,8 @@ export async function getServerSideProps({ req }) {
       props: {
         initialData: response.data.favorites,
         currentPage: response.data.currentPage,
-        totalPages: response.data.totalPages
+        totalPages: response.data.totalPages,
+        accessToken: accessToken, // Pass the token to the component if needed
       },
     };
   } catch (err) {
