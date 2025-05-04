@@ -20,22 +20,26 @@ import { openModalHandler } from "../../../redux/app/features/modalSlice";
 import Modal from "@/components/common/Modal";
 import CancelSubsConfirm from "@/components/CancelSubsConfirm";
 import { useRouter } from "next/router";
+import { parse } from "cookie";
 
-const ManageBilling = () => {
+const ManageBilling = ({ initialSubscribedPlan }) => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const router=useRouter()
-  const [subscribedPlan, setSubscribedPlan] = useState({
-    subscription_id: "",
-    interval: "",
-    payment_status: "",
-    amount: "",
-    created_time: "",
-    expires_at: "",
-    cancelled_at: null,
-    plan_name: "",
-    invoice_url: "",
-  });
+  const [subscribedPlan, setSubscribedPlan] = useState(
+    initialSubscribedPlan || 
+    {
+      subscription_id: "",
+      interval: "",
+      payment_status: "",
+      amount: "",
+      created_time: "",
+      expires_at: "",
+      cancelled_at: null,
+      plan_name: "",
+      invoice_url: "",
+    }
+  );
   const dispatch = useDispatch();
   // useEffect(() => {
   //   getSubscriptionDetail(token)
@@ -51,7 +55,7 @@ const ManageBilling = () => {
     if((router.query.session_id && router.query.session_id.trim()!=='') && typeof window !==undefined){
       const userData=JSON.parse(localStorage.getItem('userData')) || {};
      console.log('user Data',userData)
-      getPaymentInformation(userData?.id,router.query.session_id).then((res)=>{
+      getPaymentInformation(userData?.id, router.query.session_id).then((res)=>{
         // console.log('api res',res.data)
       getSubscriptionDetail()
       .then((subRes) => {
@@ -258,6 +262,36 @@ const handleCancelSubscription = () => {
     </Fragment>
   );
 };
+
+export async function getServerSideProps({ req }) {
+  const cookies = parse(req.headers.cookie || "");
+  const accessToken = cookies.accessToken || "";
+
+  if (!accessToken) {
+    return {
+      redirect: {
+        destination: "/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const res = await getSubscriptionDetail(accessToken);
+    return {
+      props: {
+        initialSubscribedPlan: res.data.plan || null,
+      },
+    };
+  } catch (err) {
+    console.error("SSR subscription fetch failed", err);
+    return {
+      props: {
+        initialSubscribedPlan: null,
+      },
+    };
+  }
+}
 
 ManageBilling.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

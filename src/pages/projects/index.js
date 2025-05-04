@@ -9,14 +9,14 @@ import Icons from "@/components/Icons";
 import { deleteUserProject, getUserProjects } from "@/service/api";
 // import api from "@/service/api";
  
-const CompletedProjects = () => {
+const CompletedProjects = ({ initialProjects, totalPages: initialTotalPages, }) => {
 
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(initialProjects || []);
   const [message, setMessage] = useState("");
   // For simplicity, assume pagination is not implemented on the backend;
   // Otherwise, adjust totalPages/currentPage accordingly.
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
 
   const fetchProjects = async (page = 1) => {
     try {
@@ -30,6 +30,7 @@ const CompletedProjects = () => {
   
 
   useEffect(() => {
+    if (currentPage === 1) return; // Already loaded via SSR
     fetchProjects(currentPage);
   }, [currentPage]);
 
@@ -60,7 +61,7 @@ const CompletedProjects = () => {
         <title>Projects | Cadbull </title>
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
-      <ProjectsLayout>
+      <ProjectsLayout refreshProjects={() => fetchProjects(currentPage)}>
         <div className="container">
           <div className="row">
             <div className="col-md-12">
@@ -137,6 +138,27 @@ const CompletedProjects = () => {
   );
 }
 
+export async function getServerSideProps(context) {
+  try {
+    const response = await getUserProjects(1, 10);
+    return {
+      props: {
+        initialProjects: response.data.projects,
+        totalPages: response.data.totalPages || 1,
+      },
+    };
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
+    return {
+      props: {
+        initialProjects: [],
+        totalPages: 1,
+      },
+    };
+  }
+}
+
+
 CompletedProjects.getLayout = function getLayout(page) {
   return (
     <MainLayout>
@@ -147,37 +169,3 @@ CompletedProjects.getLayout = function getLayout(page) {
 
 
 export default CompletedProjects;
-
-
-
-
-// const tableData = [
-//   {
-//     drawing: drawing,
-//     title: "Architect",
-//     role: "Administrator",
-//     location: "Ahmedabad",
-//     keywords: "Designer",
-//     type: "Designer",
-//     status: "Complete"
-//   },
-//   {
-//     drawing: drawing,
-//     title: "Architect",
-//     role: "Administrator",
-//     location: "Ahmedabad",
-//     keywords: "Designer",
-//     type: "Designer",
-//     status: "Complete"
-//   },
-//   {
-//     drawing: drawing,
-//     title: "Architect",
-//     role: "Administrator",
-//     location: "Ahmedabad",
-//     keywords: "Designer",
-//     type: "Designer",
-//     status: "Complete"
-//   },
-
-// ]

@@ -777,9 +777,14 @@ export const addExperience = async (data) => {
 };
 
 // ✅ Fetch Experiences
-export const getExperiences = async () => {
-  return api.get("/experiences");
+export const getExperiences = async (accessToken) => {
+  return api.get("/experiences", {
+    headers: {
+      Cookie: `accessToken=${accessToken}`,
+    },
+  });
 };
+
 
 
 /**

@@ -7,11 +7,14 @@ import PageHeading from "@/components/PageHeading";
 import SectionHeading from "@/components/SectionHeading";
 import Pagination from "@/components/Pagination";
 import { getOccupations, addExperience, getExperiences } from "@/service/api"; // Import API functions
+import { parse } from "cookie";
 
-const Experiences = () => {
+const Experiences = ({ initialOccupations, initialExperiences }) => {
   // const { token } = useSelector((store) => store.logininfo); // Get user token
-  const [occupations, setOccupations] = useState([]);
-  const [experiences, setExperiences] = useState([]);
+  const [occupations, setOccupations] = useState(initialOccupations || []);
+  const [experiences, setExperiences] = useState(initialExperiences || []);
+  console.log(initialExperiences, "initialExperiences");
+  
   const [formData, setFormData] = useState({
     company_name: "",
     occupation: "",
@@ -22,8 +25,10 @@ const Experiences = () => {
 
   // ✅ Fetch Occupations on Component Mount
   useEffect(() => {
-    fetchOccupations();
-    fetchExperiences();
+    setExperiences(initialExperiences); // Set initial experiences from props
+    setOccupations(initialOccupations); // Set initial occupations from props
+    // fetchOccupations();
+    // fetchExperiences();
   }, []);
 
   const fetchOccupations = async () => {
@@ -202,6 +207,41 @@ const Experiences = () => {
     </Fragment>
   );
 }
+
+export async function getServerSideProps({ req }) {
+  const cookies = parse(req.headers.cookie || '');
+  const accessToken = cookies.accessToken;
+
+  if (!accessToken) {
+    return {
+      redirect: {
+        destination: "/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const occupationsRes = await getOccupations(accessToken);
+    const experiencesRes = await getExperiences(accessToken);
+
+    return {
+      props: {
+        initialOccupations: occupationsRes.data.occupations || [],
+        initialExperiences: experiencesRes.data.experiences || [],
+      },
+    };
+  } catch (error) {
+    console.error("❌ Error in getServerSideProps:", error);
+    return {
+      props: {
+        initialOccupations: [],
+        initialExperiences: [],
+      },
+    };
+  }
+}
+
 
 Experiences.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

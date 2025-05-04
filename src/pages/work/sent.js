@@ -17,6 +17,7 @@ import { addedFavouriteItem, deleteFavouriteItem } from "../../../redux/app/feat
 import { downloadFile } from "@/utils/downloadfile";
 import { handledownload } from "@/service/globalfunction";
 import { debounce } from "lodash"; // ✅ Import debounce for optimization
+import { parse } from 'cookie';
 
 
 const tableData = [
@@ -64,12 +65,12 @@ const tableData = [
 ]
 
 
-const WorkSent = () => {
+const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated); 
   const { token } = useSelector((store) => store.logininfo);
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState(initialProjects || []);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
   const [removeItemTrigger, setRemoveItemTrigger] = useState(0);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -260,6 +261,40 @@ const WorkSent = () => {
     </Fragment >
   );
 }
+
+export async function getServerSideProps({ req }) {
+  const cookies = parse(req.headers.cookie || '');
+  const accessToken = cookies.accessToken;
+
+  if (!accessToken) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const response = await getUploadedProjectList(1, 10); // Page 1, 10 items
+    return {
+      props: {
+        accessToken,
+        initialProjects: response.data.projects,
+        initialTotalPages: response.data.totalPages || 1,
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        accessToken,
+        initialProjects: [],
+        initialTotalPages: 1,
+      },
+    };
+  }
+}
+
 
 WorkSent.getLayout = function getLayout(page) {
   return (

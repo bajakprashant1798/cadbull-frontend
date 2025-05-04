@@ -6,7 +6,7 @@ import { createUserProject } from "@/service/api";
 import { toast } from "react-toastify";
 import UploadFiles from "@/components/UploadFile";
 
-const ProjectsLayout = ({ children }) => {
+const ProjectsLayout = ({ children, refreshProjects }) => {
   const [formValues, setFormValues] = useState({
     title: "",
     role: "",
@@ -91,6 +91,8 @@ const ProjectsLayout = ({ children }) => {
         details: "",
         image: null,
       });
+      
+      if (refreshProjects) refreshProjects(); // ✅ Call to update list
     } catch (error) {
       console.error("Error uploading project:", error);
       toast.error("Upload failed. Please try again.");
