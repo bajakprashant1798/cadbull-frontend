@@ -229,6 +229,7 @@ useEffect(() => {
         setIsFavorited(true);
         toast.success("Added to Favorite list", { position: "top-right" });
         // Dispatch Redux action to add favorite (using project data)
+        
         if (project) {
           dispatch(
             addedFavouriteItem({
@@ -320,10 +321,10 @@ useEffect(() => {
   return (
     <Fragment>
       <Head>
-        <title>{project?.work_title}</title>
+        <title>{project?.meta_title}</title>
         {/* Open Graph Metadata */}
         <meta property="og:title" content={project?.work_title} />
-        <meta property="og:description" content={project?.description} />
+        <meta property="og:description" content={project?.meta_description} />
         <meta property="og:type" content="www.cadbull.com" />
         <meta
           property="og:url"
@@ -335,8 +336,8 @@ useEffect(() => {
         {/* Twitter Card Metadata */}
         <meta name="twitter:card" content={project?.photo_url} />
         <meta name="twitter:site" content="@cadbull" />
-        <meta name="twitter:title" content={project?.work_title} />
-        <meta name="twitter:description" content={project?.description} />
+        <meta name="twitter:title" content={project?.meta_title} />
+        <meta name="twitter:description" content={project?.meta_description} />
         <meta name="twitter:image" content={project?.photo_url} />
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">

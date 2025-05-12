@@ -258,55 +258,63 @@ export const callViewProfileAPI = async (uuid) => {
   }
 };
 
-export const downloadProject = async ( id, router) => {
-  try {
-    const response = await api.get(`/projects/download/${id}`, {
-      responseType: "blob", // Required to handle file downloads
-      // headers: { Authorization: `Bearer ${token}` },
-    });
+// export const downloadProject = async ( id, router) => {
+//   try {
+//     const response = await api.get(`/projects/download/${id}`, {
+//       responseType: "blob", // Required to handle file downloads
+//       // headers: { Authorization: `Bearer ${token}` },
+//     });
 
-    if (response.status === 200) {
-      return response; // Return the response blob
-    }
-  } catch (err) {
-    console.error("🚨 Download Error:", err);
+//     if (response.status === 200) {
+//       return response; // Return the response blob
+//     }
+//   } catch (err) {
+//     console.error("🚨 Download Error:", err);
 
-    if (err.response) {
-      const status = err.response.status;
+//     if (err.response) {
+//       const status = err.response.status;
 
-      // 🔹 Handle Gold Subscription Redirect (403)
-      if (status === 403) {
-        const blobData = err.response.data;
-        const textData = await blobData.text();
-        // try {
-        //   const jsonData = JSON.parse(textData);
-        //   if (jsonData?.redirectUrl) {
-        //     console.warn("🚀 Redirecting to:", jsonData.redirectUrl);
-        //     router.push(jsonData.redirectUrl);
-        //   } else {
-        //     console.error("❌ Error: No redirect URL in response.");
-        //   }
-        // } catch (parseError) {
-        //   console.error("❌ JSON Parse Error:", parseError);
-        // }
-        try {
-          const jsonData = JSON.parse(textData);
-          throw new Error(jsonData.message || "Download limit reached.");
-        } catch (parseError) {
-          console.error("❌ JSON Parse Error:", parseError);
-          throw new Error("Download limit reached.");
-        }
-      }
+//       // 🔹 Handle Gold Subscription Redirect (403)
+//       if (status === 403) {
+//         const blobData = err.response.data;
+//         const textData = await blobData.text();
+//         // try {
+//         //   const jsonData = JSON.parse(textData);
+//         //   if (jsonData?.redirectUrl) {
+//         //     console.warn("🚀 Redirecting to:", jsonData.redirectUrl);
+//         //     router.push(jsonData.redirectUrl);
+//         //   } else {
+//         //     console.error("❌ Error: No redirect URL in response.");
+//         //   }
+//         // } catch (parseError) {
+//         //   console.error("❌ JSON Parse Error:", parseError);
+//         // }
+//         try {
+//           const jsonData = JSON.parse(textData);
+//           throw new Error(jsonData.message || "Download limit reached.");
+//         } catch (parseError) {
+//           console.error("❌ JSON Parse Error:", parseError);
+//           throw new Error("Download limit reached.");
+//         }
+//       }
 
-      // 🔹 Handle Unauthorized (401)
-      if (status === 401) {
-        console.warn("❌ Unauthorized. Please log in.");
-        router.push("/auth/login");
-        throw new Error("Unauthorized. Please log in.");
-      }
-    }
-  }
+//       // 🔹 Handle Unauthorized (401)
+//       if (status === 401) {
+//         console.warn("❌ Unauthorized. Please log in.");
+//         router.push("/auth/login");
+//         throw new Error("Unauthorized. Please log in.");
+//       }
+//     }
+//   }
+// };
+
+export const downloadProject = async (id, router) => {
+  const response = await api.get(`/projects/download/${id}`, {
+    responseType: "blob"
+  });
+  return response;
 };
+
 
 
 export const downloadHistory = async ( uuid) => {
