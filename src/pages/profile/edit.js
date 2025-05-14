@@ -77,6 +77,8 @@ const EditProfile = () => {
     ? `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/profile_pic/medium/${user.profile_pic}`
     : null;
 
+  console.log(profile_pic, "profile_pic edit page");
+    
   // console.log("tokenedit: ", token);
   // console.log("useredit: ", user);
   // console.log("profile_pic: ", profile_pic);
