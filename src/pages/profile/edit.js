@@ -69,7 +69,14 @@ const EditProfile = () => {
   const { user } = useSelector((state) => state.logininfo || {});
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
-  const profile_pic = user.profile_pic;
+  // const profile_pic = user.profile_pic;
+  const profile_pic =
+  user.profile_pic?.startsWith("http") // already a full S3 URL
+    ? user.profile_pic
+    : user.profile_pic
+    ? `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/profile_pic/medium/${user.profile_pic}`
+    : null;
+
   // console.log("tokenedit: ", token);
   // console.log("useredit: ", user);
   // console.log("profile_pic: ", profile_pic);
@@ -249,100 +256,58 @@ const EditProfile = () => {
   };
   
 
-    // useEffect(() => {
-    //   const updateProfilePic = () => {
-    //     if (!file) return;
-    //     updateProfilePicture(token, file)
-    //       .then((res) => {
-    //         // console.log("update profile pic", res.data)
-    //         toast.success("Profile Picture Updated Successfully");
-    //         const storedUserData = localStorage.getItem("userData");
-    //          if(storedUserData){
-    //             const oldDetails= JSON.parse(storedUserData);
-    //             oldDetails.profile_pic = res.data.profile_pic_url;
-    //             localStorage.setItem('userData',JSON.stringify(oldDetails))
-    //             // console.log("edit profile pic url: ", oldDetails, res.data.profile_pic_url);
-    //             // console.log("profile_pic: ", profile_pic);
-                
-    //          }
-             
-    //         dispatch(updateuserProfilepic(res.data.profile_pic_url));
-    //       })
-    //       .catch((err) => {
-    //         if (err.response?.status === 404) {
-    //           toast.error("Please create a profile before uploading a picture.");
-    //         } else {
-    //           toast.error("Profile Picture Updation Failed");
-    //         }
-    //       });
-    //   };
-    
-    //   updateProfilePic();
-    // }, [file]); // Change the dependency to [file]
-
-    useEffect(() => {
-      const updateProfilePic = () => {
-        if (!file) return;
-    
-        // If profile doesn't exist, create one first before updating picture
-        const updatePic = () => {
-          updateProfilePicture( file)
-            .then((res) => {
-              toast.success("Profile Picture Updated Successfully");
-              const storedUserData = localStorage.getItem("userData");
-              if (storedUserData) {
-                const oldDetails = JSON.parse(storedUserData);
-                oldDetails.profile_pic = res.data.profile_pic_url;
-                // If the response now includes a profileId, update it too:
-                if (res.data.profileId) {
-                  oldDetails.profileId = res.data.profileId;
-                }
-                localStorage.setItem("userData", JSON.stringify(oldDetails));
+  useEffect(() => {
+    const updateProfilePic = () => {
+      if (!file) return;
+  
+      // If profile doesn't exist, create one first before updating picture
+      const updatePic = () => {
+        updateProfilePicture( file)
+          .then((res) => {
+            toast.success("Profile Picture Updated Successfully");
+            const storedUserData = localStorage.getItem("userData");
+            if (storedUserData) {
+              const oldDetails = JSON.parse(storedUserData);
+              oldDetails.profile_pic = res.data.profile_pic_url;
+              // If the response now includes a profileId, update it too:
+              if (!res.data.profileId && profileData?.id) {
+                oldDetails.profileId = profileData.id;
+                dispatch(updateUserProfileId({ profileId: profileData.id }));
               }
-              dispatch(updateuserProfilepic(res.data.profile_pic_url));
-              dispatch(updateUserProfileId({ profileId: res.data.profileId }));
-            })
-            .catch((err) => {
-              if (err.response?.status === 404) {
-                toast.error("Please create a profile before uploading a picture.");
-              } else {
-                toast.error("Profile Picture Updation Failed");
-              }
-            });
-        };
-    
-        if (profileData && profileData.id) {
-          // If profile exists, update picture directly
-          updatePic();
-        } else {
-          // Otherwise, create a profile first (you might call registerNewArchitechProfile here)
-          registerNewArchitechProfile({})
-            .then((res) => {
-              // Update local state and then update the profile picture
-              setProfileData(res.data);
-              reset(res.data);
-              updatePic();
-            })
-            .catch((err) => {
-              toast.error("Profile creation failed. Unable to upload picture.");
-            });
-        }
+              localStorage.setItem("userData", JSON.stringify(oldDetails));
+            }
+            dispatch(updateuserProfilepic(res.data.profile_pic_url));
+            dispatch(updateUserProfileId({ profileId: res.data.profileId }));
+          })
+          .catch((err) => {
+            if (err.response?.status === 404) {
+              toast.error("Please create a profile before uploading a picture.");
+            } else {
+              toast.error("Profile Picture Updation Failed");
+            }
+          });
       };
-    
-      updateProfilePic();
-    }, [file]);
-    
-
-  // useEffect(() => {
-  //   getUserProfile(token)
-  //     .then((res) => {
-  //       // console.log("profile:", res.data);
-        
-  //       dispatch(loginSuccess({ user: res.data, status: true })); // Update Redux state
-  //       localStorage.setItem("userData", JSON.stringify(res.data)); // Update session storage
-  //     })
-  //     .catch((err) => console.error(err));
-  // }, [resetState, profile_pic]);
+  
+      if (profileData && profileData.id) {
+        // If profile exists, update picture directly
+        updatePic();
+      } else {
+        // Otherwise, create a profile first (you might call registerNewArchitechProfile here)
+        registerNewArchitechProfile({})
+          .then((res) => {
+            // Update local state and then update the profile picture
+            setProfileData(res.data);
+            reset(res.data);
+            updatePic();
+          })
+          .catch((err) => {
+            toast.error("Profile creation failed. Unable to upload picture.");
+          });
+      }
+    };
+  
+    updateProfilePic();
+  }, [file]);
 
   // Fetch the profile when the component mounts (or when resetState changes)
   // Fetch profile data when component mounts or when resetState changes
@@ -382,20 +347,6 @@ const EditProfile = () => {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
-  
-  // useEffect(() => {
-  //   getUserProfile(token)
-  //     .then((res) => {
-  //       // console.log("user profile api", res.data);
-  //       const data = res.data;
-  //       reset(res.data);
-  //       setProfileData(res.data);
-  //     })
-  //     .catch((err) => {
-  //       // console.log(err);
-  //       console.error(err);
-  //     });
-  // }, [resetState]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -403,21 +354,7 @@ const EditProfile = () => {
     }
   }, [isAuthenticated]);
 
-  // const removeAccountHandler = async () => {
-  //   try {
-  //     const res = await deleteAccount(token);
-  //     if (res.status === 200) {
-  //       dispatch(logout());
-  //       localStorage.removeItem("userData");
-  //       toast.success("Account Removed Successfully");
-  //       Router.push("/");
-  //     } else {
-  //       throw new Error("Failed to remove account");
-  //     }
-  //   } catch (err) {
-  //     toast.error(err.message || "An error occurred while removing the account");
-  //   }
-  // };
+ 
   // Trigger Account Deletion
   const removeAccountHandler = async () => {
     try {

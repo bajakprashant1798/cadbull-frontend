@@ -309,9 +309,7 @@ export const callViewProfileAPI = async (uuid) => {
 // };
 
 export const downloadProject = async (id, router) => {
-  const response = await api.get(`/projects/download/${id}`, {
-    responseType: "blob"
-  });
+  const response = await api.get(`/projects/download/${id}`); // no blob
   return response;
 };
 
@@ -662,26 +660,10 @@ export const getProjectByIdApi = (id) => {
 };
 
 // ✅ Update Project (With File Upload)
-export const updateProjectApi = async (id, data) => {
-  const formData = new FormData();
-
-  // ✅ Append all non-file fields
-  Object.keys(data).forEach((key) => {
-    if (key !== "file" && key !== "image") {
-      formData.append(key, data[key]);
-    }
-  });
-
-  // ✅ Append file & image if they exist
-  if (data.file && data.file.length > 0) {
-    formData.append("file", data.file[0]);
-  }
-  if (data.image && data.image.length > 0) {
-    formData.append("image", data.image[0]);
-  }
-
-  return api.put(`/admin/projects/${id}`, formData);
+export const updateProjectApi = async (id, formData) => {
+  return api.put(`/admin/projects/${id}`, formData); // ✅ Let Axios detect content type
 };
+
 
 // ✅ Delete Project
 export const deleteProjectApi = (id) => {

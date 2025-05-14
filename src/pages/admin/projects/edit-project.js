@@ -128,7 +128,20 @@ const EditProject = () => {
 
       console.log("🚀 Sending Updated Project Data:", updatedData);
 
-      await updateProjectApi(id, updatedData);
+      const formData = new FormData();
+
+      for (const key in updatedData) {
+        if (key === "file" || key === "image") {
+          if (updatedData[key] && updatedData[key].length > 0) {
+            formData.append(key, updatedData[key][0]); // Append file directly
+          }
+        } else {
+          formData.append(key, updatedData[key]);
+        }
+      }
+
+      await updateProjectApi(id, formData);
+
       toast.success("Project updated successfully!");
       router.push("/admin/projects/view-projects");
     } catch (error) {

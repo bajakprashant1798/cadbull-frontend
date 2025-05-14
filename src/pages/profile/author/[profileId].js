@@ -29,7 +29,12 @@ import Pagination from "@/components/Pagination";
 
 const CompanyProfile = () => {
   // Get profileId from router query
-  const { profileId } = useRouter().query;
+  // const { profileId } = useRouter().query;
+  const router = useRouter();
+  const profileIdFromRoute = router.query.profileId;
+  const profileIdFromRedux = useSelector((store) => store.logininfo.user?.profileId);
+  const profileId = profileIdFromRoute || profileIdFromRedux;
+
   const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
@@ -48,6 +53,14 @@ const CompanyProfile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
+
+  // Fetch profileId from URL or Redux store optionally
+  useEffect(() => {
+    if (!profileIdFromRoute && profileIdFromRedux) {
+      router.replace(`/profile/author/${profileIdFromRedux}`);
+    }
+  }, [profileIdFromRoute, profileIdFromRedux]);
+
 
   // Fetch profile info
   const fetchProfile = async () => {

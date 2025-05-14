@@ -4,6 +4,7 @@ import { getProjectsApi, getAdminCategoriesWithSubcategories } from "@/service/a
 import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
+import { handledownload } from "@/service/globalfunction";
 
 const ViewProjects = () => {
     // const { token } = useSelector((store) => store.logininfo);
@@ -79,6 +80,7 @@ const ViewProjects = () => {
         const selectedCategory = categories.find((cat) => cat.id === Number(categoryId));
         setSubcategories(selectedCategory?.project_sub_categories || []);
     };
+
 
     return (
         <AdminLayout>
@@ -157,7 +159,14 @@ const ViewProjects = () => {
                                         <td>{project.status === "1" ? "Approved" : project.status === "2" ? "Rejected" : "Pending"}</td>
                                         <td>
                                             <button className="btn btn-primary btn-sm" onClick={() => router.push(`/admin/projects/edit-project?id=${project.id}`)}>Edit</button>
-                                            <a href={`${process.env.NEXT_PUBLIC_API_MAIN_NO_API}/uploads/project_files/${project.file}`} className="btn btn-sm btn-success ms-2" download>Download</a>
+                                            {/* <a href={`${process.env.NEXT_PUBLIC_API_MAIN_NO_API}/uploads/project_files/${project.file}`} className="btn btn-sm btn-success ms-2" download>Download</a> */}
+                                            <button
+                                                className="btn btn-sm btn-success ms-2"
+                                                onClick={() => handledownload(project.id, isAuthenticated, router)}
+                                            >
+                                                Download
+                                            </button>
+
                                         </td>
                                     </tr>
                                 ))
