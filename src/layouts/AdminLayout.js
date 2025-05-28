@@ -16,25 +16,6 @@ const AdminLayout = ({ children }) => {
   // const { user } = useSelector((store) => store.logininfo.user);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Read the token from sessionStorage using the correct key.
-  //   // const savedToken = localStorage.getItem("accessToken");
-  //   // Your user data is stored as: JSON.stringify({ user: userData })
-  //   const savedUserRaw = localStorage.getItem("userData");
-  //   let savedUser = null;
-  //   if (savedUserRaw) {
-  //     const parsed = JSON.parse(savedUserRaw);
-  //     savedUser = parsed.user || parsed;
-  //   }
-  //   if (isAuthenticated && savedUser) {
-  //     // Dispatch with a property named accessToken (not token)
-  //     dispatch(
-  //       loginSuccess({ user: savedUser, status: "authenticated" })
-  //     );
-  //   }
-  //   setLoading(false);
-  // }, [dispatch]);
-
   useEffect(() => {
     // Call your API to rehydrate user data using cookies
     getUserData({ withCredentials: true })

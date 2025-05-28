@@ -142,7 +142,7 @@ const Login = () => {
         if (user.role === 1) {
           router.push("/admin/dashboard"); // Super Admin
         } else if (user.role === 5) {
-          router.push("/admin/projects/view-project"); // Content Creator
+          router.push("/admin/dashboard"); // Content Creator
         } else {
           router.push("/"); // Default for other users
         }

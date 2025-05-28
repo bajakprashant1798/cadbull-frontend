@@ -24,6 +24,9 @@ const EditProject = () => {
   const [checking, setChecking] = useState(false);
   const typingTimeout = useRef(null); // You need to import useRef!
 
+  const user = useSelector((store) => store.logininfo.user);
+  const userRole = user?.role;
+
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -301,7 +304,13 @@ const EditProject = () => {
           {/* Upload New Zip File */}
           <div className="mb-3">
             <label className="form-label">Upload New Zip File</label>
-            <input type="file" className="form-control" {...register("file")} />
+            {/* <input type="file" className="form-control" {...register("file")} /> */}
+            <input
+              type="file"
+              className="form-control"
+              {...register("file")}
+              disabled={userRole === 5}
+            />
           </div>
 
           {/* Upload New Image */}

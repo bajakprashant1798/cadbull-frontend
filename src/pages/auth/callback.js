@@ -37,7 +37,7 @@ const OAuthCallback = () => {
           if (userData.role === 1) {
             router.replace("/admin/dashboard");
           } else if (userData.role === 5) {
-            router.replace("/admin/projects/view-project");
+            router.replace("/admin/dashboard");
           } else {
             router.replace("/");
           }

@@ -72,29 +72,85 @@ const Sidebar = () => {
         {/* Content Creator (Role 5) should only see User Management */}
         {userRole === 5 ? (
           <>
-            {/* Project Management with Dropdown */}
+            {/* Optional: Dashboard Link */}
+            {/* <li className="nav-item">
+              <Link href="/admin/dashboard" className="nav-link text-white">
+                <span className="me-2"><Home size={18} className="me-2" /> Dashboard</span>
+              </Link>
+            </li> */}
+
+            {/* Category Management */}
             <li className="nav-item">
-                <button 
-                    className="nav-link text-white d-flex justify-content-between align-items-center w-100"
-                    onClick={() => setProjectMenuOpen(!projectMenuOpen)}
-                >
-                    <span className="me-2"><Layers size={18} className="me-2" /> Project Management</span>
-                    {projectMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </button>
-                {projectMenuOpen && (
-                    <ul className="nav flex-column ms-3">
-                    <li>
-                        <Link href="/admin/users/add" className="nav-link text-white">
-                            <span className="me-2"><PlusCircle size={18} className="me-2" />Add Project</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/admin/users/admins" className="nav-link text-white">
-                            <span className="me-2"><List size={18} className="me-2" />View Project</span>
-                        </Link>
-                    </li>
-                    </ul>
-                )}
+              <button 
+                className="nav-link text-white d-flex justify-content-between align-items-center w-100"
+                onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
+              >
+                <span className="me-2">
+                  <Folder size={18} className="me-2" /> Category Management
+                </span>
+                {categoryMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
+              {categoryMenuOpen && (
+                <ul className="nav flex-column ms-3">
+                  <li>
+                    <Link href="/admin/categories/add-category" className="nav-link text-white">
+                      <span className="me-2"><PlusCircle size={18} className="me-2" />Add Category</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/categories/all-categories" className="nav-link text-white">
+                      <span className="me-2"><List size={18} className="me-2" />All categories</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/categories/active-categories" className="nav-link text-white">
+                      <span className="me-2"><List size={18} className="me-2" />Active categories</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/categories/inactive-categories" className="nav-link text-white">
+                      <span className="me-2"><List size={18} className="me-2" />Inactive categories</span>
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Project Management */}
+            <li className="nav-item">
+              <button 
+                className="nav-link text-white d-flex justify-content-between align-items-center w-100"
+                onClick={() => setProjectMenuOpen(!projectMenuOpen)}
+              >
+                <span className="me-2"><Layers size={18} className="me-2" /> Project Management</span>
+                {projectMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </button>
+              {projectMenuOpen && (
+                <ul className="nav flex-column ms-3">
+                  {/* <li>
+                    <Link href="/admin/projects/add-project" className="nav-link text-white">
+                      <span className="me-2"><PlusCircle size={18} className="me-2" />Add Project</span>
+                    </Link>
+                  </li> */}
+                  <li>
+                    <Link href="/admin/projects/view-projects" className="nav-link text-white">
+                      <span className="me-2"><List size={18} className="me-2" />View Projects</span>
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Change Password */}
+            <li className="nav-item">
+              <Link href="/admin/change-password" className="nav-link text-white">
+                <Settings size={18} className="me-2" /> Change Password
+              </Link>
+            </li>
+
+            {/* Logout */}
+            <li className="nav-item">
+              <button className="nav-link text-danger" onClick={handleLogout}>Logout</button>
             </li>
           </>
         ) : (
