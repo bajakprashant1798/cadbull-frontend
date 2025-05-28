@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi } from "@/service/api";
+import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import TagsField from "@/components/TagsField";
 
@@ -19,6 +19,12 @@ const AddProject = () => {
   const [subcategories, setSubcategories] = useState([]); // ✅ Ensure it starts as an empty array
   const [descriptionCount, setDescriptionCount] = useState(250);
   const [tags, setTags] = useState([]);
+
+  const [workTitle, setWorkTitle] = useState(""); // Controlled input for title
+  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const typingTimeout = useRef(null);
+
 
   // ✅ Fetch Categories on Component Mount
   useEffect(() => {
@@ -59,8 +65,39 @@ const AddProject = () => {
     setDescriptionCount(250 - text.length);
   };
 
+  const handleWorkTitleChange = (e) => {
+    const value = e.target.value;
+    setWorkTitle(value);
+    setValue("work_title", value); // Sync with react-hook-form
+    
+    setIsDuplicate(false);
+
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(async () => {
+      if (!value.trim()) {
+        setIsDuplicate(false);
+        setChecking(false);
+        return;
+      }
+      setChecking(true);
+      try {
+        const res = await checkProjectNameApi(value.trim());
+        setIsDuplicate(res.data.exists);
+      } catch (err) {
+        setIsDuplicate(false);
+      }
+      setChecking(false);
+    }, 350);
+  };
+
+
   // ✅ Submit Form
   const onSubmit = async (data) => {
+    if (isDuplicate) {
+      toast.error("Cannot save: Duplicate project title.");
+      return;
+    }
     try {
         const formData = new FormData();
 
@@ -117,7 +154,22 @@ const AddProject = () => {
           {/* Work Title */}
           <div className="mb-3">
             <label className="form-label">Work Title</label>
-            <input className="form-control" {...register("work_title", { required: true })} />
+            {/* <input className="form-control" {...register("work_title", { required: true })} /> */}
+            <input
+              className="form-control"
+              {...register("work_title", { required: true })}
+              value={workTitle}
+              onChange={handleWorkTitleChange}
+              autoComplete="off"
+            />
+            {checking && (
+              <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
+            )}
+            {isDuplicate && (
+              <span style={{ color: "red", fontSize: "14px" }}>
+                This project title already exists. Please choose another.
+              </span>
+            )}
           </div>
 
           {/* Description */}
@@ -211,7 +263,10 @@ const AddProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary">Add Project</button>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
+            Add Project
+          </button>
+
         </form>
       </div>
     </AdminLayout>

@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import * as api from "@/service/api";
 import { toast } from "react-toastify";
-import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories } from "@/service/api";
+import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
@@ -18,6 +18,12 @@ const EditProject = () => {
   const { register, handleSubmit, setValue, watch } = useForm();
   const router = useRouter();
   const { id } = router.query;
+
+  const [workTitle, setWorkTitle] = useState(""); // Controlled input
+  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const typingTimeout = useRef(null); // You need to import useRef!
+
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -81,6 +87,11 @@ const EditProject = () => {
         Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
 
+        setProjectDetails(projectRes.data); // For comparing on duplicate check
+        setWorkTitle(projectRes.data.work_title || ""); // Set controlled input
+        setValue("work_title", projectRes.data.work_title || "");
+
+
         // ✅ Set Category & Subcategory
         if (projectRes.data.category_id) {
           const selectedCategory = categoriesRes.data.find((cat) => cat.id === Number(projectRes.data.category_id));
@@ -99,6 +110,35 @@ const EditProject = () => {
     fetchProjectData();
   }, [id, isAuthenticated]);
 
+  const handleWorkTitleChange = (e) => {
+    const value = e.target.value;
+    setWorkTitle(value);
+    setValue("work_title", value); // Sync with react-hook-form
+
+    setIsDuplicate(false); // Reset state
+
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(async () => {
+      // Empty or unchanged value: skip
+      if (!value.trim() || value.trim() === projectDetails?.work_title) {
+        setIsDuplicate(false);
+        setChecking(false);
+        return;
+      }
+      setChecking(true);
+      try {
+        // Pass id so it doesn't match itself
+        const res = await checkProjectNameApi(value.trim(), id || "");
+        setIsDuplicate(res.data.exists);
+      } catch (err) {
+        setIsDuplicate(false);
+      }
+      setChecking(false);
+    }, 350);
+  };
+
+
   // ✅ Handle Category Selection
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
@@ -111,6 +151,11 @@ const EditProject = () => {
 
   // ✅ Submit Form with Updated Data
   const onSubmit = async (data) => {
+    if (isDuplicate) {
+      toast.error("Cannot save: Duplicate project title.");
+      return;
+    }
+
     try {
       const updatedData = {
         ...data,
@@ -169,7 +214,22 @@ const EditProject = () => {
           {/* Work Title */}
           <div className="mb-3">
             <label className="form-label">Work Title</label>
-            <input className="form-control" {...register("work_title", { required: true })} />
+            {/* <input className="form-control" {...register("work_title", { required: true })} /> */}
+            <input
+              className="form-control"
+              {...register("work_title", { required: true })}
+              value={workTitle}
+              onChange={handleWorkTitleChange}
+              autoComplete="off"
+            />
+            {checking && (
+              <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
+            )}
+            {isDuplicate && (
+              <span style={{ color: "red", fontSize: "14px" }}>
+                This project title already exists. Please choose another.
+              </span>
+            )}
           </div>
 
           {/* Description */}
@@ -269,7 +329,9 @@ const EditProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary">Save Changes</button>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
+            Save Changes
+          </button>
         </form>
       </div>
     </AdminLayout>

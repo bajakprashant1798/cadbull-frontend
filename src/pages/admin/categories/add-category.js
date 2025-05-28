@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { addCategoryApi, getCategoriesApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
+import { checkCategoryNameApi } from "@/service/api";
 import { toast } from "react-toastify";
 
 const AddCategory = () => {
@@ -13,8 +14,13 @@ const AddCategory = () => {
     (store) => store.logininfo.isAuthenticated
   );
   
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const [parentCategories, setParentCategories] = useState([]);
+
+  const [categoryName, setCategoryName] = useState(""); // Controlled input
+  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const typingTimeout = useRef(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,7 +30,38 @@ const AddCategory = () => {
     }
   }, [isAuthenticated]);
 
+  // Live duplicate check on name
+  const handleCategoryNameChange = (e) => {
+    const value = e.target.value;
+    setCategoryName(value);
+    setValue("name", value); // Sync with react-hook-form
+
+    setIsDuplicate(false);
+
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(async () => {
+      if (!value.trim()) {
+        setIsDuplicate(false);
+        setChecking(false);
+        return;
+      }
+      setChecking(true);
+      try {
+        const res = await checkCategoryNameApi(value.trim());
+        setIsDuplicate(res.data.exists);
+      } catch (err) {
+        setIsDuplicate(false);
+      }
+      setChecking(false);
+    }, 350);
+  };
+
   const onSubmit = async (data) => {
+    if (isDuplicate) {
+      toast.error("Cannot save: Duplicate category name.");
+      return;
+    }
     try {
       await addCategoryApi(data);
       toast.success("Category added successfully!");
@@ -53,7 +90,22 @@ const AddCategory = () => {
 
           <div className="mb-3">
             <label className="form-label">Category Name</label>
-            <input className="form-control" {...register("name")} required />
+            {/* <input className="form-control" {...register("name")} required /> */}
+            <input
+              className="form-control"
+              {...register("name", { required: true })}
+              value={categoryName}
+              onChange={handleCategoryNameChange}
+              autoComplete="off"
+            />
+            {checking && (
+              <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
+            )}
+            {isDuplicate && (
+              <span style={{ color: "red", fontSize: "14px" }}>
+                This category name already exists. Please choose another.
+              </span>
+            )}
           </div>
 
           <div className="mb-3">
@@ -76,7 +128,9 @@ const AddCategory = () => {
             <textarea className="form-control" {...register("meta_description")} />
           </div>
 
-          <button type="submit" className="btn btn-primary">Add Category</button>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
+            Add Category
+          </button>
         </form>
       </div>
     </AdminLayout>

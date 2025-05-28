@@ -739,6 +739,14 @@ export const toggleRedeemStatusApi = async (redeemId, userId, redeemMoney) => {
 };
 
 
+// Duplicate check for categories (for use in Add/Edit Category page)
+export const checkCategoryNameApi = (name, id = "") => {
+  return api.get("/admin/categories/check-name", { params: { name, id } });
+};
+// Duplicate check for projects (for use in Add/Edit Project page)
+export const checkProjectNameApi = (work_title, id = "") => {
+  return api.get("/admin/projects/check-name", { params: { work_title, id } });
+};
 
 
 // ------------------- Admin APIs -------------------- //
