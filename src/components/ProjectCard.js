@@ -160,9 +160,22 @@ const ProjectCard = ({
   }, [isAuthenticated, id, isFavorited, router, dispatch, work_title, file_type, photo_url, type]);
 
 
+  function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+  }
+
+
   return (
     <div className='project-day-card h-100'>
-      <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}>
+      {/* <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}> */}
+      <Link onClick={handleviewcount}  className="h-100" href={`/detail/${id}/${slugify(work_title)}`}>
         <div className='project-day-card-image mb-3 position-relative'>
           
               <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" />

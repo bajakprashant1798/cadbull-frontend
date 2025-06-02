@@ -49,12 +49,12 @@ const links = [
     active: false,
   },
   {
-    url: "/about",
+    url: "/about-us",
     title: "ABOUT US",
     active: false,
   },
   {
-    url: "/contact",
+    url: "/contact-us",
     title: "CONTACT US",
     active: false,
   },
