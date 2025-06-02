@@ -51,13 +51,13 @@ const Footer = () => {
                 <p className="text-white mb-3 mb-md-4">Cadbull is an exclusive forum that connects the creative community of innovative Auto cad designers, firms and organizations.</p>
                 <ul className="list-unstyled d-flex gap-2 justify-content-md-center">
                   <li>
-                    <a href=""> <img src={fb.src} alt="icon" /></a>
+                    <a href="https://www.facebook.com/cadbull/"> <img src={fb.src} alt="icon" /></a>
                   </li>
                   <li>
-                    <a href=""> <img src={twitter.src} alt="icon" /></a>
+                    <a href="https://twitter.com/cadbull"> <img src={twitter.src} alt="icon" /></a>
                   </li>
                   <li>
-                    <a href=""> <img src={youtube.src} alt="icon" /></a>
+                    <a href="https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ"> <img src={youtube.src} alt="icon" /></a>
                   </li>
                 </ul>
               </div>
