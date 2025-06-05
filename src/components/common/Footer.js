@@ -8,7 +8,7 @@ import twitter from "@/assets/icons/twitter.png";
 import youtube from "@/assets/icons/youtube.png";
 import Link from "next/link";
 const Footer = () => {
-  return (
+  return ( 
     <footer className="mt-auto pt-4 pt-sm-5">
       <hr className="border-top-footer opacity-100 d-none d-lg-block" />
       <div className="container">

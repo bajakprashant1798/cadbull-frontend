@@ -27,7 +27,10 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = {};
 
-      localStorage.removeItem("userData");
+      // Only remove from localStorage if running on client
+      if (typeof window !== "undefined" && window.localStorage) {
+        localStorage.removeItem("userData");
+      }
 
     },
     updateuserProfilepic: (state, action) => {

@@ -33,9 +33,9 @@ function CategoriesList({
         <Link
         onClick={(e)=>{
           dispatch(closeDrawerHandler({drawerType:"category"}))
-          router.push(`/categories/sub/${slug}`)
+          router.push(`/${slug}`)
         }}
-          href={`/categories/sub/${slug}`}
+          href={`/${slug}`}
           className="d-inline-flex gap-1 align-items-center"
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}

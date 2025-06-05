@@ -93,14 +93,14 @@ const CategoriesLayout = ({
                     <SearchCategories
                       categories={subCategories}
                       type="Sub Categories"
-                      url="categories/sub/"
+                      // url="categories/sub/"
                     />
                   </div>
                   <div className="mb-4">
                     <SearchCategories
                       categories={mainCategories}
                       type="Categories"
-                      url="categories/"
+                      // url="categories/"
                     />
                   </div>
                 </>
