@@ -394,7 +394,7 @@ const Header = () => {
                       </li>
                       <li>
                         <Link
-                          href="/projects"
+                          href="/project"
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
@@ -654,7 +654,7 @@ const Header = () => {
                       </li>
                       <li>
                         <Link
-                          href="/projects"
+                          href="/project"
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
