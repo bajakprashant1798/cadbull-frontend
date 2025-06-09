@@ -1,6 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import drawing1 from "@/assets/images/drawing-image.png";
 import CategoriesLayout, { makeTitle } from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
@@ -56,6 +56,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   
   // State for main categories
   const [mainCategories, setMainCategories] = useState([]);
+
+  const [pageChanged, setPageChanged] = useState(false);
 
   // Fetch main categories on mount
   useEffect(() => {
@@ -188,7 +190,72 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
     dispatch(updatesubcatpage(newPage));
+
+    setPageChanged(true); // set flag so effect can scroll after content loads
+    // Scroll to products grid
+    // Adjust selector to where your grid starts
+    // if (typeof window !== "undefined") {
+    //   const grid = document.querySelector("#categories-top");
+    //   if (grid) {
+    //     grid.scrollIntoView({ behavior: "smooth", block: "start" });
+    //   } else {
+    //     // fallback: scroll to top
+    //     window.scrollTo({ top: 0, behavior: "smooth" });
+    //   }
+    // }
   };
+
+  // useEffect(() => {
+  //   if (pageChanged && !isLoading) {
+  //     // Wait for content to be present in DOM
+  //     setTimeout(() => {
+  //       const grid = document.getElementById("categories-top");
+  //       if (grid) {
+  //         grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  //       } else {
+  //         window.scrollTo({ top: 0, behavior: "smooth" });
+  //       }
+  //       setPageChanged(false); // Reset flag
+  //     }, 0); // You can use a small timeout if needed
+  //   }
+  // }, [pageChanged, isLoading]);
+
+  const productGridRef = useRef();
+
+useEffect(() => {
+  if (!pageChanged) return;
+
+  // Only scroll after new products are rendered
+  let scrolled = false;
+
+  function scrollToGrid() {
+    if (productGridRef.current) {
+      // Only scroll if the grid has cards/content
+      const cards = productGridRef.current.querySelectorAll('.col-md-6, .col-lg-4, .col-xl-4');
+      if (cards.length > 0) {
+        productGridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrolled = true;
+        setPageChanged(false);
+      }
+    }
+  }
+
+  // First, try to scroll immediately
+  scrollToGrid();
+
+  // If not, observe for new children being rendered
+  if (!scrolled && productGridRef.current) {
+    const observer = new MutationObserver(() => {
+      scrollToGrid();
+      if (scrolled && observer) observer.disconnect();
+    });
+    observer.observe(productGridRef.current, { childList: true, subtree: true });
+
+    // Clean up observer on effect cleanup
+    return () => observer.disconnect();
+  }
+}, [pageChanged, isLoading]);
+
 
   // const handlePageChange = useCallback((newPage) => {
   //   // Optionally validate that newPage is within bounds
@@ -207,7 +274,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
         <section>
-          <div className="container">
+          <div className="container" id="categories-top">
             <div className="row mb-4 mb-md-5">
               <div className="col-lg-12">
                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-2">
@@ -306,7 +373,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
             </div>
 
             {/* Projects Grid */}
-            <div className="row g-4 justify-content-center">
+            <div id="product-grid" ref={productGridRef} className="row g-4 justify-content-center">
               {isLoading ? null : subcat && subcat.length > 0 ? (
                 subcat.map((project) => (
                   <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
