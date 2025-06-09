@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import CategoriesLayout, { makeTitle } from "@/layouts/CategoriesLayouts";
 import ProjectCard from "@/components/ProjectCard";
 import Link from "next/link";
+import Icons from "@/components/Icons";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
 import { getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
@@ -27,44 +28,34 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
-  // Prefer SSR/SSG props, fallback to router for client-side transitions
+  // Pick slug and page from SSR/SSG props, or router query (client navigation)
   const slug = initialSlug || querySlug;
   const currentPage = parseInt(initialPage || queryPage || 1, 10);
 
   const dispatch = useDispatch();
   const [isLoading, startLoading, stopLoading] = useLoading();
 
-  // Use Redux to store subcategory projects and filters.
   const subcat = useSelector((store) => store.projectinfo.subcat);
   const subcatfilter = useSelector((store) => store.projectinfo.subcatfilter);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
-  // Local state for search input
   const [searchText, setSearchText] = useState("");
   const [searchedText, setSearchedText] = useState("");
-
-  // Pagination (total pages)
   const [totalPages, setTotalPages] = useState(initialTotalPages);
-
-  const [favouritesFetched, setFavouritesFetched] = useState(false);
   const [mainCategories, setMainCategories] = useState([]);
+  const [favouritesFetched, setFavouritesFetched] = useState(false);
   const [pageChanged, setPageChanged] = useState(false);
 
   // Fetch main categories on mount
   useEffect(() => {
     getallCategories("")
-      .then((res) => {
-        if (res.data.categories) {
-          setMainCategories(res.data.categories);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching main categories:", err);
-      });
+      .then((res) => setMainCategories(res.data.categories || []))
+      .catch((err) => console.error("Error fetching main categories:", err));
   }, []);
 
+  // Fetch favourites for authenticated users
   useEffect(() => {
     if (isAuthenticated && !favouritesFetched) {
       getFavouriteItems()
@@ -73,13 +64,13 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
           setFavouritesFetched(true);
         })
         .catch((error) => {
-          console.error("Error fetching favorites:", error);
           setFavouritesFetched(true);
+          // ignore error, user can retry
         });
     }
   }, [isAuthenticated, favouritesFetched, dispatch]);
 
-  // Update Redux with the new slug and reset pagination
+  // Update Redux with slug and currentPage on navigation
   useEffect(() => {
     if (slug) {
       dispatch(updatesubcatslug(slug));
@@ -87,7 +78,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     }
   }, [slug, currentPage, dispatch]);
 
-  // Debounce search input so API calls are not made on every keystroke
+  // Debounced search input
   const debouncedSearch = useCallback(
     debounce((value) => {
       setSearchedText(value);
@@ -112,7 +103,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     }
   };
 
-  // Load projects dynamically based on current filters and search query
+  // Load projects when Redux filter or slug changes
   const loadProjects = () => {
     startLoading();
     if (!subcatfilter.slug) {
@@ -128,7 +119,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
       })
       .catch((error) => {
         stopLoading();
-        console.error("Error fetching subcategories:", error);
+        // log or ignore
       });
   };
 
@@ -137,13 +128,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     loadProjects();
   }, [subcatfilter, slug]);
 
-  // Cleanup on unmount
+  // Cleanup Redux state on unmount
   useEffect(() => {
     return () => {
       dispatch(resetsubcatfilter());
     };
   }, [dispatch]);
 
+  // Prepare layout props
   const CategoriesProps = searchedText.length
     ? {
         title: "Search Results",
@@ -163,7 +155,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         type: "Sub Categories",
       };
 
-  // No setCurrentPage; just navigate!
+  // Pagination handler for router navigation
   const handlePageChange = (newPage) => {
     setPageChanged(true);
     if (newPage === 1) {
@@ -209,7 +201,103 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         {isLoading && <Loader />}
         <section>
           <div className="container" id="categories-top">
-            {/* ...your header/search/filter/grid as before... */}
+            <div className="row mb-4 mb-md-5">
+              <div className="col-lg-12">
+                <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-2">
+                  <div className="col-lg-3">
+                    {searchedText.length ? (
+                      <h5 className="text-nowrap">
+                        <span className="fw-semibold text-primary">
+                          {searchedText}
+                        </span>{" "}
+                        <small className="text-grey fs-12">
+                          ({subcat?.length || 0} RESULTS)
+                        </small>
+                      </h5>
+                    ) : (
+                      <nav aria-label="breadcrumb">
+                        <ol className="breadcrumb mt-2 mt-md-0 mb-md-0">
+                          <li className="breadcrumb-item">
+                            <Link href="/categories">Categories</Link>
+                          </li>
+                          {slug && (
+                            <li className="breadcrumb-item">
+                              {makeTitle(slug)}
+                            </li>
+                          )}
+                        </ol>
+                      </nav>
+                    )}
+                  </div>
+                  <div>
+                    <div className="d-flex gap-2 justify-content-end flex-column flex-md-row">
+                      <form onSubmit={handleSearch}>
+                        <div className="input-group">
+                          <span className="input-group-text bg-white">
+                            <Icons.Search />
+                          </span>
+                          <input
+                            type="text"
+                            className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
+                            placeholder="For e.g. House Design"
+                            aria-label="For e.g. House Design"
+                            value={searchText}
+                            onChange={handleInputChange}
+                          />
+                          <span className="input-group-text p-0">
+                            <button type="submit" className="btn btn-secondary rounded-start-0">
+                              SEARCH
+                            </button>
+                          </span>
+                        </div>
+                      </form>
+                      <div className="d-none d-xl-flex gap-2">
+                        <div className="d-flex">
+                          <span className="input-group-text bg-white border-end-0 rounded-end-0 pe-0">
+                            Type :
+                          </span>
+                          <select
+                            defaultValue=""
+                            className="form-select border-start-0 rounded-start-0"
+                            onChange={(e) => {
+                              handlePageChange(1);
+                              dispatch(updatesubcatpage(1));
+                              dispatch(updatesubcatpagetype(e.target.value));
+                            }}
+                          >
+                            <option value="">All</option>
+                            <option value="Free">Free</option>
+                            <option value="Gold">Gold</option>
+                          </select>
+                        </div>
+                        <div className="d-flex">
+                          <span className="input-group-text bg-white border-end-0 rounded-end-0 pe-0">
+                            Sort by :
+                          </span>
+                          <select
+                            defaultValue="DWG"
+                            className="form-select border-start-0 rounded-start-0"
+                            onChange={(e) => {
+                              handlePageChange(1);
+                              dispatch(updatesubcatpage(1));
+                              dispatch(updatesubcatsortTerm(e.target.value));
+                            }}
+                          >
+                            <option value="">All</option>
+                            {drawings.map(({ type, value }, index) => (
+                              <option key={index} value={value}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Projects Grid */}
             <div id="product-grid" ref={productGridRef} className="row g-4 justify-content-center">
               {isLoading ? null : subcat && subcat.length > 0 ? (
@@ -224,12 +312,13 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
                 </div>
               )}
             </div>
-            {/* Pagination */}
+
+            {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
                   <Pagination
-                    slug={slug}
+                    basePath={`/${slug}`}
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
@@ -247,6 +336,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
 export async function getStaticPaths() {
   const catRes = await getallCategories("");
   const categories = catRes?.data?.categories || [];
+  // You can prebuild a few pages, or just 1/2 as before
   const paths = [];
   categories.forEach(cat => {
     paths.push({ params: { slug: cat.slug, page: "1" }});

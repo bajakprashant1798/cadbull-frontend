@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from 'react';
 
 const Pagination = ({
-  slug,
+  basePath = "",
   currentPage,
   totalPages,
   onPageChange,
@@ -38,6 +38,14 @@ const Pagination = ({
 
   const pages = getWindowPages(currentPage, totalPages);
 
+  // For links: default to "/" if no basePath
+  const getPageHref = (pageNumber) => {
+    if (!basePath || basePath === "/") {
+      return pageNumber === 1 ? "/" : `/${pageNumber}`;
+    }
+    return pageNumber === 1 ? basePath : `${basePath}/${pageNumber}`;
+  };
+
   // Jump buttons for desktop view
   const jumpBack = () => {
     const newPage = currentPage - jumpSize;
@@ -66,13 +74,16 @@ const Pagination = ({
                     Previous
                   </button> */}
                   <Link
-                    href={currentPage - 1 === 1 ? `/${slug}` : `/${slug}/${currentPage - 1}`}
+                    href={getPageHref(currentPage - 1)}
                     className="page-link"
                     onClick={e => {
                       e.preventDefault();
                       if (currentPage > 1) onPageChange(currentPage - 1);
                     }}
-                  >Previous</Link>
+                  >
+                    Previous
+                  </Link>
+
 
                 </li>
               )}
@@ -107,7 +118,7 @@ const Pagination = ({
                 </button>
               </li>
 
-              {pages.map((pageNumber) => (
+              {/* {pages.map((pageNumber) => (
                 <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
                   <Link
                     href={pageNumber === 1 ? `/${slug}` : `/${slug}/${pageNumber}`}
@@ -123,7 +134,24 @@ const Pagination = ({
                     {pageNumber}
                   </Link>
                 </li>
+              ))} */}
+
+              {pages.map((pageNumber) => (
+                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
+                  <Link
+                    href={getPageHref(pageNumber)}
+                    scroll={false}
+                    className="page-link"
+                    onClick={e => {
+                      e.preventDefault();
+                      if (currentPage !== pageNumber) onPageChange(pageNumber);
+                    }}
+                  >
+                    {pageNumber}
+                  </Link>
+                </li>
               ))}
+
 
 
               {/* {pages.map((pageNumber) => (
