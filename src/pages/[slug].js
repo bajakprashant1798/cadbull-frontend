@@ -140,7 +140,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug }) => 
         // Always replace the current projects
         dispatch(getSubCategory(response.projects));
         setTotalPages(response.totalPages);
-        console.log("response: ", response);
+        console.log("sub cat response: ", response);
         
         stopLoading();
       })

@@ -30,6 +30,8 @@ const ProjectCard = ({
 
   console.log("isAuthenticated for projectCard", isAuthenticated);
   
+  console.log(photo_url, "photo_url in projectCard");
+  
   const dispatch = useDispatch();
 
   // // Use a custom hook or parent prop for favorites if available.

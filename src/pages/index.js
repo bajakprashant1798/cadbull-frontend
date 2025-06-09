@@ -117,7 +117,7 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
   const [projects, setProjects] = useState(initialProjects);
   const [productCount, setProductCount] = useState(totalProducts);
   const [currentPage, setCurrentPage] = useState(1);
-
+  
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
@@ -182,6 +182,7 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
       
       setProjects(response.data.products); // Set the projects for the page
       setTotalPages(response.data.totalPages); // Set total pages
+      
       // setProductCount(response.data.totalPages * (pageSize - 1)); // Set total products
       } catch (error) {
       console.error("Failed to fetch projects:", error);
