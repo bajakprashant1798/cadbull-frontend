@@ -1,7 +1,8 @@
 import { Fragment, useState, useEffect, useCallback } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
-import profile from "@/assets/images/profile-arch.png"
+// import profile from "@/assets/images/profile-arch.png"
+import profile_dummy from "@/assets/icons/profile.png";
 import award1 from "@/assets/images/award-1.png"
 import award2 from "@/assets/images/award-2.png";
 import project from "@/assets/images/blog-1.png";
@@ -129,9 +130,19 @@ const CompanyProfile = () => {
           <div className="row mb-4 gy-3 ">
             <div className="col-md-2">
               <div className="profile-image-wrapper d-flex gap-2">
-                <img src={profile?.profile_pic || "/default-profile.png"} className="rounded-circle company-logo-info { object-fit-cover"  alt="profile" />
+                <img 
+                  src={profile?.profile_pic || profile_dummy.src} 
+                  className="rounded-circle company-logo-info { object-fit-cover"  
+                  alt="profile" 
+                  onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
+                />
                 <div className="d-md-none">
-                  <h4 className="fw-semibold text-primary">{`${profile?.first_name} ${profile?.last_name}`}</h4>
+                  {(profile?.first_name || profile?.last_name) && (
+                    <h4 className="fw-semibold text-primary">
+                      {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
+                    </h4>
+                  )}
+
                   <p>{profile?.address1 || ""}</p>
                 </div>
               </div>
