@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Icons from "../Icons";
 import logo from "@/assets/images/logo.png";
-import profile from "@/assets/icons/profile.png";
+import profile_dummy from "@/assets/icons/profile.png";
 import { useSelector } from "react-redux";
 import { loginSuccess, logout } from "../../../redux/app/features/authSlice";
 import { useDispatch } from "react-redux";
@@ -258,13 +258,14 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       {status?.user?.profile_pic == null ? (
-                        <img src={profile.src} alt="profile" width={30}  />
+                        <img src={profile_dummy.src} alt="profile" width={30}  />
                       ) : (
                         <img
-                          src={status?.user?.profile_pic}
+                          src={status?.user?.profile_pic || profile_dummy.src}
                           alt="profile"
                           width={30}
                           style={{borderRadius:"50%"}}
+                          onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                         />
                       )} 
                     </button>
@@ -276,13 +277,14 @@ const Header = () => {
                           onClick={closeHamburgerMenu}
                         >
                           {status?.user?.profile_pic == null ? (
-                            <img src={profile.src} alt="profile" width={30} />
+                            <img src={profile_dummy.src} alt="profile" width={30} />
                           ) : (
                             <img
-                              src={status?.user?.profile_pic}
+                              src={status?.user?.profile_pic || profile_dummy.src}
                               alt="profile"
                               width={30}
                               style={{borderRadius:"50%"}}
+                              onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                             />
                           )}
                           <div>
@@ -518,13 +520,14 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       {status?.user?.profile_pic == null ? (
-                        <img src={profile.src} alt="profile" width={30}  />
+                        <img src={profile_dummy.src} alt="profile" width={30}  />
                       ) : (
                         <img
-                          src={status?.user?.profile_pic}
+                          src={status?.user?.profile_pic || profile_dummy.src}
                           alt="profile"
                           width={30}
                           style={{borderRadius:"50%"}}
+                          onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                         />
                       )} 
                     </button>
@@ -536,13 +539,14 @@ const Header = () => {
                           onClick={closeHamburgerMenu}
                         >
                           {status?.user?.profile_pic == null ? (
-                            <img src={profile.src} alt="profile" width={30} />
+                            <img src={profile_dummy.src} alt="profile" width={30} />
                           ) : (
                             <img
-                              src={status?.user?.profile_pic}
+                              src={status?.user?.profile_pic || profile_dummy.src}
                               alt="profile"
                               width={30}
                               style={{borderRadius:"50%"}}
+                              onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                             />
                           )}
                           <div>

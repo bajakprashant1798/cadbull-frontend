@@ -2,6 +2,7 @@ import GetOff from "@/components/GetOff";
 import { Fragment, createElement, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
+import profile_dummy from "@/assets/icons/profile.png";
 import SectionHeading from "@/components/SectionHeading";
 import FileDescription from "@/components/FileDescription";
 import autoCad from "@/assets/images/filetype/file_white.png";
@@ -566,10 +567,11 @@ useEffect(() => {
                               <div className="flex-shrink-0">
                                 {project?.profile_pic ? (
                                   <img
-                                    src={project.profile_pic}
+                                    src={project.profile_pic || profile_dummy.src}
                                     alt="Profile"
                                     className="rounded-circle"
                                     style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                                    onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                                   />
                                 ) : (
                                   <Icons.Avatar />
