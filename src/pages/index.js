@@ -492,7 +492,8 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
               const slug = category.slug
               return (
                 <div className="col-lg-3 col-md-4 col-sm-6 col-10" key={index}>
-                  <Link href={`/categories/sub/${slug}`}>
+                  {/* <Link href={`/categories/sub/${slug}`}> */}
+                  <Link href={`/${slug}`}>
                     <div className="d-flex align-items-center gap-2 category-wrapper">
                       <img
                         src={category.image.src}
