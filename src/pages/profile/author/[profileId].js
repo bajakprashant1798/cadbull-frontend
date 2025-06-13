@@ -152,7 +152,11 @@ const CompanyProfile = () => {
                 <div className="d-flex gap-lg-5 mb-4">
                   {/* Name  */}
                   <div className="d-none d-md-block">
-                    <h3 className="fw-semibold text-primary">{`${profile?.first_name} ${profile?.last_name}`}</h3>
+                    {(profile?.first_name || profile?.last_name) && (
+                      <h3 className="fw-semibold text-primary">
+                        {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
+                      </h3>
+                    )}
                     <p>{profile?.address1 || ""}</p>
                   </div>
                   {/* Project Detail  */}
