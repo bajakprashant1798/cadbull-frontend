@@ -65,9 +65,20 @@ export const handledownload = async (id, isAuthenticated, router) => {
   try {
     const res = await downloadProject(id, router);
 
+    // Gold membership required
     if (res?.data?.redirectUrl) {
       toast.warning("Gold membership required. Redirecting...");
       return router.push(res.data.redirectUrl);
+    }
+
+    // Download limit reached
+    if (
+      res?.data?.message &&
+      res?.status === 403 &&
+      res.data.message.toLowerCase().includes("download limit")
+    ) {
+      toast.error("Your daily limit of downloads is over. Please try again tomorrow or upgrade your plan.");
+      return;
     }
 
     if (typeof res?.data?.url === "string") {
@@ -82,7 +93,22 @@ export const handledownload = async (id, isAuthenticated, router) => {
     toast.error("Download failed: Invalid server response.");
     console.error("Unexpected download response format:", res.data);
   } catch (err) {
-    console.error("❌ Download error:", err);
+    // Axios error: check if response is available
+    if (err.response && err.response.status === 403) {
+      // Check backend error message
+      if (
+        err.response.data?.message &&
+        err.response.data.message.toLowerCase().includes("download limit")
+      ) {
+        toast.error("Your daily limit of downloads is over. Please try again tomorrow or upgrade your plan.");
+        return;
+      }
+      if (err.response.data?.redirectUrl) {
+        toast.warning("Gold membership required. Redirecting...");
+        return router.push(err.response.data.redirectUrl);
+      }
+    }
     toast.error("Failed to download file.");
+    console.error("❌ Download error:", err);
   }
 };

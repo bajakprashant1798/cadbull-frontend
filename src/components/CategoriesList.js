@@ -25,7 +25,7 @@ function CategoriesList({
 
   return (
     <li
-      className={`d-flex justify-content-between align-items-center gap-2 ${
+      className={`d-flex justify-content-between align-items-start gap-2 ${
         active ? "active" : ""
       }`}
     >

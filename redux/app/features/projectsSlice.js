@@ -114,7 +114,7 @@ export const projectsSlice = createSlice({
     },
     deleteFavouriteItem: (state, action) => {
       state.favouriteList = state.favouriteList.filter(
-        (item) => item.id !== action.payload
+        (item) => item.id !== Number(action.payload)
       );
       console.log("deleteFavouriteItem", state.favouriteList);
       

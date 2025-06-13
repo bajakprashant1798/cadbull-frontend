@@ -159,9 +159,9 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
   
   const projectId = Number(id);
   useEffect(() => {
-    if (favouriteList && Array.isArray(favouriteList)) {
-      setIsFavorited(favouriteList.some((fav) => fav.id === projectId));
-    }
+    // if (favouriteList && Array.isArray(favouriteList)) {
+      setIsFavorited(favouriteList.some((fav) => fav.id ===  Number(projectId)));
+    // }
   }, [favouriteList, projectId, id]);
 
 
@@ -231,10 +231,13 @@ useEffect(() => {
     }
     try {
       if (isFavorited) {
-        await removeFavouriteItem( id);
-        setIsFavorited(false);
+        // await removeFavouriteItem( id);
+        // setIsFavorited(false);
+        // toast.success("Removed from Favorite list", { position: "top-right" });
+        // // Dispatch Redux action to remove favorite using the project id
+        // dispatch(deleteFavouriteItem(id));
+        await removeFavouriteItem(id);
         toast.success("Removed from Favorite list", { position: "top-right" });
-        // Dispatch Redux action to remove favorite using the project id
         dispatch(deleteFavouriteItem(id));
       } else {
         await addFavouriteItem({ product_id: id });
@@ -611,7 +614,7 @@ useEffect(() => {
                       <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
                         <button
                           onClick={() =>
-                            handledownload(project.id, router)
+                            handledownload(project.id, isAuthenticated, router)
                           }
                           type="button"
                           className="btn-success-split "
