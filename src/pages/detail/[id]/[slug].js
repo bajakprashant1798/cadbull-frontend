@@ -484,15 +484,17 @@ useEffect(() => {
                     className="link-btn"
                   >
                     {/* <Icons.Like /> */}
-                    {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
+                    {/* {isFavorited ? <Icons.Dislike /> : <Icons.Like />} */}
+                    {isFavorited ? <Icons.Save /> : <Icons.Save />}
                   </button>
-                  <button
+                  {/* save, downlaod button */}
+                  {/* <button
                     onClick={() => handledownload(project.id, isAuthenticated, router)}
                     type="button"
                     className="link-btn"
                   >
                     <Icons.Save />
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -622,9 +624,11 @@ useEffect(() => {
                           <span>
                             <Icons.Download />
                           </span>
-                          <span>Download</span>
+                          <span className="w-100">Download</span>
                         </button>
-                        <button
+
+                        {/* add to fevorite btn */}
+                        {/* <button
                           onClick={() => handleAddToLibrary()}
                           type="button"
                           className="btn-primary-split"
@@ -633,13 +637,8 @@ useEffect(() => {
                             <Icons.Add />
                           </span>
                           <span>Add to libary</span>
-                        </button>
-                        {/* <button type="button" className="btn-danger-split">
-                          <span>
-                            <Icons.File />
-                          </span>
-                          <span>Related Files</span>
                         </button> */}
+                        
                       </div>
                     </div>
                   </div>

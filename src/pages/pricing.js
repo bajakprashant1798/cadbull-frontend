@@ -99,8 +99,10 @@ useEffect(() => {
                 {message && <p className="alert alert-warning text-center">{message}</p>}
                 
               </div>
-                <h1>Choose Your Pricing Plan</h1>
-                <p>Choose the Right plan. No commission</p>
+                {/* <h1>Choose Your Pricing Plan</h1>
+                <p>Choose the Right plan. No commission</p> */}
+                <h1>New Files Delivered Daily, No Exceptions!</h1>
+                <p className="h5 mt-2">Choose Your Pricing Plan</p>
               </div>
             </div>
             </div>
@@ -119,14 +121,15 @@ useEffect(() => {
                 </div>
               </div>
             </div> */}
-            <div className="col-sm-11 col-md-10 col-lg-9 col-xl-8">
+
+            {/* <div className="col-sm-11 col-md-10 col-lg-9 col-xl-8">
               <div className="pricing-slider text-start mb-5">
                 <p className="mb-2 text-grey">Number of monthly visitors</p>
                 <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                   <div className="progress-bar" data-attr={progress + 'K'} style={{ width: progress + '%' }} ></div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
     </section>
