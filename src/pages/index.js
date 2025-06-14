@@ -1,6 +1,6 @@
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState, useRef } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import Link from "next/link";
 import Icons from "@/components/Icons";
@@ -123,6 +123,7 @@ export default function Home({
   const [projects, setProjects] = useState(initialProjects);
   const [productCount, setProductCount] = useState(totalProducts);
 
+  const projectOfDayRef = useRef(null);
 
   useEffect(() => {
     setCurrentPage(initialCurrentPage || 1);
@@ -145,6 +146,7 @@ export default function Home({
     const [projectSearchInput, setProjectSearchInput] = useState('');
     const [sortTerm, setSortTerm] = useState(router.query.file_type || "");
 
+    const [shouldScroll, setShouldScroll] = useState(false);
 
     useEffect(() => {
       setCurrentPage(Number(router.query.page) || 1);
@@ -275,10 +277,25 @@ export default function Home({
       if (!newQuery[k]) delete newQuery[k];
     });
 
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("scrollToProjectOfDay", "1");
+    }
     router.push({ pathname: '/', query: newQuery }, undefined, { shallow: false });
   };
 
 
+  useEffect(() => {
+    // Only try this on the client side
+    if (typeof window !== "undefined") {
+      if (sessionStorage.getItem("scrollToProjectOfDay") === "1") {
+        // Scroll and remove flag
+        if (projectOfDayRef.current) {
+          projectOfDayRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+        sessionStorage.removeItem("scrollToProjectOfDay");
+      }
+    }
+  }, [currentPage, sortTerm]); // or [router.query.page] if you want
 
 
 
@@ -332,8 +349,22 @@ export default function Home({
       if (!newQuery[k]) delete newQuery[k];
     });
 
+    // ⭐ Set scroll flag in sessionStorage before navigation (same as handlePageChange)
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("scrollToProjectOfDay", "1");
+    }
+
     router.push({ pathname: '/', query: newQuery }, undefined, { shallow: false });
   };
+
+
+  useEffect(() => {
+    if (shouldScroll && projectOfDayRef.current) {
+      projectOfDayRef.current.scrollIntoView({ behavior: "smooth" });
+      setShouldScroll(false); // Reset after scroll!
+    }
+  }, [shouldScroll, currentPage]);
+
 
 
   return (
@@ -434,7 +465,7 @@ export default function Home({
       </section>
 
       {/* Project of the Day  */}
-      <section className="py-md-5 py-3">
+      <section className="py-md-5 py-3" ref={projectOfDayRef}>
        
         <div className="container">
           <div className="row mb-4 mb-md-5">
