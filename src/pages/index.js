@@ -96,12 +96,18 @@ const debounce = (func, delay) => {
 };
 
 
-export default function Home({ initialProjects, totalPages: initialTotalPages, totalProducts }) {
+export default function Home({
+    initialProjects,
+    totalPages: initialTotalPages,
+    totalProducts,
+    currentPage: initialCurrentPage = 1, // default to 1 if not passed
+    filters = {},
+}) {
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
   
-  const [searchTerm,setSearchTerm]=useState('');
-  const [sortTerm,setSortTerm]=useState('');
+//   const [searchTerm,setSearchTerm]=useState('');
+//   const [sortTerm,setSortTerm]=useState('');
   const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
   
   const [searchInput, setSearchInput] = useState('');
@@ -116,7 +122,12 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
   // ssg setup
   const [projects, setProjects] = useState(initialProjects);
   const [productCount, setProductCount] = useState(totalProducts);
-  const [currentPage, setCurrentPage] = useState(1);
+
+
+  useEffect(() => {
+    setCurrentPage(initialCurrentPage || 1);
+  }, [initialCurrentPage]);
+
   
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
@@ -125,6 +136,30 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
 
   const dispatch=useDispatch();
   const router = useRouter();
+
+    const initialSearch = filters?.search || router.query.search || '';
+    const initialSort = filters?.sort || router.query.sort || '';
+
+    const [currentPage, setCurrentPage] = useState(Number(router.query.page) || 1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [projectSearchInput, setProjectSearchInput] = useState('');
+    const [sortTerm, setSortTerm] = useState(router.query.file_type || "");
+
+
+    useEffect(() => {
+      setCurrentPage(Number(router.query.page) || 1);
+      setSearchTerm(router.query.search || "");
+      setSortTerm(router.query.file_type || "");
+    }, [router.query]);
+
+    const buildQuery = (params) => {
+        const query = {};
+        // if (params.type) query.type = params.type;
+        if (params.file_type) query.file_type = params.file_type;
+        if (params.search) query.search = params.search;
+        // page will be in path
+        return query;
+    };
 
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
@@ -174,22 +209,42 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
   // }, [blogs]);
   
 
-  // Fetch projects with pagination
-  const loadProjects = async (page, pageSize = 9) => {
-    startLoading(true);
-    try {
-      const response = await getallprojects(page, pageSize, searchTerm, sortTerm);
+  // // Fetch projects with pagination
+//   const loadProjects = async (page, pageSize = 9) => {
+//     startLoading(true);
+//     try {
+//       const response = await getallprojects(page, pageSize, searchTerm, sortTerm);
       
-      setProjects(response.data.products); // Set the projects for the page
-      setTotalPages(response.data.totalPages); // Set total pages
+//       setProjects(response.data.products); // Set the projects for the page
+//       setTotalPages(response.data.totalPages); // Set total pages
       
-      // setProductCount(response.data.totalPages * (pageSize - 1)); // Set total products
-      } catch (error) {
-      console.error("Failed to fetch projects:", error);
-    } finally {
-      stopLoading(false);
-    }
-  };
+//       // setProductCount(response.data.totalPages * (pageSize - 1)); // Set total products
+//       } catch (error) {
+//       console.error("Failed to fetch projects:", error);
+//     } finally {
+//       stopLoading(false);
+//     }
+//   };
+
+    const loadProjects = async (page, pageSize = 9) => {
+        startLoading(true);
+        try {
+            const response = await getallprojects(
+            page,
+            pageSize,
+            searchTerm,
+            sortTerm
+            // you can add type if needed
+            );
+            setProjects(response.data.products);
+            setTotalPages(response.data.totalPages);
+        } catch (error) {
+            console.error("Failed to fetch projects:", error);
+        } finally {
+            stopLoading(false);
+        }
+    };
+
   
   // useEffect(() => {
   //   loadProjects(currentPage, 3);
@@ -201,61 +256,85 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
     loadProjects(currentPage, 9);
   }, [currentPage, searchTerm, sortTerm]);
 
-  // Handle page change
-  // const handlePageChange = (newPage) => {
-  //   if (newPage >= 1 && newPage <= totalPages) {
-  //     setCurrentPage(newPage);
-  //     loadProjects(newPage);
-  //   }
-  // };
-  const handlePageChange = useCallback((newPage) => {
-    // Optionally validate that newPage is within bounds
-    if(newPage < 1 || newPage > totalPages) return;
-    setCurrentPage(newPage);
-    // Now call your API (or dispatch a Redux action) to load projects for newPage.
-  }, [totalPages]);
+
+//   const handlePageChange = useCallback((newPage) => {
+//     // Optionally validate that newPage is within bounds
+//     if(newPage < 1 || newPage > totalPages) return;
+//     setCurrentPage(newPage);
+//     // Now call your API (or dispatch a Redux action) to load projects for newPage.
+//   }, [totalPages]);
+
+  const handlePageChange = (newPage) => {
+    const newQuery = { ...router.query, page: newPage };
+
+    // Remove "page" if 1 (so homepage stays "/")
+    if (newPage === 1) delete newQuery.page;
+
+    // Remove empty/undefined params
+    Object.keys(newQuery).forEach((k) => {
+      if (!newQuery[k]) delete newQuery[k];
+    });
+
+    router.push({ pathname: '/', query: newQuery }, undefined, { shallow: false });
+  };
+
+
+
+
 
   // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((value) => {
-      setSearchTerm(value);
-    }, 500),
-    []
-  );
+  // const debouncedSearch = useCallback(
+  //   debounce((value) => {
+  //     setSearchTerm(value);
+  //   }, 500),
+  //   []
+  // );
   // Adjust search handler to use debounce
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Update immediately and trigger navigation if needed
-    setSearchTerm(searchInput.trim());
-    dispatch(getserachTerm(searchInput.trim()));
-    router.push('/categories/search');
-  };
-  
-
-
-  // // The search handler dispatches the search term and navigates
   // const handleSearch = (e) => {
   //   e.preventDefault();
-  //   if (searchTerm.trim()) {
-  //     // Dispatch the search term to Redux store
-  //     dispatch(getserachTerm(searchTerm));
-  //     // Navigate to the search page without query parameters
-  //     router.push('/categories/search');
+  //   const trimmedSearch = searchInput.trim();
+  //   if (trimmedSearch) {
+  //     // Go to the search page with query param
+  //     router.push({
+  //       pathname: '/categories/search',
+  //       query: { search: trimmedSearch }
+  //     });
   //   }
+  //   // Optionally: clear search input after redirect
+  //   // setSearchInput('');
   // };
-  
-  // const handleSortChange = (e) => {
-  //   setSortTerm(e.target.value);
-  //   setCurrentPage(1);
-  // };
-  // const handleTypeChange = (e) => {
-  //   setType(e.target.value);
-  //   setCurrentPage(1);
-  // };
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  //   loadProjects(1);
-  // }, [searchTerm, sortTerm]);
+    const handleSearch = (e) => {
+      e.preventDefault();
+      // Update immediately and trigger navigation if needed
+      setSearchTerm(searchInput.trim());
+      dispatch(getserachTerm(searchInput.trim()));
+      router.push('/categories/search');
+    };
+
+    const handleProjectSearch = (e) => {
+      e.preventDefault();
+      // Update immediately and trigger navigation if needed
+      setSearchTerm(projectSearchInput.trim());
+      dispatch(getserachTerm(projectSearchInput.trim()));
+      router.push('/categories/search');
+    };
+
+
+  const handleSortChange = (e) => {
+    const newSort = e.target.value;
+    const newQuery = { ...router.query, file_type: newSort, page: 1 }; // Reset to page 1
+
+    // Remove "file_type" if "All" (empty string)
+    if (!newSort) delete newQuery.file_type;
+
+    // Remove empty/undefined params
+    Object.keys(newQuery).forEach((k) => {
+      if (!newQuery[k]) delete newQuery[k];
+    });
+
+    router.push({ pathname: '/', query: newQuery }, undefined, { shallow: false });
+  };
+
 
   return (
     <Fragment>
@@ -306,7 +385,7 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
                     value={searchInput}
                     onChange={(e) => {
                       setSearchInput(e.target.value);
-                      debouncedSearch(e.target.value.trim());
+                      // debouncedSearch(e.target.value.trim());
                     }}
                   />
                   <span className="input-group-text p-0">
@@ -370,7 +449,7 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
                 </div>
                 <div className="w-100">
                   <div className="d-flex gap-3 justify-content-end flex-column flex-md-row">
-                    <form>
+                    <form onSubmit={handleProjectSearch}>
                       <div className="input-group">
                         <span className="input-group-text bg-white">
                           <Icons.Search />
@@ -383,17 +462,14 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
                           // onChange={(e) =>
                           //  setSearchTerm(e.target.value.trim())
                           // }
-                          value={searchInput}
-                          onChange={(e) => {
-                            setSearchInput(e.target.value);
-                            debouncedSearch(e.target.value.trim());
-                          }}
+                          value={projectSearchInput}
+                          onChange={(e) => setProjectSearchInput(e.target.value)}
                         />
                         <span className="input-group-text p-0">
                           <button
                             type="submit"
                             className="btn btn-secondary rounded-start-0"
-                            onClick={handleSearch}
+                            onClick={handleProjectSearch}
                           >
                             SEARCH
                           </button>
@@ -408,7 +484,8 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
                       <select
                         className="form-select border-start-0 rounded-start-0"
                         aria-label=".form-select-sm example"
-                        onChange={(e) => setSortTerm(e.target.value)}
+                        // onChange={(e) => setSortTerm(e.target.value)}
+                        onChange={handleSortChange}
                       >
                         <option value={''}>All</option>
                         {drawings.map(({ type, value }, index) => {
@@ -868,32 +945,50 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
   );
 }
 
-// --- SSR/SSG Block: Fetch Projects & Total Count ---
-export async function getStaticProps() {
-  try {
-    const projectsResponse = await getallprojects(1, 9, '', '');
-    const totalProducts = projectsResponse.data.totalProducts || 0;
+export async function getServerSideProps({ query }) {
+  const page = parseInt(query.page, 10) || 1;
+  const search = query.search || "";
+  const file_type = query.file_type || "";
 
-    return {
-      props: {
-        initialProjects: projectsResponse.data.products || [],
-        totalPages: projectsResponse.data.totalPages || 1,
-        totalProducts
-      },
-      revalidate: 300, // ISR every 5 minutes
-    };
-  } catch (error) {
-    console.error("Error loading home data:", error);
-    return {
-      props: {
-        initialProjects: [],
-        totalPages: 1,
-        totalProducts: 0,
-      },
-      revalidate: 300,
-    };
-  }
+  const res = await getallprojects(page, 9, search, file_type);
+
+  return {
+    props: {
+      initialProjects: res.data.products || [],
+      totalPages: res.data.totalPages || 1,
+      totalProducts: res.data.totalProducts || 0,
+      currentPage: page,
+      filters: { search, file_type },
+    },
+  };
 }
+
+// --- SSR/SSG Block: Fetch Projects & Total Count ---
+// export async function getStaticProps() {
+//   try {
+//     const projectsResponse = await getallprojects(1, 9, '', '');
+//     const totalProducts = projectsResponse.data.totalProducts || 0;
+
+//     return {
+//       props: {
+//         initialProjects: projectsResponse.data.products || [],
+//         totalPages: projectsResponse.data.totalPages || 1,
+//         totalProducts
+//       },
+//       revalidate: 300, // ISR every 5 minutes
+//     };
+//   } catch (error) {
+//     console.error("Error loading HomePage data:", error);
+//     return {
+//       props: {
+//         initialProjects: [],
+//         totalPages: 1,
+//         totalProducts: 0,
+//       },
+//       revalidate: 300,
+//     };
+//   }
+// }
 
 
 Home.getLayout = function getLayout(page) {
