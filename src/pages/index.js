@@ -322,11 +322,16 @@ export default function Home({
   // };
     const handleSearch = (e) => {
       e.preventDefault();
-      // Update immediately and trigger navigation if needed
-      setSearchTerm(searchInput.trim());
-      dispatch(getserachTerm(searchInput.trim()));
-      router.push('/categories/search');
+      const trimmedSearch = searchInput.trim();
+      setSearchTerm(trimmedSearch);
+      dispatch(getserachTerm(trimmedSearch));
+      // Now pass the search as a query parameter!
+      router.push({
+        pathname: '/categories/search',
+        query: trimmedSearch ? { search: trimmedSearch } : {}, // only if not empty
+      });
     };
+
 
     const handleProjectSearch = (e) => {
       e.preventDefault();
