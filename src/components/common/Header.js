@@ -44,7 +44,7 @@ const links = [
     active: false,
   },
   {
-    url: "/house-plan",
+    url: "/Architecture-House-Plan-CAD-Drawings",
     title: "HOUSE PLAN",
     active: false,
   },

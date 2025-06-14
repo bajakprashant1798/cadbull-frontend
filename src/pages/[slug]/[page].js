@@ -48,6 +48,16 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   const [favouritesFetched, setFavouritesFetched] = useState(false);
   const [pageChanged, setPageChanged] = useState(false);
 
+  const { type = "", file_type = "", search = "" } = router.query;
+  
+  const buildQuery = (params) => {
+    const query = {};
+    if (params.type) query.type = params.type;
+    if (params.file_type) query.file_type = params.file_type;
+    if (params.search) query.search = params.search;
+    return query;
+  };
+
   // Fetch main categories on mount
   useEffect(() => {
     getallCategories("")
@@ -78,15 +88,33 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     }
   }, [slug, currentPage, dispatch]);
 
-  // Debounced search input
+  // // Debounced search input
+  // const debouncedSearch = useCallback(
+  //   debounce((value) => {
+  //     setSearchedText(value);
+  //     dispatch(updatesubcatpage(1));
+  //     dispatch(updatesubcatserachTerm(value));
+  //   }, 500),
+  //   [dispatch]
+  // );
+
   const debouncedSearch = useCallback(
     debounce((value) => {
       setSearchedText(value);
       dispatch(updatesubcatpage(1));
       dispatch(updatesubcatserachTerm(value));
+      router.push({
+        pathname: `/${slug}/1`,
+        query: buildQuery({
+          type: router.query.type || "",
+          file_type: router.query.file_type || "",
+          search: value,
+        })
+      }, undefined, { shallow: true });
     }, 500),
-    [dispatch]
+    [dispatch, router, slug]
   );
+
 
   const handleInputChange = (e) => {
     const value = e.target.value.trim();
@@ -94,39 +122,65 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     debouncedSearch(value);
   };
 
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (searchText.length >= 3) {
+  //     setSearchedText(searchText);
+  //     dispatch(updatesubcatpage(1));
+  //     dispatch(updatesubcatserachTerm(searchText));
+  //   }
+  // };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchText.length >= 3) {
-      setSearchedText(searchText);
-      dispatch(updatesubcatpage(1));
-      dispatch(updatesubcatserachTerm(searchText));
-    }
+    debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
+    setSearchedText(searchText);
+    router.push({
+      pathname: `/${slug}/1`,
+      query: buildQuery({
+        type: router.query.type || "",
+        file_type: router.query.file_type || "",
+        search: searchText,
+      })
+    });
   };
 
+
   // Load projects when Redux filter or slug changes
-  const loadProjects = () => {
+  // const loadProjects = () => {
+  //   startLoading();
+  //   if (!subcatfilter.slug) {
+  //     stopLoading();
+  //     return;
+  //   }
+  //   const filterWithPageSize = { ...subcatfilter, pageSize: 9 };
+  //   getSubCategories(filterWithPageSize)
+  //     .then((response) => {
+  //       dispatch(getSubCategory(response.projects));
+  //       setTotalPages(response.totalPages);
+  //       stopLoading();
+  //     })
+  //     .catch((error) => {
+  //       stopLoading();
+  //       // log or ignore
+  //     });
+  // };
+  const loadProjects = (slug, page, type, file_type, search) => {
     startLoading();
-    if (!subcatfilter.slug) {
-      stopLoading();
-      return;
-    }
-    const filterWithPageSize = { ...subcatfilter, pageSize: 9 };
-    getSubCategories(filterWithPageSize)
+    getSubCategories({ slug, currentPage: page, pageSize: 9, type, file_type, search })
       .then((response) => {
         dispatch(getSubCategory(response.projects));
         setTotalPages(response.totalPages);
         stopLoading();
       })
-      .catch((error) => {
-        stopLoading();
-        // log or ignore
-      });
+      .catch(() => stopLoading());
   };
 
   useEffect(() => {
     if (!slug) return;
-    loadProjects();
-  }, [subcatfilter, slug]);
+    // Whenever slug, currentPage, or filters change, load data
+    loadProjects(slug, currentPage, type, file_type, search);
+  }, [slug, currentPage, type, file_type, search]);
 
   // Cleanup Redux state on unmount
   useEffect(() => {
@@ -158,11 +212,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   // Pagination handler for router navigation
   const handlePageChange = (newPage) => {
     setPageChanged(true);
-    if (newPage === 1) {
-      router.push(`/${slug}`);
-    } else {
-      router.push(`/${slug}/${newPage}`);
-    }
+    router.push({
+      pathname: `/${slug}/${newPage}`,
+      query: buildQuery({
+        type: router.query.type || "",
+        file_type: router.query.file_type || "",
+        search: router.query.search || "",
+      })
+    });
   };
 
   // Scroll to grid after page change
@@ -190,6 +247,36 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
       return () => observer.disconnect();
     }
   }, [pageChanged, isLoading]);
+
+  const handleTypeChange = (e) => {
+    router.push({
+      pathname: `/${slug}/1`,
+      query: buildQuery({
+        type: e.target.value,
+        file_type: router.query.file_type || "",
+        search: router.query.search || "",
+      })
+    });
+  };
+
+  const handleSortChange = (e) => {
+    router.push({
+      pathname: `/${slug}/1`,
+      query: buildQuery({
+        type: router.query.type || "",
+        file_type: e.target.value,
+        search: router.query.search || "",
+      })
+    });
+  };
+
+
+  useEffect(() => {
+    dispatch(updatesubcatpagetype(type));
+    dispatch(updatesubcatsortTerm(file_type));
+    dispatch(updatesubcatserachTerm(search));
+  }, [type, file_type, search]);
+
 
   return (
     <Fragment>
@@ -257,13 +344,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
                             Type :
                           </span>
                           <select
-                            defaultValue=""
+                            value={type}
                             className="form-select border-start-0 rounded-start-0"
-                            onChange={(e) => {
-                              handlePageChange(1);
-                              dispatch(updatesubcatpage(1));
-                              dispatch(updatesubcatpagetype(e.target.value));
-                            }}
+                            // onChange={(e) => {
+                            //   handlePageChange(1);
+                            //   dispatch(updatesubcatpage(1));
+                            //   dispatch(updatesubcatpagetype(e.target.value));
+                            // }}
+                            onChange={handleTypeChange}
                           >
                             <option value="">All</option>
                             <option value="Free">Free</option>
@@ -275,13 +363,15 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
                             Sort by :
                           </span>
                           <select
-                            defaultValue="DWG"
+                            // defaultValue="DWG"
+                            value={file_type}
                             className="form-select border-start-0 rounded-start-0"
-                            onChange={(e) => {
-                              handlePageChange(1);
-                              dispatch(updatesubcatpage(1));
-                              dispatch(updatesubcatsortTerm(e.target.value));
-                            }}
+                            // onChange={(e) => {
+                            //   handlePageChange(1);
+                            //   dispatch(updatesubcatpage(1));
+                            //   dispatch(updatesubcatsortTerm(e.target.value));
+                            // }}
+                            onChange={handleSortChange}
                           >
                             <option value="">All</option>
                             {drawings.map(({ type, value }, index) => (

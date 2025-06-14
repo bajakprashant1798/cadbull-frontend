@@ -460,14 +460,14 @@ export const getBlogs = async () => {
 // ========================
 // ✅ Get Subcategories for Projects Page (Public API)
 // ========================
-export const getSubCategories = async ({ slug, currentPage, pageSize, searchTerm, sortTerm, type }) => {
+export const getSubCategories = async ({ slug, currentPage, pageSize, search, file_type, type }) => {
   try {
     const url = `/categories/sub/${slug}/projects`;
     const params = { page: currentPage, perPage: pageSize };
 
-    if (searchTerm) params.search = searchTerm;
+    if (search) params.search = search;
     if (type) params.type = type;
-    if (sortTerm) params.file_type = sortTerm;
+    if (file_type) params.file_type = file_type;
 
     const response = await api.get(url, { params });
     return response.data;

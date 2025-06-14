@@ -52,7 +52,9 @@ const Categories = ({
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const currentPage = parseInt(router.query.page || "1", 10); 
+  const { page = "1", type = "", file_type = "", search = "" } = router.query;
+  const currentPage = parseInt(page, 10);  // use from URL
+  // const currentPage = parseInt(router.query.page || "1", 10); 
 
   // Retrieve token from login info:
   const { token } = useSelector((store) => store.logininfo);
@@ -66,6 +68,16 @@ const Categories = ({
 
   // Fetch favorites if not already fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);
+
+  const buildQuery = (params) => {
+    const query = {};
+    if (params.type) query.type = params.type;
+    if (params.file_type) query.file_type = params.file_type;
+    if (params.search) query.search = params.search;
+    // Don't include page as a query param, since it's in the path!
+    return query;
+  };
+
 
   // csr setup
   // useEffect(() => {
@@ -90,21 +102,13 @@ const Categories = ({
     }
   }, [isAuthenticated, initialFavourites, dispatch]);
 
-
   // Memoize the loadRecords function to prevent re-creation on re-renders
+  // API data loader: always use args from query
   const loadRecords = useCallback(
-    (page) => {
+    (page, searchText, fileType, type) => {
       startLoading();
-      getallprojects(page, 9, searchedText, sortTerm, sortType)
+      getallprojects(page, 9, searchText, fileType, type)
         .then((response) => {
-          // if (page === 1) {
-          //   setProjects(response.data?.products);
-          // } else {
-          //   setProjects((prevProjects) => [
-          //     ...prevProjects,
-          //     ...response.data?.products,
-          //   ]);
-          // }
           setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
           stopLoading();
@@ -114,14 +118,15 @@ const Categories = ({
           console.error("Error fetching projects:", error);
         });
     },
-    [searchedText, sortTerm, sortType]
-  ); // Dependency array
+    [startLoading, stopLoading]
+  );
+
 
   
+  // Load records on query param change
   useEffect(() => {
-    // Load records when the component mounts or when filtering/sorting conditions change
-    loadRecords(currentPage);
-  }, [loadRecords, currentPage, searchedText, sortTerm, sortType]); // Call loadRecords whenever it changes or currentPage changes
+    loadRecords(currentPage, search, file_type, type);
+  }, [currentPage, search, file_type, type]); // Call loadRecords whenever it changes or currentPage changes
 
   // Handle changes to search term, sort term, and sort type
 //   useEffect(() => {
@@ -135,27 +140,71 @@ const Categories = ({
   //   // setSortTerm(sortList);
   // }, [searchedText]);
 
+  // Keep filter state in sync with query params
+  useEffect(() => {
+    setSortType(type);
+    setSortTerm(file_type);
+    setSearchTerm(search);
+    setSearchedText(search);
+  }, [type, file_type, search]);
   // Update sortTerm when Redux sortList changes.
   useEffect(() => {
     // setCurrentPage(1);
     setSortTerm(sortList);
   }, [sortList]);
 
-  // Debounced search
+  // // Debounced search
+  // const debouncedSearch = useCallback(
+  //   debounce((value) => {
+  //     setSearchedText(value);
+  //   //   setCurrentPage(1);
+  //   }, 500),
+  //   []
+  // );
   const debouncedSearch = useCallback(
     debounce((value) => {
       setSearchedText(value);
-    //   setCurrentPage(1);
+
+      // Optionally update Redux filters if you want
+      // dispatch(updatesubcatpage(1));
+      // dispatch(updatesubcatserachTerm(value));
+
+      // Push new URL/search to trigger useEffect & reload results
+      router.push({
+        pathname: `/categories/1`,
+        query: buildQuery({
+          type: sortType,
+          file_type: sortTerm,
+          search: value,
+        })
+      }, undefined, { shallow: true });
     }, 500),
-    []
+    [router, sortType, sortTerm] // Make sure these are in deps!
   );
 
+
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   // setCurrentPage(1);
+  //   setShowSearchBreadCrumb(true);
+  //   setSearchedText(searchTerm);
+  // };
   const handleSearch = (e) => {
     e.preventDefault();
-    // setCurrentPage(1);
+    debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
     setShowSearchBreadCrumb(true);
-    setSearchedText(searchTerm);
+    router.push({
+      pathname: '/categories/1',
+      query: buildQuery({
+        type: sortType,
+        file_type: sortTerm,
+        search: searchTerm,
+      })
+    }, undefined, { shallow: true });
   };
+
+
+
   const handlerSearchInput = (e) => {
     setSearchTerm(e.target.value);
     debouncedSearch(e.target.value);
@@ -202,20 +251,60 @@ const Categories = ({
         type: "Categories",
       };
 
-    // const handlePageChange = useCallback((newPage) => {
-    //   // Optionally validate that newPage is within bounds
-    //   if(newPage < 1 || newPage > totalPages) return;
-    //   setCurrentPage(newPage);
-    //   // Now call your API (or dispatch a Redux action) to load projects for newPage.
-    // }, [totalPages]);
+    // const handlePageChange = (newPage) => {
+    //     if (newPage === 1) {
+    //         router.push('/categories');
+    //     } else {
+    //         router.push(`/categories/${newPage}`);
+    //     }
+    //     // setCurrentPage(newPage);
+    // };
 
+    // useEffect(() => {
+    //   setSortType(type);
+    //   setSortTerm(file_type);
+    //   setSearchTerm(search);
+    // }, [type, file_type, search]);
+
+
+    const handleTypeChange = (e) => {
+      const newType = e.target.value;
+      setSortType(newType);
+      router.push({
+        pathname: '/categories/1',
+        query: buildQuery({
+          type: newType,
+          file_type: sortTerm,
+          search: searchTerm,
+        })
+      }, undefined, { shallow: true });
+    };
+
+
+    const handleSortChange = (e) => {
+      const newFileType = e.target.value;
+      setSortTerm(newFileType);
+      router.push({
+        pathname: '/categories/1',
+        query: buildQuery({
+          type: sortType,
+          file_type: newFileType,
+          search: searchTerm,
+        })
+      }, undefined, { shallow: true });
+    };
+
+
+    // Pagination handler
     const handlePageChange = (newPage) => {
-        if (newPage === 1) {
-            router.push('/categories');
-        } else {
-            router.push(`/categories/${newPage}`);
-        }
-        // setCurrentPage(newPage);
+      router.push({
+        pathname: `/categories/${newPage}`,
+        query: buildQuery({
+          type: sortType,
+          file_type: sortTerm,
+          search: searchTerm,
+        })
+      }, undefined, { shallow: true });
     };
 
   
@@ -279,10 +368,17 @@ const Categories = ({
                             Type :
                           </span>
                           <select
-                            onChange={(e) => {
-                              setCurrentPage(1);
-                              setSortType(e.target.value);
-                            }}
+                            // onChange={(e) => {
+                            //   setSortType(e.target.value);
+                            //   if (currentPage !== 1) {
+                            //     router.push('/categories'); // Go to first page on filter change
+                            //   } else {
+                            //     // If already on page 1, just reload data (if needed)
+                            //     loadRecords(1); // Or whatever your data-fetching function is called
+                            //   }
+                            // }}
+                            value={sortType}
+                            onChange={handleTypeChange}
                             className="form-select border-start-0 rounded-start-0"
                             aria-label=".form-select-sm example"
                           >
@@ -297,10 +393,16 @@ const Categories = ({
                             Sort by :
                           </span>
                           <select
-                            onChange={(e) => {
-                              setCurrentPage(1);
-                              setSortTerm(e.target.value);
-                            }}
+                            // onChange={(e) => {
+                            //   setSortType(e.target.value);
+                            //   if (currentPage !== 1) {
+                            //     router.push('/categories'); // Go to first page on filter change
+                            //   } else {
+                            //     // If already on page 1, just reload data (if needed)
+                            //     loadRecords(1); // Or whatever your data-fetching function is called
+                            //   }
+                            // }}
+                            onChange={handleSortChange}
                             className="form-select border-start-0 rounded-start-0"
                             aria-label=".form-select-sm example"
                             value={sortTerm}
