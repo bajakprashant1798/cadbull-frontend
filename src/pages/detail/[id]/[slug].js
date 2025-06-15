@@ -1,5 +1,5 @@
 import GetOff from "@/components/GetOff";
-import { Fragment, createElement, useEffect, useState, useCallback } from "react";
+import { Fragment, createElement, useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
 import profile_dummy from "@/assets/icons/profile.png";
@@ -189,38 +189,51 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
     }
   }, [id]);
   
+  const visitedIdsRef = useRef([Number(id)]); // always include current
 
   // Fetch similar projects
-const fetchSimilarProjects = async () => {
-  try {
-    if (!similarProjectId) return;
+  const fetchSimilarProjects = async () => {
+    try {
+      if (!similarProjectId) return;
 
-    const response = await getsimilerllprojects(1, 12, similarProjectId, id);
-    console.log("similer project: ", response);
-    
-    
-    // const filteredProjects = response.data.projects.filter(
-    //   (proj) => proj.id !== Number(id)
-    // );
-    // setSimilarProjects(filteredProjects);
-    setSimilarProjects(response.data.projects);
+      // Exclude all visited
+      const excludeIds = visitedIdsRef.current.join(",");
+      const response = await getsimilerllprojects(1, 12, similarProjectId, excludeIds);
+      // const response = await getsimilerllprojects(1, 12, similarProjectId, id);
+      // console.log("similer products: ", response);
+      
+      
+      // const filteredProjects = response.data.projects.filter(
+      //   (proj) => proj.id !== Number(id)
+      // );
+      // setSimilarProjects(filteredProjects);
+      setSimilarProjects(response.data.projects);
 
-  } catch (error) {
-      console.error("Error fetching similar projects:", error);
-  }
-};
-
-// Fetch similar projects when the subcategory ID changes
-useEffect(() => {
-  fetchSimilarProjects();
-}, [similarProjectId, router.query.id]);
-
-// Reset pagination when the component unmounts
-useEffect(() => {
-  return () => {
-      dispatch(getSimilarProjectsPage(1));
+    } catch (error) {
+        console.error("Error fetching similar projects:", error);
+    }
   };
-}, []);
+
+  useEffect(() => {
+    // When route changes (clicked to another project), add the new id to the ref
+    if (!visitedIdsRef.current.includes(Number(id))) {
+      visitedIdsRef.current.push(Number(id));
+    }
+    fetchSimilarProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [similarProjectId, router.query.id]);
+
+  // Fetch similar projects when the subcategory ID changes
+  useEffect(() => {
+    fetchSimilarProjects();
+  }, [similarProjectId, router.query.id]);
+
+  // Reset pagination when the component unmounts
+  useEffect(() => {
+    return () => {
+        dispatch(getSimilarProjectsPage(1));
+    };
+  }, []);
 
   const handlePageChange = (currentPage) => {
     dispatch(getSimilarProjectsPage(currentPage));

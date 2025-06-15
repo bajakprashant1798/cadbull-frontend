@@ -196,9 +196,9 @@ export const getsingleallprojects = (searchTerm = "", id = "") => {
   return api.get(`/projects/${id}`, { params });
 };
 
-export const getsimilerllprojects = (page, pageSize, subcatId, excludeId = null) => {
+export const getsimilerllprojects = (page, pageSize, subcatId, excludeIds = null) => {
   const params = { page, pageSize };
-  if (excludeId) params.excludeId = excludeId;
+  if (excludeIds) params.excludeIds = excludeIds;
   return api.get(`/projects/sub/${subcatId}`, { params });
 };
 
