@@ -196,9 +196,10 @@ export const getsingleallprojects = (searchTerm = "", id = "") => {
   return api.get(`/projects/${id}`, { params });
 };
 
-export const getsimilerllprojects = (page, pageSize, id = "") => {
+export const getsimilerllprojects = (page, pageSize, subcatId, excludeId = null) => {
   const params = { page, pageSize };
-  return api.get(`/projects/sub/${id}`, { params });
+  if (excludeId) params.excludeId = excludeId;
+  return api.get(`/projects/sub/${subcatId}`, { params });
 };
 
 export const addFavouriteItem = (product_id) => {

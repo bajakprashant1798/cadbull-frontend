@@ -193,16 +193,18 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
   // Fetch similar projects
 const fetchSimilarProjects = async () => {
   try {
-      if (!similarProjectId) return;
+    if (!similarProjectId) return;
 
-      const response = await getsimilerllprojects(1, 12, similarProjectId);
-      console.log("similer project: ", response);
-      
-      
-      const filteredProjects = response.data.projects.filter(
-        (proj) => proj.id !== Number(id)
-      );
-    setSimilarProjects(filteredProjects);
+    const response = await getsimilerllprojects(1, 12, similarProjectId, id);
+    console.log("similer project: ", response);
+    
+    
+    // const filteredProjects = response.data.projects.filter(
+    //   (proj) => proj.id !== Number(id)
+    // );
+    // setSimilarProjects(filteredProjects);
+    setSimilarProjects(response.data.projects);
+
   } catch (error) {
       console.error("Error fetching similar projects:", error);
   }
