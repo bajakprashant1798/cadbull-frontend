@@ -767,7 +767,8 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                     </div>
                   </aside>
                 </div>
-                <div>
+                {/* ads image */}
+                {/* <div>
                   <img
                     src={banner_1.src}
                     className="img-fluid w-100 rounded-2 shadow-sm"
@@ -794,7 +795,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                     className="img-fluid w-100  rounded-2 shadow-sm"
                     alt="ad"
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
