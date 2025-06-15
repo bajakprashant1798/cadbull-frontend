@@ -47,6 +47,14 @@ const UploadWork = () => {
     image: null,
   });
 
+  // Inside UploadWork component:
+  const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+    }
+  }, [isAuthenticated, router]);
   // Function to handle form submission
   // const handleSubmit = (event) => {
   //   startLoading();

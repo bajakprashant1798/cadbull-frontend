@@ -2,7 +2,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
 import Link from "next/link";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
 import { signupApiHandler, socialLogin } from "@/service/api";
@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -30,6 +31,9 @@ const Register = () => {
   } = useForm();
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // -------------------------------
   // Normal Registration Flow
@@ -246,7 +250,7 @@ const Register = () => {
             )}
           </div>
           {/* Password */}
-          <div className="col-lg-6">
+          <div className="col-lg-6 position-relative">
             <div className="d-flex gap-2 align-items-center mb-1">
               <label>Password</label>
             </div>
@@ -257,7 +261,7 @@ const Register = () => {
               render={({ field }) => (
                 <input
                   {...field}
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   className={`form-control ${
                     errors.password ? "is-invalid" : ""
                   }`}
@@ -265,12 +269,26 @@ const Register = () => {
                 />
               )}
             />
+            {/* Eye Icon/Button */}
+            <span
+              onClick={() => setShowPassword((v) => !v)}
+              style={{
+                position: "absolute",
+                right: "18px",
+                top: "60%",
+                cursor: "pointer",
+                zIndex: 2,
+                color: "#555"
+              }}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
             {errors.password && (
               <div className="invalid-feedback">{errors.password.message}</div>
             )}
           </div>
           {/* Confirm Password */}
-          <div className="col-lg-6">
+          <div className="col-lg-6 position-relative">
             <div className="d-flex gap-2 align-items-center mb-1">
               <label>Confirm Password</label>
             </div>
@@ -285,7 +303,7 @@ const Register = () => {
               render={({ field }) => (
                 <input
                   {...field}
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   className={`form-control ${
                     errors.confirmPassword ? "is-invalid" : ""
                   }`}
@@ -293,6 +311,20 @@ const Register = () => {
                 />
               )}
             />
+            {/* Eye Icon/Button */}
+            <span
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              style={{
+                position: "absolute",
+                right: "18px",
+                top: "60%",
+                cursor: "pointer",
+                zIndex: 2,
+                color: "#555"
+              }}
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
             {errors.confirmPassword && (
               <div className="invalid-feedback">
                 {errors.confirmPassword.message}

@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 // import ReCAPTCHA from "react-google-recaptcha";
 // import RecaptchaComponent from "@/components/RecaptchaComponent";
@@ -37,6 +38,7 @@ const Login = () => {
 
   //// Get isAuthenticated from Redux:
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
+  const [showPassword, setShowPassword] = useState(false);
 
   // const [captchaValue, setCaptchaValue] = useState(null);
 
@@ -314,16 +316,31 @@ const Login = () => {
             control={control}
             rules={{ required: "Password is required", minLength: 8 }}
             render={({ field }) => (
-              <div className="col-lg-12">
+              <div className="col-lg-12 position-relative">
                 <div className="d-flex gap-2 align-items-center mb-1">
                   <label>Password</label>
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   className="form-control"
                   placeholder="8 Digit Pin"
                   {...field}
+                  style={{ paddingRight: "2.5rem" }} // make space for the icon
                 />
+                {/* Eye Icon/Button */}
+                <span
+                  onClick={() => setShowPassword((v) => !v)}
+                  style={{
+                    position: "absolute",
+                    right: "18px",
+                    top: "60%",
+                    cursor: "pointer",
+                    zIndex: 2,
+                    color: "#555"
+                  }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
                 {errors.password && (
                   <p className="text-danger">{errors.password.message}</p>
                 )}
