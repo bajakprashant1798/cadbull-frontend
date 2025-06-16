@@ -316,9 +316,9 @@ export const downloadProject = async (id, router) => {
 
 
 
-export const downloadHistory = async ( uuid) => {
-  return api.post(`/projects/${uuid}/download-history`, {});
-};
+// export const downloadHistory = async ( uuid) => {
+//   return api.post(`/projects/${uuid}/download-history`, {});
+// };
 
 export const handleSubscription = async (priceId, userId) => {
   return api.post("/subscription/payment-initiate", { subscriptionPlanId: priceId, userId });

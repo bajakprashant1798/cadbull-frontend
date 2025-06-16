@@ -11,7 +11,7 @@ import downloadIcon from "@/assets/icons/download.png";
 import Pagination from "@/components/Pagination";
 import {
   addFavouriteItem,
-  downloadHistory,
+  // downloadHistory,
   downloadProject,
   getPaginatedFavouriteItems,
   removeFavouriteItem,

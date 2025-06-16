@@ -11,7 +11,7 @@ import downloadIcon from "@/assets/icons/download.png";
 import Pagination from "@/components/Pagination";
 import {
   addFavouriteItem,
-  downloadHistory,
+  // downloadHistory,
   downloadProject,
   getFavouriteItems,
   getUploadedProjectList,
@@ -85,23 +85,23 @@ const myProjects = () => {
       });
   };
 
-  const handledownload = (id) => {
-    downloadProject( id)
-      .then((res) => {
-        const zipUrl = res.data.zip_url;
-        downloadFile(zipUrl);
-        downloadHistory( id)
-          .then((res) => {
-            console.log("download", res.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // const handledownload = (id) => {
+  //   downloadProject( id)
+  //     .then((res) => {
+  //       const zipUrl = res.data.zip_url;
+  //       downloadFile(zipUrl);
+  //       downloadHistory( id)
+  //         .then((res) => {
+  //           console.log("download", res.data);
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   return (
     <Fragment>
