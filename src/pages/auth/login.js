@@ -102,7 +102,12 @@ const Login = () => {
     // }
     // Handle form submission here
     startLoading()
-    loginApiHandler(data)
+    // loginApiHandler(data)
+    loginApiHandler({
+      email: data.loginInput,
+      password: data.password
+    })
+
       .then((res) => {
         const { user } = res.data;
 
@@ -290,7 +295,7 @@ const Login = () => {
         >
           {/* Email */}
           <Controller
-            name="email"
+            name="loginInput"
             control={control}
             rules={{ required: "Email is required", pattern: /^\S+@\S+$/i }}
             render={({ field }) => (
@@ -304,8 +309,8 @@ const Login = () => {
                   placeholder="Enter Your Email"
                   {...field}
                 />
-                {errors.email && (
-                  <p className="text-danger">{errors.email.message}</p>
+                {errors.loginInput && (
+                  <p className="text-danger">{errors.loginInput.message}</p>
                 )}
               </div>
             )}
