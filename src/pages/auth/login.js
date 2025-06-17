@@ -305,7 +305,7 @@ const Login = () => {
                   <label>Email Id</label>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
                   placeholder="Enter Your Email"
                   {...field}
