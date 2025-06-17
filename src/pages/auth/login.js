@@ -297,7 +297,8 @@ const Login = () => {
           <Controller
             name="loginInput"
             control={control}
-            rules={{ required: "Email is required", pattern: /^\S+@\S+$/i }}
+            // rules={{ required: "Email is required", pattern: /^\S+@\S+$/i }}
+            rules={{ required: "Email or Username is required" }}
             render={({ field }) => (
               <div className="col-lg-12">
                 <div className="d-flex gap-2 align-items-center mb-1">
