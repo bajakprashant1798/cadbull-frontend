@@ -104,7 +104,7 @@ const Login = () => {
     startLoading()
     // loginApiHandler(data)
     loginApiHandler({
-      email: data.loginInput,
+      loginInput: data.loginInput,
       password: data.password
     })
 
