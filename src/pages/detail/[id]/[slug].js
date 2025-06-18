@@ -645,7 +645,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                         </button>
 
                         {/* add to fevorite btn */}
-                        {/* <button
+                        <button
                           onClick={() => handleAddToLibrary()}
                           type="button"
                           className="btn-primary-split"
@@ -654,7 +654,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                             <Icons.Add />
                           </span>
                           <span>Add to libary</span>
-                        </button> */}
+                        </button>
                         
                       </div>
                     </div>

@@ -94,7 +94,7 @@ useEffect(() => {
         <div className="row justify-content-center">
           <div className="col-md-9">
             <div className="text-center">
-              <div className="mb-3 mb-md-4">
+              <div className="mb-3 mb-md-4 mt-3 mt-md-5">
               <div>
                 {message && <p className="alert alert-warning text-center">{message}</p>}
                 

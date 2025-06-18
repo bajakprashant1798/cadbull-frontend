@@ -671,7 +671,7 @@ table {
 }
 
 .categories-pcount-font-size {
-  font: normal normal 500 12px/24px 'Poppins', sans-serif !important;
+  font: normal normal 500 12px/20px 'Poppins', sans-serif !important;
 }
 .categories-name-font-size {
   font: normal normal 400 12px/20px 'Poppins', sans-serif !important;
@@ -910,16 +910,16 @@ table {
   }
 
   // max-width: 100%;
-  width: 250px;
+  // width: 250px;
 }
-.btn-success-split {
-  width: 100%;
-}
-.btn-success-split span {
-  @media all and (max-width:575px) {
-    text-align: left;
-  }
-}
+// .btn-success-split {
+//   width: 100%;
+// }
+// .btn-success-split span {
+//   @media all and (max-width:575px) {
+//     text-align: left;
+//   }
+// }
 
 
 // about page css
