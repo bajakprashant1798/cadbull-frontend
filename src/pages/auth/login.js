@@ -381,7 +381,7 @@ const Login = () => {
           <button
             onClick={() => {
               handleGoogleSignIn();
-              router.push("/");
+              // router.push("/");
             }}
               
             type="button"

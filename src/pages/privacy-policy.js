@@ -14,7 +14,7 @@ const PrivacyPolicy = ({privacy_policy}) => {
               alt="cover"
               height={350}
             />
-            {/* <div>
+            <div>
               <h1 className="mb-3">Privacy Policy</h1>
               <h3 className="mb-4">EFFECTIVE 18th Sept. 2021</h3>
 
@@ -282,8 +282,8 @@ const PrivacyPolicy = ({privacy_policy}) => {
               </p>
               <p className="mb-4">Each data subject shall have the right granted by the European legislator to withdraw his or her consent to processing of his or her personal data at any time.</p>
               <p className="mb-4">If the data subject wishes to exercise the right to withdraw the consent, he or she may, at any time, contact any employee of the cadbull.</p>
-            </div> */}
-            {parse(privacy_policy)}
+            </div>
+            {/* {parse(privacy_policy)} */}
           </div>
         </div>
       </div>
