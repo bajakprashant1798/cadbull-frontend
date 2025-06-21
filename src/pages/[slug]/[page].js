@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -281,8 +281,22 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   return (
     <Fragment>
       <Head>
-        <title>{makeTitle(slug)} | Cadbull</title>
-        <meta name="description" content="World Largest 2d CAD Library." />
+        <title>{metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"}</title>
+        <meta
+          name="description"
+          content={metaDescription || "World Largest 2d CAD Library."}
+        />
+        {metaKeywords && <meta name="keywords" content={metaKeywords} />}
+        
+        <meta property="og:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
+        <meta property="og:description" content={metaDescription || "World Largest 2d CAD Library."} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
+        {/* <meta property="og:image" content={project?.photo_url} /> */}
+        {/* <meta name="twitter:card" content="summary_large_image" /> */}
+        <meta name="twitter:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
+        <meta name="twitter:description" content={metaDescription || "World Largest 2d CAD Library."} />
+        {/* <meta name="twitter:image" content={project?.photo_url} /> */}
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
@@ -442,12 +456,23 @@ export async function getStaticProps({ params }) {
   if (!data || !data.projects) {
     return { notFound: true };
   }
+
+  // Fetch all categories to get meta for the current one
+  const catRes = await getallCategories("");
+  const categories = catRes?.data?.categories || [];
+  // Find current category by slug
+  const currentCategory = categories.find(cat => cat.slug === slug);
+
   return {
     props: {
       initialProjects: data.projects,
       initialTotalPages: data.totalPages || 1,
       initialSlug: slug,
       page,
+      // These might be undefined if not found
+      metaTitle: currentCategory?.meta_title || null,
+      metaKeywords: currentCategory?.meta_keywords || null,
+      metaDescription: currentCategory?.meta_description || null,
     },
     revalidate: 300,
   };

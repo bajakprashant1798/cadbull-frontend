@@ -367,24 +367,18 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
   return (
     <Fragment>
       <Head>
-        <title>{project?.meta_title}</title>
-        {/* Open Graph Metadata */}
-        <meta property="og:title" content={project?.work_title} />
-        <meta property="og:description" content={project?.meta_description} />
-        <meta property="og:type" content="www.cadbull.com" />
-        <meta
-          property="og:url"
-          content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
-        />
+        <title>{project?.meta_title || project?.work_title}</title>
+        <meta name="description" content={project?.meta_description || project?.description?.slice(0, 150)} />
+        <meta property="og:title" content={project?.meta_title || project?.work_title} />
+        <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
         <meta property="og:image" content={project?.photo_url} />
-        {/* <meta property="og:image:alt" content="A description of what is in the image" /> */}
-
-        {/* Twitter Card Metadata */}
-        <meta name="twitter:card" content={project?.photo_url} />
-        <meta name="twitter:site" content="@cadbull" />
-        <meta name="twitter:title" content={project?.meta_title} />
-        <meta name="twitter:description" content={project?.meta_description} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={project?.meta_title || project?.work_title} />
+        <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta name="twitter:image" content={project?.photo_url} />
+        <meta name="keywords" content={project?.tags || ""} />
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
         <div className="container">

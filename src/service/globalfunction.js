@@ -94,6 +94,10 @@ export const handledownload = async (id, isAuthenticated, router) => {
     console.error("Unexpected download response format:", res.data);
   } catch (err) {
     // Axios error: check if response is available
+    if (err?.response?.status === 404) {
+      router.push('/404');
+      return;
+    }
     if (err.response && err.response.status === 403) {
       // Check backend error message
       if (
