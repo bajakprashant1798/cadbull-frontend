@@ -115,6 +115,9 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
   const [similarProjectId, setSimilarProjectId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // At component top:
+  const shownSimilarIdsRef = useRef(new Set());
+
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
@@ -191,28 +194,40 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
   
   const visitedIdsRef = useRef([Number(id)]); // always include current
 
+  // When similarProjects are fetched/shown:
+  useEffect(() => {
+    similarProjects.forEach(p => shownSimilarIdsRef.current.add(p.id));
+  }, [similarProjects]);
+
+
   // Fetch similar projects
   const fetchSimilarProjects = async () => {
     try {
       if (!similarProjectId) return;
 
-      // Exclude all visited
-      const excludeIds = visitedIdsRef.current.join(",");
-      const response = await getsimilerllprojects(1, 12, similarProjectId, excludeIds);
-      // const response = await getsimilerllprojects(1, 12, similarProjectId, id);
-      // console.log("similer products: ", response);
+      // // Exclude all visited
+      // const excludeIds = visitedIdsRef.current.join(",");
+      // const response = await getsimilerllprojects(1, 12, similarProjectId, excludeIds);
       
-      
-      // const filteredProjects = response.data.projects.filter(
-      //   (proj) => proj.id !== Number(id)
-      // );
-      // setSimilarProjects(filteredProjects);
+      // setSimilarProjects(response.data.projects);
+
+      const excludeIdsArray = Array.from(shownSimilarIdsRef.current);
+      // Always exclude the current project id as well
+      if (!excludeIdsArray.includes(Number(id))) excludeIdsArray.push(Number(id));
+      // Call your API
+      const response = await getsimilerllprojects(
+        1, // or current page
+        12, // or whatever pageSize
+        similarProjectId,
+        excludeIdsArray.join(",")
+      );
       setSimilarProjects(response.data.projects);
 
     } catch (error) {
         console.error("Error fetching similar projects:", error);
     }
   };
+  
 
   useEffect(() => {
     // When route changes (clicked to another project), add the new id to the ref
@@ -673,7 +688,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                       </div>
                     </div>
                     <div className="row gy-4 mb-4 mb-md-5">
-                      {similarProjects.map((project) => {
+                      {/* {similarProjects.map((project) => {
                         return (
                           <div
                             className="col-md-6 col-lg-6 col-xxl-4"
@@ -682,7 +697,18 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                             <ProjectCard {...project} favorites={favouriteList} />
                           </div>
                         );
-                      })}
+                      })} */}
+                      {similarProjects.length > 0 ? (
+                        similarProjects.map((project) => (
+                          <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
+                            <ProjectCard {...project} favorites={favouriteList} />
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-12 text-center">
+                          <p>No more related files found.</p>
+                        </div>
+                      )}
                     </div>
 
                   </div>
