@@ -2,6 +2,7 @@ import MainLayout from "@/layouts/MainLayout";
 import { getTermsPrivacyAndFaqData } from "@/service/api";
 
 import parse from 'html-react-parser'
+import Link from "next/link";
 const TermsPrivacyFaq = ({termsData}) => {
     console.log('terms data',termsData)
   return (

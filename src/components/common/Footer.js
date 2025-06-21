@@ -127,7 +127,7 @@ const Footer = () => {
               </li>
               <li className="text-white">|</li>
               <li>
-                <Link href="/terms-privacy-faq">FAQs</Link>
+                <Link href="/faqs">FAQs</Link>
               </li>
             </ul>
           </div>
