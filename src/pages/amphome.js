@@ -134,7 +134,7 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
           <nav className="navbar navbar-dropdown navbar-expand-lg navbar-fixed-top">
             <div className="menu-container container">
               <div className="navbar-brand">
-                <a href="/amphome">
+                <a href="/">
                   <div className="navbar-logo">
                     <amp-img
                       src={logo.src}
@@ -149,7 +149,7 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
               <div className="collapse navbar-collapse">
                 <ul className="navbar-nav nav-dropdown nav-right">
                   <li className="nav-item">
-                    <a href="/amphome">Home</a>
+                    <a href="/">Home</a>
                   </li>
                   {/* <li className="nav-item">
                     <a href="https://cadbull.com/features">Features</a>
