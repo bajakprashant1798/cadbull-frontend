@@ -166,10 +166,10 @@ export default function Home({
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
-    console.log("isAuthenticated index:",isAuthenticated);
+    // console.log("isAuthenticated index:",isAuthenticated);
     
     if ( !favouritesFetched && isAuthenticated ) {
-      console.log("isAuthenticated index:",isAuthenticated);
+      // console.log("isAuthenticated index:",isAuthenticated);
       getFavouriteItems()
         .then((favRes) => {
           dispatch(setFavouriteList(favRes.data.favorites || []));

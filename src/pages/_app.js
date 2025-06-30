@@ -109,7 +109,30 @@ export default function App({ Component, pageProps }) {
 //   return rehydrated ? null : <div>Loading...</div>;
 // }
   
+  // --- Detect AMP route ---
+  const isAmpRoute = router.pathname.startsWith('/amp'); // Adjust if needed
+
   const getLayout = Component.getLayout || ((page) => page);
+
+  // If it's an AMP route, do NOT wrap in Redux/Persist
+  if (isAmpRoute) {
+    return (
+      <Fragment>
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          <title>Cadbull</title>
+          <meta name="description" content="World Largest 2d CAD Library." />
+        </Head>
+        <style jsx global>{`
+          * {
+            font-family: ${poppins.style.fontFamily} !important;
+          }
+        `}</style>
+        {getLayout(<Component {...pageProps} />)}
+      </Fragment>
+    );
+  }
   return (
     <Fragment>
       {/* <Authprovider> */}

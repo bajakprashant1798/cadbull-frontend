@@ -11,6 +11,27 @@ const api = axios.create({
   timeout: 20000, // 20 seconds
 });
 
+// ✅ Request Interceptor: Attach Access Token
+api.interceptors.request.use(
+  (config) => {
+    // Run this logic only on the client-side
+    if (typeof window !== "undefined") {
+      const userDataString = localStorage.getItem("userData");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        const accessToken = userData?.accessToken;
+        if (accessToken) {
+          config.headers["Authorization"] = `Bearer ${accessToken}`;
+        }
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 //// ✅ Response Interceptor: Refresh Token Handling
 api.interceptors.response.use(
   (response) => response,
@@ -25,44 +46,38 @@ api.interceptors.response.use(
 
     // ✅ If Access Token Expired & No Retry Attempt Yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
-
-      // // Check if the user is authenticated
-      // const isAuthenticated = localStorage.getItem("userData");
-
-      // if (!isAuthenticated) {
-      //   // If the user is not authenticated, reject the request without attempting to refresh the token
-      //   console.log("❌ User is not authenticated. Skipping token refresh.");
-      //   return Promise.reject(error);
-      // }
-
       originalRequest._retry = true;
 
-      try {
+      if (typeof window === "undefined") {
+        return Promise.reject(error);
+      }
 
-        // console.log("Calling refresh endpoint at:", "/api/auth/refresh-token");
-        // const refreshResponse = await axios.post(
-        //   "/api/auth/refresh-token",
-        //   {},
-        //   { withCredentials: true }
-        // );
-        // console.log(" User is authenticated. refresh.");
-        // Call refresh endpoint (cookies are automatically sent)
-        console.log("Calling refresh endpoint at:", `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`);
-        // ✅ Send Refresh Token in Headers
+      try {
+        // The browser will automatically send the httpOnly refresh token cookie
+        // because of `withCredentials: true`.
         const refreshResponse = await axios.post(
           `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
           {},
-          // { headers: { "x-refresh-token": refreshToken } }
-          { withCredentials: true }
+          { withCredentials: true } // Ensures cookies are sent
         );
 
-        const newAccessToken = refreshResponse.data.accessToken;
-        console.log("✅ New Access Token Received:", newAccessToken);
+        const { accessToken: newAccessToken } = refreshResponse.data;
+
+        // Update the access token in localStorage
+        const userDataString = localStorage.getItem("userData");
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          userData.accessToken = newAccessToken;
+          localStorage.setItem("userData", JSON.stringify(userData));
+        }
+
+        // Update the authorization header for the original request
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
         // ✅ Retry Original Request with New Token
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("❌ Refresh Token Failed:", refreshError);
+        console.error("❌ Refresh Token Failed (cookie-based):", refreshError);
         handleLogout();
         return Promise.reject(refreshError);
       }
@@ -350,7 +365,7 @@ export const uploadProjectApiHandler = async (formData) => {
       },
       onUploadProgress: (progressEvent) => {
         const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-        console.log(`Upload Progress: ${progress}%`);
+        // console.log(`Upload Progress: ${progress}%`);
       },
     });
     return response.data;
@@ -416,7 +431,7 @@ export const getCompanyProducts = (
   profileId,
   { page = 1, pageSize = 12, search = "", sort, from, to } = {}
 ) => {
-  console.log("api call back", profileId, page, pageSize, search, sort, from, to);
+  // console.log("api call back", profileId, page, pageSize, search, sort, from, to);
   return api.get(`/profile/author/${profileId}/products`, {
     params: { page, pageSize, search, sort, from, to },
     // headers: { Authorization: `Bearer ${token}` },
@@ -711,9 +726,9 @@ export const sendNewsletterEmailApi = (id, formData) => {
  * API Route: GET `/admin/users/earnings`
  */
 export const getUsersEarningsApi = async (filterStatus, page = 1, perPage = 10, token, search = "") => {
-  console.log("📢 API Call: getUsersEarningsApi()");
-  console.log("🔹 Token:", token);
-  console.log("🔹 Query Params:", { filterStatus, page, perPage, search });
+  // console.log("📢 API Call: getUsersEarningsApi()");
+  // console.log("🔹 Token:", token);
+  // console.log("🔹 Query Params:", { filterStatus, page, perPage, search });
 
   return api.get("/admin/earnings", {
     params: { status: filterStatus, page, perPage, search },

@@ -5,13 +5,13 @@ import { loadStripe } from '@stripe/stripe-js';
 const useStripeLoader = (publishableKey) => {
   const [stripe, setStripe] = useState(null);
   const [loading, setLoading] = useState(true);
- console.log('stripe instance',stripe
- )
+//  console.log('stripe instance',stripe
+//  )
   useEffect(() => {
     if (!window.Stripe) {
       loadStripe(publishableKey).then(stripeInstance => {
         setStripe(stripeInstance);
-        console.log('stripe instance loaded',stripeInstance)
+        // console.log('stripe instance loaded',stripeInstance)
         setLoading(false);
       }).catch(error => {
         console.error("Stripe loading failed:", error);

@@ -47,7 +47,7 @@ const Register = () => {
         stopLoading();
         
         // ✅ Log the response to check the structure
-        console.log("🔄 Signup Response:", res.data);
+        // console.log("🔄 Signup Response:", res.data);
   
         // ✅ Handle email already exists but not verified case
         if (res.data.message.includes("not verified")) {

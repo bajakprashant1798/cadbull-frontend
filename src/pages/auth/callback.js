@@ -21,7 +21,7 @@ const OAuthCallback = () => {
     if (userParam) {
       try {
         const userData = JSON.parse(decodeURIComponent(userParam));
-        console.log("✅ OAuth Callback User Data:", userData);
+        // console.log("✅ OAuth Callback User Data:", userData);
   
         // localStorage.setItem("accessToken", accessToken);
         // localStorage.setItem("refreshToken", refreshToken);
@@ -31,7 +31,7 @@ const OAuthCallback = () => {
   
         window.dispatchEvent(new Event("userLoggedIn"));
   
-        console.log("✅ User logged in:", userData);
+        // console.log("✅ User logged in:", userData);
   
         setTimeout(() => {
           if (userData.role === 1) {

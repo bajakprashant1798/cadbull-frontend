@@ -116,7 +116,7 @@ const Login = () => {
           return;
         }
 
-        console.log("user: login ", user);
+        // console.log("user: login ", user);
         
         //// ✅ Store tokens in localStorage
         // localStorage.setItem("accessToken", accessToken);
@@ -132,7 +132,7 @@ const Login = () => {
           getFavouriteItems()
             .then((favRes) => {
               dispatch(setFavouriteList(favRes.data.favorites || []));
-              console.log("res from getfav", favRes);
+              // console.log("res from getfav", favRes);
               
             })
             .catch((error) => {
@@ -168,7 +168,7 @@ const Login = () => {
         }
     
         toast.error("Please check your email or password ")
-        console.log("login error: ", err);
+        // console.log("login error: ", err);
       });
   };
 
