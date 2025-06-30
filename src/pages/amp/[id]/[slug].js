@@ -11,7 +11,6 @@ export async function getServerSideProps(context) {
   let productData = null;
   let similarProjects = [];
   let publisher = null;
-  let subcategory = {};
 
   // Example: read cookie
   const cookie = req.headers.cookie || "";
@@ -48,6 +47,10 @@ export async function getServerSideProps(context) {
     similarProjects = [];
   }
 
+  const categoryName = productData?.product_category_title || "";
+  const subcategoryName = productData?.product_subcategory_title || "";
+
+
   try {
     // Fetch publisher info
     if (productData?.user_id || productData?.profile_id) {
@@ -60,7 +63,7 @@ export async function getServerSideProps(context) {
     publisher = null;
   }
 
-  subcategory = productData?.category || {};
+  // subcategory = productData?.category || {};
 
   // Optionally, get user info if logged in
   let user = null;
@@ -76,14 +79,15 @@ export async function getServerSideProps(context) {
       product: productData,
       similar: similarProjects,
       publisher,
-      subcategory,
+      categoryName,
+      subcategoryName,
       user
     },
   };
 }
 
 
-export default function AmpProductPage({ product, similar, publisher, subcategory, user }) {
+export default function AmpProductPage({ product, similar, publisher, categoryName, subcategoryName, user }) {
   const title = product?.work_title || "Product";
   const description = product?.description || "";
   const imageUrl = product?.photo_url;
@@ -165,24 +169,24 @@ export default function AmpProductPage({ product, similar, publisher, subcategor
           </button>
           <ul className="navbar-nav nav-dropdown nav-right">
             <li className="nav-item">
-              <a href="https://cadbull.com/amphome">Home</a>
+              <a href="/amphome">Home</a>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a href="https://cadbull.com/features">Features</a>
             </li>
             <li className="nav-item">
               <a href="https://cadbull.com/contact-us">Contact Us</a>
-            </li>
+            </li> */}
             {/* <li className="nav-item">
               <a href="https://cadbull.com/amplogin">Login</a>
             </li> */}
             {user ? (
               <>
-                <li><a href="/ampprofile">{user.firstname}</a></li>
-                <li><a href="/amplogout">Logout</a></li>
+                <li className="nav-item"><a href="/ampprofile">{user.firstname}</a></li>
+                <li className="nav-item"><a href="/logout">Logout</a></li>
               </>
             ) : (
-              <li><a href="/amplogin">Login</a></li>
+              <li className="nav-item"><a href="/login">Login</a></li>
             )}
 
           </ul>
@@ -209,7 +213,7 @@ export default function AmpProductPage({ product, similar, publisher, subcategor
             <div className="collapse navbar-collapse">
               <ul className="navbar-nav nav-dropdown nav-right">
                 <li className="nav-item">
-                  <a href="https://cadbull.com/amphome">Home</a>
+                  <a href="/amphome">Home</a>
                 </li>
                 {/* <li className="nav-item">
                   <a href="https://cadbull.com/features">Features</a>
@@ -224,10 +228,10 @@ export default function AmpProductPage({ product, similar, publisher, subcategor
                 {user ? (
                   <>
                     <li><a href="/ampprofile">{user.firstname}</a></li>
-                    <li><a href="/amplogout">Logout</a></li>
+                    <li><a href="/logout">Logout</a></li>
                   </>
                 ) : (
-                  <li><a href="/amplogin">Login</a></li>
+                  <li><a href="/auth/login">Login</a></li>
                 )}
               </ul>
             </div>
@@ -329,7 +333,7 @@ export default function AmpProductPage({ product, similar, publisher, subcategor
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">Category</h3>
                   <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
                     <span style={{ fontWeight: "normal" }}>
-                      {subcategory?.name || "-"}
+                      {categoryName || "-"}
                     </span>
                   </h4>
                 </div>
@@ -343,14 +347,15 @@ export default function AmpProductPage({ product, similar, publisher, subcategor
                   <div class="iconfont-wrapper">
                     <span class="amp-iconfont mbri-opened-folder"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32" fill="currentColor">
                     <path d="M4.682 11.995c-0.552 0-1.052 0.254-1.38 0.612s-0.515 0.801-0.607 1.258l-2.661 13.333c-0.122 0.611 0.143 1.191 0.531 1.555s0.901 0.581 1.453 0.581h25.305c0.552 0 1.052-0.259 1.38-0.617s0.515-0.801 0.607-1.258l2.664-13.333c0.113-0.565-0.146-1.191-0.534-1.555s-0.901-0.576-1.453-0.576zM4.682 13.328h25.305c0.186 0 0.412 0.092 0.542 0.214s0.161 0.21 0.138 0.323l-2.664 13.333c-0.164 0.611-0.335 0.802-0.68 0.802h-25.305c-0.54 0-0.759-0.238-0.677-0.542l2.661-13.333c0.053-0.267 0.164-0.49 0.281-0.617s0.213-0.18 0.398-0.18zM2 2.667c-1.096 0-2 0.904-2 2v14.667c0 0.881 1.333 0.886 1.333 0v-14.667c0-0.381 0.286-0.667 0.667-0.667h6.391l5.138 5.138c0.125 0.125 0.295 0.195 0.471 0.195h14v0.667c0 0.907 1.333 0.865 1.333 0v-1.333c-0-0.368-0.299-0.667-0.667-0.667h-14.391l-5.138-5.138c-0.125-0.125-0.295-0.195-0.471-0.195z"></path>
-                    </svg></span>
+                    </svg>
+                    </span>
                   </div>
                 </div>
                 <div className="card-box">
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">Sub Category</h3>
                   <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
                     <span style={{ fontWeight: "normal" }}>
-                      {product?.category?.name || "-"}
+                      {subcategoryName || "-"}
                     </span>
                   </h4>
                 </div>
