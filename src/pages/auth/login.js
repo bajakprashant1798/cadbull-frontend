@@ -19,7 +19,7 @@ import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-// import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 // import RecaptchaComponent from "@/components/RecaptchaComponent";
 
 
@@ -40,10 +40,12 @@ const Login = () => {
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [showPassword, setShowPassword] = useState(false);
 
-  // const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaValue, setCaptchaValue] = useState(null);
 
-  // // Set up reCAPTCHA reference if needed
-  // const recaptchaRef = React.createRef();
+  const handleCaptchaChange = (value) => {
+    setCaptchaValue(value);
+  };
+
 
 
   // Immediately redirect if localStorage already has user data
@@ -95,17 +97,18 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    //// Ensure the captcha is solved
-    // if (!captchaValue) {
-    //   toast.error("Please verify that you are not a robot.");
-    //   return;
-    // }
+    // Ensure the captcha is solved
+    if (!captchaValue) {
+      toast.error("Please verify that you are not a robot.");
+      return;
+    }
     // Handle form submission here
     startLoading()
     // loginApiHandler(data)
     loginApiHandler({
       loginInput: data.loginInput,
-      password: data.password
+      password: data.password,
+      captcha: captchaValue,
     })
 
       .then((res) => {
@@ -265,6 +268,15 @@ const Login = () => {
   //   }
   // };
 
+  const handleFacebookSignIn = async () => {
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+    } catch (error) {
+      toast.error("Facebook login failed. Please try again.");
+    }
+  };
+
+
   // Handle Email Verification
   useEffect(() => {
     if (router.query.verified) {
@@ -360,13 +372,13 @@ const Login = () => {
             </a>
           </div>
 
-          {/* <div className="col-lg-12">
-            <RecaptchaComponent
+          <div className="col-lg-12">
+            <ReCAPTCHA
               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-              onChange={(value) => setCaptchaValue(value)}
-              ref={recaptchaRef}
+              onChange={handleCaptchaChange}
+              theme="light" // or "dark"
             />
-          </div> */}
+          </div>
 
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">

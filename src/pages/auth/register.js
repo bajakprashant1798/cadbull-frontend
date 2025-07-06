@@ -114,6 +114,14 @@ const Register = () => {
     }
   };
   
+  const handleFacebookSignIn = async () => {
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+    } catch (error) {
+      toast.error("Facebook login failed. Please try again.");
+    }
+  };
+
   // -------------------------------
   // OAuth Redirect Handling (Google Login)
   // This useEffect will run if the URL has OAuth parameters.
@@ -353,6 +361,10 @@ const Register = () => {
             <span>Login in with Google</span>
           </button>
           <button
+            onClick={() => {
+              handleFacebookSignIn();
+              router.push("/");
+            }}
             type="button"
             className="btn btn-secondary-variant d-flex gap-1 align-items-center justify-content-center"
           >
