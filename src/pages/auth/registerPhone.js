@@ -1,7 +1,7 @@
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
 // import { sendOtpApiHandler, verifyOtpApiHandler } from "@/service/api"; // Import the necessary API functions
@@ -11,6 +11,7 @@ import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { auth, RecaptchaVerifier } from "@/utils/firebase";
 import { signInWithPhoneNumber } from "firebase/auth";
 import api from "@/service/api";
+import { app } from "@/utils/firebase";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -84,47 +85,66 @@ const RegisterPhone = () => {
   // Helper: create or return recaptcha verifier
   // Helper to create/reuse
   // Helper to create/reuse
-  const getOrCreateRecaptcha = async () => {
-    if (
-      typeof window !== "undefined" &&
-      document.getElementById("recaptcha-container")
-    ) {
-      // Always destroy any previous instance!
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-        } catch (e) {}
-        window.recaptchaVerifier = null;
-      }
+  // const getOrCreateRecaptcha = () => {
+  //   console.log("auth instance:", auth);
+  //   console.log("app instance:", app);
+
+  //   if (typeof window !== "undefined" && document.getElementById("recaptcha-container")) {
+  //     if (!window.recaptchaVerifier) {
+  //       window.recaptchaVerifier = new RecaptchaVerifier(
+  //         "recaptcha-container",
+  //         { size: "normal" },
+  //         auth
+  //       );
+  //       window.recaptchaVerifier.render();
+  //     }
+  //     return window.recaptchaVerifier;
+  //   }
+  //   throw new Error("Recaptcha container not ready");
+  // };
+const recaptchaLoaded = useRef(false);
+const [recaptchaReady, setRecaptchaReady] = useState(false);
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  if (!recaptchaLoaded.current && document.getElementById("recaptcha-container")) {
+    recaptchaLoaded.current = true;
+    try {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         { size: "normal" },
         auth
       );
-      await window.recaptchaVerifier.render();
-      return window.recaptchaVerifier;
+      window.recaptchaVerifier.render().then(() => setRecaptchaReady(true));
+    } catch (err) {
+      console.error("RecaptchaVerifier failed to init:", err);
     }
-    throw new Error("Recaptcha container not ready");
-  };
+  }
+}, []);
+
+
 
   const onSubmit = async (data) => {
-    let phoneNumber = data.mobile;
-    if (!phoneNumber.startsWith("+")) {
-      alert("Please enter in +911234567890 format");
-      return;
-    }
-    try {
-      const appVerifier = await getOrCreateRecaptcha();
-      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      setConfirmationResult(result);
-      setOtpSent(true);
-      setShowOTPSection(true);
-      setDisableResend(true);
-    } catch (error) {
-      alert("Failed to send OTP: " + error.message);
-      console.error(error);
-    }
-  };
+  let phoneNumber = data.mobile;
+  if (!phoneNumber.startsWith("+")) {
+    alert("Please enter in +911234567890 format");
+    return;
+  }
+  try {
+    const appVerifier = window.recaptchaVerifier;
+    console.log("appVerifier is", appVerifier);
+    if (!appVerifier) throw new Error("RecaptchaVerifier missing");
+    const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+    setConfirmationResult(result);
+    setOtpSent(true);
+    setShowOTPSection(true);
+    setDisableResend(true);
+  } catch (error) {
+    alert("Failed to send OTP: " + error.message);
+    console.error(error);
+  }
+};
+
 
 
 
@@ -168,8 +188,9 @@ const RegisterPhone = () => {
         <title>Cadbull | Register</title>
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
-      <AuthLayout title={pageTitle.title} description={pageTitle.description}>
       <div id="recaptcha-container" style={{ minHeight: 60 }} />
+      <AuthLayout title={pageTitle.title} description={pageTitle.description}>
+      {/* <div id="recaptcha-container" style={{ minHeight: 60 }} /> */}
         {showOTPSection ? (
           // Show OTP input section
           <form
@@ -281,6 +302,7 @@ const RegisterPhone = () => {
                 <button
                   type="submit"
                   className="btn btn-lg btn-secondary w-100"
+                  disabled={!recaptchaReady || otpSent}
                 >
                   {otpSent ? "Send OTP Again" : "Send OTP"}
                 </button>
