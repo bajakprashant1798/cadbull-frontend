@@ -895,8 +895,23 @@ table {
 .category-drawer {
   --bs-offcanvas-height: 100vh;
 }
+////
+/* Add this to your global CSS file */
+#recaptcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
 
+#recaptcha-container > div {
+  margin: 0 auto;
+}
 
+/* Make sure the recaptcha is properly sized */
+.g-recaptcha {
+  margin: 0 auto;
+}
+////
 .copy-link-size {
   background-color: #E4E4E4;
   border-radius: 20%;
