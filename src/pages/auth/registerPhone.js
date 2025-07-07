@@ -107,7 +107,6 @@ const RegisterPhone = () => {
     throw new Error("Recaptcha container not ready");
   };
 
-
   const onSubmit = async (data) => {
     let phoneNumber = data.mobile;
     if (!phoneNumber.startsWith("+")) {
