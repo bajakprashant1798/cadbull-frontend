@@ -4,10 +4,13 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
-import { sendOtpApiHandler, verifyOtpApiHandler } from "@/service/api"; // Import the necessary API functions
+// import { sendOtpApiHandler, verifyOtpApiHandler } from "@/service/api"; // Import the necessary API functions
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
+import { auth, RecaptchaVerifier } from "@/utils/firebase";
+import { signInWithPhoneNumber } from "firebase/auth";
+import api from "@/service/api";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -30,80 +33,135 @@ const RegisterPhone = () => {
   const [disableResend, setDisableResend] = useState(false); // To disable the resend button
   const [countdown, setCountdown] = useState(30);
   const dispatch = useDispatch();
+  
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
-  useEffect(() => {
-    let timer;
-    if (disableResend && countdown > 0) {
-      // Decrease countdown every second
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-    } else if (countdown === 0) {
-      // Reset countdown and enable resend button
-      setCountdown(30);
-      setDisableResend(false);
-      clearInterval(timer);
+
+  // useEffect(() => {
+  //   let timer;
+  //   if (disableResend && countdown > 0) {
+  //     // Decrease countdown every second
+  //     timer = setInterval(() => {
+  //       setCountdown((prevCountdown) => prevCountdown - 1);
+  //     }, 1000);
+  //   } else if (countdown === 0) {
+  //     // Reset countdown and enable resend button
+  //     setCountdown(30);
+  //     setDisableResend(false);
+  //     clearInterval(timer);
+  //   }
+
+  //   return () => clearInterval(timer);
+  // }, [disableResend, countdown]);
+
+
+  // useEffect(() => {
+  //   const storedUserData = sessionStorage.getItem("userData");
+  //   if (storedUserData) {
+  //     const userData = JSON.parse(storedUserData);
+  //     dispatch(loginSuccess({ user: userData, status: "authenticated" }));
+  //   }
+  // }, []);
+
+
+  // const onSubmit = async (data) => {
+  //   try {
+  //     // Send OTP only if it hasn't been sent already
+  //     if (!otpSent) {
+  //       await sendOtpApiHandler(data.mobile); // Call the sendOtpApiHandler function to send OTP
+  //       setOtpSent(true);
+  //       setDisableResend(true); // Disable the resend button
+       
+       
+  //     }
+  //     setShowOTPSection(true);
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error("Error sending OTP:", error);
+  //   }
+  // };
+
+  // Helper: create or return recaptcha verifier
+  // Helper to create/reuse
+  // Helper to create/reuse
+  const getOrCreateRecaptcha = async () => {
+    if (
+      typeof window !== "undefined" &&
+      document.getElementById("recaptcha-container")
+    ) {
+      // Always destroy any previous instance!
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {}
+        window.recaptchaVerifier = null;
+      }
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "normal" },
+        auth
+      );
+      await window.recaptchaVerifier.render();
+      return window.recaptchaVerifier;
     }
-
-    return () => clearInterval(timer);
-  }, [disableResend, countdown]);
-
-
-  useEffect(() => {
-    const storedUserData = sessionStorage.getItem("userData");
-    if (storedUserData) {
-      const userData = JSON.parse(storedUserData);
-      dispatch(loginSuccess({ user: userData, status: "authenticated" }));
-    }
-  }, []);
+    throw new Error("Recaptcha container not ready");
+  };
 
 
   const onSubmit = async (data) => {
-    try {
-      // Send OTP only if it hasn't been sent already
-      if (!otpSent) {
-        await sendOtpApiHandler(data.mobile); // Call the sendOtpApiHandler function to send OTP
-        setOtpSent(true);
-        setDisableResend(true); // Disable the resend button
-       
-       
-      }
-      setShowOTPSection(true);
-    } catch (error) {
-      // Handle error
-      console.error("Error sending OTP:", error);
+    let phoneNumber = data.mobile;
+    if (!phoneNumber.startsWith("+")) {
+      alert("Please enter in +911234567890 format");
+      return;
     }
-  };
-
-  const handleResendCode = async () => {
     try {
-      await sendOtpApiHandler(watch("mobile")); // Call the sendOtpApiHandler function to resend OTP
+      const appVerifier = await getOrCreateRecaptcha();
+      const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      setConfirmationResult(result);
       setOtpSent(true);
-      setDisableResend(true); // Disable the resend button
-      reset({ otp: "" });
+      setShowOTPSection(true);
+      setDisableResend(true);
     } catch (error) {
-      // Handle error
-      console.error("Error resending OTP:", error);
+      alert("Failed to send OTP: " + error.message);
+      console.error(error);
     }
   };
 
-  const onSubmitOTP = async (data) => {
-    const Verify = {
-      phone_number: data.mobile,
-      otp: data.otp,
-    };
-    try {
-      // Verify the OTP
-      const response = await verifyOtpApiHandler(Verify);
-      sessionStorage.setItem("userData", JSON.stringify(response.data));
-      dispatch(loginSuccess({ user: response.data, status: "authenticated" }));
-      router.push("/profile/edit");
-      // Redirect or perform any other action upon successful OTP verification
-    } catch (error) {
-      // Handle error
-      console.error("Error verifying OTP:", error);
-    }
-  };
+
+
+
+
+  // const handleResendCode = async () => {
+  //   try {
+  //     await sendOtpApiHandler(watch("mobile")); // Call the sendOtpApiHandler function to resend OTP
+  //     setOtpSent(true);
+  //     setDisableResend(true); // Disable the resend button
+  //     reset({ otp: "" });
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error("Error resending OTP:", error);
+  //   }
+  // };
+
+  // const onSubmitOTP = async (data) => {
+  //   const Verify = {
+  //     phone_number: data.mobile,
+  //     otp: data.otp,
+  //   };
+  //   try {
+  //     // Verify the OTP
+  //     const response = await verifyOtpApiHandler(Verify);
+  //     sessionStorage.setItem("userData", JSON.stringify(response.data));
+  //     dispatch(loginSuccess({ user: response.data, status: "authenticated" }));
+  //     router.push("/profile/edit");
+  //     // Redirect or perform any other action upon successful OTP verification
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error("Error verifying OTP:", error);
+  //   }
+  // };
+
+
 
   return (
     <Fragment>
@@ -112,6 +170,7 @@ const RegisterPhone = () => {
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <AuthLayout title={pageTitle.title} description={pageTitle.description}>
+      <div id="recaptcha-container" style={{ minHeight: 60 }} />
         {showOTPSection ? (
           // Show OTP input section
           <form
@@ -197,7 +256,8 @@ const RegisterPhone = () => {
                 control={control}
                 rules={{
                   required: "Mobile number is required",
-                  pattern: /^[0-9]{10}$/i, // Modify pattern as per your mobile number format
+                  // pattern: /^[0-9]{10}$/i, // Modify pattern as per your mobile number format
+                  pattern: /^\+[1-9]\d{1,14}$/, // E.164 international format
                 }}
                 render={({ field }) => (
                   <input
@@ -214,6 +274,9 @@ const RegisterPhone = () => {
                 <div className="invalid-feedback">{errors.mobile.message}</div>
               )}
             </div>
+
+            <div id="recaptcha-container" />
+
             <div className="col-lg-12">
               <div className="mt-2 mt-md-3">
                 <button

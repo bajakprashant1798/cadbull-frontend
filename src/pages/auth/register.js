@@ -12,6 +12,7 @@ import { loginSuccess } from "../../../redux/app/features/authSlice";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -35,10 +36,23 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  
+  const [captchaValue, setCaptchaValue] = useState(null);
+
+  const handleCaptchaChange = (value) => {
+    setCaptchaValue(value);
+  };
+  
   // -------------------------------
   // Normal Registration Flow
   // -------------------------------
   const onSubmit = (data) => {
+    // Ensure the captcha is solved
+    if (!captchaValue) {
+      toast.error("Please verify that you are not a robot.");
+      return;
+    }
+
     startLoading();
     const { confirmPassword, ...formData } = data;
   
@@ -339,6 +353,15 @@ const Register = () => {
               </div>
             )}
           </div>
+
+          <div className="col-lg-12">
+            <ReCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              onChange={handleCaptchaChange}
+              theme="light" // or "dark"
+            />
+          </div>
+
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">
               <button 
