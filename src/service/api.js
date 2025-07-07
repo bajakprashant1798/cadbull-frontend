@@ -163,6 +163,11 @@ export const sendOtpApiHandler = async (mobile) => {
   return api.post("/auth/send-otp", { phone_number: mobile });
 };
 
+// src/service/api.js
+export const getTermsPrivacyAndFaqData = async () => {
+  // TODO: implement or replace with your actual API call
+  return {};
+};
 
 
 // export const deleteAccount = async () => {
