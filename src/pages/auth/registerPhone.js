@@ -189,7 +189,14 @@ const RegisterPhone = () => {
       router.push("/profile/edit");
 
     } catch (err) {
+      // setError(
+      //   err?.response?.data?.message ||
+      //   "Failed to verify OTP."
+      // );
+      // 👇 Add this for detailed error info
+      console.error('OTP verification error:', err);
       setError(
+        err?.message ||
         err?.response?.data?.message ||
         "Failed to verify OTP."
       );
