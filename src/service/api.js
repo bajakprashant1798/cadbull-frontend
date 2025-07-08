@@ -147,12 +147,15 @@ export const socialLogin = async (data) => {
   return api.post("/auth/social-auth", data);
 };
 
+// export const verifyEmailApiHandler = async (token) => {
+//   return fetch(`${process.env.NEXT_PUBLIC_API_MAIN}/auth/verify-email/${token}`)
+//     .then((response) => {
+//       if (!response.ok) throw new Error("Verification failed");
+//       return response.json();
+//     });
+// };
 export const verifyEmailApiHandler = async (token) => {
-  return fetch(`${process.env.NEXT_PUBLIC_API_MAIN}/auth/verify-email/${token}`)
-    .then((response) => {
-      if (!response.ok) throw new Error("Verification failed");
-      return response.json();
-    });
+  return api.get(`/auth/verify-email/${token}`);
 };
 
 export const verifyOtpApiHandler = async (data) => {
@@ -163,12 +166,13 @@ export const sendOtpApiHandler = async (mobile) => {
   return api.post("/auth/send-otp", { phone_number: mobile });
 };
 
-// src/service/api.js
-export const getTermsPrivacyAndFaqData = async () => {
-  // TODO: implement or replace with your actual API call
-  return {};
+export const linkPhoneApiHandler = async ({ idToken, email, phone_number }) => {
+  return api.post("/auth/link-phone", {
+    idToken,
+    email,
+    phone_number,
+  });
 };
-
 
 // export const deleteAccount = async () => {
 //   return api.delete("/profile");
