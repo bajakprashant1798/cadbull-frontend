@@ -41,7 +41,7 @@ const RegisterPhone = () => {
   const { handleSubmit: handleEmailSubmit, register: registerEmail, formState: { errors: emailErrors }, reset: resetEmail, getValues: getEmailValues } = useForm();
   const [registrationSuccessMessage, setRegistrationSuccessMessage] = useState("");
 
-  console.log('render', { showOTPSection, showEmailInput });
+  // console.log('render', { showOTPSection, showEmailInput });
 
   // Recaptcha load only once
   const recaptchaLoaded = useRef(false);
