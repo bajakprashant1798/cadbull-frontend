@@ -121,6 +121,9 @@ const RegisterPhone = () => {
       else if (err.code === "auth/too-many-requests") msg = "Too many requests, try again later.";
       else if (err.code === "auth/quota-exceeded") msg = "SMS quota exceeded.";
       setError(msg);
+
+      // Add this for debugging:
+      console.error("OTP send error:", err);
       if (recaptchaVerifier) recaptchaVerifier.clear();
       setTimeout(() => recaptchaVerifier && recaptchaVerifier.render(), 1000);
     }
