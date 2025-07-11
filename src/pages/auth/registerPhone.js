@@ -45,25 +45,51 @@ const RegisterPhone = () => {
 
   // Recaptcha load only once
   const recaptchaLoaded = useRef(false);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && !recaptchaLoaded.current) {
+  //     recaptchaLoaded.current = true;
+  //     try {
+  //       const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+  //         size: "normal",
+  //         callback: () => {},
+  //         "expired-callback": () => {
+  //           setError("Recaptcha expired, please try again.");
+  //         }
+  //       });
+  //       setRecaptchaVerifier(verifier);
+  //       verifier.render().catch(console.error);
+  //     } catch (err) {
+  //       setError("Recaptcha failed to initialize. Try refreshing.");
+  //     }
+  //   }
+  //   return () => { if (recaptchaVerifier) recaptchaVerifier.clear(); };
+  // }, []);
+
   useEffect(() => {
-    if (typeof window !== "undefined" && !recaptchaLoaded.current) {
-      recaptchaLoaded.current = true;
-      try {
-        const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "normal",
-          callback: () => {},
-          "expired-callback": () => {
-            setError("Recaptcha expired, please try again.");
-          }
-        });
-        setRecaptchaVerifier(verifier);
-        verifier.render().catch(console.error);
-      } catch (err) {
-        setError("Recaptcha failed to initialize. Try refreshing.");
+    // Only (re-)initialize when on phone form (not OTP, not Email)
+    if (!showOTPSection && !showEmailInput) {
+      // This runs on mount and when coming back to phone entry
+      recaptchaLoaded.current = false;
+      setRecaptchaVerifier(null); // clear previous
+      if (typeof window !== "undefined") {
+        try {
+          const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+            size: "normal",
+            callback: () => {},
+            "expired-callback": () => setError("Recaptcha expired, please try again.")
+          });
+          setRecaptchaVerifier(verifier);
+          verifier.render().catch(console.error);
+          recaptchaLoaded.current = true;
+        } catch (err) {
+          setError("Recaptcha failed to initialize. Try refreshing.");
+        }
       }
     }
+    // On unmount, clear verifier
     return () => { if (recaptchaVerifier) recaptchaVerifier.clear(); };
-  }, []);
+  }, [showOTPSection, showEmailInput]);
+
 
   // Resend OTP countdown
   useEffect(() => {
@@ -282,6 +308,7 @@ const RegisterPhone = () => {
     setPhone("");
     resetPhone();
     resetOtp();
+    recaptchaLoaded.current = false;
   };
 
   return (
