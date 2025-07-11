@@ -112,6 +112,17 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <section className="py-4 bg-primary">
+        <div className="container">
+          <div className="flex flex-column flex-md-row justify-center items-center">
+            <Link href="/about-us">About</Link> | 
+            <Link href="/contact-us">Contact</Link> | 
+            <Link href="/categories">Categories</Link>
+          </div>
+        </div>
+      </section>
+
       <hr className="border-top-footer opacity-100" />
       <div className="container">
         <div className="footer-lower-wrapper text-center">
