@@ -103,9 +103,9 @@ const ProjectCard = ({
       event.preventDefault();
       return;
     }
-    callViewProfileAPI(id)
-      .then((res) => console.log("view", res.data))
-      .catch((err) => console.error(err));
+    // callViewProfileAPI(id)
+    //   .then((res) => console.log("view", res.data))
+    //   .catch((err) => console.error(err));
   }, [id]);
 
   // const handleLike = useCallback(async () => {

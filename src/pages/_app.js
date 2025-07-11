@@ -137,7 +137,7 @@ export default function App({ Component, pageProps }) {
     <Fragment>
       {/* <Authprovider> */}
       <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      {/* <PersistGate loading={<div>Loading...</div>} persistor={persistor}> */}
       {/* <RehydrateState /> */}
       <Head>
         <link rel="icon" href="/favicon.ico" />
@@ -153,7 +153,7 @@ export default function App({ Component, pageProps }) {
       {getLayout(<Component {...pageProps} />)}
       {/* <AppContent Component={Component} pageProps={pageProps} /> */}
       <ToastContainer />
-      </PersistGate>
+      {/* </PersistGate> */}
       </Provider>
       {/* </Authprovider> */}
     </Fragment>
