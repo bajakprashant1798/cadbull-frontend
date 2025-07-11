@@ -79,10 +79,10 @@ const Header = () => {
   //     setToken(storedToken);
   //   }
   // }, [dispatch]);
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // const [isClient, setIsClient] = useState(false);
+  // useEffect(() => {
+  //   setIsClient(true);
+  // }, []);
 
 
   // useEffect(() => {
@@ -326,7 +326,7 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
-                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                      { status?.user?.role === 1 || status?.user?.role === 5 ? (
                         
                         <li>
                           <Link
@@ -566,7 +566,7 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
-                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                      {status?.user?.role === 1 || status?.user?.role === 5 ? (
                         
                         <li>
                           <Link
