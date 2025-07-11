@@ -79,10 +79,10 @@ const Header = () => {
   //     setToken(storedToken);
   //   }
   // }, [dispatch]);
-  // const [isClient, setIsClient] = useState(false);
-  // useEffect(() => {
-  //   setIsClient(true);
-  // }, []);
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
 
   // useEffect(() => {
@@ -216,31 +216,6 @@ const Header = () => {
             <Link href="/">
               <img src={logo.src} alt="logo" className="logo"    />
             </Link>
-
-            <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
-              {links.map((link, index) => {
-                return (
-                  <li className="b-bottom-md" key={index}>
-                    <Link
-                      onClick={()=>{
-                      closeHamburgerMenu();
-                      //  if(link.url==='/categories'){
-                      //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
-                      //  }
-                      }}
-                      className={`${
-                        link.url === Router.asPath ? "active" : ""
-                      }`}
-                      aria-current="page"
-                      href={link.url}
-                    >
-                      {link.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            
             <button
               className="navbar-toggler border-0 p-0 shadow-none"
               type="button"
@@ -271,8 +246,6 @@ const Header = () => {
               className={` collapse navbar-collapse ${showHamburgerMenuItem?"show":''} `}
               id="navbarSupportedContent"
             >
-
-              
 
               {/* small screen device resposive */}
               {isAuthenticated && !isLoggedOut && (
@@ -329,7 +302,7 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
-                      { status?.user?.role === 1 || status?.user?.role === 5 ? (
+                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
                         
                         <li>
                           <Link
@@ -512,7 +485,29 @@ const Header = () => {
               ) }
               {/* small screen device responsive */}
 
-              
+              <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
+                {links.map((link, index) => {
+                  return (
+                    <li className="b-bottom-md" key={index}>
+                      <Link
+                       onClick={()=>{
+                        closeHamburgerMenu();
+                        //  if(link.url==='/categories'){
+                        //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
+                        //  }
+                       }}
+                        className={`${
+                          link.url === Router.asPath ? "active" : ""
+                        }`}
+                        aria-current="page"
+                        href={link.url}
+                      >
+                        {link.title}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
 
               {/* desktop device responsive */}
               {isAuthenticated && !isLoggedOut ? (
@@ -569,7 +564,7 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
-                      {status?.user?.role === 1 || status?.user?.role === 5 ? (
+                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
                         
                         <li>
                           <Link
