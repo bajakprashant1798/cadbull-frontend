@@ -94,6 +94,7 @@ const social = [
 ];
 
 function slugify(text) {
+  if (!text) return "";
   return text
     .toString()
     .toLowerCase()
