@@ -216,6 +216,31 @@ const Header = () => {
             <Link href="/">
               <img src={logo.src} alt="logo" className="logo"    />
             </Link>
+
+            <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
+              {links.map((link, index) => {
+                return (
+                  <li className="b-bottom-md" key={index}>
+                    <Link
+                      onClick={()=>{
+                      closeHamburgerMenu();
+                      //  if(link.url==='/categories'){
+                      //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
+                      //  }
+                      }}
+                      className={`${
+                        link.url === Router.asPath ? "active" : ""
+                      }`}
+                      aria-current="page"
+                      href={link.url}
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            
             <button
               className="navbar-toggler border-0 p-0 shadow-none"
               type="button"
@@ -247,29 +272,7 @@ const Header = () => {
               id="navbarSupportedContent"
             >
 
-              <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
-                {links.map((link, index) => {
-                  return (
-                    <li className="b-bottom-md" key={index}>
-                      <Link
-                       onClick={()=>{
-                        closeHamburgerMenu();
-                        //  if(link.url==='/categories'){
-                        //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
-                        //  }
-                       }}
-                        className={`${
-                          link.url === Router.asPath ? "active" : ""
-                        }`}
-                        aria-current="page"
-                        href={link.url}
-                      >
-                        {link.title}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              
 
               {/* small screen device resposive */}
               {isAuthenticated && !isLoggedOut && (
