@@ -27,6 +27,7 @@ const UserTable = ({ role, title }) => {
     if (isAuthenticated) {
       getUsersByRoleApi(role, "", filterStatus, 1, 10)
         .then((res) => {
+          console.log('API users response:', res.data);
           // Assume res.data.users is an array of all users for the given role
           setUsers(res.data.users);
         })
