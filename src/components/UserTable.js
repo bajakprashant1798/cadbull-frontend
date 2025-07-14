@@ -25,7 +25,7 @@ const UserTable = ({ role, title }) => {
   // Fetch users from API (fetch all users; if your API is paginated you may need to adjust this)
   useEffect(() => {
     if (isAuthenticated) {
-      getUsersByRoleApi(role, "", filterStatus, 1, 1000)
+      getUsersByRoleApi(role, "", filterStatus, 1, 10)
         .then((res) => {
           // Assume res.data.users is an array of all users for the given role
           setUsers(res.data.users);

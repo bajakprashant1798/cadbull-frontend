@@ -246,7 +246,7 @@ const CompanyProfile = () => {
                           </div>
                         ) : (
                           <div className="col-12 text-center">
-                            <p>No projects uploaded.</p>
+                            <p>No files uploaded.</p>
                           </div>
                         )}
                       </div>

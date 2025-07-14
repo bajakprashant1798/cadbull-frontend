@@ -341,7 +341,7 @@ const Login = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   className="form-control"
-                  placeholder="8 Digit Pin"
+                  placeholder="Password"
                   {...field}
                   style={{ paddingRight: "2.5rem" }} // make space for the icon
                 />

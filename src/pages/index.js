@@ -685,11 +685,11 @@ export default function Home({
                           Cad plan of each detail of your future interior.
                         </p>
                       </div>
-                      <div className="mt-auto">
+                      {/* <div className="mt-auto">
                         <button className="btn transparent-btn shadow-none">
                           READ MORE
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   {/* 1  */}
@@ -711,11 +711,11 @@ export default function Home({
                           design.
                         </p>
                       </div>
-                      <div className="mt-auto">
+                      {/* <div className="mt-auto">
                         <button className="btn transparent-btn shadow-none">
                           READ MORE
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -738,7 +738,7 @@ export default function Home({
                   At every stage, we could supervise your project – controlling
                   all the details and consulting the builders.
                 </p>
-                <Link href="/contact" passHref>
+                <Link href="/contact-us" passHref>
                   <button className="btn btn-light">GET IN TOUCH</button>
                 </Link>
               </div>

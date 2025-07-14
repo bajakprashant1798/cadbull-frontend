@@ -287,7 +287,7 @@ const Register = () => {
                   className={`form-control ${
                     errors.password ? "is-invalid" : ""
                   }`}
-                  placeholder="8 Digit Pin"
+                  placeholder="Password"
                 />
               )}
             />
@@ -329,7 +329,7 @@ const Register = () => {
                   className={`form-control ${
                     errors.confirmPassword ? "is-invalid" : ""
                   }`}
-                  placeholder="8 Digit Pin"
+                  placeholder="Confirm Password"
                 />
               )}
             />

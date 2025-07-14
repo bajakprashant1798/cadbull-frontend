@@ -52,7 +52,7 @@ const About = () => {
                           </div>
                           <div class="stat-item">
                             <div class="stat-circle">
-                              <h3>2.5M</h3>
+                              <h3>2.5M+</h3>
                               <p>Registered Users</p>
                             </div>
                           </div>

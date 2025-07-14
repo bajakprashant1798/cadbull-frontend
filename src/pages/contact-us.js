@@ -111,8 +111,8 @@ const ContactUs = () => {
                 }
               />
 
-              <div className="text-md-center mt-3 mb-4">
-                {/* Contact Detail  */}
+              {/* Contact Detail  */}
+              {/* <div className="text-md-center mt-3 mb-4">
                 <ul className="d-xxl-flex justify-content-between gap-2 align-content-center mb-0">
                   {contactDetail.map((res, index) => {
                     return (
@@ -128,7 +128,7 @@ const ContactUs = () => {
                     );
                   })}
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
 
