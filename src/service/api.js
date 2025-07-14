@@ -519,9 +519,11 @@ export const getUserByIdApi = (id) => {
 };
 
 // ✅ Get Users by Role with Filters
-export const getUsersByRoleApi = async (role, searchTerm, filterStatus, page, perPage) => {
+export const getUsersByRoleApi = async (role, search = "", status = "", page = 1, perPage = 10, sortColumn = "id", sortOrder = "asc") => {
   return api.get("/admin/users", {
-    params: { role, search: searchTerm, status: filterStatus, page, perPage },
+    params: { 
+      role, search, status, page, perPage, sortColumn, sortOrder,
+    }
   });
 };
 
