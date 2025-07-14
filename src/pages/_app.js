@@ -13,6 +13,8 @@ import { store, persistor } from "../../redux/app/store";
 import { PersistGate } from "redux-persist/integration/react";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import CanonicalTag from "@/components/CanonicalTag";
+
 config.autoAddCss = false;
 import { loginSuccess, logout } from "../../redux/app/features/authSlice"; // Import Redux actions
 
@@ -123,7 +125,12 @@ export default function App({ Component, pageProps }) {
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
+          
         </Head>
+
+        {/* Canonical Tag here */}
+        <CanonicalTag baseUrl="https://beta.cadbull.com" />
+
         <style jsx global>{`
           * {
             font-family: ${poppins.style.fontFamily} !important;
@@ -145,6 +152,10 @@ export default function App({ Component, pageProps }) {
         <title>Cadbull</title>
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
+      
+      {/* Canonical Tag here */}
+      <CanonicalTag baseUrl="https://beta.cadbull.com" />
+
       <style jsx global>{`
         * {
           font-family: ${poppins.style.fontFamily} !important;
