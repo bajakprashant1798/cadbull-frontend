@@ -50,11 +50,13 @@ const UploadWork = () => {
   // Inside UploadWork component:
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthenticated, router]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push("/auth/login");
+  //   }
+  // }, [isAuthenticated, router]);
+
+  
   // Function to handle form submission
   // const handleSubmit = (event) => {
   //   startLoading();
@@ -228,7 +230,7 @@ const UploadWork = () => {
                       <option value="">Select Category</option>
                       {
                         categoryAndSubCategory.map((item, index) => (
-                          <option key={index} value={item.id}>{item.title}</option>
+                          <option key={index} value={item.id}>• {item.title}</option>
                         ))
                       }
                     </select>
@@ -253,7 +255,7 @@ const UploadWork = () => {
                       <option value="">Select Subcategory</option>
                       {
                         subCategory?.map((item, index) => (
-                          <option key={index} value={item.id}>{item.title}</option>
+                          <option key={index} value={item.id}>• {item.title}</option>
                         ))
                       }
                     </select>

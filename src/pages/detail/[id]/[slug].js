@@ -748,7 +748,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                             <option value="all">All Category</option>
                             {categoryAndSubCategory.map(({ id, title }) => (
                               <option value={id} key={id}>
-                                {title}
+                                • {title}
                               </option>
                             ))}
                           </select>
@@ -768,7 +768,7 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
                             {subCategories.map(({ id, title }) => {
                               return (
                                 <option value={title} key={id}>
-                                  {title}
+                                  • {title}
                                 </option>
                               );
                             })}

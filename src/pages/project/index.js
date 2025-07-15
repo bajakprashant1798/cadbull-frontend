@@ -7,6 +7,7 @@ import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import Icons from "@/components/Icons";
 import { deleteUserProject, getUserProjects } from "@/service/api";
+import withAuth from "@/HOC/withAuth";
 // import api from "@/service/api";
  
 const CompletedProjects = ({ initialProjects, totalPages: initialTotalPages, }) => {
@@ -168,4 +169,5 @@ CompletedProjects.getLayout = function getLayout(page) {
 }
 
 
-export default CompletedProjects;
+// export default CompletedProjects;
+export default withAuth(CompletedProjects); // or AddProjects

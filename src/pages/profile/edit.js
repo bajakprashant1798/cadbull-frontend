@@ -350,11 +350,11 @@ const EditProfile = () => {
     setFile(e.target.files[0]);
   };
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      Router.push("/auth/login"); // Redirect to login if user is not logged in
-    }
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     Router.push("/auth/login"); // Redirect to login if user is not logged in
+  //   }
+  // }, [isAuthenticated]);
 
  
   // Trigger Account Deletion
