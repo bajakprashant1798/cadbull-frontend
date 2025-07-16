@@ -85,10 +85,10 @@ useEffect(() => {
     console.log("Params:", params);
     console.log("Response currentPage:", res.data.currentPage);
 
-    // ✅ Reset all modes
-    setLastPageFlag(false);
-    setIsSeek(false);
-    setIsReverse(false);
+    //// ✅ Reset all modes
+    // setLastPageFlag(false);
+    // setIsSeek(false);
+    // setIsReverse(false);
 
     setBeforeId(firstUser?.id || null);
     setAfterId(lastUser?.id || null);
@@ -149,7 +149,15 @@ useEffect(() => {
   };
 
   // Pagination handlers
-  const goToFirstPage = () => setCurrentPage(1);
+  const goToFirstPage = () => {
+    setCurrentPage(1);
+    setLastPageFlag(false);
+    setIsSeek(false);
+    setIsReverse(false);
+    setBeforeId(null);
+    setAfterId(null);
+  };
+
   const goToLastPage = () => {
     setLastPageFlag(true);           // 👈 triggers keyset last page
     setCurrentPage(null);           // ✅ prevents offset query
