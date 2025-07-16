@@ -76,13 +76,14 @@ const Pagination = ({
 
   // Generate pagination numbers with "..." for large sets
   const getPageNumbers = () => {
-    const pages = [];
-    let startPage = Math.max(1, currentPage - 4); // Show 4 before, 5 after current
-    let endPage = startPage + 9;
+    let pages = [];
+    const maxPagesToShow = 10;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = startPage + maxPagesToShow - 1;
 
     if (endPage > totalPages) {
       endPage = totalPages;
-      startPage = Math.max(1, endPage - 9);
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
     for (let i = startPage; i <= endPage; i++) {

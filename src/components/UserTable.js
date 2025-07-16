@@ -18,24 +18,48 @@ const UserTable = ({ role, title }) => {
   const [sortColumn, setSortColumn] = useState("id");
   const [sortOrder, setSortOrder] = useState("desc");
   const router = useRouter();
+  const [lastPageFlag, setLastPageFlag] = useState(false);
+
+
+  const handleFirstPage = () => setCurrentPage(1);
+  const handleLastPage = () => {
+    setLastPageFlag(true);
+    setCurrentPage(totalPages); // Or just set some "placeholder" to show last page is intended
+  };
 
   // Fetch users from API (pagination & filtering in backend)
   useEffect(() => {
     if (!isAuthenticated) return;
-    getUsersByRoleApi(
-      role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
-    )
-      .then((res) => {
-        // If it's last page and backend used DESC, reverse here!
-        let loadedUsers = res.data.users;
-        if (res.data.isLastPage && res.data.sortOrder === "desc") {
-          loadedUsers = loadedUsers.reverse();
-        }
-        setUsers(loadedUsers);
+
+    // Prepare params for API
+    let params = {
+      role,
+      search: searchTerm,
+      status: filterStatus,
+      page: currentPage,
+      perPage: entriesPerPage,
+      sortColumn,
+      sortOrder
+    };
+
+    // If lastPageFlag is set, ask backend for last page
+    if (lastPageFlag) params.last = true;
+
+    getUsersByRoleApi(params)
+      .then(res => {
+        setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
+        setCurrentPage(res.data.currentPage); // backend returns real page
+        setLastPageFlag(false); // Reset the flag for future
       })
-      .catch((err) => console.error("Error fetching users:", err));
-  }, [isAuthenticated, role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder]);
+      .catch(err => {
+        setLastPageFlag(false);
+        console.error("Error fetching users:", err);
+      });
+  }, [
+    isAuthenticated, role, searchTerm, filterStatus, currentPage,
+    entriesPerPage, sortColumn, sortOrder, lastPageFlag // <--- add here!
+  ]);
 
 
   // Filter for gold/non-gold (frontend only)
@@ -55,8 +79,12 @@ const UserTable = ({ role, title }) => {
       setSortColumn(column);
       setSortOrder("asc");
     }
-    setCurrentPage(1); // Reset to first page on sort change
+    setCurrentPage(1);
+    setLastPageFlag(false);
   };
+
+
+
 
   // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
@@ -85,6 +113,7 @@ const UserTable = ({ role, title }) => {
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
     setCurrentPage(1);
+    setLastPageFlag(false);
   };
 
   return (
@@ -172,12 +201,13 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={goToPreviousPage}
-          goToNextPage={goToNextPage}
-          goToFirstPage={goToFirstPage}
-          goToLastPage={goToLastPage}
+          goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
+          goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+          goToFirstPage={handleFirstPage}
+          goToLastPage={handleLastPage}
           dispatchCurrentPage={setCurrentPage}
         />
+
       </div>
     </section>
   );

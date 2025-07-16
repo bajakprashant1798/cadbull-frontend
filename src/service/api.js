@@ -519,13 +519,18 @@ export const getUserByIdApi = (id) => {
 };
 
 // ✅ Get Users by Role with Filters
-export const getUsersByRoleApi = async (role, search = "", status = "", page = 1, perPage = 10, sortColumn = "id", sortOrder = "asc") => {
-  return api.get("/admin/users", {
-    params: { 
-      role, search, status, page, perPage, sortColumn, sortOrder,
-    }
-  });
+// export const getUsersByRoleApi = async (role, search = "", status = "", page = 1, perPage = 10, sortColumn = "id", sortOrder = "asc") => {
+//   return api.get("/admin/users", {
+//     params: { 
+//       role, search, status, page, perPage, sortColumn, sortOrder,
+//     }
+//   });
+// };
+// Accept a single "params" object to allow extra params (like last)
+export const getUsersByRoleApi = async (params) => {
+  return api.get("/admin/users", { params });
 };
+
 
 // ✅ Update an Existing User
 export const updateUserApi = (id, data) => {
