@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api";
 import PaginationAdmin from "@/components/PaginationAdmin";
@@ -6,12 +6,21 @@ import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
 
+function debounce(fn, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+}
+
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
   // Pagination state
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [goldFilter, setGoldFilter] = useState("all");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -19,43 +28,48 @@ const UserTable = ({ role, title }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortColumn, setSortColumn] = useState("id");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [afterId, setAfterId] = useState(null);    // For keyset: Next page
-  const [beforeId, setBeforeId] = useState(null);  // For keyset: Prev page
-  const [isKeyset, setIsKeyset] = useState(false); // Tracks which mode is active
+  const [afterId, setAfterId] = useState(null);
+  const [beforeId, setBeforeId] = useState(null);
 
   const router = useRouter();
 
-  // Fetch users (offset or keyset)
+  // Debounce search input
+  const debouncedSet = useRef(
+    debounce((val) => setDebouncedSearch(val), 400)
+  ).current;
+
+  useEffect(() => {
+    debouncedSet(searchTerm);
+  }, [searchTerm, debouncedSet]);
+
+  // Fetch users
   useEffect(() => {
     if (!isAuthenticated) return;
 
     let params = {
       role,
-      search: searchTerm,
+      search: debouncedSearch,
       status: filterStatus,
       perPage: entriesPerPage,
       sortColumn,
       sortOrder,
     };
 
-    // Keyset
-    if (afterId) { params.afterId = afterId; }
-    else if (beforeId) { params.beforeId = beforeId; }
-    else { params.page = currentPage; }
+    if (afterId) params.afterId = afterId;
+    else if (beforeId) params.beforeId = beforeId;
+    else params.page = currentPage;
 
     getUsersByRoleApi(params)
       .then(res => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
         setCurrentPage(res.data.currentPage || currentPage);
-        setIsKeyset(Boolean(afterId || beforeId)); // Track mode for UI logic
         // Reset keyset after fetch
         setAfterId(null);
         setBeforeId(null);
       });
-  // eslint-disable-next-line
   }, [
-    isAuthenticated, role, searchTerm, filterStatus, currentPage,
+    isAuthenticated, role, debouncedSearch, filterStatus, currentPage,
     entriesPerPage, sortColumn, sortOrder, afterId, beforeId
   ]);
 
@@ -77,16 +91,17 @@ const UserTable = ({ role, title }) => {
       setSortOrder("asc");
     }
     setCurrentPage(1);
+    setAfterId(null); setBeforeId(null);
   };
 
-  // Toggle status handler
+  // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
       // Re-fetch users
       getUsersByRoleApi({
-        role, search: searchTerm, status: filterStatus,
+        role, search: debouncedSearch, status: filterStatus,
         page: currentPage, perPage: entriesPerPage,
         sortColumn, sortOrder
       }).then((res) => {
@@ -99,12 +114,10 @@ const UserTable = ({ role, title }) => {
   };
 
   // Pagination Handlers
-  // -- Offset mode for jump to first/last/page N
   const goToFirstPage = () => { setCurrentPage(1); setAfterId(null); setBeforeId(null); };
   const goToLastPage = () => { setCurrentPage(totalPages); setAfterId(null); setBeforeId(null); };
   const goToPage = (pageNum) => { setCurrentPage(pageNum); setAfterId(null); setBeforeId(null); };
 
-  // -- Keyset (fast!) for Next/Prev
   const goToNextPage = () => {
     if (users.length > 0) setAfterId(users[users.length - 1].id);
   };
@@ -112,7 +125,6 @@ const UserTable = ({ role, title }) => {
     if (users.length > 0) setBeforeId(users[0].id);
   };
 
-  // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
     setCurrentPage(1);
@@ -209,7 +221,7 @@ const UserTable = ({ role, title }) => {
           goToNextPage={goToNextPage}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
-          dispatchCurrentPage={goToPage} // for direct page number click
+          dispatchCurrentPage={goToPage}
         />
       </div>
     </section>
