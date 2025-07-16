@@ -21,6 +21,9 @@ const UserTable = ({ role, title }) => {
   const [sortOrder, setSortOrder] = useState("desc");
   const router = useRouter();
   const [lastPageFlag, setLastPageFlag] = useState(false);
+  const [afterId, setAfterId] = useState(null); // For reverse pagination
+  const [isReverse, setIsReverse] = useState(false); // Track reverse mode
+
 
 
   const handleFirstPage = () => setCurrentPage(1);
@@ -56,20 +59,28 @@ useEffect(() => {
 
   if (lastPageFlag) {
     params.last = true;
-  } else if (beforeId && isSeek) {
+  } else if (isSeek && beforeId) {
     params.seek = true;
     params.beforeId = beforeId;
+  } else if (isReverse && afterId) {
+    params.reverse = true;
+    params.afterId = afterId;
   } else {
     params.page = currentPage;
   }
 
+
   getUsersByRoleApi(params)
     .then(res => {
+      const firstUser = res.data.users[0];
+      const lastUser = res.data.users[res.data.users.length - 1];
       setUsers(res.data.users);
       setTotalPages(res.data.totalPages);
       if (!isSeek) setCurrentPage(res.data.currentPage);
       setLastPageFlag(false);
       setIsSeek(res.data.isSeek || false);
+      setBeforeId(firstUser?.id);  // for next (forward)
+      setAfterId(lastUser?.id);    // for previous (reverse)
     });
 }, [
   isAuthenticated,
@@ -81,7 +92,8 @@ useEffect(() => {
   sortColumn,
   sortOrder,
   lastPageFlag,
-  beforeId
+  beforeId,
+  isReverse // ✅ ADD THIS
 ]);
 
 
@@ -128,8 +140,26 @@ useEffect(() => {
   // Pagination handlers
   const goToFirstPage = () => setCurrentPage(1);
   const goToLastPage = () => setCurrentPage(totalPages);
-  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(1, prev - 1));
-  const goToNextPage = () => setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  const goToPreviousPage = () => {
+    if (lastPageFlag || isSeek) {
+      setIsReverse(true);
+      setIsSeek(false);
+      setLastPageFlag(false);
+    } else {
+      setCurrentPage((prev) => Math.max(1, prev - 1));
+    }
+  };
+
+  const goToNextPage = () => {
+    if (isReverse) {
+      setIsReverse(false);
+      setIsSeek(true);
+    } else {
+      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+    }
+  };
+
+
 
   // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
@@ -148,7 +178,15 @@ useEffect(() => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => { 
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+              setIsSeek(false);
+              setIsReverse(false);
+              setLastPageFlag(false);
+              setBeforeId(null);
+              setAfterId(null);
+             }}
           />
           <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
             <option value="">All</option>
@@ -222,12 +260,13 @@ useEffect(() => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+          goToPreviousPage={goToPreviousPage} // ✅ use your keyset-aware version
+          goToNextPage={goToNextPage}         // ✅ use your keyset-aware version
           goToFirstPage={handleFirstPage}
           goToLastPage={handleLastPage}
           dispatchCurrentPage={setCurrentPage}
         />
+
       </div>
     </section>
   );
