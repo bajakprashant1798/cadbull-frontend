@@ -26,14 +26,17 @@ const UserTable = ({ role, title }) => {
       role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
     )
       .then((res) => {
-        setUsers(res.data.users);
+        // If it's last page and backend used DESC, reverse here!
+        let loadedUsers = res.data.users;
+        if (res.data.isLastPage && res.data.sortOrder === "desc") {
+          loadedUsers = loadedUsers.reverse();
+        }
+        setUsers(loadedUsers);
         setTotalPages(res.data.totalPages);
       })
       .catch((err) => console.error("Error fetching users:", err));
-  }, [
-    isAuthenticated, role, searchTerm, filterStatus, currentPage,
-    entriesPerPage, sortColumn, sortOrder
-  ]);
+  }, [isAuthenticated, role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder]);
+
 
   // Filter for gold/non-gold (frontend only)
   const filteredUsers = users.filter((user) => {
