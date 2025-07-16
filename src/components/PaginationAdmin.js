@@ -52,12 +52,19 @@
 // export default Pagination;
 
 
-
 import Link from 'next/link';
 import Icons from './Icons';
 import { useDispatch } from 'react-redux';
 
-const Pagination = ({ currentPage, totalPages, goToPreviousPage, goToNextPage, dispatchCurrentPage }) => {
+const Pagination = ({
+  currentPage,
+  totalPages,
+  goToPreviousPage,
+  goToNextPage,
+  goToFirstPage,    // <--- Add these props in your parent
+  goToLastPage,
+  dispatchCurrentPage
+}) => {
   const dispatch = useDispatch();
 
   // Handles page change when clicking a number
@@ -69,23 +76,17 @@ const Pagination = ({ currentPage, totalPages, goToPreviousPage, goToNextPage, d
 
   // Generate pagination numbers with "..." for large sets
   const getPageNumbers = () => {
-    let pages = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages = [1];
-      if (currentPage > 3) {
-        pages.push("...");
-      }
-      for (let i = Math.max(2, currentPage - 1); i <= Math.min(currentPage + 1, totalPages - 1); i++) {
-        pages.push(i);
-      }
-      if (currentPage < totalPages - 2) {
-        pages.push("...");
-      }
-      pages.push(totalPages);
+    const pages = [];
+    let startPage = Math.max(1, currentPage - 4); // Show 4 before, 5 after current
+    let endPage = startPage + 9;
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(1, endPage - 9);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
     }
     return pages;
   };
@@ -100,11 +101,20 @@ const Pagination = ({ currentPage, totalPages, goToPreviousPage, goToNextPage, d
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <Link
                   className="page-link text-white d-inline-flex gap-2"
+                  href={`/page/1`}
+                  aria-label="First"
+                >
+                  <span aria-hidden="true">First</span>
+                </Link>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <Link
+                  className="page-link text-white d-inline-flex gap-2"
                   href={`/page/${currentPage - 1}`}
                   aria-label="Previous"
                 >
                   <span aria-hidden="true"><Icons.WhiteArrowLeft /></span>
-                  <span>Previous</span>
+                  <span >Previous</span>
                 </Link>
               </li>
               <li className="page-item">
@@ -116,36 +126,48 @@ const Pagination = ({ currentPage, totalPages, goToPreviousPage, goToNextPage, d
                   href={`/page/${currentPage + 1}`}
                   aria-label="Next"
                 >
-                  <span>Next</span>
+                  <span >Next</span>
                   <span aria-hidden="true"><Icons.WhiteArrowRight /></span>
+                </Link>
+              </li>
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <Link
+                  className="page-link text-white d-inline-flex gap-2"
+                  href={`/page/${totalPages}`}
+                  aria-label="Last"
+                >
+                  <span aria-hidden="true">Last</span>
                 </Link>
               </li>
             </ul>
 
             {/* Large screens pagination */}
             <ul className="pagination d-none d-md-inline-flex">
+              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <button onClick={goToFirstPage} className="page-link text-white" aria-label="First" disabled={currentPage === 1}>First</button>
+              </li>
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button onClick={goToPreviousPage} className="page-link" aria-label="Previous">
+                <button onClick={goToPreviousPage} className="page-link" aria-label="Previous" disabled={currentPage === 1}>
                   <span aria-hidden="true"><Icons.WhiteArrowLeft /></span>
                 </button>
               </li>
               {getPageNumbers().map((pageNumber, index) => (
                 <li key={index} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                  {pageNumber === "..." ? (
-                    <span className="page-link">...</span>
-                  ) : (
-                    <button onClick={() => handlePageChange(pageNumber)} className="page-link">
-                      {pageNumber}
-                    </button>
-                  )}
+                  <button onClick={() => dispatchCurrentPage(pageNumber)} className="page-link">
+                    {pageNumber}
+                  </button>
                 </li>
               ))}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button onClick={goToNextPage} className="page-link" aria-label="Next">
+                <button onClick={goToNextPage} className="page-link" aria-label="Next" disabled={currentPage === totalPages}>
                   <span aria-hidden="true"><Icons.WhiteArrowRight /></span>
                 </button>
               </li>
+              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                <button onClick={goToLastPage} className="page-link text-white" aria-label="Last" disabled={currentPage === totalPages}>Last</button>
+              </li>
             </ul>
+
           </nav>
         </div>
       </div>
@@ -154,3 +176,4 @@ const Pagination = ({ currentPage, totalPages, goToPreviousPage, goToNextPage, d
 };
 
 export default Pagination;
+

@@ -537,11 +537,13 @@ footer {
   border: 0 !important;
   font: normal normal 500 15px/20px "Poppins", sans-serif;
   color: #1A1A1A;
+  /* background: #fff; */
 }
 .pagination .page-item:first-child .page-link,
 .pagination .page-item:last-child .page-link {
   background-color: #20325A;
   border-color: #20325A;
+  /* color: #fff !important; */
 }
 
 /* .pagination .page-item:nth-child(2) .page-link {

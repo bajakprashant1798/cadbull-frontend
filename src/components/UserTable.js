@@ -10,8 +10,8 @@ const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState(""); // Active/Inactive
-  const [goldFilter, setGoldFilter] = useState("all"); // all/gold/non-gold
+  const [filterStatus, setFilterStatus] = useState("");
+  const [goldFilter, setGoldFilter] = useState("all");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -23,13 +23,7 @@ const UserTable = ({ role, title }) => {
   useEffect(() => {
     if (!isAuthenticated) return;
     getUsersByRoleApi(
-      role,            // role
-      searchTerm,      // search
-      filterStatus,    // status
-      currentPage,     // page
-      entriesPerPage,  // perPage
-      sortColumn,      // sortColumn
-      sortOrder        // sortOrder
+      role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
     )
       .then((res) => {
         setUsers(res.data.users);
@@ -41,7 +35,7 @@ const UserTable = ({ role, title }) => {
     entriesPerPage, sortColumn, sortOrder
   ]);
 
-  // Filter for gold/non-gold (frontend only, rest is backend!)
+  // Filter for gold/non-gold (frontend only)
   const filteredUsers = users.filter((user) => {
     if (goldFilter === "all") return true;
     if (!user.acc_exp_date) return goldFilter === "non-gold";
@@ -58,44 +52,31 @@ const UserTable = ({ role, title }) => {
       setSortColumn(column);
       setSortOrder("asc");
     }
+    setCurrentPage(1); // Reset to first page on sort change
   };
 
-  const fetchUsers = () => {
-    getUsersByRoleApi(
-      role,
-      searchTerm,
-      filterStatus,
-      currentPage,
-      entriesPerPage,
-      sortColumn,
-      sortOrder
-    )
-      .then((res) => {
-        setUsers(res.data.users);
-        setTotalPages(res.data.totalPages);
-      })
-      .catch((err) => console.error("Error fetching users:", err));
-  };
-
-
-  // Toggle user status handler
+  // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
-      // Optionally: refetch users here
-      fetchUsers();
+      // Re-fetch users
+      getUsersByRoleApi(
+        role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
+      ).then((res) => {
+        setUsers(res.data.users);
+        setTotalPages(res.data.totalPages);
+      });
     } catch (error) {
       toast.error("Failed to update user status. ❌");
     }
   };
 
-  // Pagination handler
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  // Pagination handlers
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(1, prev - 1));
+  const goToNextPage = () => setCurrentPage((prev) => Math.min(totalPages, prev + 1));
 
   // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
@@ -188,8 +169,10 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={() => handlePageChange(currentPage - 1)}
-          goToNextPage={() => handlePageChange(currentPage + 1)}
+          goToPreviousPage={goToPreviousPage}
+          goToNextPage={goToNextPage}
+          goToFirstPage={goToFirstPage}
+          goToLastPage={goToLastPage}
           dispatchCurrentPage={setCurrentPage}
         />
       </div>
