@@ -148,13 +148,14 @@ useEffect(() => {
   // Pagination handlers
   const goToFirstPage = () => setCurrentPage(1);
   const goToLastPage = () => {
-    setLastPageFlag(true);        // ✅ triggers `last=true`
-    setCurrentPage(1);            // ❌ don't set page=260643
+    setLastPageFlag(true);           // 👈 triggers keyset last page
+    setCurrentPage(null);           // ✅ prevents offset query
     setIsSeek(false);
     setIsReverse(false);
     setBeforeId(null);
     setAfterId(null);
   };
+
 
   const goToPreviousPage = () => {
     if (lastPageFlag || isSeek) {
