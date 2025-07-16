@@ -23,6 +23,8 @@ const UserTable = ({ role, title }) => {
   const [lastPageFlag, setLastPageFlag] = useState(false);
   const [afterId, setAfterId] = useState(null); // For reverse pagination
   const [isReverse, setIsReverse] = useState(false); // Track reverse mode
+  const [paginationMode, setPaginationMode] = useState("offset");
+
 
 
 
@@ -57,19 +59,17 @@ useEffect(() => {
     sortOrder
   };
 
-  if (lastPageFlag) {
+  if (paginationMode === "last") {
     params.last = true;
-  } else if (isSeek && beforeId) {
+  } else if (paginationMode === "keyset" && isSeek && beforeId) {
     params.seek = true;
     params.beforeId = beforeId;
-  } else if (isReverse && afterId) {
+  } else if (paginationMode === "keyset" && isReverse && afterId) {
     params.reverse = true;
     params.afterId = afterId;
-  } else if (!isSeek && !isReverse && !lastPageFlag && currentPage !== null) {
-    params.page = currentPage; // ✅ only if not in keyset mode
+  } else if (paginationMode === "offset" && currentPage !== null) {
+    params.page = currentPage;
   }
-
-
 
   getUsersByRoleApi(params).then(res => {
     const firstUser = res.data.users[0];
@@ -78,20 +78,14 @@ useEffect(() => {
     setUsers(res.data.users);
     setTotalPages(res.data.totalPages);
 
-    // Only update currentPage if NOT in keyset mode
-    if (
-      !lastPageFlag &&
-      !isSeek &&
-      !isReverse &&
-      res.data.currentPage !== null
-    ) {
+    // Only update currentPage if in offset mode
+    if (paginationMode === "offset" && res.data.currentPage !== null) {
       setCurrentPage(res.data.currentPage);
     }
 
     setBeforeId(firstUser?.id || null);
     setAfterId(lastUser?.id || null);
   });
-
 }, [
   isAuthenticated,
   role,
@@ -150,6 +144,7 @@ useEffect(() => {
   // Pagination handlers
   const goToFirstPage = () => {
     setCurrentPage(1);
+    setPaginationMode("offset");
     setLastPageFlag(false);
     setIsSeek(false);
     setIsReverse(false);
@@ -158,8 +153,9 @@ useEffect(() => {
   };
 
   const goToLastPage = () => {
-    setLastPageFlag(true);           // 👈 triggers keyset last page
-    setCurrentPage(null);           // ✅ prevents offset query
+    setLastPageFlag(true);
+    setPaginationMode("last");
+    setCurrentPage(null);
     setIsSeek(false);
     setIsReverse(false);
     setBeforeId(null);
@@ -167,38 +163,36 @@ useEffect(() => {
   };
 
 
+
   const goToPreviousPage = () => {
-    // If we are in keyset mode (after "last", or after seeking), use reverse!
-    if (lastPageFlag || isSeek) {
+    // If in keyset mode after "last", go to previous page using afterId
+    if (paginationMode === "last" || paginationMode === "keyset") {
       setIsReverse(true);
+      setPaginationMode("keyset");
       setIsSeek(false);
       setLastPageFlag(false);
-      // Do NOT set currentPage, just rely on afterId
-    } else if (isReverse && afterId) {
-      // Stay in reverse if we keep hitting previous
-      setIsReverse(true);
-      setIsSeek(false);
-      setLastPageFlag(false);
+      // Do NOT set currentPage
     } else {
       setCurrentPage((prev) => Math.max(1, prev - 1));
+      setPaginationMode("offset");
     }
   };
 
-
-
-
   const goToNextPage = () => {
-    if (isReverse) {
+    if (paginationMode === "keyset" && isReverse) {
       setIsReverse(false);
       setIsSeek(true);
+      setPaginationMode("keyset");
     } else {
       setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+      setPaginationMode("offset");
     }
   };
 
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    setPaginationMode("offset");
     setLastPageFlag(false);
     setIsSeek(false);
     setIsReverse(false);
