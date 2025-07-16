@@ -42,49 +42,25 @@ const Pagination = ({
         <div className="text-center">
           <nav aria-label="Page navigation justify-content-center">
             {/* Small screens pagination */}
+            {/* Small screens pagination */}
             <ul className="pagination gap-3 shadow-none d-md-none">
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <Link
-                  className="page-link text-white d-inline-flex gap-2"
-                  href={`/page/1`}
-                  aria-label="First"
-                >
-                  <span aria-hidden="true">First</span>
-                </Link>
+                <button className="page-link" onClick={goToFirstPage} disabled={currentPage === 1}>First</button>
               </li>
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <Link
-                  className="page-link text-white d-inline-flex gap-2"
-                  href={`/page/${currentPage - 1}`}
-                  aria-label="Previous"
-                >
-                  <span aria-hidden="true"><Icons.WhiteArrowLeft /></span>
-                  <span >Previous</span>
-                </Link>
+                <button className="page-link" onClick={goToPreviousPage} disabled={currentPage === 1}>Previous</button>
               </li>
               <li className="page-item">
-                <span className="page-link text-white">{currentPage} / {totalPages}</span>
+                <span className="page-link">{currentPage} / {totalPages}</span>
               </li>
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <Link
-                  className="page-link text-white d-inline-flex gap-2"
-                  href={`/page/${currentPage + 1}`}
-                  aria-label="Next"
-                >
-                  <span >Next</span>
-                  <span aria-hidden="true"><Icons.WhiteArrowRight /></span>
-                </Link>
+                <button className="page-link" onClick={goToNextPage} disabled={currentPage === totalPages}>Next</button>
               </li>
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <Link
-                  className="page-link text-white d-inline-flex gap-2"
-                  href={`/page/${totalPages}`}
-                  aria-label="Last"
-                >
-                  <span aria-hidden="true">Last</span>
-                </Link>
+                <button className="page-link" onClick={goToLastPage} disabled={currentPage === totalPages}>Last</button>
               </li>
             </ul>
+
 
             {/* Large screens pagination */}
             <ul className="pagination d-none d-md-inline-flex">
