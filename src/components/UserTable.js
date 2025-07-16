@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api";
 import PaginationAdmin from "@/components/PaginationAdmin";
@@ -6,21 +6,10 @@ import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
 
-function debounce(fn, delay) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn(...args), delay);
-  };
-}
-
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
-
-  // Pagination state
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [goldFilter, setGoldFilter] = useState("all");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -28,57 +17,39 @@ const UserTable = ({ role, title }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortColumn, setSortColumn] = useState("id");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [afterId, setAfterId] = useState(null);
-  const [beforeId, setBeforeId] = useState(null);
-
   const router = useRouter();
+  const [lastPageFlag, setLastPageFlag] = useState(false);
 
-  // Debounce search input
-  const debouncedSet = useRef(
-    debounce((val) => setDebouncedSearch(val), 400)
-  ).current;
 
+  const handleFirstPage = () => setCurrentPage(1);
+  const handleLastPage = () => {
+    // Set state to trigger API with last=true
+    setCurrentPage(totalPages);
+    setLastPageFlag(true);
+  };
+  // Fetch users from API (pagination & filtering in backend)
   useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedSearch(searchTerm), 400);
-    return () => clearTimeout(timeout);
-  }, [searchTerm]);
-
-
-  // useEffect(() => {
-  //   debouncedSet(searchTerm);
-  // }, [searchTerm, debouncedSet]);
-
-  // Fetch users
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
     let params = {
       role,
-      search: debouncedSearch,
+      search: searchTerm,
       status: filterStatus,
+      page: currentPage,
       perPage: entriesPerPage,
       sortColumn,
-      sortOrder,
+      sortOrder
     };
-    if (afterId) params.afterId = afterId;
-    else if (beforeId) params.beforeId = beforeId;
-    else params.page = currentPage;
-
+    if (lastPageFlag) params.last = true;
     getUsersByRoleApi(params)
       .then(res => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
-        setCurrentPage(res.data.currentPage || currentPage);
-        setAfterId(null); setBeforeId(null);
+        setCurrentPage(res.data.currentPage); // might be adjusted on backend
+        setLastPageFlag(false); // Reset flag
       });
-  }, [
-    isAuthenticated, role, debouncedSearch, filterStatus, currentPage,
-    entriesPerPage, sortColumn, sortOrder, afterId, beforeId
-  ]);
+  }, [isAuthenticated, role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder]);
 
 
-
-  // Gold/non-gold filter (frontend only)
+  // Filter for gold/non-gold (frontend only)
   const filteredUsers = users.filter((user) => {
     if (goldFilter === "all") return true;
     if (!user.acc_exp_date) return goldFilter === "non-gold";
@@ -87,17 +58,26 @@ const UserTable = ({ role, title }) => {
     return goldFilter === "gold" ? expDate > today : expDate <= today;
   });
 
+  // Sorting handler
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1); // Reset to first page on sort change
+  };
+
   // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
       // Re-fetch users
-      getUsersByRoleApi({
-        role, search: debouncedSearch, status: filterStatus,
-        page: currentPage, perPage: entriesPerPage,
-        sortColumn, sortOrder
-      }).then((res) => {
+      getUsersByRoleApi(
+        role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
+      ).then((res) => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
       });
@@ -106,63 +86,17 @@ const UserTable = ({ role, title }) => {
     }
   };
 
-  // Pagination Handlers
-  // User clicks on a page number
-  const goToPage = (pageNum) => {
-    setCurrentPage(pageNum);
-    setAfterId(null);
-    setBeforeId(null);
-  };
+  // Pagination handlers
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(1, prev - 1));
+  const goToNextPage = () => setCurrentPage((prev) => Math.min(totalPages, prev + 1));
 
-  // First/Last Page
-  const goToFirstPage = () => {
-    setCurrentPage(1);
-    setAfterId(null);
-    setBeforeId(null);
-  };
-  const goToLastPage = () => {
-    setCurrentPage(totalPages);
-    setAfterId(null);
-    setBeforeId(null);
-  };
-
-  // Next/Previous (only keyset when allowed, else offset)
-  const canUseKeyset = !debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc";
-  const goToNextPage = () => {
-    if (canUseKeyset && users.length > 0) {
-      setAfterId(users[users.length - 1].id);
-    } else {
-      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
-      setAfterId(null); setBeforeId(null);
-    }
-  };
-  const goToPreviousPage = () => {
-    if (canUseKeyset && users.length > 0) {
-      setBeforeId(users[0].id);
-    } else {
-      setCurrentPage((prev) => Math.max(1, prev - 1));
-      setAfterId(null); setBeforeId(null);
-    }
-  };
-
-  // Sort
-  const handleSort = (column) => {
-    if (sortColumn === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortOrder("asc");
-    }
-    setCurrentPage(1);
-    setAfterId(null); setBeforeId(null);
-  };
-  // Entries per page
+  // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
     setCurrentPage(1);
-    setAfterId(null); setBeforeId(null);
   };
-
 
   return (
     <section className="py-lg-5 py-4 profile-page">
@@ -175,14 +109,9 @@ const UserTable = ({ role, title }) => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-              setAfterId(null);
-              setBeforeId(null);
-            }}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
           />
-          <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); setAfterId(null); setBeforeId(null); }}>
+          <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
@@ -254,11 +183,11 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={goToPreviousPage}
-          goToNextPage={goToNextPage}
-          goToFirstPage={goToFirstPage}
-          goToLastPage={goToLastPage}
-          dispatchCurrentPage={goToPage}
+          goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
+          goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+          goToFirstPage={handleFirstPage}
+          goToLastPage={handleLastPage}
+          dispatchCurrentPage={setCurrentPage}
         />
       </div>
     </section>
