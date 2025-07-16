@@ -5,6 +5,8 @@ import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
+import debounce from "lodash.debounce";
+import { useCallback } from "react";
 
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -28,8 +30,18 @@ const UserTable = ({ role, title }) => {
     setLastPageFlag(true);
   };
   // Fetch users from API (pagination & filtering in backend)
+  const fetchUsers = useCallback(debounce((params) => {
+    getUsersByRoleApi(params)
+      .then(res => {
+        setUsers(res.data.users);
+        setTotalPages(res.data.totalPages);
+        setCurrentPage(res.data.currentPage);
+        setLastPageFlag(false);
+      });
+  }, 500), []); // 500ms debounce
+
   useEffect(() => {
-    let params = {
+    const params = {
       role,
       search: searchTerm,
       status: filterStatus,
@@ -39,14 +51,10 @@ const UserTable = ({ role, title }) => {
       sortOrder
     };
     if (lastPageFlag) params.last = true;
-    getUsersByRoleApi(params)
-      .then(res => {
-        setUsers(res.data.users);
-        setTotalPages(res.data.totalPages);
-        setCurrentPage(res.data.currentPage); // might be adjusted on backend
-        setLastPageFlag(false); // Reset flag
-      });
+
+    fetchUsers(params); // ✅ Debounced call
   }, [isAuthenticated, role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder]);
+
 
 
   // Filter for gold/non-gold (frontend only)
