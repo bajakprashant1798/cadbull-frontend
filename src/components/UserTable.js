@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
+
+  // Pagination state
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -17,52 +19,47 @@ const UserTable = ({ role, title }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortColumn, setSortColumn] = useState("id");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [afterId, setAfterId] = useState(null);    // For keyset: Next page
+  const [beforeId, setBeforeId] = useState(null);  // For keyset: Prev page
+  const [isKeyset, setIsKeyset] = useState(false); // Tracks which mode is active
+
   const router = useRouter();
-  const [lastPageFlag, setLastPageFlag] = useState(false);
 
-
-  const handleFirstPage = () => setCurrentPage(1);
-  const handleLastPage = () => {
-    setLastPageFlag(true);
-    setCurrentPage(totalPages); // Or just set some "placeholder" to show last page is intended
-  };
-
-  // Fetch users from API (pagination & filtering in backend)
+  // Fetch users (offset or keyset)
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    // Prepare params for API
     let params = {
       role,
       search: searchTerm,
       status: filterStatus,
-      page: currentPage,
       perPage: entriesPerPage,
       sortColumn,
-      sortOrder
+      sortOrder,
     };
 
-    // If lastPageFlag is set, ask backend for last page
-    if (lastPageFlag) params.last = true;
+    // Keyset
+    if (afterId) { params.afterId = afterId; }
+    else if (beforeId) { params.beforeId = beforeId; }
+    else { params.page = currentPage; }
 
     getUsersByRoleApi(params)
       .then(res => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
-        setCurrentPage(res.data.currentPage); // backend returns real page
-        setLastPageFlag(false); // Reset the flag for future
-      })
-      .catch(err => {
-        setLastPageFlag(false);
-        console.error("Error fetching users:", err);
+        setCurrentPage(res.data.currentPage || currentPage);
+        setIsKeyset(Boolean(afterId || beforeId)); // Track mode for UI logic
+        // Reset keyset after fetch
+        setAfterId(null);
+        setBeforeId(null);
       });
+  // eslint-disable-next-line
   }, [
     isAuthenticated, role, searchTerm, filterStatus, currentPage,
-    entriesPerPage, sortColumn, sortOrder, lastPageFlag // <--- add here!
+    entriesPerPage, sortColumn, sortOrder, afterId, beforeId
   ]);
 
-
-  // Filter for gold/non-gold (frontend only)
+  // Gold/non-gold filter (frontend only)
   const filteredUsers = users.filter((user) => {
     if (goldFilter === "all") return true;
     if (!user.acc_exp_date) return goldFilter === "non-gold";
@@ -80,21 +77,19 @@ const UserTable = ({ role, title }) => {
       setSortOrder("asc");
     }
     setCurrentPage(1);
-    setLastPageFlag(false);
   };
 
-
-
-
-  // Status toggle with re-fetch
+  // Toggle status handler
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
       // Re-fetch users
-      getUsersByRoleApi(
-        role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
-      ).then((res) => {
+      getUsersByRoleApi({
+        role, search: searchTerm, status: filterStatus,
+        page: currentPage, perPage: entriesPerPage,
+        sortColumn, sortOrder
+      }).then((res) => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
       });
@@ -103,17 +98,26 @@ const UserTable = ({ role, title }) => {
     }
   };
 
-  // Pagination handlers
-  const goToFirstPage = () => setCurrentPage(1);
-  const goToLastPage = () => setCurrentPage(totalPages);
-  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(1, prev - 1));
-  const goToNextPage = () => setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  // Pagination Handlers
+  // -- Offset mode for jump to first/last/page N
+  const goToFirstPage = () => { setCurrentPage(1); setAfterId(null); setBeforeId(null); };
+  const goToLastPage = () => { setCurrentPage(totalPages); setAfterId(null); setBeforeId(null); };
+  const goToPage = (pageNum) => { setCurrentPage(pageNum); setAfterId(null); setBeforeId(null); };
+
+  // -- Keyset (fast!) for Next/Prev
+  const goToNextPage = () => {
+    if (users.length > 0) setAfterId(users[users.length - 1].id);
+  };
+  const goToPreviousPage = () => {
+    if (users.length > 0) setBeforeId(users[0].id);
+  };
 
   // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
     setCurrentPage(1);
-    setLastPageFlag(false);
+    setAfterId(null);
+    setBeforeId(null);
   };
 
   return (
@@ -127,9 +131,9 @@ const UserTable = ({ role, title }) => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); setAfterId(null); setBeforeId(null); }}
           />
-          <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
+          <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); setAfterId(null); setBeforeId(null); }}>
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
@@ -201,13 +205,12 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-          goToFirstPage={handleFirstPage}
-          goToLastPage={handleLastPage}
-          dispatchCurrentPage={setCurrentPage}
+          goToPreviousPage={goToPreviousPage}
+          goToNextPage={goToNextPage}
+          goToFirstPage={goToFirstPage}
+          goToLastPage={goToLastPage}
+          dispatchCurrentPage={goToPage} // for direct page number click
         />
-
       </div>
     </section>
   );
