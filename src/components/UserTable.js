@@ -78,9 +78,12 @@ useEffect(() => {
     setUsers(res.data.users);
     setTotalPages(res.data.totalPages);
 
-    if (!isSeek && !isReverse && !lastPageFlag && res.data.currentPage) {
+    if (res.data.currentPage !== null && !res.data.isSeek && res.data.direction !== "last") {
       setCurrentPage(res.data.currentPage);
     }
+
+    console.log("Params:", params);
+    console.log("Response currentPage:", res.data.currentPage);
 
     // ✅ Reset all modes
     setLastPageFlag(false);
