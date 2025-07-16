@@ -78,9 +78,11 @@ useEffect(() => {
     setUsers(res.data.users);
     setTotalPages(res.data.totalPages);
 
-    if (res.data.currentPage !== null && !res.data.isSeek && res.data.direction !== "last") {
+    // Always update currentPage if backend returns it (even in "last" mode!)
+    if (res.data.currentPage !== null) {
       setCurrentPage(res.data.currentPage);
     }
+
 
     console.log("Params:", params);
     console.log("Response currentPage:", res.data.currentPage);
@@ -190,6 +192,15 @@ useEffect(() => {
   };
 
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setLastPageFlag(false);
+    setIsSeek(false);
+    setIsReverse(false);
+    setBeforeId(null);
+    setAfterId(null);
+  };
+
 
   // Change entries per page resets to first page
   const handleEntriesPerPageChange = (e) => {
@@ -290,12 +301,13 @@ useEffect(() => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
-          goToPreviousPage={goToPreviousPage} // ✅ use your keyset-aware version
-          goToNextPage={goToNextPage}         // ✅ use your keyset-aware version
-          goToFirstPage={handleFirstPage}
-          goToLastPage={handleLastPage}
-          dispatchCurrentPage={setCurrentPage}
+          goToPreviousPage={goToPreviousPage}
+          goToNextPage={goToNextPage}
+          goToFirstPage={goToFirstPage}
+          goToLastPage={goToLastPage}
+          dispatchCurrentPage={handlePageChange}
         />
+
 
       </div>
     </section>
