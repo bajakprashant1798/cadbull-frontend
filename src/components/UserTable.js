@@ -32,6 +32,10 @@ const UserTable = ({ role, title }) => {
   // Fetch users from API (pagination & filtering in backend)
  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
+const [beforeId, setBeforeId] = useState(null);
+const [isSeek, setIsSeek] = useState(false);
+
+
 useEffect(() => {
   const handler = setTimeout(() => {
     setDebouncedSearchTerm(searchTerm);
@@ -40,7 +44,7 @@ useEffect(() => {
 }, [searchTerm]);
 
 
- useEffect(() => {
+useEffect(() => {
   const params = {
     role,
     search: debouncedSearchTerm,
@@ -52,6 +56,9 @@ useEffect(() => {
 
   if (lastPageFlag) {
     params.last = true;
+  } else if (beforeId && isSeek) {
+    params.seek = true;
+    params.beforeId = beforeId;
   } else {
     params.page = currentPage;
   }
@@ -60,8 +67,9 @@ useEffect(() => {
     .then(res => {
       setUsers(res.data.users);
       setTotalPages(res.data.totalPages);
-      setCurrentPage(res.data.currentPage); // ✅ use backend's currentPage
+      if (!isSeek) setCurrentPage(res.data.currentPage);
       setLastPageFlag(false);
+      setIsSeek(res.data.isSeek || false);
     });
 }, [
   isAuthenticated,
@@ -71,8 +79,11 @@ useEffect(() => {
   currentPage,
   entriesPerPage,
   sortColumn,
-  sortOrder
+  sortOrder,
+  lastPageFlag,
+  beforeId
 ]);
+
 
 
 
