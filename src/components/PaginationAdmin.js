@@ -76,21 +76,20 @@ const Pagination = ({
 
   // Generate pagination numbers with "..." for large sets
   const getPageNumbers = () => {
-    let pages = [];
     const maxPagesToShow = 10;
+    let pages = [];
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = startPage + maxPagesToShow - 1;
-
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
-
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
     return pages;
   };
+
 
   return (
     <div className="row mt-4 mt-md-5">
