@@ -30,30 +30,49 @@ const UserTable = ({ role, title }) => {
     setLastPageFlag(true);
   };
   // Fetch users from API (pagination & filtering in backend)
-  const fetchUsers = useCallback(debounce((params) => {
-    getUsersByRoleApi(params)
-      .then(res => {
-        setUsers(res.data.users);
-        setTotalPages(res.data.totalPages);
-        setCurrentPage(res.data.currentPage);
-        setLastPageFlag(false);
-      });
-  }, 500), []); // 500ms debounce
+ const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  useEffect(() => {
-    const params = {
-      role,
-      search: searchTerm,
-      status: filterStatus,
-      page: currentPage,
-      perPage: entriesPerPage,
-      sortColumn,
-      sortOrder
-    };
-    if (lastPageFlag) params.last = true;
+useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearchTerm(searchTerm);
+  }, 500);
+  return () => clearTimeout(handler);
+}, [searchTerm]);
 
-    fetchUsers(params); // ✅ Debounced call
-  }, [isAuthenticated, role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder]);
+
+ useEffect(() => {
+  const params = {
+    role,
+    search: debouncedSearchTerm, // ✅ Use the debounced version here
+    status: filterStatus,
+    page: currentPage,
+    perPage: entriesPerPage,
+    sortColumn,
+    sortOrder
+  };
+
+  if (lastPageFlag) params.last = true;
+
+  getUsersByRoleApi(params)
+    .then(res => {
+      setUsers(res.data.users);
+      setTotalPages(res.data.totalPages);
+      setCurrentPage(res.data.currentPage);
+      setLastPageFlag(false);
+    })
+    .catch((err) => {
+      console.error("❌ Failed to fetch users:", err.message);
+    });
+}, [
+  isAuthenticated,
+  role,
+  debouncedSearchTerm, // ✅ Not `searchTerm` anymore
+  filterStatus,
+  currentPage,
+  entriesPerPage,
+  sortColumn,
+  sortOrder
+]);
 
 
 
