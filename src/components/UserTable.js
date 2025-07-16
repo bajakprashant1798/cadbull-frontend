@@ -78,23 +78,20 @@ useEffect(() => {
     setUsers(res.data.users);
     setTotalPages(res.data.totalPages);
 
-    // Always update currentPage if backend returns it (even in "last" mode!)
-    if (res.data.currentPage !== null) {
+    // Only update currentPage if NOT in keyset mode
+    if (
+      !lastPageFlag &&
+      !isSeek &&
+      !isReverse &&
+      res.data.currentPage !== null
+    ) {
       setCurrentPage(res.data.currentPage);
     }
-
-
-    console.log("Params:", params);
-    console.log("Response currentPage:", res.data.currentPage);
-
-    //// ✅ Reset all modes
-    // setLastPageFlag(false);
-    // setIsSeek(false);
-    // setIsReverse(false);
 
     setBeforeId(firstUser?.id || null);
     setAfterId(lastUser?.id || null);
   });
+
 }, [
   isAuthenticated,
   role,
@@ -171,15 +168,23 @@ useEffect(() => {
 
 
   const goToPreviousPage = () => {
+    // If we are in keyset mode (after "last", or after seeking), use reverse!
     if (lastPageFlag || isSeek) {
       setIsReverse(true);
       setIsSeek(false);
       setLastPageFlag(false);
-      setCurrentPage(null); // ✅ important: prevent offset query for 260642
+      // Do NOT set currentPage, just rely on afterId
+    } else if (isReverse && afterId) {
+      // Stay in reverse if we keep hitting previous
+      setIsReverse(true);
+      setIsSeek(false);
+      setLastPageFlag(false);
     } else {
       setCurrentPage((prev) => Math.max(1, prev - 1));
     }
   };
+
+
 
 
   const goToNextPage = () => {
@@ -200,6 +205,7 @@ useEffect(() => {
     setBeforeId(null);
     setAfterId(null);
   };
+
 
 
   // Change entries per page resets to first page
