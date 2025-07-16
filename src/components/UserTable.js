@@ -65,23 +65,31 @@ useEffect(() => {
   } else if (isReverse && afterId) {
     params.reverse = true;
     params.afterId = afterId;
-  } else {
-    params.page = currentPage;
+  } else if (!isSeek && !isReverse && !lastPageFlag && currentPage !== null) {
+    params.page = currentPage; // ✅ only if not in keyset mode
   }
 
 
-  getUsersByRoleApi(params)
-    .then(res => {
-      const firstUser = res.data.users[0];
-      const lastUser = res.data.users[res.data.users.length - 1];
-      setUsers(res.data.users);
-      setTotalPages(res.data.totalPages);
-      if (!isSeek) setCurrentPage(res.data.currentPage);
-      setLastPageFlag(false);
-      setIsSeek(res.data.isSeek || false);
-      setBeforeId(firstUser?.id);  // for next (forward)
-      setAfterId(lastUser?.id);    // for previous (reverse)
-    });
+
+  getUsersByRoleApi(params).then(res => {
+    const firstUser = res.data.users[0];
+    const lastUser = res.data.users[res.data.users.length - 1];
+
+    setUsers(res.data.users);
+    setTotalPages(res.data.totalPages);
+
+    if (!isSeek && !isReverse && !lastPageFlag && res.data.currentPage) {
+      setCurrentPage(res.data.currentPage);
+    }
+
+    // ✅ Reset all modes
+    setLastPageFlag(false);
+    setIsSeek(false);
+    setIsReverse(false);
+
+    setBeforeId(firstUser?.id || null);
+    setAfterId(lastUser?.id || null);
+  });
 }, [
   isAuthenticated,
   role,
@@ -139,16 +147,26 @@ useEffect(() => {
 
   // Pagination handlers
   const goToFirstPage = () => setCurrentPage(1);
-  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToLastPage = () => {
+    setLastPageFlag(true);        // ✅ triggers `last=true`
+    setCurrentPage(1);            // ❌ don't set page=260643
+    setIsSeek(false);
+    setIsReverse(false);
+    setBeforeId(null);
+    setAfterId(null);
+  };
+
   const goToPreviousPage = () => {
     if (lastPageFlag || isSeek) {
       setIsReverse(true);
       setIsSeek(false);
       setLastPageFlag(false);
+      setCurrentPage(null); // ✅ important: prevent offset query for 260642
     } else {
       setCurrentPage((prev) => Math.max(1, prev - 1));
     }
   };
+
 
   const goToNextPage = () => {
     if (isReverse) {
