@@ -51,6 +51,7 @@ const UserTable = ({ role, title }) => {
   // Fetch users
   useEffect(() => {
     if (!isAuthenticated) return;
+
     let params = {
       role,
       search: debouncedSearch,
@@ -76,6 +77,7 @@ const UserTable = ({ role, title }) => {
   ]);
 
 
+
   // Gold/non-gold filter (frontend only)
   const filteredUsers = users.filter((user) => {
     if (goldFilter === "all") return true;
@@ -84,18 +86,6 @@ const UserTable = ({ role, title }) => {
     const today = new Date();
     return goldFilter === "gold" ? expDate > today : expDate <= today;
   });
-
-  // Sorting handler
-  const handleSort = (column) => {
-    if (sortColumn === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortOrder("asc");
-    }
-    setCurrentPage(1);
-    setAfterId(null); setBeforeId(null);
-  };
 
   // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
@@ -117,34 +107,62 @@ const UserTable = ({ role, title }) => {
   };
 
   // Pagination Handlers
-  const goToFirstPage = () => { setCurrentPage(1); setAfterId(null); setBeforeId(null); };
-  const goToLastPage = () => { setCurrentPage(totalPages); setAfterId(null); setBeforeId(null); };
-  const goToPage = (pageNum) => { setCurrentPage(pageNum); setAfterId(null); setBeforeId(null); };
-
-  // Only use keyset if NO filters/search and id/desc
-  const goToNextPage = () => {
-    if (!debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc" && users.length > 0) {
-      setAfterId(users[users.length - 1].id);
-    } else {
-      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
-    }
-  };
-  const goToPreviousPage = () => {
-    if (!debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc" && users.length > 0) {
-      setBeforeId(users[0].id);
-    } else {
-      setCurrentPage((prev) => Math.max(1, prev - 1));
-    }
+  // User clicks on a page number
+  const goToPage = (pageNum) => {
+    setCurrentPage(pageNum);
+    setAfterId(null);
+    setBeforeId(null);
   };
 
-
-
-  const handleEntriesPerPageChange = (e) => {
-    setEntriesPerPage(Number(e.target.value));
+  // First/Last Page
+  const goToFirstPage = () => {
     setCurrentPage(1);
     setAfterId(null);
     setBeforeId(null);
   };
+  const goToLastPage = () => {
+    setCurrentPage(totalPages);
+    setAfterId(null);
+    setBeforeId(null);
+  };
+
+  // Next/Previous (only keyset when allowed, else offset)
+  const canUseKeyset = !debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc";
+  const goToNextPage = () => {
+    if (canUseKeyset && users.length > 0) {
+      setAfterId(users[users.length - 1].id);
+    } else {
+      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+      setAfterId(null); setBeforeId(null);
+    }
+  };
+  const goToPreviousPage = () => {
+    if (canUseKeyset && users.length > 0) {
+      setBeforeId(users[0].id);
+    } else {
+      setCurrentPage((prev) => Math.max(1, prev - 1));
+      setAfterId(null); setBeforeId(null);
+    }
+  };
+
+  // Sort
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+    setCurrentPage(1);
+    setAfterId(null); setBeforeId(null);
+  };
+  // Entries per page
+  const handleEntriesPerPageChange = (e) => {
+    setEntriesPerPage(Number(e.target.value));
+    setCurrentPage(1);
+    setAfterId(null); setBeforeId(null);
+  };
+
 
   return (
     <section className="py-lg-5 py-4 profile-page">
@@ -157,7 +175,12 @@ const UserTable = ({ role, title }) => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); setAfterId(null); setBeforeId(null); }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+              setAfterId(null);
+              setBeforeId(null);
+            }}
           />
           <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); setAfterId(null); setBeforeId(null); }}>
             <option value="">All</option>
