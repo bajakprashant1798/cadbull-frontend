@@ -39,13 +39,18 @@ const UserTable = ({ role, title }) => {
   ).current;
 
   useEffect(() => {
-    debouncedSet(searchTerm);
-  }, [searchTerm, debouncedSet]);
+    const timeout = setTimeout(() => setDebouncedSearch(searchTerm), 400);
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
+
+  // useEffect(() => {
+  //   debouncedSet(searchTerm);
+  // }, [searchTerm, debouncedSet]);
 
   // Fetch users
   useEffect(() => {
     if (!isAuthenticated) return;
-
     let params = {
       role,
       search: debouncedSearch,
@@ -54,7 +59,6 @@ const UserTable = ({ role, title }) => {
       sortColumn,
       sortOrder,
     };
-
     if (afterId) params.afterId = afterId;
     else if (beforeId) params.beforeId = beforeId;
     else params.page = currentPage;
@@ -64,14 +68,13 @@ const UserTable = ({ role, title }) => {
         setUsers(res.data.users);
         setTotalPages(res.data.totalPages);
         setCurrentPage(res.data.currentPage || currentPage);
-        // Reset keyset after fetch
-        setAfterId(null);
-        setBeforeId(null);
+        setAfterId(null); setBeforeId(null);
       });
   }, [
     isAuthenticated, role, debouncedSearch, filterStatus, currentPage,
     entriesPerPage, sortColumn, sortOrder, afterId, beforeId
   ]);
+
 
   // Gold/non-gold filter (frontend only)
   const filteredUsers = users.filter((user) => {
@@ -118,12 +121,23 @@ const UserTable = ({ role, title }) => {
   const goToLastPage = () => { setCurrentPage(totalPages); setAfterId(null); setBeforeId(null); };
   const goToPage = (pageNum) => { setCurrentPage(pageNum); setAfterId(null); setBeforeId(null); };
 
+  // Only use keyset if NO filters/search and id/desc
   const goToNextPage = () => {
-    if (users.length > 0) setAfterId(users[users.length - 1].id);
+    if (!debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc" && users.length > 0) {
+      setAfterId(users[users.length - 1].id);
+    } else {
+      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+    }
   };
   const goToPreviousPage = () => {
-    if (users.length > 0) setBeforeId(users[0].id);
+    if (!debouncedSearch && !filterStatus && sortColumn === "id" && sortOrder === "desc" && users.length > 0) {
+      setBeforeId(users[0].id);
+    } else {
+      setCurrentPage((prev) => Math.max(1, prev - 1));
+    }
   };
+
+
 
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
