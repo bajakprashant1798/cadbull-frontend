@@ -59,32 +59,33 @@ useEffect(() => {
     sortOrder
   };
 
-  if (paginationMode === "last") {
+  if (lastPageFlag) {
     params.last = true;
-  } else if (paginationMode === "keyset" && isSeek && beforeId) {
+  } else if (isSeek && beforeId) {
     params.seek = true;
     params.beforeId = beforeId;
-  } else if (paginationMode === "keyset" && isReverse && afterId) {
+  } else if (isReverse && afterId) {
     params.reverse = true;
     params.afterId = afterId;
-  } else if (paginationMode === "offset" && currentPage !== null) {
-    params.page = currentPage;
+  } else {
+    params.page = currentPage; // only if not in keyset mode
   }
 
+  // Only ONE fetch should happen per state change!
   getUsersByRoleApi(params).then(res => {
-    const firstUser = res.data.users[0];
-    const lastUser = res.data.users[res.data.users.length - 1];
-
     setUsers(res.data.users);
     setTotalPages(res.data.totalPages);
 
-    // Only update currentPage if in offset mode
-    if (paginationMode === "offset" && res.data.currentPage !== null) {
+    // After LAST page, set currentPage to totalPages
+    if (lastPageFlag && res.data.currentPage) {
+      setCurrentPage(res.data.currentPage);
+      setLastPageFlag(false); // <--- IMPORTANT: reset flag after fetch
+    } else if (!isSeek && !isReverse && res.data.currentPage !== null) {
       setCurrentPage(res.data.currentPage);
     }
 
-    setBeforeId(firstUser?.id || null);
-    setAfterId(lastUser?.id || null);
+    setBeforeId(res.data.users[0]?.id || null);
+    setAfterId(res.data.users[res.data.users.length - 1]?.id || null);
   });
 }, [
   isAuthenticated,
@@ -97,8 +98,9 @@ useEffect(() => {
   sortOrder,
   lastPageFlag,
   beforeId,
-  isReverse // ✅ ADD THIS
+  isReverse // ADD THIS
 ]);
+
 
 
 
@@ -153,14 +155,14 @@ useEffect(() => {
   };
 
   const goToLastPage = () => {
-    setLastPageFlag(true);
-    setPaginationMode("last");
-    setCurrentPage(null);
+    setLastPageFlag(true);           // ONLY set this flag!
     setIsSeek(false);
     setIsReverse(false);
     setBeforeId(null);
     setAfterId(null);
+    // DO NOT setCurrentPage(null) or any value here!
   };
+
 
 
 
