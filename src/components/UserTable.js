@@ -149,43 +149,56 @@ const UserTable = ({ role, title }) => {
   // Optimize goToLastPage function
   const goToLastPage = async () => {
     try {
-      // Fetch last page directly with last=true parameter
-      const lastRes = await getUsersByRoleApi({ 
-        ...buildParams(), 
-        page: totalPages,
-        last: true 
+      // Get total pages and last page data
+      const totalRes = await getUsersByRoleApi({ 
+        ...buildParams(),
+        page: 1,
+        perPage: 1
+      });
+      
+      const lastPageNum = totalRes.data.totalPages;
+      
+      // Fetch last few pages for stack (MAX_STACK_SIZE)
+      const startPage = Math.max(lastPageNum - MAX_STACK_SIZE + 1, 1);
+      let newStack = [];
+
+      // Get last page first to get lastUserId
+      const lastRes = await getUsersByRoleApi({
+        ...buildParams(),
+        page: lastPageNum,
+        last: true
       });
 
       if (lastRes.data.users?.length > 0) {
-        // Calculate the starting page for last pages cache
-        const startPage = Math.max(totalPages - MAX_STACK_SIZE + 1, 1);
-        let newStack = [];
-
-        // Fetch and cache last MAX_STACK_SIZE pages
-        for (let i = startPage; i <= totalPages; i++) {
-          const res = await getUsersByRoleApi({ 
+        const lastUserId = lastRes.data.users[0].id;
+        
+        // Fetch pages backwards from last page
+        for (let i = lastPageNum; i >= startPage; i--) {
+          const res = await getUsersByRoleApi({
             ...buildParams(),
             page: i,
-            beforeId: lastRes.data.lastUserId 
+            beforeId: lastUserId
           });
           
           if (res.data.users?.length > 0) {
-            newStack.push({
+            newStack.unshift({
               page: i,
               users: res.data.users,
               beforeId: res.data.users[0]?.id,
-              afterId: res.data.users[res.data.users.length - 1]?.id,
+              afterId: res.data.users[res.data.users.length - 1]?.id
             });
           }
         }
 
         setPageStack(newStack);
         setUsers(lastRes.data.users);
-        setCurrentPage(totalPages);
+        setCurrentPage(lastPageNum);
+        setTotalPages(lastPageNum);
+        setLastPageLastId(lastUserId);
       }
     } catch (error) {
+      console.error('Error loading last page:', error);
       toast.error("Failed to load last page ❌");
-      console.error(error);
     }
   };
 
