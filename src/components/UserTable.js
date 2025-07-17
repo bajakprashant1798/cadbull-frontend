@@ -320,6 +320,7 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={lastPageMode ? (deepPage || totalPages) : currentPage}
           totalPages={showNumbers ? totalPages : null}
+          lastPageMode={lastPageMode}   // <-- NEW PROP!
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
           goToPreviousPage={lastPageMode
