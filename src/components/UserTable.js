@@ -78,6 +78,24 @@ const UserTable = ({ role, title }) => {
     setTotalPages(res.data.totalPages || 1);
   };
 
+  const fetchNextFromLast = async () => {
+    try {
+      const params = buildParams(null, null);
+      params.last = true;
+      if (afterId) params.afterId = afterId;
+      const res = await getUsersByRoleApi(params);
+      setUsers(res.data.users || []);
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
+      setHasNext(!!res.data.hasNext);
+      setHasPrev(!!res.data.hasPrev);
+      setCurrentPage(currentPage + 1); // or track lastPageModePage separately if you want
+      setTotalPages(res.data.totalPages || totalPages);
+    } catch (err) {
+      toast.error("Failed to load users ❌");
+    }
+  };
+
 
   // Handler for "First Page" button (reset to first/offset page 1)
   const goToFirstPage = async () => {
@@ -274,10 +292,8 @@ const UserTable = ({ role, title }) => {
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
           goToPreviousPage={lastPageMode ? fetchPrevFromLast : () => hasPrev && fetchUserPage("prev")}
-
-          goToNextPage={() => hasNext && fetchUserPage("next")}
+          goToNextPage={lastPageMode ? fetchNextFromLast : () => hasNext && fetchUserPage("next")}
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
-          
         />
         {!showNumbers && (
           <div className="text-center mt-2" style={{color: "#888"}}>
