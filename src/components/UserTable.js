@@ -105,20 +105,22 @@ const UserTable = ({ role, title }) => {
     params.last = true;
     params.afterId = afterId;
     const res = await getUsersByRoleApi(params);
+    const newDeep = Math.min(totalPages, (deepPage || totalPages) + 1);
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setHasPrev(!!res.data.hasPrev);
-    setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
+    setDeepPage(newDeep);
+    setCurrentPage(newDeep);
 
     console.log(
       "Users:", (res.data.users || []).map(u => u.id),
       "afterId:", res.data.nextId,
       "beforeId:", res.data.prevId,
-      "deepPage:", deepPage,
+      "deepPage:", newDeep,
       "lastPageMode:", lastPageMode,
-      "currentPage:", currentPage
+      "currentPage:", newDeep
     );
   };
 
@@ -158,25 +160,23 @@ const UserTable = ({ role, title }) => {
     params.last = true;
     params.beforeId = beforeId;
     const res = await getUsersByRoleApi(params);
-
+    const newDeep = Math.max(1, (deepPage || totalPages) - 1);
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setHasPrev(!!res.data.hasPrev);
-    setDeepPage(prev => {
-      const newPage = Math.max(1, (prev || totalPages) - 1);
-      // Log inside the updater for most accurate value
-      console.log(
-        "Users:", (res.data.users || []).map(u => u.id),
-        "afterId:", res.data.nextId,
-        "beforeId:", res.data.prevId,
-        "deepPage (new):", newPage,
-        "lastPageMode:", true,
-        "currentPage:", currentPage // Might still be the previous value
-      );
-      return newPage;
-    });
+    setDeepPage(newDeep);
+    setCurrentPage(newDeep);
+
+    console.log(
+      "Users:", (res.data.users || []).map(u => u.id),
+      "afterId:", res.data.nextId,
+      "beforeId:", res.data.prevId,
+      "deepPage:", newDeep,
+      "lastPageMode:", lastPageMode,
+      "currentPage:", newDeep
+    );
   };
 
 
