@@ -85,19 +85,32 @@ const UserTable = ({ role, title }) => {
     if (!lastPageMode) return;
     try {
       const params = buildParams();
-      params.last = true;
+      // Remove params.last = true; - this was causing the issue
       if (afterId) params.afterId = afterId;
+      
       const res = await getUsersByRoleApi(params);
+      
+      // Check if we should exit last page mode
+      // If we're moving forward and have valid data, we might be back in regular pagination
+      if (res.data.mode === "keyset" || res.data.mode === "offset") {
+        setLastPageMode(false);
+        setCurrentPage(res.data.currentPage || (deepPage ? deepPage + 1 : 1));
+      }
+      
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
+      
+      if (lastPageMode) {
+        setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
+      }
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
   };
+
 
 
   // Handler for "First Page" button (reset to first/offset page 1)
@@ -203,6 +216,35 @@ const UserTable = ({ role, title }) => {
       toast.error("Failed to load users ❌");
     }
   };
+  
+  const goToNextPage = () => {
+    if (lastPageMode) {
+      // Check if we should exit last page mode
+      if (deepPage && deepPage < totalPages) {
+        setLastPageMode(false);
+        const nextPage = deepPage + 1;
+        if (nextPage <= MAX_OFFSET_PAGES) {
+          handlePageJump(nextPage);
+        } else {
+          fetchUserPage("next");
+        }
+        return;
+      }
+      // If still in last page mode, use the fixed fetchNextFromLast
+      fetchNextFromLast();
+    } else {
+      // Regular next page logic
+      if (hasNext) fetchUserPage("next");
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (lastPageMode) {
+      fetchPrevFromLast();
+    } else {
+      if (hasPrev) fetchUserPage("prev");
+    }
+  };
 
   // Handlers
   const handleSort = (column) => {
@@ -295,8 +337,8 @@ const UserTable = ({ role, title }) => {
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
-          goToPreviousPage={lastPageMode ? fetchPrevFromLast : () => hasPrev && fetchUserPage("prev")}
-          goToNextPage={lastPageMode ? fetchNextFromLast : () => hasNext && fetchUserPage("next")}
+          goToPreviousPage={goToPreviousPage}  // Use the new function
+          goToNextPage={goToNextPage}          // Use the new function
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
         />
         {!showNumbers && (
