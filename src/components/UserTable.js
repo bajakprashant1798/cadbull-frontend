@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api";
 import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
-import debounce from "lodash.debounce";
-import { useCallback } from "react";
+
+const MAX_STACK_SIZE = 5; // Number of pages to cache in stack
 
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -20,101 +20,124 @@ const UserTable = ({ role, title }) => {
   const [sortColumn, setSortColumn] = useState("id");
   const [sortOrder, setSortOrder] = useState("desc");
   const router = useRouter();
-  const [lastPageFlag, setLastPageFlag] = useState(false);
-  const [afterId, setAfterId] = useState(null); // For reverse pagination
-  const [isReverse, setIsReverse] = useState(false); // Track reverse mode
-  const [paginationMode, setPaginationMode] = useState("offset");
 
+  // Stack/cache for paging: [{page, users, beforeId, afterId}]
+  const [pageStack, setPageStack] = useState([]);
+  const [firstPageFirstId, setFirstPageFirstId] = useState(null);
+  const [lastPageLastId, setLastPageLastId] = useState(null);
 
+  // Refs to avoid stale closures in async
+  const stackRef = useRef(pageStack);
+  stackRef.current = pageStack;
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
 
-
-  const handleFirstPage = () => setCurrentPage(1);
-  const handleLastPage = () => {
-    // Set state to trigger API with last=true
-    // setCurrentPage(totalPages);
-    setLastPageFlag(true);
-  };
-  // Fetch users from API (pagination & filtering in backend)
- const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
-const [beforeId, setBeforeId] = useState(null);
-const [isSeek, setIsSeek] = useState(false);
-
-
-useEffect(() => {
-  const handler = setTimeout(() => {
-    setDebouncedSearchTerm(searchTerm);
-  }, 500);
-  return () => clearTimeout(handler);
-}, [searchTerm]);
-
-
-useEffect(() => {
-  const params = {
-   role,
-    search: debouncedSearchTerm,
-    status: filterStatus,
-    perPage: entriesPerPage,
-    sortColumn,
-    sortOrder,
-    gold: goldFilter !== "all" ? goldFilter : undefined, // pass gold only if selected
-  };
-
-  if (lastPageFlag) {
-    params.last = true;
-  } else if (isSeek && beforeId) {
-    params.seek = true;
-    params.beforeId = beforeId;
-  } else if (isReverse && afterId) {
-    params.reverse = true;
-    params.afterId = afterId;
-  } else {
-    params.page = currentPage; // only if not in keyset mode
+  // Build API params utility
+  function buildParams(pageNum = 1) {
+    return {
+      role,
+      search: searchTerm.trim(),
+      status: filterStatus,
+      perPage: entriesPerPage,
+      sortColumn,
+      sortOrder,
+      gold: goldFilter !== "all" ? goldFilter : undefined,
+      page: pageNum
+    };
   }
 
-  // Only ONE fetch should happen per state change!
-  getUsersByRoleApi(params).then(res => {
-    setUsers(res.data.users);
-    setTotalPages(res.data.totalPages);
+  // Fill stack and store first/last user id on initial load or filter/sort change
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchInitialPages() {
+      let newStack = [];
+      let firstId = null, lastId = null;
+      let totalFetchedPages = 0;
+      let newTotalPages = 1;
 
-    // After LAST page, set currentPage to totalPages
-    if (lastPageFlag && res.data.currentPage) {
-      setCurrentPage(res.data.currentPage);
-      setLastPageFlag(false); // <--- IMPORTANT: reset flag after fetch
-    } else if (!isSeek && !isReverse && res.data.currentPage !== null) {
-      setCurrentPage(res.data.currentPage);
+      // 1. Fetch first N pages in sequence (no parallel to avoid race)
+      for (let i = 1; i <= MAX_STACK_SIZE; i++) {
+        const params = buildParams(i);
+        const res = await getUsersByRoleApi(params);
+        if (i === 1) {
+          firstId = res.data.users[0]?.id || null;
+          newTotalPages = res.data.totalPages;
+        }
+        if (res.data.users.length === 0) break;
+        newStack.push({
+          page: i,
+          users: res.data.users,
+          beforeId: res.data.users[0]?.id,
+          afterId: res.data.users[res.data.users.length - 1]?.id,
+        });
+        totalFetchedPages++;
+      }
+      // 2. Fetch last page to get last user id
+      const lastParams = buildParams(newTotalPages);
+      lastParams.page = newTotalPages;
+      const lastRes = await getUsersByRoleApi(lastParams);
+      lastId = lastRes.data.users[lastRes.data.users.length - 1]?.id || null;
+
+      if (isMounted) {
+        setPageStack(newStack);
+        setFirstPageFirstId(firstId);
+        setLastPageLastId(lastId);
+        setUsers(newStack[0]?.users || []);
+        setCurrentPage(1);
+        setTotalPages(newTotalPages);
+      }
     }
+    fetchInitialPages();
+    // Cleanup on unmount or filter change
+    return () => { isMounted = false; };
+    // Trigger on these dependencies:
+  }, [role, filterStatus, goldFilter, searchTerm, entriesPerPage, sortColumn, sortOrder, isAuthenticated]);
 
-    setBeforeId(res.data.users[0]?.id || null);
-    setAfterId(res.data.users[res.data.users.length - 1]?.id || null);
-  });
-}, [
-  isAuthenticated,
-  role,
-  debouncedSearchTerm,
-  filterStatus,
-  currentPage,
-  entriesPerPage,
-  sortColumn,
-  sortOrder,
-  lastPageFlag,
-  beforeId,
-  isReverse // ADD THIS
-]);
+  // Helper to get cached page
+  function getCachedPage(pageNum) {
+    return stackRef.current.find(p => p.page === pageNum);
+  }
 
+  // Handler for next/prev/first/last/page number
+  const handlePageChange = async (pageNum) => {
+    // If in stack, use cache
+    const cached = getCachedPage(pageNum);
+    if (cached) {
+      setUsers(cached.users);
+      setCurrentPage(pageNum);
+    } else {
+      // Fetch and update stack
+      const res = await getUsersByRoleApi(buildParams(pageNum));
+      const usersData = res.data.users;
+      setUsers(usersData);
+      setCurrentPage(pageNum);
+      // Add to stack, maintain at MAX_STACK_SIZE
+      let newStack = [...stackRef.current, {
+        page: pageNum,
+        users: usersData,
+        beforeId: usersData[0]?.id,
+        afterId: usersData[usersData.length - 1]?.id,
+      }];
+      // Keep stack sliding window
+      if (newStack.length > MAX_STACK_SIZE) newStack.shift();
+      setPageStack(newStack);
+    }
+  };
 
+  const goToFirstPage = () => handlePageChange(1);
 
+  const goToLastPage = () => handlePageChange(totalPages);
 
+  const goToPreviousPage = () => {
+    if (currentPage > 1) handlePageChange(currentPage - 1);
+  };
 
+  const goToNextPage = () => {
+    if (currentPage < totalPages) handlePageChange(currentPage + 1);
+  };
 
-  // Filter for gold/non-gold (frontend only)
-  const filteredUsers = users.filter((user) => {
-    if (goldFilter === "all") return true;
-    if (!user.acc_exp_date) return goldFilter === "non-gold";
-    const expDate = new Date(user.acc_exp_date);
-    const today = new Date();
-    return goldFilter === "gold" ? expDate > today : expDate <= today;
-  });
+  // Filter for gold/non-gold (frontend only, but backend does SQL filter too)
+  const filteredUsers = users; // No additional frontend filtering needed, since backend does gold now
 
   // Sorting handler
   const handleSort = (column) => {
@@ -124,101 +147,31 @@ useEffect(() => {
       setSortColumn(column);
       setSortOrder("asc");
     }
-    setCurrentPage(1); // Reset to first page on sort change
+    // Triggers useEffect to refetch
   };
 
-  useEffect(() => {
-    // Reset state on any filter/search/gold change
-    setCurrentPage(1);
-    setLastPageFlag(false);
-    setIsSeek(false);
-    setIsReverse(false);
-    setBeforeId(null);
-    setAfterId(null);
-  }, [debouncedSearchTerm, filterStatus, goldFilter]);
-
-  // Status toggle with re-fetch
+  // Status toggle
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
       toast.success("User status updated successfully! ✅");
-      // Re-fetch users
-      getUsersByRoleApi(
-        role, searchTerm, filterStatus, currentPage, entriesPerPage, sortColumn, sortOrder
-      ).then((res) => {
-        setUsers(res.data.users);
-        setTotalPages(res.data.totalPages);
-      });
+      handlePageChange(currentPage);
     } catch (error) {
       toast.error("Failed to update user status. ❌");
     }
   };
 
-  // Pagination handlers
-  const goToFirstPage = () => {
-    setCurrentPage(1);
-    setPaginationMode("offset");
-    setLastPageFlag(false);
-    setIsSeek(false);
-    setIsReverse(false);
-    setBeforeId(null);
-    setAfterId(null);
-  };
+  // Search debounce
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
-  const goToLastPage = () => {
-    setLastPageFlag(true);           // ONLY set this flag!
-    setIsSeek(false);
-    setIsReverse(false);
-    setBeforeId(null);
-    setAfterId(null);
-    // DO NOT setCurrentPage(null) or any value here!
-  };
-
-
-
-
-  const goToPreviousPage = () => {
-    // If in keyset mode after "last", go to previous page using afterId
-    if (paginationMode === "last" || paginationMode === "keyset") {
-      setIsReverse(true);
-      setPaginationMode("keyset");
-      setIsSeek(false);
-      setLastPageFlag(false);
-      // Do NOT set currentPage
-    } else {
-      setCurrentPage((prev) => Math.max(1, prev - 1));
-      setPaginationMode("offset");
-    }
-  };
-
-  const goToNextPage = () => {
-    if (paginationMode === "keyset" && isReverse) {
-      setIsReverse(false);
-      setIsSeek(true);
-      setPaginationMode("keyset");
-    } else {
-      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
-      setPaginationMode("offset");
-    }
-  };
-
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setPaginationMode("offset");
-    setLastPageFlag(false);
-    setIsSeek(false);
-    setIsReverse(false);
-    setBeforeId(null);
-    setAfterId(null);
-  };
-
-
-
-  // Change entries per page resets to first page
+  // Entries per page change
   const handleEntriesPerPageChange = (e) => {
     setEntriesPerPage(Number(e.target.value));
-    setCurrentPage(1);
   };
 
   return (
@@ -232,17 +185,9 @@ useEffect(() => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => { 
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-              setIsSeek(false);
-              setIsReverse(false);
-              setLastPageFlag(false);
-              setBeforeId(null);
-              setAfterId(null);
-             }}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select className="form-control w-25" value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
+          <select className="form-control w-25" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
@@ -321,6 +266,12 @@ useEffect(() => {
           dispatchCurrentPage={handlePageChange}
         />
 
+        {/* For debugging: show first and last id */}
+        <div style={{ marginTop: 10, color: "#888" }}>
+          <div>First page first user id: <b>{firstPageFirstId}</b></div>
+          <div>Last page last user id: <b>{lastPageLastId}</b></div>
+          <div>Stack pages cached: {pageStack.map(p => p.page).join(', ')}</div>
+        </div>
 
       </div>
     </section>
