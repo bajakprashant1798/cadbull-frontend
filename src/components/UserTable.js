@@ -42,6 +42,20 @@ const UserTable = ({ role, title }) => {
   };
   const debouncedSearch = useCallback(debounce((val) => setSearchTerm(val), 500), []);
 
+  const logPageState = (action, res, params) => {
+    console.log(
+      `[${action}] Users:`, (res.data.users || []).map(u => u.id),
+      '| afterId:', res.data.nextId,
+      '| beforeId:', res.data.prevId,
+      '| deepPage:', deepPage,
+      '| currentPage:', currentPage,
+      '| lastPageMode:', lastPageMode,
+      '| hasNext:', res.data.hasNext,
+      '| hasPrev:', res.data.hasPrev,
+      '| params:', params
+    );
+  };
+
   // --- Handler for "Last Page" button (fetch oldest users, reverse keyset) ---
   const goToLastPage = async () => {
     try {
@@ -59,14 +73,7 @@ const UserTable = ({ role, title }) => {
       setDeepPage(res.data.totalPages || 1); // start at the real last page
 
 
-    console.log(
-      "Users:", (res.data.users || []).map(u => u.id),
-      "afterId:", res.data.nextId,
-      "beforeId:", res.data.prevId,
-      "deepPage:", deepPage,
-      "lastPageMode:", lastPageMode,
-      "currentPage:", currentPage
-    );
+      logPageState('NEXT_FROM_LAST', res, params);
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
@@ -89,14 +96,7 @@ const UserTable = ({ role, title }) => {
     setHasNext(!!res.data.hasNext);
     setTotalPages(res.data.totalPages || 1);
 
-    console.log(
-      "Users:", (res.data.users || []).map(u => u.id),
-      "afterId:", res.data.nextId,
-      "beforeId:", res.data.prevId,
-      "deepPage:", deepPage,
-      "lastPageMode:", lastPageMode,
-      "currentPage:", currentPage
-    );
+    logPageState('NEXT_FROM_LAST', res, params);
   };
 
   // Next from last-page mode (move toward oldest users)
@@ -120,6 +120,7 @@ const UserTable = ({ role, title }) => {
         return newDeep;
       });
     }
+    logPageState('NEXT_FROM_LAST', res, params);
   };
 
 
@@ -141,14 +142,7 @@ const UserTable = ({ role, title }) => {
     setHasPrev(false);
     setTotalPages(res.data.totalPages || 1);
 
-    console.log(
-      "Users:", (res.data.users || []).map(u => u.id),
-      "afterId:", res.data.nextId,
-      "beforeId:", res.data.prevId,
-      "deepPage:", deepPage,
-      "lastPageMode:", lastPageMode,
-      "currentPage:", currentPage
-    );
+    logPageState('NEXT_FROM_LAST', res, params);
   };
 
   // Then, for "Previous" from last page, do:
@@ -171,14 +165,7 @@ const UserTable = ({ role, title }) => {
       });
     }
 
-    console.log(
-      "Users:", (res.data.users || []).map(u => u.id),
-      "afterId:", res.data.nextId,
-      "beforeId:", res.data.prevId,
-      "deepPage:", newDeep,
-      "lastPageMode:", lastPageMode,
-      "currentPage:", newDeep
-    );
+    logPageState('NEXT_FROM_LAST', res, params);
   };
     
 
