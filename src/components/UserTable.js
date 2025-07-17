@@ -58,6 +58,7 @@ const UserTable = ({ role, title }) => {
       setTotalPages(res.data.totalPages || 1);
       setDeepPage(res.data.totalPages || 1); // start at the real last page
 
+
     console.log(
       "Users:", (res.data.users || []).map(u => u.id),
       "afterId:", res.data.nextId,
@@ -105,23 +106,20 @@ const UserTable = ({ role, title }) => {
     params.last = true;
     params.afterId = afterId;
     const res = await getUsersByRoleApi(params);
-    const newDeep = Math.min(totalPages, (deepPage || totalPages) + 1);
-    setUsers(res.data.users || []);
-    setAfterId(res.data.nextId || null);
-    setBeforeId(res.data.prevId || null);
-    setHasNext(!!res.data.hasNext);
-    setHasPrev(!!res.data.hasPrev);
-    setDeepPage(newDeep);
-    setCurrentPage(newDeep);
-
-    console.log(
-      "Users:", (res.data.users || []).map(u => u.id),
-      "afterId:", res.data.nextId,
-      "beforeId:", res.data.prevId,
-      "deepPage:", newDeep,
-      "lastPageMode:", lastPageMode,
-      "currentPage:", newDeep
-    );
+    if (res.data.users?.length) {
+      // Only increment if you actually have more pages
+      setUsers(res.data.users);
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
+      setHasNext(!!res.data.hasNext);
+      setHasPrev(!!res.data.hasPrev);
+      setDeepPage(prev => {
+        // Only increment if there really is a next page
+        const newDeep = (prev !== null ? prev : (totalPages || 1)) + 1;
+        setCurrentPage(newDeep); // Keep both in sync!
+        return newDeep;
+      });
+    }
   };
 
 
@@ -160,14 +158,18 @@ const UserTable = ({ role, title }) => {
     params.last = true;
     params.beforeId = beforeId;
     const res = await getUsersByRoleApi(params);
-    const newDeep = Math.max(1, (deepPage || totalPages) - 1);
-    setUsers(res.data.users || []);
-    setAfterId(res.data.nextId || null);
-    setBeforeId(res.data.prevId || null);
-    setHasNext(!!res.data.hasNext);
-    setHasPrev(!!res.data.hasPrev);
-    setDeepPage(newDeep);
-    setCurrentPage(newDeep);
+    if (res.data.users?.length) {
+      setUsers(res.data.users);
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
+      setHasNext(!!res.data.hasNext);
+      setHasPrev(!!res.data.hasPrev);
+      setDeepPage(prev => {
+        const newDeep = (prev !== null ? prev : (totalPages || 1)) - 1;
+        setCurrentPage(newDeep);
+        return newDeep;
+      });
+    }
 
     console.log(
       "Users:", (res.data.users || []).map(u => u.id),
@@ -178,6 +180,7 @@ const UserTable = ({ role, title }) => {
       "currentPage:", newDeep
     );
   };
+    
 
 
   // Build API params
@@ -334,7 +337,7 @@ const UserTable = ({ role, title }) => {
         </div>
         {/* Pagination Controls */}
         <PaginationAdmin
-          currentPage={lastPageMode ? deepPage : currentPage}
+          currentPage={lastPageMode ? (deepPage || totalPages) : currentPage}
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
