@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
 
-const MAX_STACK_SIZE = 5; // Number of pages to cache in stack
+const MAX_STACK_SIZE = 5;
 
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -21,18 +21,13 @@ const UserTable = ({ role, title }) => {
   const [sortOrder, setSortOrder] = useState("desc");
   const router = useRouter();
 
-  // Stack/cache for paging: [{page, users, beforeId, afterId}]
   const [pageStack, setPageStack] = useState([]);
   const [firstPageFirstId, setFirstPageFirstId] = useState(null);
   const [lastPageLastId, setLastPageLastId] = useState(null);
 
-  // Refs to avoid stale closures in async
   const stackRef = useRef(pageStack);
   stackRef.current = pageStack;
-  const currentPageRef = useRef(currentPage);
-  currentPageRef.current = currentPage;
 
-  // Build API params utility
   function buildParams(pageNum = 1) {
     return {
       role,
@@ -46,7 +41,7 @@ const UserTable = ({ role, title }) => {
     };
   }
 
-  // Fill stack and store first/last user id on initial load or filter/sort change
+  // Reset all paging when filter/search changes
   useEffect(() => {
     let isMounted = true;
     async function fetchInitialPages() {
@@ -55,7 +50,7 @@ const UserTable = ({ role, title }) => {
       let totalFetchedPages = 0;
       let newTotalPages = 1;
 
-      // 1. Fetch first N pages in sequence (no parallel to avoid race)
+      // Fetch first MAX_STACK_SIZE pages
       for (let i = 1; i <= MAX_STACK_SIZE; i++) {
         const params = buildParams(i);
         const res = await getUsersByRoleApi(params);
@@ -72,11 +67,13 @@ const UserTable = ({ role, title }) => {
         });
         totalFetchedPages++;
       }
-      // 2. Fetch last page to get last user id
-      const lastParams = buildParams(newTotalPages);
-      lastParams.page = newTotalPages;
-      const lastRes = await getUsersByRoleApi(lastParams);
-      lastId = lastRes.data.users[lastRes.data.users.length - 1]?.id || null;
+
+      // Always fetch last page with last=true!
+      // let lastId = null;
+      if (newTotalPages > 1) {
+        const lastRes = await getUsersByRoleApi({ ...buildParams(), last: true });
+        lastId = lastRes.data.users[lastRes.data.users.length - 1]?.id || null;
+      }
 
       if (isMounted) {
         setPageStack(newStack);
@@ -88,69 +85,90 @@ const UserTable = ({ role, title }) => {
       }
     }
     fetchInitialPages();
-    // Cleanup on unmount or filter change
     return () => { isMounted = false; };
-    // Trigger on these dependencies:
   }, [role, filterStatus, goldFilter, searchTerm, entriesPerPage, sortColumn, sortOrder, isAuthenticated]);
 
-  // Helper to get cached page
+  // Helper: get page from stack
   function getCachedPage(pageNum) {
     return stackRef.current.find(p => p.page === pageNum);
   }
 
-  // Handler for next/prev/first/last/page number
-  const handlePageChange = async (pageNum) => {
-    // If in stack, use cache
+  // Optimize the fetch and cache logic with early returns
+  const fetchAndCachePage = async (pageNum, params = {}) => {
+    // Early return if page is in stack
     const cached = getCachedPage(pageNum);
-    if (cached) {
-      setUsers(cached.users);
+    if (cached) return cached.users;
+
+    // Optimize queries for first/last pages
+    let queryParams = { ...buildParams(pageNum), ...params };
+    if (pageNum === 1 && firstPageFirstId) {
+      queryParams.afterId = firstPageFirstId;
+    } else if (pageNum === totalPages && lastPageLastId) {
+      queryParams.beforeId = lastPageLastId;
+      queryParams.last = true;
+    }
+
+    const res = await getUsersByRoleApi(queryParams);
+    
+    // Update stack with new page data
+    let newStack = [...stackRef.current, {
+      page: pageNum,
+      users: res.data.users,
+      beforeId: res.data.users[0]?.id,
+      afterId: res.data.users[res.data.users.length - 1]?.id,
+    }].sort((a, b) => a.page - b.page);
+
+    // Keep only MAX_STACK_SIZE most recent pages
+    if (newStack.length > MAX_STACK_SIZE) {
+      // Remove pages furthest from current page
+      const distance = p => Math.abs(p.page - pageNum);
+      newStack.sort((a, b) => distance(a) - distance(b));
+      newStack = newStack.slice(0, MAX_STACK_SIZE);
+      newStack.sort((a, b) => a.page - b.page);
+    }
+
+    setPageStack(newStack);
+    return res.data.users;
+  };
+
+  // Optimize handlePageChange to use fetchAndCachePage
+  const handlePageChange = async (pageNum) => {
+    try {
+      const users = await fetchAndCachePage(pageNum);
+      setUsers(users);
       setCurrentPage(pageNum);
-    } else {
-      // Fetch and update stack
-      const res = await getUsersByRoleApi(buildParams(pageNum));
-      const usersData = res.data.users;
-      setUsers(usersData);
-      setCurrentPage(pageNum);
-      // Add to stack, maintain at MAX_STACK_SIZE
-      let newStack = [...stackRef.current, {
-        page: pageNum,
-        users: usersData,
-        beforeId: usersData[0]?.id,
-        afterId: usersData[usersData.length - 1]?.id,
-      }];
-      // Keep stack sliding window
-      if (newStack.length > MAX_STACK_SIZE) newStack.shift();
-      setPageStack(newStack);
+    } catch (error) {
+      toast.error("Failed to load users ❌");
+      console.error(error);
     }
   };
 
+  // Go to first page
   const goToFirstPage = () => handlePageChange(1);
 
-  const goToLastPage = () => handlePageChange(totalPages);
+  // Optimize goToLastPage to use lastPageLastId
+  const goToLastPage = async () => {
+    try {
+      const users = await fetchAndCachePage(totalPages, { 
+        last: true,
+        beforeId: lastPageLastId 
+      });
+      setUsers(users);
+      setCurrentPage(totalPages);
+    } catch (error) {
+      toast.error("Failed to load last page ❌");
+      console.error(error);
+    }
+  };
 
   const goToPreviousPage = () => {
     if (currentPage > 1) handlePageChange(currentPage - 1);
   };
-
   const goToNextPage = () => {
     if (currentPage < totalPages) handlePageChange(currentPage + 1);
   };
 
-  // Filter for gold/non-gold (frontend only, but backend does SQL filter too)
-  const filteredUsers = users; // No additional frontend filtering needed, since backend does gold now
-
-  // Sorting handler
-  const handleSort = (column) => {
-    if (sortColumn === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortOrder("asc");
-    }
-    // Triggers useEffect to refetch
-  };
-
-  // Status toggle
+  // Status toggle with reload
   const handleToggleStatus = async (id) => {
     try {
       await toggleUserStatusApi(id);
@@ -161,13 +179,15 @@ const UserTable = ({ role, title }) => {
     }
   };
 
-  // Search debounce
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchTerm(searchTerm);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
+  // Sorting handler
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
 
   // Entries per page change
   const handleEntriesPerPageChange = (e) => {
@@ -185,14 +205,14 @@ const UserTable = ({ role, title }) => {
             className="form-control w-25"
             placeholder="Search by email..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
           />
-          <select className="form-control w-25" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+          <select className="form-control w-25" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="">All</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
           </select>
-          <select className="form-control w-25" value={goldFilter} onChange={(e) => setGoldFilter(e.target.value)}>
+          <select className="form-control w-25" value={goldFilter} onChange={e => setGoldFilter(e.target.value)}>
             <option value="all">All Accounts</option>
             <option value="gold">Gold Accounts</option>
             <option value="non-gold">Non Gold Accounts</option>
@@ -203,7 +223,6 @@ const UserTable = ({ role, title }) => {
             <option value={50}>50 entries</option>
           </select>
         </div>
-
         {/* User Table */}
         <div className="table-responsive">
           <table className="table table-striped table-hover">
@@ -229,7 +248,7 @@ const UserTable = ({ role, title }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id}>
                   <td>{user.username}</td>
                   <td>{user.firstname} {user.lastname}</td>
@@ -239,8 +258,8 @@ const UserTable = ({ role, title }) => {
                   <td>
                     <button className="btn btn-link p-0" onClick={() => handleToggleStatus(user.id)}
                       title={user.status === "1" ? "Deactivate User" : "Activate User"}>
-                      {user.status === "1" ?
-                        <Icons.Active className="text-success" size={20} />
+                      {user.status === "1"
+                        ? <Icons.Active className="text-success" size={20} />
                         : <Icons.Inactive className="text-danger" size={20} />}
                     </button>
                   </td>
@@ -265,14 +284,11 @@ const UserTable = ({ role, title }) => {
           goToLastPage={goToLastPage}
           dispatchCurrentPage={handlePageChange}
         />
-
-        {/* For debugging: show first and last id */}
         <div style={{ marginTop: 10, color: "#888" }}>
           <div>First page first user id: <b>{firstPageFirstId}</b></div>
           <div>Last page last user id: <b>{lastPageLastId}</b></div>
           <div>Stack pages cached: {pageStack.map(p => p.page).join(', ')}</div>
         </div>
-
       </div>
     </section>
   );

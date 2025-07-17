@@ -528,7 +528,15 @@ export const getUserByIdApi = (id) => {
 // };
 // Accept a single "params" object to allow extra params (like last)
 export const getUsersByRoleApi = async (params) => {
-  return api.get("/admin/users", { params });
+  return api.get("/admin/users", { 
+    params: {
+      ...params,
+      // Add support for ID-based pagination
+      afterId: params.afterId,
+      beforeId: params.beforeId,
+      last: params.last
+    }
+  });
 };
 
 
