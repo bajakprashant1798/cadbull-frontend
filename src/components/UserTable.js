@@ -61,6 +61,12 @@ const UserTable = ({ role, title }) => {
     try {
       const params = buildParams();
       params.last = true;
+
+      console.log('[PAGING] Action:', actionName, {
+        lastPageMode, afterId, beforeId, deepPage, currentPage, params
+      });
+
+
       const res = await getUsersByRoleApi(params);
       setLastPageMode(true);
       setUsers(res.data.users || []);
@@ -71,6 +77,10 @@ const UserTable = ({ role, title }) => {
       setCurrentPage(res.data.totalPages || 1);
       setTotalPages(res.data.totalPages || 1);
       setDeepPage(res.data.totalPages || 1); // start at the real last page
+
+      console.log('[PAGING] Action:', actionName, {
+        lastPageMode, afterId, beforeId, deepPage, currentPage, params
+      });
 
 
       logPageState('NEXT_FROM_LAST', res, params);
@@ -89,12 +99,21 @@ const UserTable = ({ role, title }) => {
     setHasNext(false);
     setHasPrev(pageNum > 1);
 
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
+
+
     const res = await getUsersByRoleApi(buildParams(null, pageNum));
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setTotalPages(res.data.totalPages || 1);
+
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
 
     logPageState('NEXT_FROM_LAST', res, params);
   };
@@ -104,24 +123,33 @@ const UserTable = ({ role, title }) => {
     if (!lastPageMode || !afterId) return;
     const params = buildParams();
     params.last = true;
-    params.afterId = afterId;
+    params.afterId = afterId; // afterId must be updated every time
+
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
+
     const res = await getUsersByRoleApi(params);
     if (res.data.users?.length) {
-      // Only increment if you actually have more pages
       setUsers(res.data.users);
-      setAfterId(res.data.nextId || null);
-      setBeforeId(res.data.prevId || null);
+      setAfterId(res.data.nextId || null);   // <- Update to new nextId
+      setBeforeId(res.data.prevId || null);  // <- Update to new prevId
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
       setDeepPage(prev => {
-        // Only increment if there really is a next page
         const newDeep = (prev !== null ? prev : (totalPages || 1)) + 1;
-        setCurrentPage(newDeep); // Keep both in sync!
+        setCurrentPage(newDeep);
         return newDeep;
       });
     }
+
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
+
     logPageState('NEXT_FROM_LAST', res, params);
   };
+
 
 
 
@@ -134,6 +162,11 @@ const UserTable = ({ role, title }) => {
     setHasNext(false);
     setHasPrev(false);
     setDeepPage(null);
+
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
+
     const res = await getUsersByRoleApi(buildParams(null, 1));
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
@@ -141,6 +174,11 @@ const UserTable = ({ role, title }) => {
     setHasNext(!!res.data.hasNext);
     setHasPrev(false);
     setTotalPages(res.data.totalPages || 1);
+
+    console.log('[PAGING] Action:', actionName, {
+      lastPageMode, afterId, beforeId, deepPage, currentPage, params
+    });
+
 
     logPageState('NEXT_FROM_LAST', res, params);
   };
