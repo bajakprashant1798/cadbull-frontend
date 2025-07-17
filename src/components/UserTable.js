@@ -69,7 +69,6 @@ const UserTable = ({ role, title }) => {
       }
 
       // Always fetch last page with last=true!
-      // let lastId = null;
       if (newTotalPages > 1) {
         const lastRes = await getUsersByRoleApi({ ...buildParams(), last: true });
         lastId = lastRes.data.users[lastRes.data.users.length - 1]?.id || null;
@@ -129,6 +128,30 @@ const UserTable = ({ role, title }) => {
 
     setPageStack(newStack);
     return res.data.users;
+  };
+
+  // Add debounce function
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  // Add debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchTerm(value);
+    }, 500),
+    []
+  );
+
+  // Replace the search input onChange handler
+  const handleSearchChange = (e) => {
+    const { value } = e.target;
+    e.target.value = value;
+    debouncedSearch(value);
   };
 
   // Optimize handlePageChange to use fetchAndCachePage
@@ -205,6 +228,7 @@ const UserTable = ({ role, title }) => {
   const goToPreviousPage = () => {
     if (currentPage > 1) handlePageChange(currentPage - 1);
   };
+
   const goToNextPage = () => {
     if (currentPage < totalPages) handlePageChange(currentPage + 1);
   };
@@ -235,30 +259,6 @@ const UserTable = ({ role, title }) => {
     setEntriesPerPage(Number(e.target.value));
   };
 
-  // Add debounce function
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
-  };
-
-  // Add debounced search handler
-  const debouncedSearch = useCallback(
-    debounce((value) => {
-      setSearchTerm(value);
-    }, 500),
-    []
-  );
-
-  // Replace the search input onChange handler
-  const handleSearchChange = (e) => {
-    const { value } = e.target;
-    e.target.value = value; // Keep input value updated
-    debouncedSearch(value);
-  };
-
   return (
     <section className="py-lg-5 py-4 profile-page">
       <div className="container">
@@ -270,7 +270,7 @@ const UserTable = ({ role, title }) => {
             className="form-control w-25"
             placeholder="Search by email..."
             onChange={handleSearchChange}
-            defaultValue={searchTerm} // Use defaultValue instead of value
+            defaultValue={searchTerm}
           />
           <select className="form-control w-25" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="">All</option>
