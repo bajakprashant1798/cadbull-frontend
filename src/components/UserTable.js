@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import Icons from "@/components/Icons";
 import { toast } from "react-toastify";
 
-const MAX_OFFSET_PAGES = 5;
+const MAX_OFFSET_PAGES = 100;
 
 const UserTable = ({ role, title }) => {
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -248,7 +248,8 @@ const UserTable = ({ role, title }) => {
   const handleSearchChange = (e) => debouncedSearch(e.target.value);
 
   // Only show page numbers for offset pages
-  const showNumbers = !lastPageMode && currentPage <= MAX_OFFSET_PAGES;
+  // const showNumbers = !lastPageMode && currentPage <= MAX_OFFSET_PAGES;
+  const showNumbers = !lastPageMode;
 
 
   return (
@@ -322,15 +323,16 @@ const UserTable = ({ role, title }) => {
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
           goToPreviousPage={lastPageMode
-            ? () => fetchPrevFromLast(users.length ? users[0].id : beforeId) // first user in array (newest in this view)
+            ? () => fetchPrevFromLast(users.length ? users[0].id : beforeId)
             : () => hasPrev && fetchUserPage("prev")
           }
           goToNextPage={lastPageMode
-            ? () => fetchNextFromLast(users.length ? users[users.length - 1].id : afterId) // last user in array (oldest in this view)
+            ? () => fetchNextFromLast(users.length ? users[users.length - 1].id : afterId)
             : () => hasNext && fetchUserPage("next")
           }
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
         />
+
         {!showNumbers && (
           <div className="text-center mt-2" style={{color: "#888"}}>
             <b>Deep pagination mode: use Next/Previous</b>
