@@ -51,12 +51,13 @@ useEffect(() => {
 
 useEffect(() => {
   const params = {
-    role,
+   role,
     search: debouncedSearchTerm,
     status: filterStatus,
     perPage: entriesPerPage,
     sortColumn,
-    sortOrder
+    sortOrder,
+    gold: goldFilter !== "all" ? goldFilter : undefined, // pass gold only if selected
   };
 
   if (lastPageFlag) {
@@ -125,6 +126,16 @@ useEffect(() => {
     }
     setCurrentPage(1); // Reset to first page on sort change
   };
+
+  useEffect(() => {
+    // Reset state on any filter/search/gold change
+    setCurrentPage(1);
+    setLastPageFlag(false);
+    setIsSeek(false);
+    setIsReverse(false);
+    setBeforeId(null);
+    setAfterId(null);
+  }, [debouncedSearchTerm, filterStatus, goldFilter]);
 
   // Status toggle with re-fetch
   const handleToggleStatus = async (id) => {
