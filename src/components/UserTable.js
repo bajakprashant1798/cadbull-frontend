@@ -146,15 +146,43 @@ const UserTable = ({ role, title }) => {
   // Go to first page
   const goToFirstPage = () => handlePageChange(1);
 
-  // Optimize goToLastPage to use lastPageLastId
+  // Optimize goToLastPage function
   const goToLastPage = async () => {
     try {
-      const users = await fetchAndCachePage(totalPages, { 
-        last: true,
-        beforeId: lastPageLastId 
+      // Fetch last page directly with last=true parameter
+      const lastRes = await getUsersByRoleApi({ 
+        ...buildParams(), 
+        page: totalPages,
+        last: true 
       });
-      setUsers(users);
-      setCurrentPage(totalPages);
+
+      if (lastRes.data.users?.length > 0) {
+        // Calculate the starting page for last pages cache
+        const startPage = Math.max(totalPages - MAX_STACK_SIZE + 1, 1);
+        let newStack = [];
+
+        // Fetch and cache last MAX_STACK_SIZE pages
+        for (let i = startPage; i <= totalPages; i++) {
+          const res = await getUsersByRoleApi({ 
+            ...buildParams(),
+            page: i,
+            beforeId: lastRes.data.lastUserId 
+          });
+          
+          if (res.data.users?.length > 0) {
+            newStack.push({
+              page: i,
+              users: res.data.users,
+              beforeId: res.data.users[0]?.id,
+              afterId: res.data.users[res.data.users.length - 1]?.id,
+            });
+          }
+        }
+
+        setPageStack(newStack);
+        setUsers(lastRes.data.users);
+        setCurrentPage(totalPages);
+      }
     } catch (error) {
       toast.error("Failed to load last page ❌");
       console.error(error);
