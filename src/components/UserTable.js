@@ -47,89 +47,78 @@ const UserTable = ({ role, title }) => {
 
     async function fetchInitialPages() {
       try {
-        // First fetch just the first page to show data immediately
-        const firstPageRes = await getUsersByRoleApi(buildParams(1));
-        let firstId = null;
-        let newStack = [];
-
-        if (firstPageRes.data.users.length > 0) {
-          firstId = firstPageRes.data.users[0].id;
-          const firstLastUserId = firstPageRes.data.users[firstPageRes.data.users.length - 1].id;
-          
-          // Set initial data immediately
-          if (isMounted) {
-            setUsers(firstPageRes.data.users);
-            setFirstPageFirstId(firstId);
-            newStack.push({
-              page: 1,
-              users: firstPageRes.data.users,
-              beforeId: firstId,
-              afterId: firstLastUserId
-            });
-          }
-        }
-
-        // Get total pages count in parallel with first page
-        const countRes = await getUsersByRoleApi({ 
-          ...buildParams(),
-          countOnly: true
-        });
+        // First get first page data and total pages
+        const firstPageResponse = await getUsersByRoleApi(buildParams(1));
         
-        const actualTotalPages = countRes.data.totalPages;
-        console.log('Initial total pages:', actualTotalPages);
+        if (!isMounted) return;
 
-        // Start background fetching of subsequent pages using afterId
-        if (actualTotalPages > 1 && firstPageRes.data.users.length > 0) {
-          const lastUserId = firstPageRes.data.users[firstPageRes.data.users.length - 1].id;
-          const subsequentPagesPromises = [];
-          
-          // Fetch pages 2 to MAX_STACK_SIZE-1 in parallel using afterId
-          for (let i = 2; i < MAX_STACK_SIZE && i < actualTotalPages; i++) {
-            subsequentPagesPromises.push(
-              getUsersByRoleApi({
-                ...buildParams(i),
-                afterId: lastUserId
-              })
-            );
-          }
-
-          // Fetch subsequent pages in parallel
-          const subsequentResults = await Promise.all(subsequentPagesPromises);
-          subsequentResults.forEach((res, idx) => {
-            if (res.data.users.length > 0) {
-              newStack.push({
-                page: idx + 2,
-                users: res.data.users,
-                beforeId: res.data.users[0].id,
-                afterId: res.data.users[res.data.users.length - 1].id
-              });
-            }
-          });
+        const { users, total, totalPages } = firstPageResponse.data;
+        setTotalPages(totalPages);
+        
+        if (!users || users.length === 0) {
+          console.warn('No users found');
+          return;
         }
 
-        // Finally, get last page data if there are multiple pages
-        let lastId = null;
-        if (actualTotalPages > 1) {
-          const lastRes = await getUsersByRoleApi({
-            ...buildParams(),
-            last: true
-          });
-          
-          if (lastRes.data.users.length > 0) {
-            lastId = lastRes.data.users[lastRes.data.users.length - 1].id;
+        // Set first page data and IDs
+        const firstId = users[0].id;
+        setUsers(users);
+        setFirstPageFirstId(firstId);
+        
+        let newStack = [{
+          page: 1,
+          users: users,
+          beforeId: firstId,
+          afterId: users[users.length - 1].id
+        }];
+
+        // Pre-fetch next pages up to MAX_STACK_SIZE
+        if (totalPages > 1) {
+          try {
+            const pagesToFetch = Math.min(MAX_STACK_SIZE - 1, totalPages - 1);
+            const promises = [];
+            
+            // Fetch subsequent pages
+            for (let i = 2; i <= pagesToFetch + 1; i++) {
+              promises.push(getUsersByRoleApi(buildParams(i)));
+            }
+            
+            // Add last page to the fetch queue if not included
+            if (totalPages > pagesToFetch + 1) {
+              promises.push(getUsersByRoleApi({ ...buildParams(), last: true }));
+            }
+
+            const results = await Promise.all(promises);
+            
+            // Process results
+            results.forEach((res, idx) => {
+              if (res.data.users?.length > 0) {
+                const pageUsers = res.data.users;
+                const isLastPage = idx === promises.length - 1 && totalPages > pagesToFetch + 1;
+                
+                if (isLastPage) {
+                  setLastPageLastId(pageUsers[pageUsers.length - 1].id);
+                } else {
+                  newStack.push({
+                    page: idx + 2,
+                    users: pageUsers,
+                    beforeId: pageUsers[0].id,
+                    afterId: pageUsers[pageUsers.length - 1].id
+                  });
+                }
+              }
+            });
+          } catch (error) {
+            console.error('Error pre-fetching pages:', error);
           }
         }
 
         if (isMounted) {
           setPageStack(newStack);
-          setLastPageLastId(lastId);
-          setTotalPages(actualTotalPages);
-          
-          console.log('Initial state set:', {
+          console.log('Initial state set:', { 
             stackSize: newStack.length,
-            firstId,
-            lastId,
-            totalPages: actualTotalPages
+            totalPages,
+            currentPage: 1
           });
         }
       } catch (error) {
@@ -138,7 +127,9 @@ const UserTable = ({ role, title }) => {
       }
     }
 
-    fetchInitialPages();
+    if (isAuthenticated) {
+      fetchInitialPages();
+    }
     return () => { isMounted = false; };
   }, [role, filterStatus, goldFilter, searchTerm, entriesPerPage, sortColumn, sortOrder, isAuthenticated]);
 
@@ -147,42 +138,53 @@ const UserTable = ({ role, title }) => {
     return stackRef.current.find(p => p.page === pageNum);
   }
 
-  // Optimize the fetch and cache logic with early returns
+  // Optimize the fetch and cache logic with better page handling
   const fetchAndCachePage = async (pageNum, params = {}) => {
-    // Early return if page is in stack
-    const cached = getCachedPage(pageNum);
-    if (cached) return cached.users;
+    try {
+      // Early return if page is in stack
+      const cached = getCachedPage(pageNum);
+      if (cached) return cached.users;
 
-    // Optimize queries for first/last pages
-    let queryParams = { ...buildParams(pageNum), ...params };
-    if (pageNum === 1 && firstPageFirstId) {
-      queryParams.afterId = firstPageFirstId;
-    } else if (pageNum === totalPages && lastPageLastId) {
-      queryParams.beforeId = lastPageLastId;
-      queryParams.last = true;
+      // Optimize queries for first/last pages
+      let queryParams = { ...buildParams(pageNum), ...params };
+      
+      // Get the page data
+      const response = await getUsersByRoleApi(queryParams);
+      const { users, total, totalPages: newTotalPages } = response.data;
+
+      // Update total pages if it has changed
+      if (newTotalPages !== totalPages) {
+        setTotalPages(newTotalPages);
+      }
+
+      if (!users || users.length === 0) {
+        console.warn(`No users found for page ${pageNum}`);
+        return [];
+      }
+
+      // Update stack with new page data
+      let newStack = [...stackRef.current, {
+        page: pageNum,
+        users: users,
+        beforeId: users[0]?.id,
+        afterId: users[users.length - 1]?.id,
+      }].sort((a, b) => a.page - b.page);
+
+      // Keep only MAX_STACK_SIZE most recent pages
+      if (newStack.length > MAX_STACK_SIZE) {
+        const distance = p => Math.abs(p.page - pageNum);
+        newStack.sort((a, b) => distance(a) - distance(b));
+        newStack = newStack.slice(0, MAX_STACK_SIZE);
+        newStack.sort((a, b) => a.page - b.page);
+      }
+
+      setPageStack(newStack);
+      return users;
+    } catch (error) {
+      console.error('Error fetching page:', error);
+      toast.error("Failed to load users ❌");
+      return [];
     }
-
-    const res = await getUsersByRoleApi(queryParams);
-    
-    // Update stack with new page data
-    let newStack = [...stackRef.current, {
-      page: pageNum,
-      users: res.data.users,
-      beforeId: res.data.users[0]?.id,
-      afterId: res.data.users[res.data.users.length - 1]?.id,
-    }].sort((a, b) => a.page - b.page);
-
-    // Keep only MAX_STACK_SIZE most recent pages
-    if (newStack.length > MAX_STACK_SIZE) {
-      // Remove pages furthest from current page
-      const distance = p => Math.abs(p.page - pageNum);
-      newStack.sort((a, b) => distance(a) - distance(b));
-      newStack = newStack.slice(0, MAX_STACK_SIZE);
-      newStack.sort((a, b) => a.page - b.page);
-    }
-
-    setPageStack(newStack);
-    return res.data.users;
   };
 
   // Add debounce function
