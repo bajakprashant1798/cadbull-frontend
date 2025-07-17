@@ -89,14 +89,15 @@ const UserTable = ({ role, title }) => {
     setHasNext(false);
     setHasPrev(pageNum > 1);
 
-    const res = await getUsersByRoleApi(buildParams(null, pageNum));
+    const params = buildParams(null, pageNum);   // <-- Add this line!
+    const res = await getUsersByRoleApi(params); // Use it here too
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setTotalPages(res.data.totalPages || 1);
 
-    logPageState('NEXT_FROM_LAST', res, params);
+    logPageState('NEXT_FROM_LAST', res, params); // Now params is defined
   };
 
   // Next from last-page mode (move toward oldest users)
@@ -321,11 +322,11 @@ const UserTable = ({ role, title }) => {
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
           goToPreviousPage={lastPageMode
-            ? () => fetchPrevFromLast(users.length ? users[0].id : beforeId)
+            ? () => fetchPrevFromLast(users.length ? users[0].id : beforeId) // first user in array (newest in this view)
             : () => hasPrev && fetchUserPage("prev")
           }
           goToNextPage={lastPageMode
-            ? () => fetchNextFromLast(users.length ? users[users.length - 1].id : afterId)
+            ? () => fetchNextFromLast(users.length ? users[users.length - 1].id : afterId) // last user in array (oldest in this view)
             : () => hasNext && fetchUserPage("next")
           }
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}

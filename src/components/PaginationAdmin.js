@@ -17,51 +17,36 @@ const PaginationAdmin = ({
   };
 
   const getPageNumbers = () => {
-    const delta = 2; // Pages to show before and after current page
-    const pages = [];
-    
-    if (totalPages <= 7) {
-      // Show all pages if total is small
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Always include first page
-      pages.push(1);
-      
-      if (currentPage > 3) {
-        pages.push('...');
-      }
-      
-      // Calculate window around current page
-      let start = Math.max(2, currentPage - delta);
-      let end = Math.min(totalPages - 1, currentPage + delta);
-      
-      // Adjust window if at edges
-      if (currentPage <= 3) {
-        end = 5;
-      }
-      if (currentPage >= totalPages - 2) {
-        start = totalPages - 4;
-      }
-      
-      // Add pages in window
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-      
-      if (currentPage < totalPages - 2) {
-        pages.push('...');
-      }
-      
-      // Always include last page
-      if (totalPages > 1) {
-        pages.push(totalPages);
-      }
+    const pageWindow = 5;
+    let pages = [];
+
+    // If totalPages <= 5, just show them all
+    if (totalPages <= pageWindow) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+      return pages;
     }
-    
+
+    // Compute window
+    let start = Math.max(1, currentPage - Math.floor(pageWindow / 2));
+    let end = start + pageWindow - 1;
+
+    // Clamp end if it exceeds totalPages
+    if (end > totalPages) {
+      end = totalPages;
+      start = end - pageWindow + 1;
+    }
+
+    // Clamp start if it goes below 1
+    if (start < 1) start = 1;
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
     return pages;
   };
+
+
 
   return (
     <div className="row mt-4 mt-md-5">
