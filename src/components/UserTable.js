@@ -100,23 +100,20 @@ const UserTable = ({ role, title }) => {
   };
 
   // Next from last-page mode (move toward oldest users)
-  const fetchNextFromLast = async () => {
-    if (!lastPageMode || !afterId) return;
+  const fetchNextFromLast = async (cursorAfterId) => {
+    if (!lastPageMode || !cursorAfterId) return;
     const params = buildParams();
     params.last = true;
-    params.afterId = afterId; // afterId must be updated every time
+    params.afterId = cursorAfterId;
     const res = await getUsersByRoleApi(params);
     if (res.data.users?.length) {
       setUsers(res.data.users);
-      setAfterId(res.data.nextId || null);   // <- Update to new nextId
-      setBeforeId(res.data.prevId || null);  // <- Update to new prevId
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setDeepPage(prev => {
-        const newDeep = (prev !== null ? prev : (totalPages || 1)) + 1;
-        setCurrentPage(newDeep);
-        return newDeep;
-      });
+      setDeepPage(prev => (prev !== null ? prev : (totalPages || 1)) + 1);
+      setCurrentPage(prev => (prev !== null ? prev : (totalPages || 1)) + 1);
     }
     logPageState('NEXT_FROM_LAST', res, params);
   };
@@ -145,11 +142,11 @@ const UserTable = ({ role, title }) => {
   };
 
   // Then, for "Previous" from last page, do:
-  const fetchPrevFromLast = async () => {
-    if (!lastPageMode || !beforeId) return;
+  const fetchPrevFromLast = async (cursorBeforeId) => {
+    if (!lastPageMode || !cursorBeforeId) return;
     const params = buildParams();
     params.last = true;
-    params.beforeId = beforeId;
+    params.beforeId = cursorBeforeId;
     const res = await getUsersByRoleApi(params);
     if (res.data.users?.length) {
       setUsers(res.data.users);
@@ -157,13 +154,9 @@ const UserTable = ({ role, title }) => {
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setDeepPage(prev => {
-        const newDeep = (prev !== null ? prev : (totalPages || 1)) - 1;
-        setCurrentPage(newDeep);
-        return newDeep;
-      });
+      setDeepPage(prev => (prev !== null ? prev : (totalPages || 1)) - 1);
+      setCurrentPage(prev => (prev !== null ? prev : (totalPages || 1)) - 1);
     }
-
     logPageState('NEXT_FROM_LAST', res, params);
   };
     
@@ -327,8 +320,14 @@ const UserTable = ({ role, title }) => {
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
-          goToPreviousPage={lastPageMode ? fetchPrevFromLast : () => hasPrev && fetchUserPage("prev")}
-          goToNextPage={lastPageMode ? fetchNextFromLast : () => hasNext && fetchUserPage("next")}
+          goToPreviousPage={lastPageMode
+            ? () => fetchPrevFromLast(users.length ? users[0].id : beforeId)
+            : () => hasPrev && fetchUserPage("prev")
+          }
+          goToNextPage={lastPageMode
+            ? () => fetchNextFromLast(users.length ? users[users.length - 1].id : afterId)
+            : () => hasNext && fetchUserPage("next")
+          }
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
         />
         {!showNumbers && (
