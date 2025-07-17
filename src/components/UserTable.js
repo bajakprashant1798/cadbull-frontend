@@ -78,18 +78,19 @@ const UserTable = ({ role, title }) => {
     setTotalPages(res.data.totalPages || 1);
   };
 
+  // Next from last-page mode (move toward oldest users)
   const fetchNextFromLast = async () => {
     try {
       const params = buildParams(null, null);
       params.last = true;
-      if (afterId) params.afterId = afterId;
+      if (afterId) params.afterId = afterId;  // Always send afterId!
       const res = await getUsersByRoleApi(params);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setCurrentPage(currentPage + 1); // or track lastPageModePage separately if you want
+      setCurrentPage(currentPage + 1);  // or a separate deep-page counter
       setTotalPages(res.data.totalPages || totalPages);
     } catch (err) {
       toast.error("Failed to load users ❌");
@@ -119,14 +120,14 @@ const UserTable = ({ role, title }) => {
     try {
       const params = buildParams(null, null);
       params.last = true;
-      if (beforeId) params.beforeId = beforeId;
+      if (beforeId) params.beforeId = beforeId;  // Always send beforeId!
       const res = await getUsersByRoleApi(params);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setCurrentPage(currentPage - 1); // or track separately for deep pages
+      setCurrentPage(Math.max(1, currentPage - 1)); // or track separately
       setTotalPages(res.data.totalPages || totalPages);
     } catch (err) {
       toast.error("Failed to load users ❌");
