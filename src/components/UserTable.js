@@ -25,6 +25,8 @@ const UserTable = ({ role, title }) => {
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
+  const [lastPageMode, setLastPageMode] = useState(false);
+
 
   const router = useRouter();
 
@@ -46,6 +48,7 @@ const UserTable = ({ role, title }) => {
       // Only add beforeId if already in last-page mode and want "Previous"
       // if (inLastPageMode && beforeId) params.beforeId = beforeId;
       const res = await getUsersByRoleApi(params);
+      setLastPageMode(true);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
@@ -60,6 +63,7 @@ const UserTable = ({ role, title }) => {
 
   // For numbered page jump (offset mode only)
   const handlePageJump = async (pageNum) => {
+    setLastPageMode(false);
     setCurrentPage(pageNum);
     setAfterId(null);
     setBeforeId(null);
@@ -78,6 +82,7 @@ const UserTable = ({ role, title }) => {
   // Handler for "First Page" button (reset to first/offset page 1)
   const goToFirstPage = async () => {
     setCurrentPage(1);
+    setLastPageMode(false);
     setAfterId(null);
     setBeforeId(null);
     setHasNext(false);
@@ -164,6 +169,7 @@ const UserTable = ({ role, title }) => {
       if (direction === "prev") nextPage = currentPage - 1;
       let params = buildParams(direction, nextPage);
       const res = await getUsersByRoleApi(params);
+      setLastPageMode(false);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
@@ -194,7 +200,8 @@ const UserTable = ({ role, title }) => {
   const handleSearchChange = (e) => debouncedSearch(e.target.value);
 
   // Only show page numbers for offset pages
-  const showNumbers = currentPage <= MAX_OFFSET_PAGES;
+  const showNumbers = !lastPageMode && currentPage <= MAX_OFFSET_PAGES;
+
 
   return (
     <section className="py-lg-5 py-4 profile-page">
@@ -266,9 +273,11 @@ const UserTable = ({ role, title }) => {
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
-          goToPreviousPage={() => hasPrev && fetchUserPage("prev")}
+          goToPreviousPage={lastPageMode ? fetchPrevFromLast : () => hasPrev && fetchUserPage("prev")}
+
           goToNextPage={() => hasNext && fetchUserPage("next")}
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
+          
         />
         {!showNumbers && (
           <div className="text-center mt-2" style={{color: "#888"}}>
