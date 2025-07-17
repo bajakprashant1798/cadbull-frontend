@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { getUsersByRoleApi, toggleUserStatusApi } from "@/service/api";
 import PaginationAdmin from "@/components/PaginationAdmin";
@@ -235,6 +235,30 @@ const UserTable = ({ role, title }) => {
     setEntriesPerPage(Number(e.target.value));
   };
 
+  // Add debounce function
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  // Add debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchTerm(value);
+    }, 500),
+    []
+  );
+
+  // Replace the search input onChange handler
+  const handleSearchChange = (e) => {
+    const { value } = e.target;
+    e.target.value = value; // Keep input value updated
+    debouncedSearch(value);
+  };
+
   return (
     <section className="py-lg-5 py-4 profile-page">
       <div className="container">
@@ -245,8 +269,8 @@ const UserTable = ({ role, title }) => {
             type="text"
             className="form-control w-25"
             placeholder="Search by email..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
+            defaultValue={searchTerm} // Use defaultValue instead of value
           />
           <select className="form-control w-25" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="">All</option>
