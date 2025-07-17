@@ -57,6 +57,15 @@ const UserTable = ({ role, title }) => {
       setCurrentPage(res.data.totalPages || 1);
       setTotalPages(res.data.totalPages || 1);
       setDeepPage(res.data.totalPages || 1); // start at the real last page
+
+    console.log(
+      "Users:", (res.data.users || []).map(u => u.id),
+      "afterId:", res.data.nextId,
+      "beforeId:", res.data.prevId,
+      "deepPage:", deepPage,
+      "lastPageMode:", lastPageMode,
+      "currentPage:", currentPage
+    );
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
@@ -78,37 +87,39 @@ const UserTable = ({ role, title }) => {
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setTotalPages(res.data.totalPages || 1);
+
+    console.log(
+      "Users:", (res.data.users || []).map(u => u.id),
+      "afterId:", res.data.nextId,
+      "beforeId:", res.data.prevId,
+      "deepPage:", deepPage,
+      "lastPageMode:", lastPageMode,
+      "currentPage:", currentPage
+    );
   };
 
   // Next from last-page mode (move toward oldest users)
   const fetchNextFromLast = async () => {
-    if (!lastPageMode) return;
-    try {
-      const params = buildParams();
-      // Remove params.last = true; - this was causing the issue
-      if (afterId) params.afterId = afterId;
-      
-      const res = await getUsersByRoleApi(params);
-      
-      // Check if we should exit last page mode
-      // If we're moving forward and have valid data, we might be back in regular pagination
-      if (res.data.mode === "keyset" || res.data.mode === "offset") {
-        setLastPageMode(false);
-        setCurrentPage(res.data.currentPage || (deepPage ? deepPage + 1 : 1));
-      }
-      
-      setUsers(res.data.users || []);
-      setAfterId(res.data.nextId || null);
-      setBeforeId(res.data.prevId || null);
-      setHasNext(!!res.data.hasNext);
-      setHasPrev(!!res.data.hasPrev);
-      
-      if (lastPageMode) {
-        setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
-      }
-    } catch (err) {
-      toast.error("Failed to load users ❌");
-    }
+    if (!lastPageMode || !afterId) return;
+    const params = buildParams();
+    params.last = true;
+    params.afterId = afterId;
+    const res = await getUsersByRoleApi(params);
+    setUsers(res.data.users || []);
+    setAfterId(res.data.nextId || null);
+    setBeforeId(res.data.prevId || null);
+    setHasNext(!!res.data.hasNext);
+    setHasPrev(!!res.data.hasPrev);
+    setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
+
+    console.log(
+      "Users:", (res.data.users || []).map(u => u.id),
+      "afterId:", res.data.nextId,
+      "beforeId:", res.data.prevId,
+      "deepPage:", deepPage,
+      "lastPageMode:", lastPageMode,
+      "currentPage:", currentPage
+    );
   };
 
 
@@ -129,26 +140,45 @@ const UserTable = ({ role, title }) => {
     setHasNext(!!res.data.hasNext);
     setHasPrev(false);
     setTotalPages(res.data.totalPages || 1);
+
+    console.log(
+      "Users:", (res.data.users || []).map(u => u.id),
+      "afterId:", res.data.nextId,
+      "beforeId:", res.data.prevId,
+      "deepPage:", deepPage,
+      "lastPageMode:", lastPageMode,
+      "currentPage:", currentPage
+    );
   };
 
   // Then, for "Previous" from last page, do:
   const fetchPrevFromLast = async () => {
-    if (!lastPageMode) return;
-    try {
-      const params = buildParams();
-      params.last = true;
-      if (beforeId) params.beforeId = beforeId;
-      const res = await getUsersByRoleApi(params);
-      setUsers(res.data.users || []);
-      setAfterId(res.data.nextId || null);
-      setBeforeId(res.data.prevId || null);
-      setHasNext(!!res.data.hasNext);
-      setHasPrev(!!res.data.hasPrev);
-      setDeepPage(prev => Math.max(1, (prev || totalPages) - 1));
-    } catch (err) {
-      toast.error("Failed to load users ❌");
-    }
+    if (!lastPageMode || !beforeId) return;
+    const params = buildParams();
+    params.last = true;
+    params.beforeId = beforeId;
+    const res = await getUsersByRoleApi(params);
+
+    setUsers(res.data.users || []);
+    setAfterId(res.data.nextId || null);
+    setBeforeId(res.data.prevId || null);
+    setHasNext(!!res.data.hasNext);
+    setHasPrev(!!res.data.hasPrev);
+    setDeepPage(prev => {
+      const newPage = Math.max(1, (prev || totalPages) - 1);
+      // Log inside the updater for most accurate value
+      console.log(
+        "Users:", (res.data.users || []).map(u => u.id),
+        "afterId:", res.data.nextId,
+        "beforeId:", res.data.prevId,
+        "deepPage (new):", newPage,
+        "lastPageMode:", true,
+        "currentPage:", currentPage // Might still be the previous value
+      );
+      return newPage;
+    });
   };
+
 
   // Build API params
   const buildParams = (direction = null, pageOverride = null) => {
@@ -214,35 +244,6 @@ const UserTable = ({ role, title }) => {
       if (res.data.totalPages) setTotalPages(res.data.totalPages);
     } catch (err) {
       toast.error("Failed to load users ❌");
-    }
-  };
-  
-  const goToNextPage = () => {
-    if (lastPageMode) {
-      // Check if we should exit last page mode
-      if (deepPage && deepPage < totalPages) {
-        setLastPageMode(false);
-        const nextPage = deepPage + 1;
-        if (nextPage <= MAX_OFFSET_PAGES) {
-          handlePageJump(nextPage);
-        } else {
-          fetchUserPage("next");
-        }
-        return;
-      }
-      // If still in last page mode, use the fixed fetchNextFromLast
-      fetchNextFromLast();
-    } else {
-      // Regular next page logic
-      if (hasNext) fetchUserPage("next");
-    }
-  };
-
-  const goToPreviousPage = () => {
-    if (lastPageMode) {
-      fetchPrevFromLast();
-    } else {
-      if (hasPrev) fetchUserPage("prev");
     }
   };
 
@@ -337,8 +338,8 @@ const UserTable = ({ role, title }) => {
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
-          goToPreviousPage={goToPreviousPage}  // Use the new function
-          goToNextPage={goToNextPage}          // Use the new function
+          goToPreviousPage={lastPageMode ? fetchPrevFromLast : () => hasPrev && fetchUserPage("prev")}
+          goToNextPage={lastPageMode ? fetchNextFromLast : () => hasNext && fetchUserPage("next")}
           dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
         />
         {!showNumbers && (
