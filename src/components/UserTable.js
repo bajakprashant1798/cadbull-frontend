@@ -27,6 +27,8 @@ const UserTable = ({ role, title }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [lastPageMode, setLastPageMode] = useState(false);
 
+  const [deepPage, setDeepPage] = useState(null);
+
 
   const router = useRouter();
 
@@ -43,10 +45,8 @@ const UserTable = ({ role, title }) => {
   // --- Handler for "Last Page" button (fetch oldest users, reverse keyset) ---
   const goToLastPage = async () => {
     try {
-      const params = buildParams(null, null);
+      const params = buildParams();
       params.last = true;
-      // Only add beforeId if already in last-page mode and want "Previous"
-      // if (inLastPageMode && beforeId) params.beforeId = beforeId;
       const res = await getUsersByRoleApi(params);
       setLastPageMode(true);
       setUsers(res.data.users || []);
@@ -54,12 +54,14 @@ const UserTable = ({ role, title }) => {
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setCurrentPage(res.data.totalPages || currentPage);
-      setTotalPages(res.data.totalPages || totalPages);
+      setCurrentPage(res.data.totalPages || 1);
+      setTotalPages(res.data.totalPages || 1);
+      setDeepPage(res.data.totalPages || 1); // start at the real last page
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
   };
+
 
   // For numbered page jump (offset mode only)
   const handlePageJump = async (pageNum) => {
@@ -80,18 +82,18 @@ const UserTable = ({ role, title }) => {
 
   // Next from last-page mode (move toward oldest users)
   const fetchNextFromLast = async () => {
+    if (!lastPageMode) return;
     try {
-      const params = buildParams(null, null);
+      const params = buildParams();
       params.last = true;
-      if (afterId) params.afterId = afterId;  // Always send afterId!
+      if (afterId) params.afterId = afterId;
       const res = await getUsersByRoleApi(params);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setCurrentPage(currentPage + 1);  // or a separate deep-page counter
-      setTotalPages(res.data.totalPages || totalPages);
+      setDeepPage(prev => Math.min(totalPages, (prev || totalPages) + 1));
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
@@ -106,6 +108,7 @@ const UserTable = ({ role, title }) => {
     setBeforeId(null);
     setHasNext(false);
     setHasPrev(false);
+    setDeepPage(null);
     const res = await getUsersByRoleApi(buildParams(null, 1));
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
@@ -117,18 +120,18 @@ const UserTable = ({ role, title }) => {
 
   // Then, for "Previous" from last page, do:
   const fetchPrevFromLast = async () => {
+    if (!lastPageMode) return;
     try {
-      const params = buildParams(null, null);
+      const params = buildParams();
       params.last = true;
-      if (beforeId) params.beforeId = beforeId;  // Always send beforeId!
+      if (beforeId) params.beforeId = beforeId;
       const res = await getUsersByRoleApi(params);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
       setBeforeId(res.data.prevId || null);
       setHasNext(!!res.data.hasNext);
       setHasPrev(!!res.data.hasPrev);
-      setCurrentPage(Math.max(1, currentPage - 1)); // or track separately
-      setTotalPages(res.data.totalPages || totalPages);
+      setDeepPage(prev => Math.max(1, (prev || totalPages) - 1));
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
@@ -288,7 +291,7 @@ const UserTable = ({ role, title }) => {
         </div>
         {/* Pagination Controls */}
         <PaginationAdmin
-          currentPage={currentPage}
+          currentPage={lastPageMode ? deepPage : currentPage}
           totalPages={showNumbers ? totalPages : null}
           goToFirstPage={goToFirstPage}
           goToLastPage={goToLastPage}
