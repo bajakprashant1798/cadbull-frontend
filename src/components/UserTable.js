@@ -62,12 +62,10 @@ const UserTable = ({ role, title }) => {
       const params = buildParams();
       params.last = true;
 
-      console.log('[PAGING] Action:', actionName, {
-        lastPageMode, afterId, beforeId, deepPage, currentPage, params
-      });
-
+      logPageState('GO_TO_LAST_PAGE_CALL', { data: {} }, params); // before API call
 
       const res = await getUsersByRoleApi(params);
+
       setLastPageMode(true);
       setUsers(res.data.users || []);
       setAfterId(res.data.nextId || null);
@@ -76,18 +74,14 @@ const UserTable = ({ role, title }) => {
       setHasPrev(!!res.data.hasPrev);
       setCurrentPage(res.data.totalPages || 1);
       setTotalPages(res.data.totalPages || 1);
-      setDeepPage(res.data.totalPages || 1); // start at the real last page
+      setDeepPage(res.data.totalPages || 1);
 
-      console.log('[PAGING] Action:', actionName, {
-        lastPageMode, afterId, beforeId, deepPage, currentPage, params
-      });
-
-
-      logPageState('NEXT_FROM_LAST', res, params);
+      logPageState('GO_TO_LAST_PAGE_RESULT', res, params); // after API call
     } catch (err) {
       toast.error("Failed to load users ❌");
     }
   };
+
 
 
   // For numbered page jump (offset mode only)
