@@ -38,6 +38,78 @@ const UserTable = ({ role, title }) => {
   };
   const debouncedSearch = useCallback(debounce((val) => setSearchTerm(val), 500), []);
 
+  // --- Handler for "Last Page" button (fetch oldest users, reverse keyset) ---
+  const goToLastPage = async () => {
+    try {
+      const params = buildParams(null, null);
+      params.last = true;
+      // Only add beforeId if already in last-page mode and want "Previous"
+      // if (inLastPageMode && beforeId) params.beforeId = beforeId;
+      const res = await getUsersByRoleApi(params);
+      setUsers(res.data.users || []);
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
+      setHasNext(!!res.data.hasNext);
+      setHasPrev(!!res.data.hasPrev);
+      setCurrentPage(res.data.totalPages || currentPage);
+      setTotalPages(res.data.totalPages || totalPages);
+    } catch (err) {
+      toast.error("Failed to load users ❌");
+    }
+  };
+
+  // For numbered page jump (offset mode only)
+  const handlePageJump = async (pageNum) => {
+    setCurrentPage(pageNum);
+    setAfterId(null);
+    setBeforeId(null);
+    setHasNext(false);
+    setHasPrev(pageNum > 1);
+
+    const res = await getUsersByRoleApi(buildParams(null, pageNum));
+    setUsers(res.data.users || []);
+    setAfterId(res.data.nextId || null);
+    setBeforeId(res.data.prevId || null);
+    setHasNext(!!res.data.hasNext);
+    setTotalPages(res.data.totalPages || 1);
+  };
+
+
+  // Handler for "First Page" button (reset to first/offset page 1)
+  const goToFirstPage = async () => {
+    setCurrentPage(1);
+    setAfterId(null);
+    setBeforeId(null);
+    setHasNext(false);
+    setHasPrev(false);
+    const res = await getUsersByRoleApi(buildParams(null, 1));
+    setUsers(res.data.users || []);
+    setAfterId(res.data.nextId || null);
+    setBeforeId(res.data.prevId || null);
+    setHasNext(!!res.data.hasNext);
+    setHasPrev(false);
+    setTotalPages(res.data.totalPages || 1);
+  };
+
+  // Then, for "Previous" from last page, do:
+  const fetchPrevFromLast = async () => {
+    try {
+      const params = buildParams(null, null);
+      params.last = true;
+      if (beforeId) params.beforeId = beforeId;
+      const res = await getUsersByRoleApi(params);
+      setUsers(res.data.users || []);
+      setAfterId(res.data.nextId || null);
+      setBeforeId(res.data.prevId || null);
+      setHasNext(!!res.data.hasNext);
+      setHasPrev(!!res.data.hasPrev);
+      setCurrentPage(currentPage - 1); // or track separately for deep pages
+      setTotalPages(res.data.totalPages || totalPages);
+    } catch (err) {
+      toast.error("Failed to load users ❌");
+    }
+  };
+
   // Build API params
   const buildParams = (direction = null, pageOverride = null) => {
     let params = {
@@ -192,8 +264,11 @@ const UserTable = ({ role, title }) => {
         <PaginationAdmin
           currentPage={currentPage}
           totalPages={showNumbers ? totalPages : null}
+          goToFirstPage={goToFirstPage}
+          goToLastPage={goToLastPage}
           goToPreviousPage={() => hasPrev && fetchUserPage("prev")}
           goToNextPage={() => hasNext && fetchUserPage("next")}
+          dispatchCurrentPage={showNumbers ? handlePageJump : undefined}
         />
         {!showNumbers && (
           <div className="text-center mt-2" style={{color: "#888"}}>

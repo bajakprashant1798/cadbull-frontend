@@ -136,7 +136,8 @@ const PaginationAdmin = ({
                 </button>
               </li>
 
-              {getPageNumbers().map((pageNumber, index) => (
+              {/* --- Only render number buttons if dispatchCurrentPage is provided and totalPages is truthy --- */}
+              {(typeof dispatchCurrentPage === "function" && totalPages) && getPageNumbers().map((pageNumber, index) => (
                 <li 
                   key={index}
                   className={`page-item ${currentPage === pageNumber ? 'active' : ''} ${pageNumber === '...' ? 'disabled' : ''}`}
@@ -145,7 +146,7 @@ const PaginationAdmin = ({
                     <span className="page-link">...</span>
                   ) : (
                     <button 
-                      onClick={() => handlePageChange(pageNumber)}
+                      onClick={() => dispatchCurrentPage(pageNumber)}
                       className="page-link"
                     >
                       {pageNumber}
@@ -175,6 +176,7 @@ const PaginationAdmin = ({
                 </button>
               </li>
             </ul>
+
           </nav>
         </div>
       </div>
