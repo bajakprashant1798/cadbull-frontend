@@ -31,7 +31,7 @@ const UserTable = ({ role, title }) => {
   function buildParams(pageNum = 1) {
     return {
       role,
-      search: searchTerm.trim(),
+      emailSearch: searchTerm.trim(), // Changed to emailSearch to be explicit
       status: filterStatus,
       perPage: entriesPerPage,
       sortColumn,
@@ -47,7 +47,29 @@ const UserTable = ({ role, title }) => {
 
     async function fetchInitialPages() {
       try {
-        // First get accurate total pages count with actual perPage value
+        // First fetch just the first page to show data immediately
+        const firstPageRes = await getUsersByRoleApi(buildParams(1));
+        let firstId = null;
+        let newStack = [];
+
+        if (firstPageRes.data.users.length > 0) {
+          firstId = firstPageRes.data.users[0].id;
+          const firstLastUserId = firstPageRes.data.users[firstPageRes.data.users.length - 1].id;
+          
+          // Set initial data immediately
+          if (isMounted) {
+            setUsers(firstPageRes.data.users);
+            setFirstPageFirstId(firstId);
+            newStack.push({
+              page: 1,
+              users: firstPageRes.data.users,
+              beforeId: firstId,
+              afterId: firstLastUserId
+            });
+          }
+        }
+
+        // Get total pages count in parallel with first page
         const countRes = await getUsersByRoleApi({ 
           ...buildParams(),
           countOnly: true
@@ -55,37 +77,38 @@ const UserTable = ({ role, title }) => {
         
         const actualTotalPages = countRes.data.totalPages;
         console.log('Initial total pages:', actualTotalPages);
-        
-        let newStack = [];
-        let firstId = null, lastId = null;
 
-        // Fetch first page to get firstId
-        const firstPageRes = await getUsersByRoleApi(buildParams(1));
-        if (firstPageRes.data.users.length > 0) {
-          firstId = firstPageRes.data.users[0].id;
-          newStack.push({
-            page: 1,
-            users: firstPageRes.data.users,
-            beforeId: firstPageRes.data.users[0].id,
-            afterId: firstPageRes.data.users[firstPageRes.data.users.length - 1].id
-          });
-        }
-
-        // Fetch remaining pages for initial stack
-        const pagesToFetch = Math.min(MAX_STACK_SIZE, actualTotalPages);
-        for (let i = 2; i <= pagesToFetch; i++) {
-          const res = await getUsersByRoleApi(buildParams(i));
-          if (res.data.users.length === 0) break;
+        // Start background fetching of subsequent pages using afterId
+        if (actualTotalPages > 1 && firstPageRes.data.users.length > 0) {
+          const lastUserId = firstPageRes.data.users[firstPageRes.data.users.length - 1].id;
+          const subsequentPagesPromises = [];
           
-          newStack.push({
-            page: i,
-            users: res.data.users,
-            beforeId: res.data.users[0].id,
-            afterId: res.data.users[res.data.users.length - 1].id
+          // Fetch pages 2 to MAX_STACK_SIZE-1 in parallel using afterId
+          for (let i = 2; i < MAX_STACK_SIZE && i < actualTotalPages; i++) {
+            subsequentPagesPromises.push(
+              getUsersByRoleApi({
+                ...buildParams(i),
+                afterId: lastUserId
+              })
+            );
+          }
+
+          // Fetch subsequent pages in parallel
+          const subsequentResults = await Promise.all(subsequentPagesPromises);
+          subsequentResults.forEach((res, idx) => {
+            if (res.data.users.length > 0) {
+              newStack.push({
+                page: idx + 2,
+                users: res.data.users,
+                beforeId: res.data.users[0].id,
+                afterId: res.data.users[res.data.users.length - 1].id
+              });
+            }
           });
         }
 
-        // Get last page ID if there are multiple pages
+        // Finally, get last page data if there are multiple pages
+        let lastId = null;
         if (actualTotalPages > 1) {
           const lastRes = await getUsersByRoleApi({
             ...buildParams(),
@@ -99,10 +122,7 @@ const UserTable = ({ role, title }) => {
 
         if (isMounted) {
           setPageStack(newStack);
-          setFirstPageFirstId(firstId);
           setLastPageLastId(lastId);
-          setUsers(newStack[0]?.users || []);
-          setCurrentPage(1);
           setTotalPages(actualTotalPages);
           
           console.log('Initial state set:', {
@@ -409,9 +429,9 @@ const UserTable = ({ role, title }) => {
         {/* Search, Filter & Entries Selection */}
         <div className="d-flex justify-content-between mb-3">
           <input
-            type="text"
+            type="email"
             className="form-control w-25"
-            placeholder="Search by email..."
+            placeholder="Search by exact email address..."
             onChange={handleSearchChange}
             defaultValue={searchTerm}
           />
