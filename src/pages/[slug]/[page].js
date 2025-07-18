@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -297,6 +297,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         <meta name="twitter:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
         <meta name="twitter:description" content={metaDescription || "World Largest 2d CAD Library."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
+        <link rel="canonical" href={canonicalUrl} />
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
@@ -463,6 +464,13 @@ export async function getStaticProps({ params }) {
   // Find current category by slug
   const currentCategory = categories.find(cat => cat.slug === slug);
 
+  // At the bottom of getStaticProps before return
+  const baseUrl = "https://beta.cadbull.com";
+  const canonicalUrl =
+    page === 1
+      ? `${baseUrl}/${slug}`
+      : `${baseUrl}/${slug}/${page}`;
+
   return {
     props: {
       initialProjects: data.projects,
@@ -473,6 +481,7 @@ export async function getStaticProps({ params }) {
       metaTitle: currentCategory?.meta_title || null,
       metaKeywords: currentCategory?.meta_keywords || null,
       metaDescription: currentCategory?.meta_description || null,
+      canonicalUrl,
     },
     revalidate: 300,
   };
