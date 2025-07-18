@@ -376,6 +376,7 @@ export default function Home({
     <Fragment>
       <Head>
         <title>Cadbull | Home</title>
+        <link rel="canonical" href="https://beta.cadbull.com" />
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
 

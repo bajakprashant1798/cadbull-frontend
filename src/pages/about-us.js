@@ -9,6 +9,7 @@ const About = () => {
     <Fragment>
       <Head>
         <title>About Us | Cadbull</title>
+        <link rel="canonical" href="https://beta.cadbull.com/about-us" />
         <meta name="description" content="Impress Your Imagination with Cadbull." />
       </Head>
       {/* py-md-4 removed from below classname */}

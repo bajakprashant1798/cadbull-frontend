@@ -98,6 +98,7 @@ const ContactUs = () => {
     <Fragment>
       <Head>
         <title>Contact Us | Cadbull </title>
+        <link rel="canonical" href="https://beta.cadbull.com/contact-us" />
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <section className="py-lg-5 py-4 auth-page">

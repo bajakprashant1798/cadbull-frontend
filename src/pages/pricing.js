@@ -1,5 +1,6 @@
 "use client"
 import MainLayout from "@/layouts/MainLayout";
+import Head from "next/head";
 import offer from "@/assets/images/20-off.png"
 import { Fragment, useEffect, useState } from "react";
 import Icons from "@/components/Icons";
@@ -89,6 +90,11 @@ useEffect(() => {
   };
 
   return (<Fragment>
+    <Head>
+      <title>Pricing | Cadbull </title>
+      <link rel="canonical" href="https://beta.cadbull.com/pricing" />
+      <meta name="description" content="World Largest 2d CAD Library." />
+    </Head>
     <section className="py-lg-4 py-3">
       <div className="container">
         <div className="row justify-content-center">

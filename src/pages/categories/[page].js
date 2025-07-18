@@ -314,6 +314,7 @@ const Categories = ({
     <Fragment>
       <Head>
         <title>Categories | Cadbull </title>
+        <link rel="canonical" href="https://beta.cadbull.com/categories" />
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <CategoriesLayout {...CategoriesProps}>

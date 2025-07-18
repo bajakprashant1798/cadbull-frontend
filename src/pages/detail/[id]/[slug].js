@@ -106,7 +106,7 @@ function slugify(text) {
 }
 
 
-const ViewDrawing = ({ initialProject, initialSimilar }) => {
+const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const dispatch = useDispatch();
   const [project, setProject] = useState( initialProject || []);
   const [similarProjects, setSimilarProjects] = useState( initialSimilar || []);
@@ -380,6 +380,8 @@ const ViewDrawing = ({ initialProject, initialSimilar }) => {
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta name="twitter:image" content={project?.photo_url} />
         <meta name="keywords" content={project?.tags || ""} />
+
+        <link rel="canonical" href={canonicalUrl} />
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
         <div className="container">
@@ -862,10 +864,14 @@ export async function getStaticProps({ params }) {
 
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
     
+    // Construct canonical URL here and pass it as a prop
+    const canonicalUrl = `https://beta.cadbull.com/detail/${id}/${expectedSlug}`;
+
     return {
       props: {
         initialProject: project,
         initialSimilar: similarRes.data.projects || [],
+        canonicalUrl,
       },
       revalidate: 300,
     };

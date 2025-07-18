@@ -129,7 +129,7 @@ export default function App({ Component, pageProps }) {
         </Head>
 
         {/* Canonical Tag here */}
-        <CanonicalTag baseUrl="https://beta.cadbull.com" />
+        {/* <CanonicalTag baseUrl="https://beta.cadbull.com" /> */}
 
         <style jsx global>{`
           * {
@@ -154,7 +154,7 @@ export default function App({ Component, pageProps }) {
       </Head>
       
       {/* Canonical Tag here */}
-      <CanonicalTag baseUrl="https://beta.cadbull.com" />
+      {/* <CanonicalTag baseUrl="https://beta.cadbull.com" /> */}
 
       <style jsx global>{`
         * {
