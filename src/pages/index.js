@@ -192,6 +192,8 @@ export default function Home({
       .then((response) => {
         // Use total count from the API response (adjust field name accordingly)
         const count = response.data.lastProductId || 0;
+        console.log("Total products count:", count);
+        
         setProductCount(count);
       })
       .catch((error) => {
