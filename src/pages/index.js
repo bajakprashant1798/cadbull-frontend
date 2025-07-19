@@ -101,6 +101,7 @@ export default function Home({
     totalPages: initialTotalPages,
     totalProducts,
     lastProductId,
+    housePlanFiles,
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
@@ -192,7 +193,7 @@ export default function Home({
       .then((response) => {
         // Use total count from the API response (adjust field name accordingly)
         const count = response.data.lastProductId || 0;
-        console.log("Total products count:", count);
+        // console.log("Total products count:", count);
         
         setProductCount(count);
       })
@@ -904,7 +905,7 @@ export default function Home({
                   Architecture House Plan CAD Drawings CAD Blocks &
                 </h4>
                 <h4 className="text-white">
-                  <b>21354 Files</b>
+                  <b>{Number(housePlanFiles).toLocaleString()} Files</b>
                 </h4>
               </div>
             </div>
@@ -1000,6 +1001,7 @@ export async function getServerSideProps({ query }) {
       totalPages: res.data.totalPages || 1,
       totalProducts: res.data.totalProducts || 0,
       lastProductId: res.data.lastProductId || 0,
+      housePlanFiles: res.data.housePlanFiles || 0,
       currentPage: page,
       filters: { search, file_type },
     },
