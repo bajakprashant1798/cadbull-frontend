@@ -100,6 +100,7 @@ export default function Home({
     initialProjects,
     totalPages: initialTotalPages,
     totalProducts,
+    lastProductId,
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
@@ -121,7 +122,9 @@ export default function Home({
 
   // ssg setup
   const [projects, setProjects] = useState(initialProjects);
-  const [productCount, setProductCount] = useState(totalProducts);
+  const [productCount, setProductCount] = useState(lastProductId);
+
+  // const [lastProductId, setLastProductId] = useState(0);
 
   const projectOfDayRef = useRef(null);
 
@@ -188,7 +191,7 @@ export default function Home({
     getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
       .then((response) => {
         // Use total count from the API response (adjust field name accordingly)
-        const count = response.data.totalProducts || 0;
+        const count = response.data.lastProductId || 0;
         setProductCount(count);
       })
       .catch((error) => {
@@ -393,7 +396,7 @@ export default function Home({
                 </p>
                 <p className="mb-4 mb-md-5">
                   {/* User */}
-                  <span className="text-danger">{productCount}+</span> <span className="fw-light"> Free & Premium
+                  <span className="text-danger">{Number(productCount).toLocaleString()}+</span> <span className="fw-light"> Free & Premium
                   CADFiles
                   </span>
                 </p>
@@ -994,6 +997,7 @@ export async function getServerSideProps({ query }) {
       initialProjects: res.data.products || [],
       totalPages: res.data.totalPages || 1,
       totalProducts: res.data.totalProducts || 0,
+      lastProductId: res.data.lastProductId || 0,
       currentPage: page,
       filters: { search, file_type },
     },
