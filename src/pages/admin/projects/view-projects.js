@@ -180,13 +180,24 @@ const ViewProjects = () => {
                 </div>
 
                 {/* Pagination */}
-                <PaginationAdmin
+                {/* <PaginationAdmin
                     currentPage={searchParams.page}
                     totalPages={totalPages}
                     goToPreviousPage={() => setSearchParams({ ...searchParams, page: Math.max(1, searchParams.page - 1) })}
                     goToNextPage={() => setSearchParams({ ...searchParams, page: Math.min(totalPages, searchParams.page + 1) })}
                     dispatchCurrentPage={(page) => setSearchParams({ ...searchParams, page })}
-                />
+                /> */}
+
+                <PaginationAdmin
+                    currentPage={searchParams.page}
+                    totalPages={totalPages}
+                    goToFirstPage={() => setSearchParams({ ...searchParams, page: 1 })}
+                    goToPreviousPage={() => setSearchParams({ ...searchParams, page: Math.max(1, searchParams.page - 1) })}
+                    goToNextPage={() => setSearchParams({ ...searchParams, page: Math.min(totalPages, searchParams.page + 1) })}
+                    goToLastPage={() => setSearchParams({ ...searchParams, page: totalPages })}
+                    dispatchCurrentPage={(page) => setSearchParams({ ...searchParams, page })}
+                    />
+
             </div>
         </AdminLayout>
     );
