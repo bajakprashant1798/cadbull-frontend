@@ -110,14 +110,26 @@ const TableComponent = ({ fetchData, deleteHandler, editPath, columnName, showEd
       </div>
 
       {/* Pagination */}
-      <PaginationAdmin
+      {/* <PaginationAdmin
         currentPage={currentPage}
         totalPages={totalPages}
         totalEntries={totalEntries}
         goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
         goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
         dispatchCurrentPage={setCurrentPage}
+      /> */}
+
+      <PaginationAdmin
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalEntries={totalEntries}
+        goToFirstPage={() => setCurrentPage(1)}
+        goToLastPage={() => setCurrentPage(totalPages)}
+        goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
+        goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+        dispatchCurrentPage={setCurrentPage}
       />
+
     </section>
   );
 };

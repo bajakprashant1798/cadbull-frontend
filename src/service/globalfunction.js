@@ -93,6 +93,8 @@ export const handledownload = async (id, isAuthenticated, router) => {
     toast.error("Download failed: Invalid server response.");
     console.error("Unexpected download response format:", res.data);
   } catch (err) {
+    console.log("❌ Download error:", err);
+    
     // Axios error: check if response is available
     if (err?.response?.status === 404) {
       router.push('/404');

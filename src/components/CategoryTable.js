@@ -136,13 +136,24 @@ const CategoryTable = ({ status, title }) => {
         </div>
 
         {/* Pagination */}
-        <PaginationAdmin
+        {/* <PaginationAdmin
           currentPage={currentPage}
           totalPages={totalPages}
           goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
           goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
           dispatchCurrentPage={setCurrentPage}
+        /> */}
+
+        <PaginationAdmin
+          currentPage={currentPage}
+          totalPages={totalPages}
+          goToFirstPage={() => setCurrentPage(1)}
+          goToLastPage={() => setCurrentPage(totalPages)}
+          goToPreviousPage={() => setCurrentPage(Math.max(1, currentPage - 1))}
+          goToNextPage={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+          dispatchCurrentPage={setCurrentPage}
         />
+
       </div>
     </section>
   );
