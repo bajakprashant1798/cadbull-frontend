@@ -5,7 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { auth } from "@/utils/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
@@ -50,6 +50,7 @@ const RegisterPhone = () => {
 
   // Recaptcha load only once
   const recaptchaLoaded = useRef(false);
+
   // useEffect(() => {
   //   if (typeof window !== "undefined" && !recaptchaLoaded.current) {
   //     recaptchaLoaded.current = true;
@@ -92,7 +93,19 @@ const RegisterPhone = () => {
       }
     }
     // On unmount, clear verifier
-    return () => { if (recaptchaVerifier) recaptchaVerifier.clear(); };
+    // return () => { if (recaptchaVerifier) recaptchaVerifier.clear(); };
+    return () => {
+      try {
+        if (recaptchaVerifier && typeof recaptchaVerifier.clear === "function") {
+          recaptchaVerifier.clear();
+        }
+      } catch (err) {
+        // Silence or log error as needed
+        console.log("Error clearing recaptcha verifier:", err);
+        
+      }
+    };
+
   }, [showOTPSection, showEmailInput]);
 
 
