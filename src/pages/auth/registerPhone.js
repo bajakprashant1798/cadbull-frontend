@@ -206,17 +206,15 @@ const RegisterPhone = () => {
       const user = result.user;
       const idToken = await user.getIdToken();
       // POST to backend!
+      // onSubmitOTP
       const response = await verifyOtpApiHandler({
         idToken,
         phone_number: user.phoneNumber,
       });
 
-       // Debug: log the API response
-        console.log('Backend response:', response);
-
-      // If backend says email needed:
+      // If backend says email needed, show email input form (NO REDIRECT)
       if (response.data && response.data.message === "Email required") {
-        resetOtp(); // clear OTP value so validation is not stuck
+        resetOtp();
         setShowOTPSection(false);
         setShowEmailInput(true);
         setOtpStepData({ idToken, phoneNumber: user.phoneNumber });
@@ -224,10 +222,34 @@ const RegisterPhone = () => {
         setInfoMessage("No account was found for this phone number. Please provide your email to continue registration.");
         return;
       }
-      // Otherwise, proceed as usual
-      localStorage.setItem("userData", JSON.stringify(response.data.user));
-      dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
-      router.push("/profile/edit");
+
+      // If backend says "verify your email", show info message (NO REDIRECT)
+      if (response.data && response.data.message && response.data.message.includes("verify your email")) {
+        setShowEmailInput(false);
+        setShowOTPSection(false);
+        setOtpStepData({});
+        setPhone("");
+        resetPhone();
+        resetOtp();
+        setLoading(false);
+        setRegistrationSuccessMessage(
+          "Registration successful! Please check your inbox to verify your email before you can login."
+        );
+        return;
+      }
+
+      // Only if response.data.user is present, continue with login!
+      if (response.data && response.data.user) {
+        localStorage.setItem("userData", JSON.stringify(response.data.user));
+        dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
+        router.push("/profile/edit");
+        return;
+      }
+
+      // Fallback for unexpected cases:
+      setError("Unexpected response. Please try again.");
+      setLoading(false);
+
 
     } catch (err) {
       // setError(
@@ -257,6 +279,7 @@ const RegisterPhone = () => {
         email: data.email,
       });
       // 👇 This message means user must verify their email, DO NOT LOGIN YET!
+      // If backend says verify your email (no redirect!)
       if (
         response.data?.message &&
         response.data.message.includes("verify your email")
@@ -275,10 +298,17 @@ const RegisterPhone = () => {
         return;
       }
 
-      // Otherwise, proceed as usual (login)
-      localStorage.setItem("userData", JSON.stringify(response.data.user));
-      dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
-      router.push("/profile/edit");
+      // Only proceed if user object is present
+      if (response.data && response.data.user) {
+        localStorage.setItem("userData", JSON.stringify(response.data.user));
+        dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
+        router.push("/profile/edit");
+        return;
+      }
+
+      setError("Unexpected response. Please try again.");
+      setLoading(false);
+
     } catch (err) {
       setError(
         err?.response?.data?.message ||
@@ -371,7 +401,7 @@ const RegisterPhone = () => {
                   />
                 )}
               />
-              
+
               {errorsPhone.mobile && <div className="invalid-feedback">{errorsPhone.mobile.message}</div>} */}
               <div className="col-lg-12">
                 <PhoneInput
