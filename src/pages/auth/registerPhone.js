@@ -11,6 +11,9 @@ import { auth } from "@/utils/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { verifyOtpApiHandler, linkPhoneApiHandler } from "@/service/api";
 import api from "@/service/api"
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
 
 const pageTitle = {
   title: "Register A New Account",
@@ -34,12 +37,14 @@ const RegisterPhone = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [recaptchaVerifier, setRecaptchaVerifier] = useState(null);
   const [error, setError] = useState("");
-  const [phone, setPhone] = useState(""); // The phone that OTP was sent to
+  // const [phone, setPhone] = useState(""); // The phone that OTP was sent to
   const [infoMessage, setInfoMessage] = useState("");
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [otpStepData, setOtpStepData] = useState({}); // Store idToken, phoneNumber for next step
   const { handleSubmit: handleEmailSubmit, register: registerEmail, formState: { errors: emailErrors }, reset: resetEmail, getValues: getEmailValues } = useForm();
   const [registrationSuccessMessage, setRegistrationSuccessMessage] = useState("");
+
+  const [phone, setPhone] = useState(""); // phone will be in '919999999999' format, you prepend "+"
 
   // console.log('render', { showOTPSection, showEmailInput });
 
@@ -133,8 +138,18 @@ const RegisterPhone = () => {
         setLoading(false);
         return;
       }
-      const formattedPhone = formatPhoneNumber(data.mobile);
+      // const formattedPhone = formatPhoneNumber(data.mobile);
+      // const confirmation = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+
+      const formattedPhone = phone;
+      if (!formattedPhone || formattedPhone.length < 8) { // basic check
+        setError("Please enter a valid phone number.");
+        setLoading(false);
+        return;
+      }
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+
+
       setConfirmationResult(confirmation);
       setPhone(formattedPhone); // Store the phone used for OTP
       setShowOTPSection(true);
@@ -338,7 +353,7 @@ const RegisterPhone = () => {
               <div className="d-flex gap-2 align-items-center mb-1">
                 <label>Mobile Number</label>
               </div>
-              <Controller
+              {/* <Controller
                 name="mobile"
                 control={controlPhone}
                 rules={{
@@ -356,7 +371,25 @@ const RegisterPhone = () => {
                   />
                 )}
               />
-              {errorsPhone.mobile && <div className="invalid-feedback">{errorsPhone.mobile.message}</div>}
+              
+              {errorsPhone.mobile && <div className="invalid-feedback">{errorsPhone.mobile.message}</div>} */}
+              <div className="col-lg-12">
+                <PhoneInput
+                  country={'in'} // Default to India or use geo-detect for user's country
+                  value={phone}
+                  onChange={val => setPhone('+' + val.replace(/^\+/, ''))}
+                  enableSearch
+                  inputProps={{
+                    name: 'mobile',
+                    required: true,
+                    className: 'form-control',
+                    autoFocus: true,
+                  }}
+                  inputStyle={{ width: "100%" }}
+                  // Optional: onlyCountries={['us', 'in', 'ae', ...]}
+                />
+              </div>
+
             </div>
             <div className="col-lg-12">
               <div id="recaptcha-container" style={{ marginTop: '10px' }}></div>
