@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import Head from "next/head";
 import about from "@/assets/images/about-us.png"
 import aboutmobile from "@/assets/images/about-mobile.png"
+import logo from "@/assets/images/logo.png";
 
 const About = () => {
   return (
@@ -10,7 +11,17 @@ const About = () => {
       <Head>
         <title>About Us | Cadbull</title>
         <link rel="canonical" href="https://beta.cadbull.com/about-us" />
-        <meta name="description" content="Impress Your Imagination with Cadbull." />
+        <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+
+        <meta property="og:title" content="About Us | Cadbull" />
+        <meta property="og:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={"https://beta.cadbull.com/about-us"} />
+        <meta property="og:image" content={logo} />
+        <meta name="twitter:title" content="About Us | Cadbull" />
+        <meta name="twitter:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <meta name="twitter:image" content={logo} />
+        <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
       </Head>
       {/* py-md-4 removed from below classname */}
       <section className="bg-light py-5  category-page company-page">

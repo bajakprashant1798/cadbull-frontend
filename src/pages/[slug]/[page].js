@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl, categoryTitle, categoryDescription }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -57,6 +57,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     if (params.search) query.search = params.search;
     return query;
   };
+
+  console.log("description: ", categoryDescription);
+  
 
   // Fetch main categories on mount
   useEffect(() => {
@@ -201,8 +204,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         pageName: "Search Results",
       }
     : {
-        title: slug ? makeTitle(slug) : "Sub Categories",
-        description: "Improving the aesthetic appearance of an area by changing its contours, adding ornamental features, or planting trees and shrubs.",
+        title: categoryTitle || makeTitle(slug),
+        description: categoryDescription,
         mainCategories,
         subCategories: subcat,
         slug,
@@ -299,7 +302,11 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
         <link rel="canonical" href={canonicalUrl} />
       </Head>
-      <CategoriesLayout {...CategoriesProps}>
+      <CategoriesLayout 
+        {...CategoriesProps}
+        // categoryTitle={categoryTitle}
+        // categoryDescription={categoryDescription}
+      >
         {isLoading && <Loader />}
         <section>
           <div className="container" id="categories-top">
@@ -482,6 +489,9 @@ export async function getStaticProps({ params }) {
       metaKeywords: currentCategory?.meta_keywords || null,
       metaDescription: currentCategory?.meta_description || null,
       canonicalUrl,
+
+      categoryTitle: currentCategory?.name || slug,
+      categoryDescription: currentCategory?.description || "",
     },
     revalidate: 300,
   };

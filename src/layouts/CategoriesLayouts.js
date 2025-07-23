@@ -33,7 +33,8 @@ const CategoriesLayout = ({
             <div className="col-10 col-md-12">
               <div className="text-center text-md-start">
                 <h2 className="text-primary fw-bold mb-1">
-                  {makeTitle(title)}
+                  {/* {makeTitle(title)} */}
+                  {title ? makeTitle(title) : pageName  }
                 </h2>
                 <p>{description}</p>
               </div>
