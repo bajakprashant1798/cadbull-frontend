@@ -264,20 +264,51 @@ const RegisterPhone = () => {
       setLoading(false);
 
 
-    } catch (err) {
-      // setError(
-      //   err?.response?.data?.message ||
-      //   "Failed to verify OTP."
-      // );
-      // 👇 Add this for detailed error info
-      console.error('OTP verification error:', err);
+    } 
+    // catch (err) {
+    //   // setError(
+    //   //   err?.response?.data?.message ||
+    //   //   "Failed to verify OTP."
+    //   // );
+    //   // 👇 Add this for detailed error info
+    //   console.error('OTP verification error:', err);
+    //   setError(
+    //     err?.message ||
+    //     err?.response?.data?.message ||
+    //     "Failed to verify OTP."
+    //   );
+    // }
+    // setLoading(false);
+    catch (err) {
+      // Handle "email not verified" with info message, NOT error
+      if (
+        err?.response?.status === 403 &&
+        err?.response?.data?.message &&
+        err.response.data.message.toLowerCase().includes("not verified")
+      ) {
+        setShowEmailInput(false);
+        setShowOTPSection(false);
+        setOtpStepData({});
+        setPhone("");
+        resetPhone();
+        resetOtp();
+        resetEmail && resetEmail(); // just in case
+
+        // Show info instead of error (styled in a different color if you want)
+        setRegistrationSuccessMessage(err.response.data.message);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback for other errors
       setError(
-        err?.message ||
         err?.response?.data?.message ||
+        err?.message ||
         "Failed to verify OTP."
       );
+      setLoading(false);
     }
-    setLoading(false);
+
   };
 
 
@@ -322,13 +353,44 @@ const RegisterPhone = () => {
       setError("Unexpected response. Please try again.");
       setLoading(false);
 
-    } catch (err) {
+    } 
+    // catch (err) {
+    //   setError(
+    //     err?.response?.data?.message ||
+    //     "Failed to link email."
+    //   );
+    // }
+    // setLoading(false);
+    catch (err) {
+      // Handle "email not verified" with info message, NOT error
+      if (
+        err?.response?.status === 403 &&
+        err?.response?.data?.message &&
+        err.response.data.message.toLowerCase().includes("not verified")
+      ) {
+        setShowEmailInput(false);
+        setShowOTPSection(false);
+        setOtpStepData({});
+        setPhone("");
+        resetPhone();
+        resetOtp();
+        resetEmail && resetEmail(); // just in case
+
+        // Show info instead of error (styled in a different color if you want)
+        setRegistrationSuccessMessage(err.response.data.message);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback for other errors
       setError(
         err?.response?.data?.message ||
-        "Failed to link email."
+        err?.message ||
+        "Failed to verify OTP."
       );
+      setLoading(false);
     }
-    setLoading(false);
+
   };
 
   const handleLinkPhone = async (emailValue) => {
