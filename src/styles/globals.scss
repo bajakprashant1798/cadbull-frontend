@@ -72,6 +72,17 @@
   color: $black !important;
 }
 
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.h7 {
+    font: normal normal 900 30px / 50px "Poppins", sans-serif;
+    @media (max-width: 796px) {
+      font: normal normal 900 28px / 50px "Poppins", sans-serif;
+    } 
+}
+
 .text-primary {
   color: $primary !important;
 }

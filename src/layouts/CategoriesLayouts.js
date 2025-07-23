@@ -32,10 +32,10 @@ const CategoriesLayout = ({
           <div className="row justify-content-center">
             <div className="col-10 col-md-12">
               <div className="text-center text-md-start">
-                <h2 className="text-primary fw-bold mb-1">
+                <h1 className="text-primary fw-bold mb-1">
                   {/* {makeTitle(title)} */}
                   {title ? makeTitle(title) : pageName  }
-                </h2>
+                </h1>
                 <p>{description}</p>
               </div>
               {/* Breadcrum  */}

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
-import { getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
+import { getFavouriteItems, getSubCategories, getallCategories, getCategoryBySlug } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSubCategory,
@@ -457,21 +457,73 @@ export async function getStaticPaths() {
   return { paths, fallback: "blocking" };
 }
 
+// export async function getStaticProps({ params }) {
+//   const slug = params.slug;
+//   const page = parseInt(params.page, 10) || 1;
+//   const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+//   if (!data || !data.projects) {
+//     return { notFound: true };
+//   }
+
+//   // Fetch all categories to get meta for the current one
+//   const catRes = await getallCategories("");
+//   const categories = catRes?.data?.categories || [];
+//   // Find current category by slug
+//   const currentCategory = categories.find(cat => cat.slug === slug);
+
+//   // At the bottom of getStaticProps before return
+//   const baseUrl = "https://beta.cadbull.com";
+//   const canonicalUrl =
+//     page === 1
+//       ? `${baseUrl}/${slug}`
+//       : `${baseUrl}/${slug}/${page}`;
+
+//   return {
+//     props: {
+//       initialProjects: data.projects,
+//       initialTotalPages: data.totalPages || 1,
+//       initialSlug: slug,
+//       page,
+//       // These might be undefined if not found
+//       metaTitle: currentCategory?.meta_title || null,
+//       metaKeywords: currentCategory?.meta_keywords || null,
+//       metaDescription: currentCategory?.meta_description || null,
+//       canonicalUrl,
+
+//       categoryTitle: currentCategory?.name || slug,
+//       categoryDescription: currentCategory?.description || "",
+//     },
+//     revalidate: 300,
+//   };
+// }
+
 export async function getStaticProps({ params }) {
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
-  const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-  if (!data || !data.projects) {
+
+  // Fetch the category (main or subcategory) by slug
+  let category = null;
+  try {
+    const catRes = await getCategoryBySlug(slug); // Axios response
+    category = catRes.data.category;
+    if (!category) return { notFound: true };
+  } catch (error) {
     return { notFound: true };
   }
 
-  // Fetch all categories to get meta for the current one
-  const catRes = await getallCategories("");
-  const categories = catRes?.data?.categories || [];
-  // Find current category by slug
-  const currentCategory = categories.find(cat => cat.slug === slug);
+  // Fetch projects for this category/subcategory (re-use your existing function)
+  let data;
+  try {
+    data = await getSubCategories({
+      slug,
+      currentPage: page,
+      pageSize: 9,
+    });
+    if (!data || !data.projects) return { notFound: true };
+  } catch (error) {
+    return { notFound: true };
+  }
 
-  // At the bottom of getStaticProps before return
   const baseUrl = "https://beta.cadbull.com";
   const canonicalUrl =
     page === 1
@@ -484,18 +536,18 @@ export async function getStaticProps({ params }) {
       initialTotalPages: data.totalPages || 1,
       initialSlug: slug,
       page,
-      // These might be undefined if not found
-      metaTitle: currentCategory?.meta_title || null,
-      metaKeywords: currentCategory?.meta_keywords || null,
-      metaDescription: currentCategory?.meta_description || null,
+      metaTitle: category.meta_title || null,
+      metaKeywords: category.meta_keywords || null,
+      metaDescription: category.meta_description || null,
       canonicalUrl,
-
-      categoryTitle: currentCategory?.name || slug,
-      categoryDescription: currentCategory?.description || "",
+      categoryTitle: category.name || slug,
+      categoryDescription: category.description || "",
     },
     revalidate: 300,
   };
 }
+
+
 
 CadLandscaping.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

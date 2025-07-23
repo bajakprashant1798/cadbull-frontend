@@ -404,10 +404,16 @@ export default function Home({
           <div className="row">
             <div className="col-md-12">
               <div className="text-center mb-md-5 mb-5">
-                <p className="mb-3 fw-light text-primary">
+                {/* <p className="mb-3 fw-light text-primary">
                   World Largest 2d <br />
                   <span className="fw-bold">CAD Library.</span>
-                </p>
+                </p> */}
+
+                <h1 className="h2 mb-0 fw-light text-primary">
+                  World Largest 2d <br />
+                </h1>
+                <h2 className="mb-2 h7 fw-bold fw-light text-primary">CAD Library.</h2>
+
                 <p className="mb-4 mb-md-5">
                   {/* User */}
                   <span className="text-danger">{Number(productCount).toLocaleString()}+</span> <span className="fw-light"> Free & Premium

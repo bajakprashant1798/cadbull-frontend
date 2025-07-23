@@ -272,7 +272,8 @@ const Header = () => {
                     <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
                       <li>
                         <Link
-                          href="/profile"
+                          // href="/profile"
+                          href="/profile/edit"
                           className="dropdown-item d-flex gap-2 align-items-center"
                           onClick={closeHamburgerMenu}
                         >
@@ -288,11 +289,11 @@ const Header = () => {
                             />
                           )}
                           <div>
-                            <h6 className="lh-sm text-black fw-bold">
+                            <p className="lh-sm text-black fw-bold h6 mb-0">
                               <small>
                                 {status?.user?.firstname} {status?.user?.lastname}
                               </small>
-                            </h6>
+                            </p>
                             <p className="lh-sm">
                               <small>{status?.user?.email}</small>
                             </p>
@@ -534,7 +535,8 @@ const Header = () => {
                     <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
                       <li>
                         <Link
-                          href="/profile"
+                          // href="/profile"
+                          href="/profile/edit"
                           className="dropdown-item d-flex gap-2 align-items-center"
                           onClick={closeHamburgerMenu}
                         >
@@ -550,11 +552,11 @@ const Header = () => {
                             />
                           )}
                           <div>
-                            <h6 className="lh-sm text-black fw-bold">
+                            <p className="lh-sm text-black fw-bold h6 mb-0">
                               <small>
                                 {status?.user?.firstname} {status?.user?.lastname}
                               </small>
-                            </h6>
+                            </p>
                             <p className="lh-sm">
                               <small>{status?.user?.email}</small>
                             </p>

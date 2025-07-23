@@ -198,6 +198,12 @@ export const getallCategories = (searchTerm = "") => {
   return api.get("/categories", { params });
 };
 
+// Add this at the bottom of api.js (or wherever you want)
+export const getCategoryBySlug = (slug) => {
+  return api.get(`/categories/slug/${slug}`);
+};
+
+
 export const getallsubCategories = (searchTerm = "", slug = "") => {
   const params = searchTerm ? { search: searchTerm } : {};
   return api.get(`/categories/sub/${slug}`, { params });

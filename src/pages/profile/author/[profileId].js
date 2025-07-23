@@ -27,6 +27,7 @@ import { useSelector } from "react-redux";
 import { debounce } from "@/pages";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
+import Link from "next/link";
 
 const CompanyProfile = () => {
   // Get profileId from router query
@@ -137,10 +138,12 @@ const CompanyProfile = () => {
                   onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                 />
                 <div className="d-md-none">
-                  {(profile?.first_name || profile?.last_name) && (
+                  {(profile?.first_name || profile?.last_name) ? (
                     <h4 className="fw-semibold text-primary">
                       {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
                     </h4>
+                  ) : (
+                    <h4 className="fw-semibold text-primary">Update your profile and add your name.</h4>
                   )}
 
                   <p>{profile?.address1 || ""}</p>
@@ -152,10 +155,12 @@ const CompanyProfile = () => {
                 <div className="d-flex gap-lg-5 mb-4">
                   {/* Name  */}
                   <div className="d-none d-md-block">
-                    {(profile?.first_name || profile?.last_name) && (
+                    {(profile?.first_name || profile?.last_name) ? (
                       <h3 className="fw-semibold text-primary">
                         {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
                       </h3>
+                    ) : (
+                      <Link href="/profile/edit"><h3 className="fw-semibold text-primary">Update your profile and add your name.</h3></Link>
                     )}
                     <p>{profile?.address1 || ""}</p>
                   </div>
