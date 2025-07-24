@@ -491,7 +491,7 @@ const Categories = ({
 export async function getStaticPaths() {
   // You can generate a few pages (for demo) or as many as you want.
   // Example: Pre-render first 10 pages statically, and use fallback: "blocking" for others.
-  const paths = Array.from({ length: 10 }).map((_, idx) => ({
+  const paths = Array.from({ length: 3 }).map((_, idx) => ({
     params: { page: `${idx + 1}` },
   }));
   return {

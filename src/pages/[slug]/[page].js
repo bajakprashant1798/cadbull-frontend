@@ -445,17 +445,29 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   );
 };
 
+// export async function getStaticPaths() {
+//   const catRes = await getallCategories("");
+//   const categories = catRes?.data?.categories || [];
+//   // You can prebuild a few pages, or just 1/2 as before
+//   const paths = [];
+//   categories.forEach(cat => {
+//     paths.push({ params: { slug: cat.slug, page: "1" }});
+//     // paths.push({ params: { slug: cat.slug, page: "2" }});
+//   });
+//   return { paths, fallback: "blocking" };
+// }
+
 export async function getStaticPaths() {
+  // Fetch top 5 categories or just the most important ones
   const catRes = await getallCategories("");
   const categories = catRes?.data?.categories || [];
-  // You can prebuild a few pages, or just 1/2 as before
-  const paths = [];
-  categories.forEach(cat => {
-    paths.push({ params: { slug: cat.slug, page: "1" }});
-    paths.push({ params: { slug: cat.slug, page: "2" }});
-  });
+  // Only build page 1 for the first 5 categories (or adjust as needed)
+  const paths = categories.slice(0, 5).map(cat => ({
+    params: { slug: cat.slug, page: "1" }
+  }));
   return { paths, fallback: "blocking" };
 }
+
 
 export async function getStaticProps({ params }) {
   const slug = params.slug;
