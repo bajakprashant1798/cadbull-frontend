@@ -844,53 +844,12 @@ export async function getStaticPaths() {
   };
 }
 
-// export async function getStaticProps({ params }) {
-//   const id = params.id;
-  
-
-//   try {
-//     const projectRes = await getsingleallprojects("", id);
-//     const project = projectRes.data;
-//     const expectedSlug = slugify(project.work_title);
-
-//     if (params.slug !== expectedSlug) {
-//       return {
-//         redirect: {
-//           destination: `/detail/${id}/${expectedSlug}`,
-//           permanent: true,
-//         },
-//       };
-//     }
-
-//     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-    
-//     // Construct canonical URL here and pass it as a prop
-//     const canonicalUrl = `https://beta.cadbull.com/detail/${id}/${expectedSlug}`;
-
-//     return {
-//       props: {
-//         initialProject: project,
-//         initialSimilar: similarRes.data.projects || [],
-//         canonicalUrl,
-//       },
-//       revalidate: 300,
-//     };
-//   } catch (err) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-// }
-
 export async function getStaticProps({ params }) {
   const id = params.id;
+  
+
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-    const projectRes = await getsingleallprojects("", id, { signal: controller.signal });
-    clearTimeout(timeout);
-
+    const projectRes = await getsingleallprojects("", id);
     const project = projectRes.data;
     const expectedSlug = slugify(project.work_title);
 
@@ -904,8 +863,8 @@ export async function getStaticProps({ params }) {
     }
 
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-
-    // Canonical URL
+    
+    // Construct canonical URL here and pass it as a prop
     const canonicalUrl = `https://beta.cadbull.com/detail/${id}/${expectedSlug}`;
 
     return {
@@ -922,7 +881,6 @@ export async function getStaticProps({ params }) {
     };
   }
 }
-
 
 
 ViewDrawing.getLayout = function getLayout(page) {
