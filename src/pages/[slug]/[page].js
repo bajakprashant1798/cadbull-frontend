@@ -472,42 +472,46 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
-  const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-  if (!data || !data.projects) {
+  const start = Date.now();
+
+  console.log(`[BUILD] getStaticProps called for slug=${slug} page=${page}`);
+
+  try {
+    // Log what you are sending to the API
+    console.log(`[BUILD] Fetching projects for slug: ${slug}, page: ${page}`);
+    const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+
+    if (!data || !data.projects) {
+      console.error(`[BUILD] No projects found for slug=${slug} page=${page}`);
+      return { notFound: true };
+    }
+
+    const duration = Date.now() - start;
+    console.log(`[BUILD] Fetched ${data.projects.length} projects for slug=${slug} page=${page} in ${duration}ms`);
+
+    // Also log metadata fetch
+    const catRes = await getallCategories("");
+    console.log(`[BUILD] Categories API returned ${catRes?.data?.categories?.length || 0} categories.`);
+
+    // ... rest of logic
+
+    return {
+      props: {
+        // ... your props
+      },
+      revalidate: 300,
+    };
+  } catch (err) {
+    const duration = Date.now() - start;
+    console.error(`[BUILD] ERROR in getStaticProps for slug=${slug} page=${page} after ${duration}ms`);
+    if (err.response) {
+      console.error(`[BUILD] API Error:`, err.response.data);
+    }
+    console.error(err);
     return { notFound: true };
   }
-
-  // Fetch all categories to get meta for the current one
-  const catRes = await getallCategories("");
-  const categories = catRes?.data?.categories || [];
-  // Find current category by slug
-  const currentCategory = categories.find(cat => cat.slug === slug);
-
-  // At the bottom of getStaticProps before return
-  const baseUrl = "https://beta.cadbull.com";
-  const canonicalUrl =
-    page === 1
-      ? `${baseUrl}/${slug}`
-      : `${baseUrl}/${slug}/${page}`;
-
-  return {
-    props: {
-      initialProjects: data.projects,
-      initialTotalPages: data.totalPages || 1,
-      initialSlug: slug,
-      page,
-      // These might be undefined if not found
-      metaTitle: currentCategory?.meta_title || null,
-      metaKeywords: currentCategory?.meta_keywords || null,
-      metaDescription: currentCategory?.meta_description || null,
-      canonicalUrl,
-
-      // categoryTitle: currentCategory?.name || slug,
-      // categoryDescription: currentCategory?.description || "",
-    },
-    revalidate: 300,
-  };
 }
+
 
 // export async function getStaticProps({ params }) {
 //   const slug = params.slug;
