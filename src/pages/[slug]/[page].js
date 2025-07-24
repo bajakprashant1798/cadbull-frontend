@@ -7,7 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
-import { getFavouriteItems, getSubCategories, getallCategories, getCategoryBySlug } from "@/service/api";
+import { getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSubCategory,
@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl, categoryTitle, categoryDescription }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -58,7 +58,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     return query;
   };
 
-  console.log("description: ", categoryDescription);
+  // console.log("description: ", categoryDescription);
   
 
   // Fetch main categories on mount
@@ -204,8 +204,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         pageName: "Search Results",
       }
     : {
-        title: categoryTitle || makeTitle(slug),
-        description: categoryDescription,
+        title:  makeTitle(slug),
+        description: "categoryDescription || 'Explore a wide range of categories and subcategories on Cadbull.'",
         mainCategories,
         subCategories: subcat,
         slug,
@@ -490,8 +490,8 @@ export async function getStaticProps({ params }) {
       metaDescription: currentCategory?.meta_description || null,
       canonicalUrl,
 
-      categoryTitle: currentCategory?.name || slug,
-      categoryDescription: currentCategory?.description || "",
+      // categoryTitle: currentCategory?.name || slug,
+      // categoryDescription: currentCategory?.description || "",
     },
     revalidate: 300,
   };
