@@ -500,54 +500,31 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
-  const start = Date.now();
-  console.log(`[BUILD] [${slug}] [Page ${page}] START getStaticProps`);
-
 
   // Fetch the category (main or subcategory) by slug
   let category = null;
   try {
-    console.log(`[BUILD] [${slug}] Fetching category meta`);
-    const catRes = await getCategoryBySlug(slug); // Axios response
+    const catRes = await getCategoryBySlug(slug);
     category = catRes.data.category;
-    if (!category) {
-      console.error(`[BUILD] [${slug}] Category not found`);
-      return { notFound: true };
-    }
-    console.log(`[BUILD] [${slug}] Category fetched`);
-  } catch (error) {
-    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
-    return { notFound: true };
+    if (!category) throw new Error(`[BUILD FAIL] [${slug}] Category not found`);
+  } catch (err) {
+    throw new Error(`[BUILD FAIL] [${slug}] Error fetching category: ${err?.response?.data || err?.message || err}`);
   }
 
   // Fetch projects for this category/subcategory (re-use your existing function)
   let data;
   try {
-    console.log(`[BUILD] [${slug}] Fetching projects for page ${page}`);
-    data = await getSubCategories({
-      slug,
-      currentPage: page,
-      pageSize: 9,
-    });
-    const apiTime = Date.now() - apiStart;
-    console.log(`[BUILD] [${slug}] Projects fetched in ${apiTime}ms`);
-    if (!data || !data.projects) {
-      console.error(`[BUILD] [${slug}] No projects found`);
-      return { notFound: true };
-    }
-  } catch (error) {
-    console.error(`[BUILD] [${slug}] Error fetching projects:`, err?.response?.data || err?.message || err);
-    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
-    return { notFound: true };
+    data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+    if (!data || !data.projects) throw new Error(`[BUILD FAIL] [${slug}] No projects found`);
+  } catch (err) {
+    throw new Error(`[BUILD FAIL] [${slug}] Error fetching projects: ${err?.response?.data || err?.message || err}`);
   }
 
   const baseUrl = "https://beta.cadbull.com";
-  const canonicalUrl =
-    page === 1
-      ? `${baseUrl}/${slug}`
-      : `${baseUrl}/${slug}/${page}`;
+  const canonicalUrl = page === 1
+    ? `${baseUrl}/${slug}`
+    : `${baseUrl}/${slug}/${page}`;
 
-  console.log(`[BUILD] [${slug}] FINISHED getStaticProps, total time: ${Date.now() - start}ms`);
   return {
     props: {
       initialProjects: data.projects,
@@ -564,6 +541,7 @@ export async function getStaticProps({ params }) {
     revalidate: 300,
   };
 }
+
 
 
 
