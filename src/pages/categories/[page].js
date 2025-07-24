@@ -315,6 +315,18 @@ const Categories = ({
       <Head>
         <title>Categories | Cadbull </title>
         <meta name="description" content="World Largest 2d CAD Library." />
+        <link rel="canonical" href="https://beta.cadbull.com/categories" />
+        <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+
+        <meta property="og:title" content="Categories | Cadbull" />
+        <meta property="og:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={"https://beta.cadbull.com/categories"} />
+        <meta property="og:image" content={logo} />
+        <meta name="twitter:title" content="Categories | Cadbull" />
+        <meta name="twitter:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <meta name="twitter:image" content={logo} />
+        <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}

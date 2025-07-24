@@ -297,6 +297,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         <meta name="twitter:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
         <meta name="twitter:description" content={metaDescription || "World Largest 2d CAD Library."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
+        {/* <link rel="canonical" href={canonicalUrl} /> */}
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
