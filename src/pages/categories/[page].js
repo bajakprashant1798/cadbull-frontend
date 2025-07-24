@@ -507,14 +507,14 @@ export async function getStaticProps({ params }) {
     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
       getallCategories(""),
       getallprojects(currentPage, 9, "", "", ""),
-      getFavouriteItems(),
+      // getFavouriteItems(),
     ]);
     return {
       props: {
         initialCategories: categoriesRes?.data?.categories || [],
         initialProjects: projectsRes?.data?.products || [],
         totalPages: projectsRes?.data?.totalPages || 1,
-        initialFavourites: favouritesRes?.data?.favorites || [],
+        // initialFavourites: favouritesRes?.data?.favorites || [],
         currentPage, // add this if you want to use in component
       },
       revalidate: 300,
