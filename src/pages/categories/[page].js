@@ -521,6 +521,7 @@ export async function getStaticProps({ params }) {
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);
+    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
     return {
       props: {
         initialCategories: [],
