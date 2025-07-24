@@ -194,8 +194,11 @@ export const confirmAccountDeletion = async (token) => {
 // ===================
 
 export const getallCategories = (searchTerm = "") => {
+  console.log("Fetching all categories with search term:", searchTerm);
+  
   const params = searchTerm ? { search: searchTerm } : {};
   return api.get("/categories", { params });
+  
 };
 
 // Add this at the bottom of api.js (or wherever you want)
@@ -495,6 +498,9 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
   try {
     const url = `/categories/sub/${slug}/projects`;
     const params = { page: currentPage, perPage: pageSize };
+
+    console.log("Fetching subcategories with params:", { slug, currentPage, pageSize, search, file_type, type });
+    
 
     if (search) params.search = search;
     if (type) params.type = type;

@@ -58,6 +58,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     return query;
   };
 
+  console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription);
+  
+
   // Fetch main categories on mount
   useEffect(() => {
     getallCategories("")

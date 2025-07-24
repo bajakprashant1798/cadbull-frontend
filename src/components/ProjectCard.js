@@ -28,10 +28,10 @@ const ProjectCard = ({
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  console.log("isAuthenticated for projectCard", isAuthenticated);
+  // console.log("isAuthenticated for projectCard", isAuthenticated);
   
-  console.log(photo_url, "photo_url in projectCard");
-  console.log(type, "type in projectCard");
+  // console.log(photo_url, "photo_url in projectCard");
+  // console.log(type, "type in projectCard");
   
   const dispatch = useDispatch();
 

@@ -21,7 +21,7 @@ const SearchCategories = ({ categories, type }) => {
   );
   const dispatch = useDispatch();
   const { slug } = router.query;
-  console.log("slug: ", slug);
+  // console.log("slug: ", slug);
   
   const [catalog, setCatalog] = useState([categories]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,7 +40,7 @@ const SearchCategories = ({ categories, type }) => {
         response.data.categories.forEach((item) => {
           item.url = "categories/sub/";
         });
-        console.log("searchcategoreis: ", response.data);
+        // console.log("searchcategoreis: ", response.data);
         
         setCatalog(response.data.categories);
         dispatch(addAllCategoriesData(response.data.categories));

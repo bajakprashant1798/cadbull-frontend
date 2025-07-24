@@ -65,7 +65,7 @@ const Categories = ({
 
   // Retrieve favorites from Redux:
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
-  console.log("favouriteList cat", favouriteList);
+  // console.log("favouriteList cat", favouriteList);
 
   // Fetch favorites if not already fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);

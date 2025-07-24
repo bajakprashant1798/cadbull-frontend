@@ -179,7 +179,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         const singleProjectResponse = await getsingleallprojects("", projectId);
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
-        console.log("singleProjectData: ", singleProjectData);
+        // console.log("singleProjectData: ", singleProjectData);
         
         setSimilarProjectId(singleProjectData.product_sub_category_id);
       } catch (error) {
@@ -332,7 +332,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     if (categoryAndSubCategory.length === 0) {
       getCategoriesWithSubcategories()
         .then((res) => {
-          console.log("sub", res);
+          // console.log("sub", res);
           
           dispatch(addCategoryAndSubCategoryData(res));
           // console.log('api response upload==========',res)
@@ -343,7 +343,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     }
     if(categoriesList.length===0){
      getallCategories('').then((res)=>{
-      console.log("res", res);
+      // console.log("res", res);
       
         dispatch(addAllCategoriesData(res.data.categories));
       }).catch((err)=>{
@@ -360,9 +360,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     if (selectedCategory && selectedSubCategory) {
       dispatch(updatesubcatslug(selectedSubCategory));
       dispatch(updatesubcatpage(1));
-      router.push(`/categories/sub/${selectedCategory}`);
+      // router.push(`/categories/sub/${selectedCategory}`);
+      router.push(`/${selectedCategory}`);
     } else if (selectedCategory) {
-      router.push(`/categories/sub/${selectedCategory}`);
+      // router.push(`/categories/sub/${selectedCategory}`);
+      router.push(`/${selectedCategory}`);
     }
   };
   return (
