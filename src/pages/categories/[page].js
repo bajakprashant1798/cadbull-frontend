@@ -26,6 +26,7 @@ import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
+import logo from "@/assets/images/logo.png";
 
 const Categories = ({
 //   initialCategories,
@@ -314,7 +315,6 @@ const Categories = ({
     <Fragment>
       <Head>
         <title>Categories | Cadbull </title>
-        <meta name="description" content="World Largest 2d CAD Library." />
         <link rel="canonical" href="https://beta.cadbull.com/categories" />
         <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
 
