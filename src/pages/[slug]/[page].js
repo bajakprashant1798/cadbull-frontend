@@ -7,7 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
-import { getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
+import { getCategoryBySlug, getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSubCategory,
@@ -461,11 +461,25 @@ export async function getStaticProps({ params }) {
     return { notFound: true };
   }
 
-  // Fetch all categories to get meta for the current one
-  const catRes = await getallCategories("");
-  const categories = catRes?.data?.categories || [];
-  // Find current category by slug
-  const currentCategory = categories.find(cat => cat.slug === slug);
+  // // Fetch all categories to get meta for the current one
+  // const catRes = await getallCategories("");
+  // const categories = catRes?.data?.categories || [];
+  // // Find current category by slug
+  // const currentCategory = categories.find(cat => cat.slug === slug);
+
+  // 👇 NEW: Fetch meta fields for any slug (parent or subcategory)
+  let metaTitle = null, metaKeywords = null, metaDescription = null;
+  try {
+    const catRes = await getCategoryBySlug(slug);
+    const cat = catRes?.data?.category;
+    if (cat) {
+      metaTitle = cat.meta_title || null;
+      metaKeywords = cat.meta_keywords || null;
+      metaDescription = cat.meta_description || null;
+    }
+  } catch (e) {
+    // fallback: meta fields remain null
+  }
 
   return {
     props: {
@@ -473,10 +487,12 @@ export async function getStaticProps({ params }) {
       initialTotalPages: data.totalPages || 1,
       initialSlug: slug,
       page,
-      // These might be undefined if not found
-      metaTitle: currentCategory?.meta_title || null,
-      metaKeywords: currentCategory?.meta_keywords || null,
-      metaDescription: currentCategory?.meta_description || null,
+      // metaTitle: currentCategory?.meta_title || null,
+      // metaKeywords: currentCategory?.meta_keywords || null,
+      // metaDescription: currentCategory?.meta_description || null,
+      metaTitle,
+      metaKeywords,
+      metaDescription,
     },
     revalidate: 300,
   };
