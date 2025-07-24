@@ -142,9 +142,11 @@ const CompanyProfile = () => {
                     <h4 className="fw-semibold text-primary">
                       {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
                     </h4>
-                  ) : (
+                  ) 
+                  : (
                     <h4 className="fw-semibold text-primary">Update your profile and add your name.</h4>
-                  )}
+                  )
+                  }
 
                   <p>{profile?.address1 || ""}</p>
                 </div>

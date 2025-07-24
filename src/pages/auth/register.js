@@ -63,52 +63,79 @@ const Register = () => {
         // ✅ Log the response to check the structure
         // console.log("🔄 Signup Response:", res.data);
   
-        // ✅ Handle email already exists but not verified case
-        if (res.data.message.includes("not verified")) {
-          toast.warning(res.data.message);
+        // // ✅ Handle email already exists but not verified case
+        // if (res.data.message.includes("not verified")) {
+        //   toast.warning(res.data.message);
+        //   return;
+        // }
+        // Handle all cases by backend code
+       const code = res.data.code;
+        const message = res.data.message;
+        if (code === "EMAIL_NOT_VERIFIED") {
+          toast.warning(message);
+          return;
+        } else if (code === "EMAIL_EXISTS") {
+          toast.error(message);
+          return;
+        } else if (code === "REACTIVATED") {
+          toast.success(message);
+          router.push("/auth/login");
+          return;
+        } else if (code === "REGISTERED") {
+          toast.success(message);
+          router.push("/auth/login");
           return;
         }
 
-        // ✅ Check if `user` exists before destructuring
-        if (!res.data || !res.data.user) {
-          toast.error("Unexpected response from server.");
-          return;
-        }
+        if (!code) toast.info(message || "Something happened. Please check your email.");
+
+
+        // // ✅ Check if `user` exists before destructuring
+        // if (!res.data || !res.data.user) {
+        //   toast.error("Unexpected response from server.");
+        //   return;
+        // }
   
-        const { accessToken, refreshToken, user } = res.data;
+        // const { accessToken, refreshToken, user } = res.data;
   
         
-        // ✅ Store tokens and user data ONLY IF email is verified
-        if (user.is_email_verify === 1) {
-          // Since tokens are stored in HTTP‑only cookies, we do not store them in localStorage.
-          // You may choose to store non-sensitive user data if needed.
-          localStorage.setItem("userData", JSON.stringify(user));
+        // // ✅ Store tokens and user data ONLY IF email is verified
+        // if (user.is_email_verify === 1) {
+        //   // Since tokens are stored in HTTP‑only cookies, we do not store them in localStorage.
+        //   // You may choose to store non-sensitive user data if needed.
+        //   localStorage.setItem("userData", JSON.stringify(user));
 
-          // Dispatch login success without token
-          dispatch(loginSuccess({ user, status: "authenticated" }));
-          window.dispatchEvent(new Event("userLoggedIn"));
+        //   // Dispatch login success without token
+        //   dispatch(loginSuccess({ user, status: "authenticated" }));
+        //   window.dispatchEvent(new Event("userLoggedIn"));
 
 
-          toast.success("Registration successful. Redirecting...", { autoClose: 2000 });
+        //   toast.success("Registration successful. Redirecting...", { autoClose: 2000 });
 
-          setTimeout(() => {
-            if (user.role === 1) {
-              router.push("/admin/dashboard");
-            } else if (user.role === 5) {
-              router.push("/admin/dashboard/products/view-projects");
-            } else {
-              router.push("/");
-            }
-          }, 2000);
-        } else {
-          toast.warning("Please verify your email before register.", { autoClose: 2000 });
-          router.push("/auth/login");
-        }
+        //   setTimeout(() => {
+        //     if (user.role === 1) {
+        //       router.push("/admin/dashboard");
+        //     } else if (user.role === 5) {
+        //       router.push("/admin/dashboard/products/view-projects");
+        //     } else {
+        //       router.push("/");
+        //     }
+        //   }, 2000);
+        // } else {
+        //   toast.warning("Please verify your email before register.", { autoClose: 2000 });
+        //   router.push("/auth/login");
+        // }
       })
       .catch((err) => {
         stopLoading();
-        if (err.response && err.response.status === 400) {
-          toast.error(err.response.data.message);
+        // if (err.response && err.response.status === 400) {
+        //   toast.error(err.response.data.message);
+        // } else {
+        //   toast.error("Registration failed. Please try again.");
+        // }
+        // console.error("Registration Error:", err);
+        if (err.response && err.response.data && err.response.data.message) {
+          toast.error(err.response.data.message); // This will show backend's custom message
         } else {
           toast.error("Registration failed. Please try again.");
         }
