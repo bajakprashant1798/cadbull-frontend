@@ -830,7 +830,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
 export async function getStaticPaths() {
-  const res = await getallprojects(1, 50); // Or popular projects only
+  const res = await getallprojects(1, 100); // Or popular projects only
   const paths = res.data.products.map((proj) => ({
     params: { 
         id: proj.id.toString(),
@@ -864,14 +864,10 @@ export async function getStaticProps({ params }) {
 
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
     
-    // Construct canonical URL here and pass it as a prop
-    const canonicalUrl = `https://beta.cadbull.com/detail/${id}/${expectedSlug}`;
-
     return {
       props: {
         initialProject: project,
         initialSimilar: similarRes.data.projects || [],
-        canonicalUrl,
       },
       revalidate: 300,
     };
@@ -881,49 +877,6 @@ export async function getStaticProps({ params }) {
     };
   }
 }
-
-// export async function getStaticProps({ params }) {
-//   const id = params.id;
-//   try {
-//     const controller = new AbortController();
-//     const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-//     const projectRes = await getsingleallprojects("", id, { signal: controller.signal });
-//     clearTimeout(timeout);
-
-//     const project = projectRes.data;
-//     const expectedSlug = slugify(project.work_title);
-
-//     if (params.slug !== expectedSlug) {
-//       return {
-//         redirect: {
-//           destination: `/detail/${id}/${expectedSlug}`,
-//           permanent: true,
-//         },
-//       };
-//     }
-
-//     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-
-//     // Canonical URL
-//     const canonicalUrl = `https://beta.cadbull.com/detail/${id}/${expectedSlug}`;
-
-//     return {
-//       props: {
-//         initialProject: project,
-//         initialSimilar: similarRes.data.projects || [],
-//         canonicalUrl,
-//       },
-//       revalidate: 300,
-//     };
-//   } catch (err) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-// }
-
-
 
 ViewDrawing.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
