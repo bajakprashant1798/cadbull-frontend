@@ -508,6 +508,7 @@ export async function getStaticProps({ params }) {
     category = catRes.data.category;
     if (!category) return { notFound: true };
   } catch (error) {
+    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
     return { notFound: true };
   }
 
@@ -521,6 +522,7 @@ export async function getStaticProps({ params }) {
     });
     if (!data || !data.projects) return { notFound: true };
   } catch (error) {
+    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
     return { notFound: true };
   }
 
