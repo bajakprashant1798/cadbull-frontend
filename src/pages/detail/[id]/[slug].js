@@ -863,9 +863,11 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const id = params.id;
   
-
+console.log(`[BUILD] getStaticProps for slug=${slug} START`);
   try {
+     console.log(`[BUILD] Fetching subcategories/projects for slug=${slug}`);
     const projectRes = await getsingleallprojects("", id);
+    console.log(`[BUILD] Got data for slug=${slug} in ${Date.now() - start}ms`);
     const project = projectRes.data;
     const expectedSlug = slugify(project.work_title);
 
@@ -892,6 +894,7 @@ export async function getStaticProps({ params }) {
       revalidate: 300,
     };
   } catch (err) {
+    console.error(`[BUILD] ERROR for slug=${slug}:`, err.message, err.response?.data || '');
     return {
       notFound: true,
     };

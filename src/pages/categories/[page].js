@@ -502,13 +502,15 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
-
+console.log(`[BUILD] getStaticProps for slug=${slug} START`);
   try {
+    console.log(`[BUILD] Fetching subcategories/projects for slug=${slug}`);
     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
       getallCategories(""),
       getallprojects(currentPage, 9, "", "", ""),
       // getFavouriteItems(),
     ]);
+    console.log(`[BUILD] Got data for slug=${slug} in ${Date.now() - start}ms`);
     return {
       props: {
         initialCategories: categoriesRes?.data?.categories || [],
@@ -521,6 +523,7 @@ export async function getStaticProps({ params }) {
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);
+    console.error(`[BUILD] ERROR for slug=${slug}:`, err.message, err.response?.data || '');
     return {
       props: {
         initialCategories: [],

@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl, categoryTitle, categoryDescription }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -445,103 +445,33 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   );
 };
 
-// export async function getStaticPaths() {
-//   const catRes = await getallCategories("");
-//   const categories = catRes?.data?.categories || [];
-//   // You can prebuild a few pages, or just 1/2 as before
-//   const paths = [];
-//   categories.forEach(cat => {
-//     paths.push({ params: { slug: cat.slug, page: "1" }});
-//     // paths.push({ params: { slug: cat.slug, page: "2" }});
-//   });
-//   return { paths, fallback: "blocking" };
-// }
-
 export async function getStaticPaths() {
-  // Fetch top 5 categories or just the most important ones
   const catRes = await getallCategories("");
   const categories = catRes?.data?.categories || [];
-  // Only build page 1 for the first 5 categories (or adjust as needed)
-  const paths = categories.slice(0, 5).map(cat => ({
-    params: { slug: cat.slug, page: "1" }
-  }));
+  // You can prebuild a few pages, or just 1/2 as before
+  const paths = [];
+  categories.forEach(cat => {
+    paths.push({ params: { slug: cat.slug, page: "1" }});
+    // paths.push({ params: { slug: cat.slug, page: "2" }});
+  });
   return { paths, fallback: "blocking" };
 }
-
-
-export async function getStaticProps({ params }) {
-  const slug = params.slug;
-  const page = parseInt(params.page, 10) || 1;
-  const start = Date.now();
-
-  console.log(`[BUILD] getStaticProps called for slug=${slug} page=${page}`);
-
-  try {
-    // Log what you are sending to the API
-    console.log(`[BUILD] Fetching projects for slug: ${slug}, page: ${page}`);
-    const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-
-    if (!data || !data.projects) {
-      console.error(`[BUILD] No projects found for slug=${slug} page=${page}`);
-      return { notFound: true };
-    }
-
-    const duration = Date.now() - start;
-    console.log(`[BUILD] Fetched ${data.projects.length} projects for slug=${slug} page=${page} in ${duration}ms`);
-
-    // Also log metadata fetch
-    const catRes = await getallCategories("");
-    console.log(`[BUILD] Categories API returned ${catRes?.data?.categories?.length || 0} categories.`);
-
-    // ... rest of logic
-
-    return {
-      props: {
-        // ... your props
-      },
-      revalidate: 300,
-    };
-  } catch (err) {
-    const duration = Date.now() - start;
-    console.error(`[BUILD] ERROR in getStaticProps for slug=${slug} page=${page} after ${duration}ms`);
-    if (err.response) {
-      console.error(`[BUILD] API Error:`, err.response.data);
-    }
-    console.error(err);
-    return { notFound: true };
-  }
-}
-
 
 // export async function getStaticProps({ params }) {
 //   const slug = params.slug;
 //   const page = parseInt(params.page, 10) || 1;
-
-//   // Fetch the category (main or subcategory) by slug
-//   let category = null;
-//   try {
-//     const catRes = await getCategoryBySlug(slug); // Axios response
-//     category = catRes.data.category;
-//     if (!category) return { notFound: true };
-//   } catch (error) {
-//     console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
+//   const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+//   if (!data || !data.projects) {
 //     return { notFound: true };
 //   }
 
-//   // Fetch projects for this category/subcategory (re-use your existing function)
-//   let data;
-//   try {
-//     data = await getSubCategories({
-//       slug,
-//       currentPage: page,
-//       pageSize: 9,
-//     });
-//     if (!data || !data.projects) return { notFound: true };
-//   } catch (error) {
-//     console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
-//     return { notFound: true };
-//   }
+//   // Fetch all categories to get meta for the current one
+//   const catRes = await getallCategories("");
+//   const categories = catRes?.data?.categories || [];
+//   // Find current category by slug
+//   const currentCategory = categories.find(cat => cat.slug === slug);
 
+//   // At the bottom of getStaticProps before return
 //   const baseUrl = "https://beta.cadbull.com";
 //   const canonicalUrl =
 //     page === 1
@@ -554,16 +484,86 @@ export async function getStaticProps({ params }) {
 //       initialTotalPages: data.totalPages || 1,
 //       initialSlug: slug,
 //       page,
-//       metaTitle: category.meta_title || null,
-//       metaKeywords: category.meta_keywords || null,
-//       metaDescription: category.meta_description || null,
+//       // These might be undefined if not found
+//       metaTitle: currentCategory?.meta_title || null,
+//       metaKeywords: currentCategory?.meta_keywords || null,
+//       metaDescription: currentCategory?.meta_description || null,
 //       canonicalUrl,
-//       categoryTitle: category.name || slug,
-//       categoryDescription: category.description || "",
+
+//       // categoryTitle: currentCategory?.name || slug,
+//       // categoryDescription: currentCategory?.description || "",
 //     },
 //     revalidate: 300,
 //   };
 // }
+
+export async function getStaticProps({ params }) {
+  const slug = params.slug;
+  const page = parseInt(params.page, 10) || 1;
+  const start = Date.now();
+  console.log(`[BUILD] [${slug}] [Page ${page}] START getStaticProps`);
+
+
+  // Fetch the category (main or subcategory) by slug
+  let category = null;
+  try {
+    console.log(`[BUILD] [${slug}] Fetching category meta`);
+    const catRes = await getCategoryBySlug(slug); // Axios response
+    category = catRes.data.category;
+    if (!category) {
+      console.error(`[BUILD] [${slug}] Category not found`);
+      return { notFound: true };
+    }
+    console.log(`[BUILD] [${slug}] Category fetched`);
+  } catch (error) {
+    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
+    return { notFound: true };
+  }
+
+  // Fetch projects for this category/subcategory (re-use your existing function)
+  let data;
+  try {
+    console.log(`[BUILD] [${slug}] Fetching projects for page ${page}`);
+    data = await getSubCategories({
+      slug,
+      currentPage: page,
+      pageSize: 9,
+    });
+    const apiTime = Date.now() - apiStart;
+    console.log(`[BUILD] [${slug}] Projects fetched in ${apiTime}ms`);
+    if (!data || !data.projects) {
+      console.error(`[BUILD] [${slug}] No projects found`);
+      return { notFound: true };
+    }
+  } catch (error) {
+    console.error(`[BUILD] [${slug}] Error fetching projects:`, err?.response?.data || err?.message || err);
+    console.error("❌ [PRODUCTION] getStaticProps error:", err.response?.data || err.message);
+    return { notFound: true };
+  }
+
+  const baseUrl = "https://beta.cadbull.com";
+  const canonicalUrl =
+    page === 1
+      ? `${baseUrl}/${slug}`
+      : `${baseUrl}/${slug}/${page}`;
+
+  console.log(`[BUILD] [${slug}] FINISHED getStaticProps, total time: ${Date.now() - start}ms`);
+  return {
+    props: {
+      initialProjects: data.projects,
+      initialTotalPages: data.totalPages || 1,
+      initialSlug: slug,
+      page,
+      metaTitle: category.meta_title || null,
+      metaKeywords: category.meta_keywords || null,
+      metaDescription: category.meta_description || null,
+      canonicalUrl,
+      categoryTitle: category.name || slug,
+      categoryDescription: category.description || "",
+    },
+    revalidate: 300,
+  };
+}
 
 
 
