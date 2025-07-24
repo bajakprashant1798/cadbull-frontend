@@ -500,57 +500,24 @@ export async function getStaticPaths() {
   };
 }
 
-// export async function getStaticProps({ params }) {
-//   const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
+export async function getStaticProps({ params }) {
+  const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
 
-//   try {
-//     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
-//       getallCategories(""),
-//       getallprojects(currentPage, 9, "", "", ""),
-//       getFavouriteItems(),
-//     ]);
-//     return {
-//       props: {
-//         initialCategories: categoriesRes?.data?.categories || [],
-//         initialProjects: projectsRes?.data?.products || [],
-//         totalPages: projectsRes?.data?.totalPages || 1,
-//         initialFavourites: favouritesRes?.data?.favorites || [],
-//         currentPage, // add this if you want to use in component
-//       },
-//       revalidate: 300,
-//     };
-//   } catch (err) {
-//     console.error("❌ Error in getStaticProps:", err);
-//     return {
-//       props: {
-//         initialCategories: [],
-//         initialProjects: [],
-//         totalPages: 1,
-//         initialFavourites: [],
-//         currentPage,
-//       },
-//       revalidate: 300,
-//     };
-//   }
-// }
-
-
-export async function getStaticProps() {
   try {
     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
-      getallCategories(""),             // Fetch all categories
-      getallprojects(1, 9, "", "", ""), // Fetch first page of projects
-      getFavouriteItems()               // Fetch favorites if needed (optional, only if token is not required)
+      getallCategories(""),
+      getallprojects(currentPage, 9, "", "", ""),
+      getFavouriteItems(),
     ]);
-
     return {
       props: {
         initialCategories: categoriesRes?.data?.categories || [],
         initialProjects: projectsRes?.data?.products || [],
         totalPages: projectsRes?.data?.totalPages || 1,
-        initialFavourites: favouritesRes?.data?.favorites || []
+        initialFavourites: favouritesRes?.data?.favorites || [],
+        currentPage, // add this if you want to use in component
       },
-      revalidate: 300 // Rebuild page every 5 mins
+      revalidate: 300,
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);
@@ -559,12 +526,45 @@ export async function getStaticProps() {
         initialCategories: [],
         initialProjects: [],
         totalPages: 1,
-        initialFavourites: []
+        initialFavourites: [],
+        currentPage,
       },
-      revalidate: 300
+      revalidate: 300,
     };
   }
 }
+
+
+// export async function getStaticProps() {
+//   try {
+//     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
+//       getallCategories(""),             // Fetch all categories
+//       getallprojects(1, 9, "", "", ""), // Fetch first page of projects
+//       getFavouriteItems()               // Fetch favorites if needed (optional, only if token is not required)
+//     ]);
+
+//     return {
+//       props: {
+//         initialCategories: categoriesRes?.data?.categories || [],
+//         initialProjects: projectsRes?.data?.products || [],
+//         totalPages: projectsRes?.data?.totalPages || 1,
+//         initialFavourites: favouritesRes?.data?.favorites || []
+//       },
+//       revalidate: 300 // Rebuild page every 5 mins
+//     };
+//   } catch (err) {
+//     console.error("❌ Error in getStaticProps:", err);
+//     return {
+//       props: {
+//         initialCategories: [],
+//         initialProjects: [],
+//         totalPages: 1,
+//         initialFavourites: []
+//       },
+//       revalidate: 300
+//     };
+//   }
+// }
 
 
 Categories.getLayout = function getLayout(page) {
