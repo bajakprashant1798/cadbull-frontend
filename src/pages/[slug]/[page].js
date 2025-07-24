@@ -7,7 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
-import { getFavouriteItems, getSubCategories, getallCategories, getCategoryBySlug } from "@/service/api";
+import { getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getSubCategory,
