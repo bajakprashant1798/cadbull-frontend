@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -58,7 +58,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     return query;
   };
 
-  console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription);
+  console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription, "description:", description, "title:", title);
   
 
   // Fetch main categories on mount
@@ -204,8 +204,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         pageName: "Search Results",
       }
     : {
-        title: slug ? makeTitle(slug) : "Sub Categories",
-        description: "Improving the aesthetic appearance of an area by changing its contours, adding ornamental features, or planting trees and shrubs.",
+        title: title ? title : makeTitle(slug),
+        description: description || "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
         mainCategories,
         subCategories: subcat,
         slug,
@@ -469,7 +469,7 @@ export async function getStaticProps({ params }) {
   // const currentCategory = categories.find(cat => cat.slug === slug);
 
   // 👇 NEW: Fetch meta fields for any slug (parent or subcategory)
-  let metaTitle = null, metaKeywords = null, metaDescription = null;
+  let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
   try {
     const catRes = await getCategoryBySlug(slug);
     const cat = catRes?.data?.category;
@@ -477,6 +477,8 @@ export async function getStaticProps({ params }) {
       metaTitle = cat.meta_title || null;
       metaKeywords = cat.meta_keywords || null;
       metaDescription = cat.meta_description || null;
+      description = cat.description || null; // Use description from category if available
+      title = cat.name || makeTitle(slug); // Fallback to slug if name is not available
     }
   } catch (e) {
     // fallback: meta fields remain null
@@ -494,6 +496,8 @@ export async function getStaticProps({ params }) {
       metaTitle,
       metaKeywords,
       metaDescription,
+      description,
+      title
     },
     revalidate: 300,
   };
