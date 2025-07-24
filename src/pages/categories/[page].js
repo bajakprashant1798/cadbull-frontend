@@ -26,8 +26,6 @@ import Loader from "@/components/Loader";
 import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
-import logo from "@/assets/images/logo.png";
-
 
 const Categories = ({
 //   initialCategories,
@@ -316,18 +314,7 @@ const Categories = ({
     <Fragment>
       <Head>
         <title>Categories | Cadbull </title>
-        <link rel="canonical" href="https://beta.cadbull.com/categories" />
-        <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
-
-        <meta property="og:title" content="Categories | Cadbull" />
-        <meta property="og:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={"https://beta.cadbull.com/categories"} />
-        <meta property="og:image" content={logo} />
-        <meta name="twitter:title" content="Categories | Cadbull" />
-        <meta name="twitter:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
-        <meta name="twitter:image" content={logo} />
-        <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+        <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
@@ -491,7 +478,7 @@ const Categories = ({
 export async function getStaticPaths() {
   // You can generate a few pages (for demo) or as many as you want.
   // Example: Pre-render first 10 pages statically, and use fallback: "blocking" for others.
-  const paths = Array.from({ length: 3 }).map((_, idx) => ({
+  const paths = Array.from({ length: 10 }).map((_, idx) => ({
     params: { page: `${idx + 1}` },
   }));
   return {
@@ -504,18 +491,17 @@ export async function getStaticProps({ params }) {
   const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
 
   try {
-    
     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
       getallCategories(""),
       getallprojects(currentPage, 9, "", "", ""),
-      // getFavouriteItems(),
+      getFavouriteItems(),
     ]);
     return {
       props: {
         initialCategories: categoriesRes?.data?.categories || [],
         initialProjects: projectsRes?.data?.products || [],
         totalPages: projectsRes?.data?.totalPages || 1,
-        // initialFavourites: favouritesRes?.data?.favorites || [],
+        initialFavourites: favouritesRes?.data?.favorites || [],
         currentPage, // add this if you want to use in component
       },
       revalidate: 300,

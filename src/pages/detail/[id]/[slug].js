@@ -829,45 +829,27 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 };
 
 
-// export async function getStaticPaths() {
-//   const res = await getallprojects(1, 100); // Or popular projects only
-//   const paths = res.data.products.map((proj) => ({
-//     params: { 
-//         id: proj.id.toString(),
-//         slug: slugify(proj.work_title)
-//     }
-//   }));
-
-//   return {
-//     paths,
-//     fallback: "blocking", // or "true" if you want loading spinner
-//   };
-// }
 export async function getStaticPaths() {
-  // Only fetch latest/popular 20 projects for prebuilding (adjust as needed)
-  const res = await getallprojects(1, 20); // Get 20 for fast builds
+  const res = await getallprojects(1, 50); // Or popular projects only
   const paths = res.data.products.map((proj) => ({
     params: { 
-      id: proj.id.toString(),
-      slug: slugify(proj.work_title)
+        id: proj.id.toString(),
+        slug: slugify(proj.work_title)
     }
   }));
 
   return {
     paths,
-    fallback: "blocking", // Build all other product detail pages on-demand
+    fallback: "blocking", // or "true" if you want loading spinner
   };
 }
-
 
 export async function getStaticProps({ params }) {
   const id = params.id;
   
-console.log(`[BUILD] getStaticProps for slug=${slug} START`);
+
   try {
-     console.log(`[BUILD] Fetching subcategories/projects for slug=${slug}`);
     const projectRes = await getsingleallprojects("", id);
-    console.log(`[BUILD] Got data for slug=${slug} in ${Date.now() - start}ms`);
     const project = projectRes.data;
     const expectedSlug = slugify(project.work_title);
 
@@ -894,7 +876,6 @@ console.log(`[BUILD] getStaticProps for slug=${slug} START`);
       revalidate: 300,
     };
   } catch (err) {
-    console.error(`[BUILD] ERROR for slug=${slug}:`, err.message, err.response?.data || '');
     return {
       notFound: true,
     };

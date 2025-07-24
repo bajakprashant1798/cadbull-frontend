@@ -24,7 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, canonicalUrl, categoryTitle, categoryDescription }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -57,9 +57,6 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     if (params.search) query.search = params.search;
     return query;
   };
-
-  // console.log("description: ", categoryDescription);
-  
 
   // Fetch main categories on mount
   useEffect(() => {
@@ -204,8 +201,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         pageName: "Search Results",
       }
     : {
-        title:  makeTitle(slug),
-        description: "categoryDescription || 'Explore a wide range of categories and subcategories on Cadbull.'",
+        title: slug ? makeTitle(slug) : "Sub Categories",
+        description: "Improving the aesthetic appearance of an area by changing its contours, adding ornamental features, or planting trees and shrubs.",
         mainCategories,
         subCategories: subcat,
         slug,
@@ -300,13 +297,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         <meta name="twitter:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
         <meta name="twitter:description" content={metaDescription || "World Largest 2d CAD Library."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
-        <link rel="canonical" href={canonicalUrl} />
       </Head>
-      <CategoriesLayout 
-        {...CategoriesProps}
-        // categoryTitle={categoryTitle}
-        // categoryDescription={categoryDescription}
-      >
+      <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
         <section>
           <div className="container" id="categories-top">
@@ -452,78 +444,24 @@ export async function getStaticPaths() {
   const paths = [];
   categories.forEach(cat => {
     paths.push({ params: { slug: cat.slug, page: "1" }});
-    // paths.push({ params: { slug: cat.slug, page: "2" }});
+    paths.push({ params: { slug: cat.slug, page: "2" }});
   });
   return { paths, fallback: "blocking" };
 }
 
-// export async function getStaticProps({ params }) {
-//   const slug = params.slug;
-//   const page = parseInt(params.page, 10) || 1;
-//   const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-//   if (!data || !data.projects) {
-//     return { notFound: true };
-//   }
-
-//   // Fetch all categories to get meta for the current one
-//   const catRes = await getallCategories("");
-//   const categories = catRes?.data?.categories || [];
-//   // Find current category by slug
-//   const currentCategory = categories.find(cat => cat.slug === slug);
-
-//   // At the bottom of getStaticProps before return
-//   const baseUrl = "https://beta.cadbull.com";
-//   const canonicalUrl =
-//     page === 1
-//       ? `${baseUrl}/${slug}`
-//       : `${baseUrl}/${slug}/${page}`;
-
-//   return {
-//     props: {
-//       initialProjects: data.projects,
-//       initialTotalPages: data.totalPages || 1,
-//       initialSlug: slug,
-//       page,
-//       // These might be undefined if not found
-//       metaTitle: currentCategory?.meta_title || null,
-//       metaKeywords: currentCategory?.meta_keywords || null,
-//       metaDescription: currentCategory?.meta_description || null,
-//       canonicalUrl,
-
-//       // categoryTitle: currentCategory?.name || slug,
-//       // categoryDescription: currentCategory?.description || "",
-//     },
-//     revalidate: 300,
-//   };
-// }
-
 export async function getStaticProps({ params }) {
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
-
-  // Fetch the category (main or subcategory) by slug
-  let category = null;
-  try {
-    const catRes = await getCategoryBySlug(slug);
-    category = catRes.data.category;
-    if (!category) throw new Error(`[BUILD FAIL] [${slug}] Category not found`);
-  } catch (err) {
-    throw new Error(`[BUILD FAIL] [${slug}] Error fetching category: ${err?.response?.data || err?.message || err}`);
+  const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+  if (!data || !data.projects) {
+    return { notFound: true };
   }
 
-  // Fetch projects for this category/subcategory (re-use your existing function)
-  let data;
-  try {
-    data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-    if (!data || !data.projects) throw new Error(`[BUILD FAIL] [${slug}] No projects found`);
-  } catch (err) {
-    throw new Error(`[BUILD FAIL] [${slug}] Error fetching projects: ${err?.response?.data || err?.message || err}`);
-  }
-
-  const baseUrl = "https://beta.cadbull.com";
-  const canonicalUrl = page === 1
-    ? `${baseUrl}/${slug}`
-    : `${baseUrl}/${slug}/${page}`;
+  // Fetch all categories to get meta for the current one
+  const catRes = await getallCategories("");
+  const categories = catRes?.data?.categories || [];
+  // Find current category by slug
+  const currentCategory = categories.find(cat => cat.slug === slug);
 
   return {
     props: {
@@ -531,19 +469,14 @@ export async function getStaticProps({ params }) {
       initialTotalPages: data.totalPages || 1,
       initialSlug: slug,
       page,
-      metaTitle: category.meta_title || null,
-      metaKeywords: category.meta_keywords || null,
-      metaDescription: category.meta_description || null,
-      canonicalUrl,
-      categoryTitle: category.name || slug,
-      categoryDescription: category.description || "",
+      // These might be undefined if not found
+      metaTitle: currentCategory?.meta_title || null,
+      metaKeywords: currentCategory?.meta_keywords || null,
+      metaDescription: currentCategory?.meta_description || null,
     },
     revalidate: 300,
   };
 }
-
-
-
 
 CadLandscaping.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
