@@ -93,17 +93,26 @@ const social = [
   // { image: pinit, url: "/" },
 ];
 
-function slugify(text) {
-  if (!text) return "";
-  return text
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '');            // Trim - from end of text
+// function slugify(text) {
+//   if (!text) return "";
+//   return text
+//     .toString()
+//     .toLowerCase()
+//     .replace(/\s+/g, '-')           // Replace spaces with -
+//     .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+//     .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+//     .replace(/^-+/, '')             // Trim - from start of text
+//     .replace(/-+$/, '');            // Trim - from end of text
+// }
+function slugify(title) {
+  if (!title) return '';
+  return title
+    .replace(/\s+/g, '-')                  // Replace spaces with dashes
+    .replace(/-+/g, '-')                   // Remove duplicate dashes
+    .replace(/^-+|-+$/g, '');              // Trim dashes from start/end
+    // Do NOT lowercase, do NOT remove special chars like &
 }
+
 
 
 const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
@@ -390,7 +399,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           <div className="row">
             <div className="col-md-12">
               <div>
-                <h3 className="text-primary fw-bold">{project?.work_title}</h3>
+                <h1 className="text-primary fw-bold">{project?.work_title}</h1>
               </div>
               {/* Breadcrum  */}
               <div className="mt-4">
@@ -853,12 +862,24 @@ export async function getStaticProps({ params }) {
   try {
     const projectRes = await getsingleallprojects("", id);
     const project = projectRes.data;
-    const expectedSlug = slugify(project.work_title);
+    // const expectedSlug = slugify(project.work_title);
 
-    if (params.slug !== expectedSlug) {
+    // if (params.slug !== expectedSlug) {
+    //   return {
+    //     redirect: {
+    //       destination: `/detail/${id}/${expectedSlug}`,
+    //       permanent: true,
+    //     },
+    //   };
+    // }
+
+    // Use DB slug!
+    const canonicalSlug = product.slug || slugify(project.work_title); // fallback for missing
+    // Redirect if param slug is wrong
+    if (params.slug !== canonicalSlug) {
       return {
         redirect: {
-          destination: `/detail/${id}/${expectedSlug}`,
+          destination: `/detail/${id}/${canonicalSlug}`,
           permanent: true,
         },
       };
@@ -870,6 +891,7 @@ export async function getStaticProps({ params }) {
       props: {
         initialProject: project,
         initialSimilar: similarRes.data.projects || [],
+        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
       revalidate: 300,
     };
