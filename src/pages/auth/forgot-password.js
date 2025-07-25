@@ -7,15 +7,30 @@ import { Fragment, useState, useEffect } from "react";
 import PageHeading from "@/components/PageHeading";
 import { forgetPassword } from "@/service/api";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isResetting, setIsResetting] = useState(false);
   const [countdown, setCountdown] = useState(30);
+  const [recaptchaValue, setRecaptchaValue] = useState(null);
+
+  const handleCaptchaChange = (value) => {
+    setRecaptchaValue(value);
+  };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const requestData = { email: email };
+
+    if (!recaptchaValue) {
+      toast.error("Please complete the reCAPTCHA.");
+      return;
+    }
+    
+    const requestData = { 
+      email: email,
+      captcha: recaptchaValue
+    };
     // setIsResetting(true);
 
     forgetPassword(requestData)
@@ -90,6 +105,7 @@ const ForgotPassword = () => {
                       <Icons.Email />
                       <label>Email Id</label>
                     </div>
+
                     <input
                       type="email"
                       className="form-control"
@@ -98,6 +114,14 @@ const ForgotPassword = () => {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
+
+                  <div className="col-md-12">
+                    <ReCAPTCHA
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                      onChange={handleCaptchaChange}
+                    />
+                  </div>
+                  
                   <div className="col-md-12">
                     <div className="mt-2 mt-md-3">
                       <button
