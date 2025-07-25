@@ -45,6 +45,7 @@ import { useRouter } from "next/router";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import logo from "@/assets/images/logo.png";
+import Image from "next/image";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -402,7 +403,7 @@ export default function Home({
 
                 <p className="mb-4 mb-md-5">
                   {/* User */}
-                  <span className="text-danger">{Number(productCount).toLocaleString()}+</span> <span className="fw-light"> Free & Premium
+                  <span className="text-danger">{Number(productCount).toLocaleString("en-US")}+</span> <span className="fw-light"> Free & Premium
                   CADFiles
                   </span>
                 </p>
@@ -459,10 +460,11 @@ export default function Home({
                           dispatch(updateSortList(drawing.value))
                           }
                         >
-                          <img
-                            src={drawing.img.src}
+                          <Image
+                            src={drawing.img}
                             alt="icon"
                             className="img-fluid d-none d-md-block"
+                            loading="lazy"
                           />
                           <div>
                             <h6 className="mb-1">{drawing.type}</h6>
@@ -619,10 +621,11 @@ export default function Home({
                   {/* <Link href={`/categories/sub/${slug}`}> */}
                   <Link href={`/${slug}`}>
                     <div className="d-flex align-items-center gap-2 category-wrapper">
-                      <img
-                        src={category.image.src}
+                      <Image
+                        src={category.image}
                         alt="icon"
                         className="img-fluid"
+                        loading="lazy"
                       />
                       <div>
                         <h6 className="mb-1">{category.title}</h6>
@@ -643,10 +646,11 @@ export default function Home({
           <div className="row gy-5 gx-lg-5">
             <div className="col-lg-6">
               <div className="main-principle-image-wrapper">
-                <img
-                  src={principle.src}
+                <Image
+                  src={principle}
                   className="img-fluid"
                   alt="principle"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -682,10 +686,11 @@ export default function Home({
                   <div className="col">
                     <div className="d-flex flex-column h-100">
                       <div className="mb-3">
-                        <img
-                          src={visualization.src}
+                        <Image
+                          src={visualization}
                           alt="icon"
                           className="img-fluid"
+                          loading="lazy"
                         />
                       </div>
                       <div>
@@ -891,17 +896,18 @@ export default function Home({
           <div className="row d-lg-none">
             <div className="col-md-12">
               <div>
-                <img
-                  src={Architecture.src}
+                <Image
+                  src={Architecture}
                   className="w-100 img-fluid"
                   alt="cta"
+                  loading="lazy"
                 />
               </div>
             </div>
           </div>
           <div className="row bg-danger rounded-xl align-items-center d-none d-lg-flex">
             <div className="col-lg-5 ps-0">
-              <img src={housePlan.src} className="w-100" alt="house plan" />
+              <Image src={housePlan} height={200} className="w-100" alt="house plan" loading="lazy" />
             </div>
             <div className="col-lg-4">
               <div className="text-center">
@@ -909,7 +915,8 @@ export default function Home({
                   Architecture House Plan CAD Drawings CAD Blocks &
                 </h4>
                 <h4 className="text-white">
-                  <b>{Number(housePlanFiles).toLocaleString()} Files</b>
+                  {/* <b>{Number(housePlanFiles).toLocaleString()} Files</b> */}
+                  <b>{Number(housePlanFiles).toLocaleString("en-US")}+ Files</b>
                 </h4>
               </div>
             </div>
