@@ -874,7 +874,7 @@ export async function getStaticProps({ params }) {
     // }
 
     // Use DB slug!
-    const canonicalSlug = product.slug || slugify(project.work_title); // fallback for missing
+    const canonicalSlug = project.slug || slugify(project.work_title); // fallback for missing
     // Redirect if param slug is wrong
     if (params.slug !== canonicalSlug) {
       return {

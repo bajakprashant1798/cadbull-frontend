@@ -9,6 +9,23 @@ import AdminLayout from "@/layouts/AdminLayout";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
 
+function standardSlugify(text) {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
+function oldSiteSlugify(text) {
+  if (!text) return '';
+  return text
+    .replace(/\s+/g, '-')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
+
 const EditProject = () => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector(
@@ -33,6 +50,10 @@ const EditProject = () => {
   const [tags, setTags] = useState([]);
   const [projectDetails, setProjectDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [slug, setSlug] = useState("");         // Slug input
+  const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
+
   // const [storedToken, setStoredToken] = useState(null);
 
   // ✅ Load token from sessionStorage safely
@@ -52,6 +73,20 @@ const EditProject = () => {
   //     }
   //   }
   // }, [dispatch, token, storedToken]);
+
+
+  const handleGenerateStandardSlug = () => {
+    setSlug(standardSlugify(workTitle));
+    setSlugMode('standard');
+  };
+  const handleGenerateOldSiteSlug = () => {
+    setSlug(oldSiteSlugify(workTitle));
+    setSlugMode('old');
+  };
+  const handleSlugInputChange = (e) => {
+    setSlug(e.target.value);
+    setSlugMode('custom');
+  };
 
   // ✅ Fetch Categories & Project Data
   useEffect(() => {
@@ -83,8 +118,23 @@ const EditProject = () => {
         if (!projectRes.data) {
           throw new Error("Invalid project details response");
         }
-
+        // ✅ Set Categories
         setCategories(categoriesRes.data);
+
+        // setSlug(projectRes.data.slug || ""); // set initial slug
+        // setSlugMode("custom"); // Or infer from slug format
+        let initialSlug = "";
+        let initialSlugMode = "standard";
+        if (projectRes.data.slug && projectRes.data.slug.trim() !== "") {
+          initialSlug = projectRes.data.slug;
+          initialSlugMode = "custom";
+        } else if (projectRes.data.work_title) {
+          initialSlug = oldSiteSlugify(projectRes.data.work_title);
+          initialSlugMode = "old";
+        }
+        setSlug(initialSlug);
+        setSlugMode(initialSlugMode);
+
 
         // ✅ Set Form Data
         Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
@@ -121,9 +171,7 @@ const EditProject = () => {
     setIsDuplicate(false); // Reset state
 
     if (typingTimeout.current) clearTimeout(typingTimeout.current);
-
     typingTimeout.current = setTimeout(async () => {
-      // Empty or unchanged value: skip
       if (!value.trim() || value.trim() === projectDetails?.work_title) {
         setIsDuplicate(false);
         setChecking(false);
@@ -131,7 +179,6 @@ const EditProject = () => {
       }
       setChecking(true);
       try {
-        // Pass id so it doesn't match itself
         const res = await checkProjectNameApi(value.trim(), id || "");
         setIsDuplicate(res.data.exists);
       } catch (err) {
@@ -156,6 +203,10 @@ const EditProject = () => {
   const onSubmit = async (data) => {
     if (isDuplicate) {
       toast.error("Cannot save: Duplicate project title.");
+      return;
+    }
+    if (!slug || !slug.trim()) {
+      toast.error("Slug cannot be empty.");
       return;
     }
 
@@ -252,6 +303,35 @@ const EditProject = () => {
             <label className="form-label">Meta Description</label>
             <textarea className="form-control" {...register("meta_description")} />
           </div>
+
+          {/* Slug */}
+          <div className="mb-3">
+            <label className="form-label">Slug</label>
+            <div className="d-flex gap-2 mb-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleGenerateStandardSlug}>
+                Generate Standard Slug
+              </button>
+              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleGenerateOldSiteSlug}>
+                Generate Old Site Slug
+              </button>
+            </div>
+            <input
+              className="form-control"
+              value={slug}
+              onChange={handleSlugInputChange}
+              placeholder="Enter slug or use generate buttons"
+            />
+            {slugMode === "custom" && (
+              <small className="text-warning">
+                Changing the slug will affect product URLs and SEO. Only modify if you understand the impact.
+              </small>
+            )}
+            <small className="form-text text-muted">
+              Slug will be used in product URL for SEO.<br />
+              <b>Example:</b> https://cadbull.com/detail/{id}/{slug || "<slug>"}
+            </small>
+          </div>
+
 
           {/* Tags Input Field */}
           <div className="mb-3">

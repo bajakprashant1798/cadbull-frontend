@@ -6,6 +6,25 @@ import { toast } from "react-toastify";
 import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import TagsField from "@/components/TagsField";
+import debounce from "lodash.debounce";
+
+
+function standardSlugify(text) {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
+function oldSiteSlugify(text) {
+  if (!text) return '';
+  return text
+    .replace(/\s+/g, '-')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
 
 
 const AddProject = () => {
@@ -25,6 +44,9 @@ const AddProject = () => {
   const [checking, setChecking] = useState(false);
   const typingTimeout = useRef(null);
 
+  const [slug, setSlug] = useState("");         // Slug input
+  const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
+
 
   // ✅ Fetch Categories on Component Mount
   useEffect(() => {
@@ -32,6 +54,13 @@ const AddProject = () => {
       fetchCategories();
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!workTitle && slug === "") {
+      setSlug(""); // empty
+      setSlugMode("standard");
+    }
+  }, []);
 
   // ✅ Fetch Categories Using New Admin API
   const fetchCategories = async () => {
@@ -65,37 +94,92 @@ const AddProject = () => {
     setDescriptionCount(250 - text.length);
   };
 
+  const checkDuplicateTitle = debounce(async (value) => {
+    if (!value.trim()) {
+      setIsDuplicate(false);
+      setChecking(false);
+      return;
+    }
+    setChecking(true);
+    try {
+      const res = await checkProjectNameApi(value.trim());
+      setIsDuplicate(res.data.exists);
+    } catch (err) {
+      setIsDuplicate(false);
+    }
+    setChecking(false);
+  }, 400); // 400ms debounce
+
   const handleWorkTitleChange = (e) => {
     const value = e.target.value;
     setWorkTitle(value);
     setValue("work_title", value); // Sync with react-hook-form
-    
+
     setIsDuplicate(false);
-
-    if (typingTimeout.current) clearTimeout(typingTimeout.current);
-
-    typingTimeout.current = setTimeout(async () => {
-      if (!value.trim()) {
-        setIsDuplicate(false);
-        setChecking(false);
-        return;
-      }
-      setChecking(true);
-      try {
-        const res = await checkProjectNameApi(value.trim());
-        setIsDuplicate(res.data.exists);
-      } catch (err) {
-        setIsDuplicate(false);
-      }
-      setChecking(false);
-    }, 350);
+    if (slugMode === "standard" || slug.trim() === "") {
+      setSlug(standardSlugify(value));
+    }
+    checkDuplicateTitle(value); // Use debounced function
   };
 
+  useEffect(() => {
+    return () => {
+      checkDuplicateTitle.cancel();
+    };
+  }, []);
+
+
+  // const handleWorkTitleChange = (e) => {
+  //   const value = e.target.value;
+  //   setWorkTitle(value);
+  //   setValue("work_title", value); // Sync with react-hook-form
+    
+  //   setIsDuplicate(false);
+
+  //   if (slugMode === "standard" || slug.trim() === "") {
+  //     setSlug(standardSlugify(value));
+  //   }
+  //   if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    
+
+  //   typingTimeout.current = setTimeout(async () => {
+  //     if (!value.trim()) {
+  //       setIsDuplicate(false);
+  //       setChecking(false);
+  //       return;
+  //     }
+  //     setChecking(true);
+  //     try {
+  //       const res = await checkProjectNameApi(value.trim());
+  //       setIsDuplicate(res.data.exists);
+  //     } catch (err) {
+  //       setIsDuplicate(false);
+  //     }
+  //     setChecking(false);
+  //   }, 350);
+  // };
+
+  const handleGenerateStandardSlug = () => {
+    setSlug(standardSlugify(workTitle));
+    setSlugMode('standard');
+  };
+  const handleGenerateOldSiteSlug = () => {
+    setSlug(oldSiteSlugify(workTitle));
+    setSlugMode('old');
+  };
+  const handleSlugInputChange = (e) => {
+    setSlug(e.target.value);
+    setSlugMode('custom');
+  };
 
   // ✅ Submit Form
   const onSubmit = async (data) => {
     if (isDuplicate) {
       toast.error("Cannot save: Duplicate project title.");
+      return;
+    }
+    if (!slug || !slug.trim()) {
+      toast.error("Slug cannot be empty.");
       return;
     }
     try {
@@ -110,10 +194,12 @@ const AddProject = () => {
         formData.append("description", data.description || "");
         formData.append("meta_title", data.meta_title || "");
         formData.append("meta_description", data.meta_description || "");
+        // In formData append:
+        formData.append("slug", slug);
         formData.append("tags", data.tags || "");
         formData.append("file_type", data.file_type || "");
         formData.append("category_id", data.category_id || "");
-        formData.append("subcategory_id", data.subcategory_id || "");
+        formData.append("subcategory_id", data.subcategory_id ? data.subcategory_id : null);
         formData.append("type", data.type || "Free");
 
         // ✅ Ensure file & image exist before appending
@@ -190,6 +276,30 @@ const AddProject = () => {
             <label className="form-label">Meta Description</label>
             <input className="form-control" {...register("meta_description")} />
           </div>
+
+          {/* Slug */}
+          {/* Slug */}
+          <div className="mb-3">
+            <label className="form-label">Slug</label>
+            <div className="d-flex gap-2 mb-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleGenerateStandardSlug}>
+                Generate Standard Slug
+              </button>
+            </div>
+            <input
+              className="form-control"
+              value={slug}
+              onChange={handleSlugInputChange}
+              placeholder="Enter slug or use generate"
+              required
+            />
+            <small className="form-text text-muted">
+              Slug will be used in product URL for SEO. <br />
+              <b>Example:</b> https://cadbull.com/detail/123/<span className="text-primary">{slug || "<slug>"}</span>
+            </small>
+          </div>
+
+
 
           {/* Tags */}
           {/* <div className="mb-3">
