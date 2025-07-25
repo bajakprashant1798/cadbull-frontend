@@ -24,44 +24,44 @@ const Pricing = () => {
   const [message, setMessage] = useState("");
   const [activeSubscription, setActiveSubscription] = useState(false); // ✅ Check if user has an active plan
 
-// const status = useSelector((store) => store.logininfo)
-useEffect(() => {
-  const fetchUserDetails = async () => {
-    if (!isAuthenticated) return;  // ✅ Prevent unnecessary API calls
+  // const status = useSelector((store) => store.logininfo)
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!isAuthenticated) return;  // ✅ Prevent unnecessary API calls
 
-    // console.log("🔄 Fetching user details with token:", token);
+      // console.log("🔄 Fetching user details with token:", token);
 
-    try {
-      const response = await getUserDetails();
-      if (!response) {
-        console.error("❌ No response from getUserDetails API.");
-        return;
+      try {
+        const response = await getUserDetails();
+        if (!response) {
+          console.error("❌ No response from getUserDetails API.");
+          return;
+        }
+
+        console.log(response);
+        
+
+        setUser(response.data);
+        const expDate = new Date(response.data.acc_exp_date);
+        const today = new Date();
+
+        // 🟢 Check if the user has an active subscription
+        if (response.data.acc_exp_date && expDate > today) {
+          setActiveSubscription(true);
+          setMessage(`✅ Your Gold account expires on ${expDate.toDateString()}`);
+        } else {
+          setActiveSubscription(false);
+          setMessage("❌ No active subscription found.");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching user details:", error);
       }
+    };
 
-      console.log(response);
-      
-
-      setUser(response.data);
-      const expDate = new Date(response.data.acc_exp_date);
-      const today = new Date();
-
-      // 🟢 Check if the user has an active subscription
-      if (response.data.acc_exp_date && expDate > today) {
-        setActiveSubscription(true);
-        setMessage(`✅ Your Gold account expires on ${expDate.toDateString()}`);
-      } else {
-        setActiveSubscription(false);
-        setMessage("❌ No active subscription found.");
-      }
-    } catch (error) {
-      console.error("❌ Error fetching user details:", error);
+    if (isAuthenticated) {
+      fetchUserDetails();
     }
-  };
-
-  if (isAuthenticated) {
-    fetchUserDetails();
-  }
-}, [isAuthenticated]);  // ✅ Run only when `token` is available
+  }, [isAuthenticated]);  // ✅ Run only when `token` is available
 
 
   // useEffect(() => {
@@ -93,17 +93,17 @@ useEffect(() => {
 
   return (<Fragment>
     <Head>
-      <title>Pricing | Cadbull </title>
-      <link rel="canonical" href="https://beta.cadbull.com/pricing" />
-      <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+      <title>Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture</title>
+      <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/pricing`} />
+      <meta name="description" content="Learn Pricing Plans free & premiums architectural 2D & 3D CAD models in DWG File .Pick the perfect Cadbull plan to power up your design projects." />
 
-      <meta property="og:title" content="Pricing | Cadbull" />
-      <meta property="og:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+      <meta property="og:title" content="Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture" />
+      <meta property="og:description" content="Learn Pricing Plans free & premiums architectural 2D & 3D CAD models in DWG File .Pick the perfect Cadbull plan to power up your design projects." />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={"https://beta.cadbull.com/pricing"} />
+      <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/pricing`} />
       <meta property="og:image" content={logo} />
-      <meta name="twitter:title" content="Pricing | Cadbull" />
-      <meta name="twitter:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+      <meta name="twitter:title" content="Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture" />
+      <meta name="twitter:description" content="Learn Pricing Plans free & premiums architectural 2D & 3D CAD models in DWG File .Pick the perfect Cadbull plan to power up your design projects." />
       <meta name="twitter:image" content={logo} />
       <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
     </Head>

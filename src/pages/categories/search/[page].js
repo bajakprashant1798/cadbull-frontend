@@ -176,17 +176,18 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
   return (
     <Fragment>
       <Head>
-        <title>Search Results | Cadbull</title>
+        <title>Find Your Perfect Design | Cadbull AutoCAD File Search</title>
 
-        <meta name="description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
-        <meta property="og:title" content="Search Results | Cadbull" />
-        <meta property="og:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <meta name="description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
+        <meta property="og:title" content="Find Your Perfect Design | Cadbull AutoCAD File Search" />
+        <meta property="og:description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
         {/* <meta property="og:image" content={project?.photo_url} /> */}
         {/* <meta name="twitter:card" content="summary_large_image" /> */}
-        <meta name="twitter:title" content="Search Results | Cadbull" />
-        <meta name="twitter:description" content="Explore Cadbull, the largest Autocad Library offering 269,000+ free and premium CAD files, including 2D and 3D CAD drawings, CAD blocks, and CAD models." />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
+        <meta name="twitter:title" content="Find Your Perfect Design | Cadbull AutoCAD File Search" />
+        <meta name="twitter:description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad" />
       </Head>

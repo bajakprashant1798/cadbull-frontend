@@ -2,6 +2,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
 import { Fragment, useState } from "react";
+import logo from "@/assets/images/logo.png";
 
 const faqs = [
   {
@@ -103,8 +104,19 @@ function FAQAccordion({ faqs }) {
 const FAQsPage = () => (
     <Fragment>
         <Head>
-            <title>Cadbull | FAQs</title>
-            <meta name="description" content="FAQs" />
+            <title>Cadbull Help Center | Common Questions About Architectural Plans</title>
+            <meta name="description" content="Find quick answers to common questions about CADBull downloads, DWG file access, usage rights, account setup, and file compatibility." />
+            <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/faqs`} />
+
+            <meta property="og:title" content="Cadbull Help Center | Common Questions About Architectural Plans" />
+            <meta property="og:description" content="Find quick answers to common questions about CADBull downloads, DWG file access, usage rights, account setup, and file compatibility." />
+            <meta property="og:type" content="website" />
+            <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/faqs`} />
+            <meta property="og:image" content={logo} />
+            <meta name="twitter:title" content="Cadbull Help Center | Common Questions About Architectural Plans" />
+            <meta name="twitter:description" content="Find quick answers to common questions about CADBull downloads, DWG file access, usage rights, account setup, and file compatibility." />
+            <meta name="twitter:image" content={logo} />
+            <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
         </Head>
 
         <section className="py-5">

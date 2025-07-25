@@ -1,11 +1,32 @@
 import MainLayout from "@/layouts/MainLayout";
 import { getTermsPrivacyAndFaqData } from "@/service/api";
+import logo from "@/assets/images/logo.png";
 
 import parse from 'html-react-parser'
 import Link from "next/link";
+import { Fragment } from "react";
+import Head from "next/head";
+
 const TermsPrivacyFaq = ({termsData}) => {
-    console.log('terms data',termsData)
+    // console.log('terms data',termsData)
   return (
+    <Fragment>
+        <Head>
+            <title>Cadbull Terms & Conditions | DWG File Usage & User Policies</title>
+            <meta name="description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-condition`} />
+
+            <meta property="og:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
+            <meta property="og:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <meta property="og:type" content="website" />
+            <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-condition`} />
+            <meta property="og:image" content={logo} />
+            <meta name="twitter:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
+            <meta name="twitter:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <meta name="twitter:image" content={logo} />
+            <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+        </Head>
+
     <section className="py-5">
       <div className="container">
         <div className="row">
@@ -208,6 +229,7 @@ const TermsPrivacyFaq = ({termsData}) => {
         </div>
       </div>
     </section>
+    </Fragment>
   );
 }
 

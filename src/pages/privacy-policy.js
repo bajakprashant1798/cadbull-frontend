@@ -2,9 +2,29 @@ import MainLayout from "@/layouts/MainLayout";
 import { getTermsPrivacyAndFaqData } from "@/service/api";
 
 import parse from 'html-react-parser'
+import Head from "next/head";
 import Link from "next/link";
+import { Fragment } from "react";
+import logo from "@/assets/images/logo.png";
+
 const PrivacyPolicy = ({privacy_policy}) => {
   return (
+    <Fragment>
+            <Head>
+                <title>Cadbull Privacy & Policies | DWG File Usage & User Policies</title>
+                <meta name="description" content="Find our GDPR policy to understand how we collect, store, and protect your data under EU privacy laws. Your personal information is handled securely." />
+                <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/privacy-policy`} />
+    
+                <meta property="og:title" content="Cadbull Privacy & Policies | DWG File Usage & User Policies" />
+                <meta property="og:description" content="Find our GDPR policy to understand how we collect, store, and protect your data under EU privacy laws. Your personal information is handled securely." />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/privacy-policy`} />
+                <meta property="og:image" content={logo} />
+                <meta name="twitter:title" content="Cadbull Privacy & Policies | DWG File Usage & User Policies" />
+                <meta name="twitter:description" content="Find our GDPR policy to understand how we collect, store, and protect your data under EU privacy laws. Your personal information is handled securely." />
+                <meta name="twitter:image" content={logo} />
+                <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+            </Head>
     <section className="py-5">
       <div className="container">
         <div className="row">
@@ -455,6 +475,7 @@ const PrivacyPolicy = ({privacy_policy}) => {
         </div>
       </div>
     </section>
+    </Fragment>
   );
 }
 

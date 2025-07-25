@@ -298,6 +298,7 @@ const Login = () => {
       <Head>
         <title>Cadbull | Login</title>
         <meta name="description" content="World Largest 2d CAD Library." />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/login`} />
       </Head>
       <AuthLayout title={pageTitle.title} description={pageTitle.description}>
         {/* Form  */}
