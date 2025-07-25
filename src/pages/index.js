@@ -100,7 +100,7 @@ const debounce = (func, delay) => {
 export default function Home({
     initialProjects,
     totalPages: initialTotalPages,
-    totalProducts,
+    totalProducts, // You can use this prop directly
     lastProductId,
     housePlanFiles,
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
@@ -124,7 +124,7 @@ export default function Home({
 
   // ssg setup
   const [projects, setProjects] = useState(initialProjects);
-  const [productCount, setProductCount] = useState(lastProductId);
+  const [productCount, setProductCount] = useState(totalProducts || lastProductId);
 
   // const [lastProductId, setLastProductId] = useState(0);
 
@@ -150,8 +150,6 @@ export default function Home({
     const [searchTerm, setSearchTerm] = useState("");
     const [projectSearchInput, setProjectSearchInput] = useState('');
     const [sortTerm, setSortTerm] = useState(router.query.file_type || "");
-
-    const [shouldScroll, setShouldScroll] = useState(false);
 
     useEffect(() => {
       setCurrentPage(Number(router.query.page) || 1);
@@ -187,21 +185,6 @@ export default function Home({
         });
     }
   }, [ favouritesFetched, dispatch]);
-
-  useEffect(() => {
-    // We assume your API returns an object with a property like `totalProducts`
-    getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
-      .then((response) => {
-        // Use total count from the API response (adjust field name accordingly)
-        const count = response.data.lastProductId || 0;
-        // console.log("Total products count:", count);
-        
-        setProductCount(count);
-      })
-      .catch((error) => {
-        console.error("Error fetching product count:", error);
-      });
-  }, []);
 
 
 
@@ -340,13 +323,24 @@ export default function Home({
     };
 
 
+    // const handleProjectSearch = (e) => {
+    //   e.preventDefault();
+    //   // Update immediately and trigger navigation if needed
+    //   setSearchTerm(projectSearchInput.trim());
+    //   dispatch(getserachTerm(projectSearchInput.trim()));
+    //   router.push('/categories/search');
+    // };
     const handleProjectSearch = (e) => {
       e.preventDefault();
-      // Update immediately and trigger navigation if needed
-      setSearchTerm(projectSearchInput.trim());
-      dispatch(getserachTerm(projectSearchInput.trim()));
-      router.push('/categories/search');
+      const trimmed = projectSearchInput.trim();
+      setSearchTerm(trimmed);
+      dispatch(getserachTerm(trimmed));
+      router.push({
+        pathname: '/categories/search',
+        query: trimmed ? { search: trimmed } : {},
+      });
     };
+
 
 
   const handleSortChange = (e) => {
@@ -368,14 +362,6 @@ export default function Home({
 
     router.push({ pathname: '/', query: newQuery }, undefined, { shallow: false });
   };
-
-
-  useEffect(() => {
-    if (shouldScroll && projectOfDayRef.current) {
-      projectOfDayRef.current.scrollIntoView({ behavior: "smooth" });
-      setShouldScroll(false); // Reset after scroll!
-    }
-  }, [shouldScroll, currentPage]);
 
 
 
