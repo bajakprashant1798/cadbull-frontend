@@ -76,6 +76,7 @@
   margin-bottom: 0 !important;
 }
 
+
 .h7 {
     font: normal normal 900 30px / 50px "Poppins", sans-serif;
     @media (max-width: 796px) {
@@ -267,7 +268,7 @@
   }
 
   .project-day-card-image {
-    height: 250px;
+    // height: 250px;   // enable it if we want to fix the height
     width: 100%;
     position: relative;
     border-radius: $borderRadiusLg;

@@ -67,6 +67,7 @@ import product from "@/assets/images/product.jpg"
 
 import parse from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
+import Image from "next/image";
 function transform(node, index) {
   if (node.type === "tag") {
     return createElement(
@@ -538,9 +539,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
               {/* Project Image */}
-              <div className="mt-4">
+              {/* <div className="mt-4" style={{ maxWidth: "100%" }}>
                 <div className="bg-light p-3 rounded-2 shadow-sm">
-                  <img
+                  <Image
                     src={project.photo_url || product.src}
                     className="img-fluid"
                     alt="drawing"
@@ -548,7 +549,35 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     loading="lazy" 
                   />
                 </div>
+              </div> */}
+              <div
+                className="mt-4"
+                style={{ maxWidth: "100%", margin: "0 auto" }}
+              >
+                <div
+                  className="bg-light p-3 rounded-2 shadow-sm"
+                  style={{ maxWidth: "100%" }} // Optional, if you want to constrain inner div too
+                >
+                  <Image
+                    src={project.photo_url || product}
+                    width={project.image_width || 800}
+                    height={project.image_height || 600}
+                    alt="drawing"
+                    className="img-fluid"
+                    loading="lazy"
+                    onError={(e) => (e.target.src = product.src)} 
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "0 auto"
+                    }}
+                  />
+                </div>
               </div>
+
+
           
               {/* Project Description */}
               <div className="py-3 py-md-4">
@@ -610,7 +639,20 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     className="rounded-circle"
                                     style={{ width: "80px", height: "80px", objectFit: "cover" }}
                                     onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
+                                    loading="lazy"
                                   />
+                                  // <Image
+                                  //   src={project.profile_pic || profile_dummy.src}
+                                  //   alt="Profile"
+                                  //   width={80}     // <= REQUIRED
+                                  //   height={80}    // <= REQUIRED
+                                  //   loading="lazy"
+                                  //   className="rounded-circle"
+                                  //   style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                                  //   onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
+                                  // />
+
+
                                 ) : (
                                   <Icons.Avatar />
                                 )}
