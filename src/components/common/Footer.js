@@ -7,6 +7,7 @@ import fb from "@/assets/icons/fb.png";
 import twitter from "@/assets/icons/twitter.png";
 import youtube from "@/assets/icons/youtube.png";
 import Link from "next/link";
+import Image from "next/image";
 const Footer = () => {
   return ( 
     <footer className="mt-auto pt-4 pt-sm-5">
@@ -16,7 +17,7 @@ const Footer = () => {
           <div className="row d-lg-block d-none">
             <div className="col-md-12">
               <div className="logo-wrapper text-center">
-                <img src={logo.src} alt="logo" className="img-fluid logo" />
+                <Image src={logo} alt="logo" className="img-fluid logo" />
               </div>
             </div>
           </div>
@@ -27,17 +28,17 @@ const Footer = () => {
                 <ul className="list-unstyled d-flex gap-2 gap-md-4 flex-column">
                   <li>
                     <div className="d-flex align-items-start gap-2">
-                      <img src={map.src} alt="icon" />
+                      <Image src={map} alt="icon" />
                       <p className="text-white">403, Fortune Business Hub, Beside science city, Science City Road Sola, Ahmedabad, Gujarat 380060</p>
                     </div>
                   </li>
                   <li className="d-flex align-items-start gap-3 flex-column flex-xl-row">
                     <div className="d-flex align-items-center gap-2">
-                      <img src={phone.src} alt="icon" />
+                      <Image src={phone} alt="icon" />
                       <p className="text-white">+91 989 874 8697</p>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <img src={email.src} alt="icon" />
+                      <Image src={email} alt="icon" />
                       <p className="text-white">support@cadbull.com</p>
                     </div>
                   </li>
@@ -46,18 +47,18 @@ const Footer = () => {
             </div>
             <div className="col-md-6 col-lg-4 col-xl-3 ">
               <div className="text-start text-md-center">
-                <img src={logo.src} alt="logo" className="img-fluid mb-3 d-block d-lg-none mx-md-auto logo" />
+                <Image src={logo} alt="logo" className="img-fluid mb-3 d-block d-lg-none mx-md-auto logo" />
                 <h4 className="text-white mb-md-4 d-none d-lg-block opacity-0">info</h4>
                 <p className="text-white mb-3 mb-md-4">Cadbull is an exclusive forum that connects the creative community of innovative Auto cad designers, firms and organizations.</p>
                 <ul className="list-unstyled d-flex gap-2 justify-content-md-center">
                   <li>
-                    <a href="https://www.facebook.com/cadbull/" target="_blank"> <img src={fb.src} alt="icon" /></a>
+                    <a href="https://www.facebook.com/cadbull/" target="_blank"> <Image src={fb} alt="icon" /></a>
                   </li>
                   <li>
-                    <a href="https://twitter.com/cadbull" target="_blank"> <img src={twitter.src} alt="icon" /></a>
+                    <a href="https://twitter.com/cadbull" target="_blank"> <Image src={twitter} alt="icon" /></a>
                   </li>
                   <li>
-                    <a href="https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ" target="_blank"> <img src={youtube.src} alt="icon" /></a>
+                    <a href="https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ" target="_blank"> <Image src={youtube} alt="icon" /></a>
                   </li>
                 </ul>
               </div>
@@ -68,41 +69,41 @@ const Footer = () => {
                 <div className="d-flex  gap-5 justify-content-lg-around flex-lg-column gap-lg-2 gap-xl-5 flex-xl-row">
                   <ul className="list-unstyled d-flex flex-column gap-3 justify-content-center mb-0">
                     <li>
-                      <Link href="/3d-Drawings"> <img src={arrow.src} alt="icon" /> <span>3d Drawing</span></Link>
+                      <Link href="/3d-Drawings"> <Image src={arrow} alt="icon" /> <span>3d Drawing</span></Link>
                     </li>
                     <li>
                       <Link href="/Cad-Architecture">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>CAD Architecture</span></Link>
                     </li>
                     <li>
                       <Link href="/Cad-Landscaping">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>CAD Landscape</span></Link>
                     </li>
                     <li>
                       <Link href="/Autocad-Machinery-Blocks-&-DWG-Models">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>CAD Machinery</span></Link>
                     </li>
                   </ul>
                   <ul className="list-unstyled flex-column d-flex gap-2 justify-content-center mb-0">
                     <li>
-                      <Link href="/Detail"> <img src={arrow.src} alt="icon" /> <span> CAD Detail</span></Link>
+                      <Link href="/Detail"> <Image src={arrow} alt="icon" /> <span> CAD Detail</span></Link>
                     </li>
                     <li>
                       <Link href="/DWG-Blocks">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>DWG Blocks</span></Link>
                     </li>
                     <li>
                       <Link href="/Electrical-Cad">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>Electrical CAD</span></Link>
                     </li>
                     <li>
                       <Link href="/Autocad-Furniture-Blocks--&-DWG-Models">
-                        <img src={arrow.src} alt="icon" />
+                        <Image src={arrow} alt="icon" />
                         <span>Furniture Blocks</span></Link>
                     </li>
                   </ul>
