@@ -68,6 +68,7 @@ import product from "@/assets/images/product.jpg"
 import parse from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
 import Image from "next/image";
+import AdSense from "@/components/AdSense";
 function transform(node, index) {
   if (node.type === "tag") {
     return createElement(
@@ -847,6 +848,19 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </aside>
                 </div>
                 {/* ads image */}
+
+                {/* add component started */}
+                <div className="bg-white shadow-sm p-3 rounded-2">
+                  <AdSense slot="2091281415" />
+                </div>
+                {/* add component ended */}
+
+                {/* add component started */}
+                <div className="bg-white shadow-sm p-3 rounded-2">
+                  <AdSense slot="7742900751" format="fluid" layout="in-article" />
+                </div>
+                {/* add component ended */}
+
                 {/* <div>
                   <img
                     src={banner_1.src}

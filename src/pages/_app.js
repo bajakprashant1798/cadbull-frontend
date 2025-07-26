@@ -14,6 +14,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import CanonicalTag from "@/components/CanonicalTag";
+import Script from "next/script";
+
 
 config.autoAddCss = false;
 import { loginSuccess, logout } from "../../redux/app/features/authSlice"; // Import Redux actions
@@ -126,6 +128,14 @@ export default function App({ Component, pageProps }) {
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
           
+          <Script
+            id="adsense-script"
+            async
+            strategy="afterInteractive"
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+            data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+            crossOrigin="anonymous"
+          />
         </Head>
 
         {/* Canonical Tag here */}
@@ -151,6 +161,15 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <title>Cadbull</title>
         <meta name="description" content="World Largest 2d CAD Library." />
+
+        <Script
+          id="adsense-script"
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+          crossOrigin="anonymous"
+        />
       </Head>
       
       {/* Canonical Tag here */}
