@@ -394,6 +394,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta name="keywords" content={project?.tags || ""} />
 
         <link rel="canonical" href={canonicalUrl} />
+        <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
+
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
         <div className="container">
@@ -564,8 +566,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     height={project.image_height || 600}
                     alt="drawing"
                     className="img-fluid"
-                    loading="lazy"
-                    onError={(e) => (e.target.src = product.src)} 
+                    // DO NOT SET loading="lazy" for LCP image!
+                    priority={true} // <-- This is required for LCP
+                    onError={(e) => (e.target.src = product.src)}
                     style={{
                       width: "100%",
                       height: "auto",
