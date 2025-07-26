@@ -850,7 +850,7 @@ export default function Home({
             </div>
             <div className="col-md-6 mb-3">
               <div className="our-skills-image-wrapper">
-                <img src={ourSkills.src} alt="skills" className="img-fluid" />
+                <Image src={ourSkills} alt="skills" className="img-fluid" loading="lazy" />
               </div>
             </div>
           </div>

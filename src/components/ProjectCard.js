@@ -200,6 +200,7 @@ const ProjectCard = ({
                   loading="lazy"
                   sizes="(max-width: 550px) 100vw, 550px"
                   priority={false}
+                  // priority={isLCP} // Add `priority` for LCP images
                 />
               </div>
 
