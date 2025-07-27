@@ -50,7 +50,7 @@ api.interceptors.response.use(
       console.log(
         `[AXIOS INTERCEPTOR] Received 401 for: ${originalRequest.method.toUpperCase()} ${originalRequest.url}. Attempting token refresh...`
       );
-      
+
       originalRequest._retry = true;
 
       if (typeof window === "undefined") {
@@ -199,7 +199,7 @@ export const confirmAccountDeletion = async (token) => {
 // ===================
 
 export const getallCategories = (searchTerm = "") => {
-  console.log("Fetching all categories with search term:", searchTerm);
+  // console.log("Fetching all categories with search term:", searchTerm);
   
   const params = searchTerm ? { search: searchTerm } : {};
   return api.get("/categories", { params });
