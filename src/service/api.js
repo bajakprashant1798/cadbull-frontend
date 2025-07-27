@@ -46,6 +46,11 @@ api.interceptors.response.use(
 
     // ✅ If Access Token Expired & No Retry Attempt Yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      // ✅ ADD THIS LOG to see which API call failed
+      console.log(
+        `[AXIOS INTERCEPTOR] Received 401 for: ${originalRequest.method.toUpperCase()} ${originalRequest.url}. Attempting token refresh...`
+      );
+      
       originalRequest._retry = true;
 
       if (typeof window === "undefined") {

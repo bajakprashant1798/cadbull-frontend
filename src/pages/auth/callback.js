@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { toast } from "react-toastify";
-import { getUserData } from "@/service/api";
 
 const OAuthCallback = () => {
   const router = useRouter();
