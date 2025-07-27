@@ -198,7 +198,7 @@ const Pricing = () => {
                       
                       return
                     }
-                       handleSubscription("price_1Qjn9JFy6VKViPpJOwH9hkBl", user.id).then((res)=>{
+                       handleSubscription("price_1RjmFTFy6VKViPpJkGvSFWuJ", user.id).then((res)=>{
                         console.log("API Response:", res.data); // Log response
                         window.location.href=res.data.url
                        }).catch((err)=>{
@@ -250,7 +250,7 @@ const Pricing = () => {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       return
                     }
-                    handleSubscription("price_1QjnA8Fy6VKViPpJJekatxQZ", user.id).then((res)=>{
+                    handleSubscription("price_1RjmFTFy6VKViPpJkGvSFWuJ", user.id).then((res)=>{
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{
@@ -305,7 +305,7 @@ const Pricing = () => {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       return
                     }
-                    handleSubscription("price_1QjnA8Fy6VKViPpJJekatxQZ", user.id).then((res)=>{
+                    handleSubscription("price_1RjmFTFy6VKViPpJkGvSFWuJ", user.id).then((res)=>{
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{
@@ -357,7 +357,7 @@ const Pricing = () => {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       return
                     }
-                    handleSubscription("price_1QjnZ7Fy6VKViPpJmteuIjEM", user.id).then((res)=>{
+                    handleSubscription("price_1RjmFTFy6VKViPpJkGvSFWuJ", user.id).then((res)=>{
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{

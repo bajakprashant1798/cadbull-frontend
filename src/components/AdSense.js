@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 const AdSense = ({
   style = { display: "block", textAlign: "center" },
-  slot = "1234567890", // <-- replace with your real slot ID!
+  slot , // <-- replace with your real slot ID!
   format = "auto",
   layout = "", // New prop for things like "in-article"
 }) => {
