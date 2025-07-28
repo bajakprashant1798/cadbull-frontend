@@ -850,7 +850,11 @@ select:-webkit-autofill:focus {
   }
 }
 
-
+  .ad-container {
+    border-top: 0.3px solid #343434;    /* A light border color from your theme */
+    border-bottom: 0.3px solid #343434; /* A light border color from your theme */
+    padding: 0.5rem 0;                  /* Adds space inside the borders */
+  }
 
 .project-day-card {
   background: #fff 0% 0% no-repeat padding-box;
