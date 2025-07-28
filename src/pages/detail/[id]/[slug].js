@@ -859,9 +859,23 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                 {/* add component started */}
                 <div className="bg-white shadow-sm p-3 rounded-2">
-                  <AdSense slot="7742900751" format="fluid" layout="in-article" />
+                  <AdSense slot="2091281415" format="fluid" layout="in-article" />
                 </div>
                 {/* add component ended */}
+
+                {/* add component started */}
+                <div className="bg-white shadow-sm p-3 rounded-2">
+                  <AdSense slot="2091281415" />
+                </div>
+                {/* add component ended */}
+
+                {/* add component started */}
+                <div className="bg-white shadow-sm p-3 rounded-2">
+                  <AdSense slot="2091281415" />
+                </div>
+                {/* add component ended */}
+
+                
 
                 {/* <div>
                   <img
