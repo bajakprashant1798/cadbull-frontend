@@ -46,7 +46,8 @@ const AdSense = ({
 
   return (
     // The key is crucial for ads to reload on client-side navigation
-    <div key={router.asPath}>
+    // Using the slot as a key ensures each ad unit is unique on the page.
+    <div key={slot}>
       <ins
         className="adsbygoogle"
         style={style}
