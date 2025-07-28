@@ -19,22 +19,20 @@ const AdSense = ({
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       // Log the error for debugging in production, but don't crash the app.
-      // This error is common in development due to Fast Refresh.
       console.error("AdSense error:", err);
     }
   }, [router.asPath, slot]); // Re-run effect when path or slot changes
   return (
-    <div key={router.asPath}>
-      <ins
-        className="adsbygoogle"
-        style={style}
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-ad-layout={layout}
-        data-full-width-responsive={responsive}
-      ></ins>
-    </div>
+    <ins
+      className="adsbygoogle"
+      style={style}
+      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+      data-ad-slot={slot}
+      data-ad-format={format}
+      data-ad-layout={layout}
+      // data-full-width-responsive="true"
+      data-full-width-responsive={responsive}
+    ></ins>
   );
 };
 
