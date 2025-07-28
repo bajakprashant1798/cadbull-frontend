@@ -11,28 +11,52 @@ const AdSense = ({
   const router = useRouter();
 
   useEffect(() => {
+    // Don't run ad code in development to prevent errors and allow for styling.
+    if (process.env.NODE_ENV === "development") {
+      return;
+    }
+
     try {
-      // if (window) {
-      //   (window.adsbygoogle = window.adsbygoogle || []).push({});
-      // }
-      //// The AdSense script checks this array and loads ads accordingly.
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
-      // Log the error for debugging in production, but don't crash the app.
       console.error("AdSense error:", err);
     }
   }, [router.asPath, slot]); // Re-run effect when path or slot changes
+
+  // In development, render a placeholder for layout purposes.
+  // This is the "box" you are seeing, which is correct for localhost.
+  if (process.env.NODE_ENV === "development") {
+    return (
+      <div
+        style={{
+          ...style,
+          background: "#f0f0f0",
+          border: "1px solid #ccc",
+          color: "#999",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: '90px'
+        }}
+      >
+        Ad Placeholder (Slot: {slot})
+      </div>
+    );
+  }
+
   return (
-    <ins
-      className="adsbygoogle"
-      style={style}
-      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
-      data-ad-slot={slot}
-      data-ad-format={format}
-      data-ad-layout={layout}
-      // data-full-width-responsive="true"
-      data-full-width-responsive={responsive}
-    ></ins>
+    // The key is crucial for ads to reload on client-side navigation
+    <div key={router.asPath}>
+      <ins
+        className="adsbygoogle"
+        style={style}
+        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-ad-layout={layout}
+        data-full-width-responsive={responsive}
+      ></ins>
+    </div>
   );
 };
 
