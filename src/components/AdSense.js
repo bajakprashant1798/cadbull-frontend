@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 const AdSense = ({
@@ -9,8 +9,6 @@ const AdSense = ({
   responsive = "true",
 }) => {
   const router = useRouter();
-  const [adVisible, setAdVisible] = useState(false);
-  const adContainerRef = useRef(null);
 
   useEffect(() => {
     // Don't run ad code in development to prevent errors and allow for styling.
@@ -23,40 +21,14 @@ const AdSense = ({
     } catch (err) {
       console.error("AdSense error:", err);
     }
-  }, [router.asPath, slot]);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      setAdVisible(true);
-      return;
-    }
-
-    const adInsElement = adContainerRef.current?.querySelector('.adsbygoogle');
-    if (!adInsElement) return;
-
-    const observer = new MutationObserver(() => {
-      // An ad is loaded if the <ins> tag has child nodes or its status is 'filled'.
-      if (adInsElement.hasChildNodes() || adInsElement.getAttribute('data-ad-status') === 'filled') {
-        setAdVisible(true);
-        observer.disconnect();
-      }
-    });
-
-    observer.observe(adInsElement, {
-      attributes: true,
-      childList: true,
-    });
-
-    return () => observer.disconnect();
-  }, [slot]);
+  }, [router.asPath, slot]); // Re-run effect when path or slot changes
 
   // In development, render a placeholder for layout purposes.
   // This is the "box" you are seeing, which is correct for localhost.
   if (process.env.NODE_ENV === "development") {
     return (
       <div
-        ref={adContainerRef}
-        className="ad-container ad-loaded" // Always show border in dev
+        className="ad-container"
         style={{
           ...style,
           background: "#f0f0f0",
@@ -64,6 +36,7 @@ const AdSense = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          minHeight: '90px'
         }}
       >
         Ad Placeholder (Slot: {slot})
@@ -72,9 +45,11 @@ const AdSense = ({
   }
 
   return (
-    <div ref={adContainerRef} key={slot} className={`ad-container ${adVisible ? 'ad-loaded' : ''}`}>
+    // The key is crucial for ads to reload on client-side navigation
+    // Using the slot as a key ensures each ad unit is unique on the page.
+    <div key={slot} className="">
       <ins
-        className="adsbygoogle"
+        className="adsbygoogle ad-container"
         style={style}
         data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
         data-ad-slot={slot}

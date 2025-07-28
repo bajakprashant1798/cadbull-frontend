@@ -115,22 +115,14 @@ aside {
   content: var(--bs-breadcrumb-divider, "|");
 }
 
-/* Base styles for ad containers to reserve space and prevent layout shift. */
-/* This container itself has NO border. */
 .ad-container {
-  margin: 1.5rem 0;
-  min-height: 90px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-/* Apply border and padding ONLY when an ad has successfully loaded. */
-.ad-container.ad-loaded {
-  border-top: 1px solid #e9e9eb;    /* A light, subtle border */
-  border-bottom: 1px solid #e9e9eb;
-  padding: 1rem 0;
+  border-top: 0.3px solid #343434;    /* A light border color from your theme */
+  border-bottom: 0.3px solid #343434; /* A light border color from your theme */
+  // padding: 1rem 0;                  /* Adds space inside the borders */
+  margin: 1rem 0;                 /* Adds space outside the borders */
+  // min-height: 90px;                 /* Prevents layout shift while ad loads */
+  // display: flex;
+  // justify-content: center;
 }
 
 .category-page {
