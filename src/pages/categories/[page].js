@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addAllSubCategoriesData,
   getProjects,
-  resetCategoriesList,
   setFavouriteList,
   updateSortList,
   updatesubcatpage,
@@ -38,8 +37,6 @@ const Categories = ({
   totalPages: initialTotalPages,
   initialFavourites,
 }) => {
-
-  const { sortList } = useSelector((store) => store.projectinfo);
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [catalog, setCatalog] = useState(initialCategories || []);
   const [projects, setProjects] = useState(initialProjects || []);
@@ -147,12 +144,7 @@ const Categories = ({
     setSortTerm(file_type);
     setSearchTerm(search);
     setSearchedText(search);
-  }, [type, file_type, search]);
-  // Update sortTerm when Redux sortList changes.
-  useEffect(() => {
-    // setCurrentPage(1);
-    setSortTerm(sortList);
-  }, [sortList]);
+  }, [type, file_type, search]); // The URL is the single source of truth for filters.
 
   // // Debounced search
   // const debouncedSearch = useCallback(

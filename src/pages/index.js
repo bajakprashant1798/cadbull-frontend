@@ -450,15 +450,10 @@ export default function Home({
               <div className="drawing-type-wrapper p-2 p-md-3 rounded row row-cols-12  row-cols-xl-5 row-cols-md-5  justify-content-lg-evenly  ">
                 {drawings.slice(0, 5).map((drawing, index) => {
                   return (
-                    <div className="col mb-2 ">
-                      <Link href={"/categories"}>
+                    <div className="col mb-2" key={index}>
+                      <Link href={`/categories/1?file_type=${drawing.value}`}>
                         <div
-                          key={index}
                           className="d-flex justify-content-lg-center align-items-center gap-md-2"
-                          onClick={() =>
-                          // setSortTerm(drawing.value)
-                          dispatch(updateSortList(drawing.value))
-                          }
                         >
                           <Image
                             src={drawing.img}
@@ -648,6 +643,7 @@ export default function Home({
               <div className="main-principle-image-wrapper">
                 <Image
                   src={principle}
+                  
                   className="img-fluid"
                   alt="principle"
                   loading="lazy"
