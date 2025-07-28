@@ -115,6 +115,16 @@ aside {
   content: var(--bs-breadcrumb-divider, "|");
 }
 
+.ad-container {
+  border-top: 0.3px solid #343434;    /* A light border color from your theme */
+  border-bottom: 0.3px solid #343434; /* A light border color from your theme */
+  padding: 1rem 0;                  /* Adds space inside the borders */
+  margin: 1.5rem 0;                 /* Adds space outside the borders */
+  min-height: 90px;                 /* Prevents layout shift while ad loads */
+  display: flex;
+  justify-content: center;
+}
+
 .category-page {
   nav {
     .breadcrumb {
