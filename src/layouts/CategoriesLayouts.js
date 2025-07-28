@@ -4,6 +4,7 @@ import SearchCategories from "@/components/SearchCategories";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import AdSense from "@/components/AdSense";
 export const makeTitle = (slug) => {
   return slug
     ? slug
@@ -65,6 +66,8 @@ const CategoriesLayout = ({
         </div>
       </section>
 
+      <AdSense slot="7946730558" format="fluid" layout="in-article" />
+
       {/* Categories  */}
       {/* <section className="py-lg-5 py-4">
         <div className="container">
@@ -115,6 +118,7 @@ const CategoriesLayout = ({
                   />
                 </div>
               )}
+              <AdSense slot="9615035443" format="fluid" layout="in-article" />
             </div>
             {/* Right Column */}
             <div className="col-xl-9">{children}</div>

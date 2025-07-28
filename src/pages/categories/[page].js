@@ -26,6 +26,7 @@ import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
+import AdSense from "@/components/AdSense";
 
 const Categories = ({
 //   initialCategories,
@@ -446,6 +447,8 @@ const Categories = ({
                 </div>
               )}
             </div>
+
+            <AdSense slot="7739180135" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">

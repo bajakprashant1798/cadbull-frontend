@@ -10,6 +10,7 @@ import { getSearchResults, getFavouriteItems } from "@/service/api";
 import { debounce } from "lodash";
 import { setFavouriteList } from "../../../../redux/app/features/projectsSlice";
 import { useRouter } from "next/router";
+import AdSense from "@/components/AdSense";
 
 const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPages, initialPage}) => {
     const router = useRouter();
@@ -291,6 +292,9 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
               ))}
             </div>
 
+            {/* AdSense */}
+            <AdSense slot="9615035443" format="fluid" layout="in-article" />
+
             {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">
               <div className="col-md-6 col-lg-5 col-xl-4">
@@ -302,6 +306,8 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                     goToNextPage={() => handlePageChange(currentPage + 1)}
                     dispatchCurrentPage={handlePageChange}
                   /> */}
+
+                  
 
                   <Pagination
                     basePath="/categories/search"

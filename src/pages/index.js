@@ -46,13 +46,7 @@ import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import logo from "@/assets/images/logo.png";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-
-// Lazy load the AdSense component to improve initial page load performance
-const AdSense = dynamic(() => import("@/components/AdSense"), {
-  ssr: false,
-  loading: () => <div style={{ minHeight: '90px', background: '#f0f0f0', borderRadius: '8px', width: '100%' }} />,
-});
+import AdSense from "@/components/AdSense";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
