@@ -583,7 +583,8 @@ export default function Home({
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
-
+          
+          <AdSense slot="8339598320" format="fluid" layout="in-article" />
           {/* <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}
@@ -637,6 +638,8 @@ export default function Home({
           </div>
         </div>
       </section>
+
+      <AdSense slot="8049838180" format="fluid" layout="in-article" />
 
       {/* Main PRINCIPLES  */}
       <section className="py-md-5 py-3">
