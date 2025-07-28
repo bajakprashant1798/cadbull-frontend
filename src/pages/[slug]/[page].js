@@ -23,6 +23,7 @@ import { drawings } from "@/pages";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
+import AdSense from "@/components/AdSense";
 
 const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title }) => {
   const router = useRouter();
@@ -421,6 +422,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
                 </div>
               )}
             </div>
+
+            {/* AdSense */}
+            <AdSense slot="2694403875" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
             <div className="row mt-4 justify-content-center mt-md-5">
