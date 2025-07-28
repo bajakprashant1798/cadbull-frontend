@@ -47,7 +47,7 @@ const AdSense = ({
   return (
     // The key is crucial for ads to reload on client-side navigation
     // Using the slot as a key ensures each ad unit is unique on the page.
-    // <div key={slot}>
+    <div key={slot}>
       <ins
         className="adsbygoogle"
         style={style}
@@ -57,7 +57,7 @@ const AdSense = ({
         data-ad-layout={layout}
         data-full-width-responsive={responsive}
       ></ins>
-    // </div>
+    </div>
   );
 };
 
