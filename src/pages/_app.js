@@ -128,14 +128,14 @@ export default function App({ Component, pageProps }) {
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
           
-          <Script
+          {/* <Script
             id="adsense-script"
             async
             strategy="afterInteractive"
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
             data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
             crossOrigin="anonymous"
-          />
+          /> */}
         </Head>
 
         {/* Canonical Tag here */}
@@ -147,6 +147,14 @@ export default function App({ Component, pageProps }) {
           }
         `}</style>
         {getLayout(<Component {...pageProps} />)}
+      <Script
+        id="adsense-script-amp"
+        async
+        strategy="afterInteractive"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        crossOrigin="anonymous"
+      />
       </Fragment>
     );
   }
@@ -161,20 +169,10 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <title>Cadbull</title>
         <meta name="description" content="World Largest 2d CAD Library." />
-
-        <Script
-          id="adsense-script"
-          async
-          strategy="afterInteractive"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-          data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
-          crossOrigin="anonymous"
-        />
       </Head>
       
       {/* Canonical Tag here */}
       {/* <CanonicalTag baseUrl="https://beta.cadbull.com" /> */}
-
       <style jsx global>{`
         * {
           font-family: ${poppins.style.fontFamily} !important;
@@ -182,6 +180,14 @@ export default function App({ Component, pageProps }) {
       `}</style>
       {getLayout(<Component {...pageProps} />)}
       {/* <AppContent Component={Component} pageProps={pageProps} /> */}
+      <Script
+        id="adsense-script"
+        async
+        strategy="afterInteractive"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        crossOrigin="anonymous"
+      />
       <ToastContainer />
       {/* </PersistGate> */}
       </Provider>
