@@ -3,20 +3,25 @@ import { useRouter } from "next/router";
 
 const AdSense = ({
   style = { display: "block", textAlign: "center" },
-  slot , // <-- replace with your real slot ID!
+  slot,
   format = "auto",
   layout = "", // New prop for things like "in-article"
+  responsive = "true",
 }) => {
   const router = useRouter();
+
   useEffect(() => {
     try {
-      if (window) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      }
-    } catch (e) {
-      // ignore for SSR
+      // if (window) {
+      //   (window.adsbygoogle = window.adsbygoogle || []).push({});
+      // }
+      //// The AdSense script checks this array and loads ads accordingly.
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      // Log the error for debugging in production, but don't crash the app.
+      console.error("AdSense error:", err);
     }
-  }, [router.asPath]);
+  }, [router.asPath, slot]); // Re-run effect when path or slot changes
   return (
     <ins
       className="adsbygoogle"
@@ -25,7 +30,8 @@ const AdSense = ({
       data-ad-slot={slot}
       data-ad-format={format}
       data-ad-layout={layout}
-      data-full-width-responsive="true"
+      // data-full-width-responsive="true"
+      data-full-width-responsive={responsive}
     ></ins>
   );
 };
