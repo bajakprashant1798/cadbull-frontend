@@ -441,9 +441,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           </div>
         </div>
 
-        <div className=" pt-2">
-          <AdSense slot="4597678336" format="fluid" layout="in-article" />
-        </div>
+        
+        <AdSense slot="4597678336" style={{ marginTop: "20px" }} format="fluid" layout="in-article" />
+       
       </section>
 
       {/* Categories  */}
@@ -587,9 +587,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
 
-              <div className="border-top border-bottom py-2 mt-4">
+              {/* <div className="border-top border-bottom py-2 mt-4"> */}
                 <AdSense slot="4412795758" format="fluid" layout="in-article" />
-              </div>
+              {/* </div> */}
           
               {/* Project Description */}
               <div className="py-3 py-md-4">
@@ -707,9 +707,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                   </div>
 
-                  <div className="border-top border-bottom py-2 mt-4">
+                  {/* <div className="border-top border-bottom py-2 mt-4"> */}
                     <AdSense slot="9473550740" format="fluid" layout="in-article" />
-                  </div>
+                  {/* </div> */}
 
                   <div className="row justify-content-center">
                     <div className="col-md-12 col-12 text-center">
@@ -870,9 +870,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* </div> */}
                 {/* add component ended */}
                 
-                <div className="border-top border-bottom py-2">
+                {/* <div className="border-top border-bottom py-2"> */}
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
-                </div>
+                {/* </div> */}
 
                 {/* <div>
                   <img
@@ -907,9 +907,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           </div>
         </div>
 
-        <div className="border-top border-bottom py-2">
+        {/* <div className="border-top border-bottom py-2"> */}
           <AdSense slot="8612944968" format="fluid" layout="in-article" />
-        </div>
+        {/* </div> */}
       </section>
     </Fragment>
   );
