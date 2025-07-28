@@ -476,6 +476,8 @@ export default function Home({
         </div>
       </section>
 
+      <AdSense slot="1744284284" format="fluid" layout="in-article" />
+
       {/* Project of the Day  */}
       <section className="py-md-5 py-3" ref={projectOfDayRef}>
        
