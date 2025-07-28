@@ -597,7 +597,7 @@ export default function Home({
       </section>
 
       <div className="border-top border-bottom py-2">
-        <AdSense slot="1744284284" format="fluid" layout="in-article" />
+        <AdSense slot="8339598320" format="fluid" layout="in-article" />
       </div>
 
       {/* Categories */}
@@ -645,9 +645,9 @@ export default function Home({
       </section>
 
       <div className="border-top border-bottom py-2">
-        <AdSense slot="1744284284" format="fluid" layout="in-article" />
+        <AdSense slot="8049838180" format="fluid" layout="in-article" />
       </div>
-      
+
       {/* Main PRINCIPLES  */}
       <section className="py-md-5 py-3">
         <div className="container">

@@ -442,7 +442,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         <div className=" pt-2">
-          <AdSense slot="1744284284" format="fluid" layout="in-article" />
+          <AdSense slot="4597678336" format="fluid" layout="in-article" />
         </div>
       </section>
 
@@ -587,7 +587,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
 
-
+              <div className="border-top border-bottom py-2 mt-4">
+                <AdSense slot="4412795758" format="fluid" layout="in-article" />
+              </div>
           
               {/* Project Description */}
               <div className="py-3 py-md-4">
@@ -706,7 +708,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </div>
 
                   <div className="border-top border-bottom py-2 mt-4">
-                    <AdSense slot="1744284284" format="fluid" layout="in-article" />
+                    <AdSense slot="9473550740" format="fluid" layout="in-article" />
                   </div>
 
                   <div className="row justify-content-center">
@@ -869,7 +871,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* add component ended */}
                 
                 <div className="border-top border-bottom py-2">
-                  <AdSense slot="1744284284" format="fluid" layout="in-article" />
+                  <AdSense slot="4406439781" format="fluid" layout="in-article" />
                 </div>
 
                 {/* <div>
@@ -906,7 +908,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         <div className="border-top border-bottom py-2">
-          <AdSense slot="1744284284" format="fluid" layout="in-article" />
+          <AdSense slot="8612944968" format="fluid" layout="in-article" />
         </div>
       </section>
     </Fragment>
