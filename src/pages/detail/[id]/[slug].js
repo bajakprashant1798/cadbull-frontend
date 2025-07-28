@@ -190,6 +190,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         const singleProjectResponse = await getsingleallprojects("", projectId);
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
+        console.log("singleProjectData: ", singleProjectData);
+        
         // console.log("singleProjectData: ", singleProjectData);
         
         setSimilarProjectId(singleProjectData.product_sub_category_id);
@@ -663,16 +665,16 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               </div>
                               <div>
                                 <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                  <span>{project?.first_name} </span>
+                                  <span>{project?.firstname} </span>
                                   
                                 </h6>
                                 <p>
-                                  {project?.last_name}
+                                  {project?.lastname}
                                 </p>
                                 
                                 <div className=" mt-1 d-md-none text-start text-md-end">
                                   <Link
-                                    href={`/profile/author/${project?.profileId}`} 
+                                    href={`/profile/author/${project?.user_id}`} 
                                     className="btn btn-primary"
                                   >
                                     View Profile
@@ -682,7 +684,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             </div>
                           </div>
                           <div className="d-none d-md-block col-md-3 text-start text-md-end">
-                            <Link href={`/profile/author/${project?.profileId}`} className="btn btn-primary">
+                            <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
                               View Profile
                             </Link>
                           </div>

@@ -446,16 +446,16 @@ export const updateProfileWithoutPicture = (user, token) => {
 };
 
 // Use GET instead of PATCH for retrieving data
-export const getCompanyProfile = (profileId) => {
-  return api.get(`/profile/author/${profileId}`);
+export const getCompanyProfile = (userId) => {
+  return api.get(`/profile/author/${userId}`);
 };
 
 export const getCompanyProducts = (
-  profileId,
+  userId,
   { page = 1, pageSize = 12, search = "", sort, from, to } = {}
 ) => {
   // console.log("api call back", profileId, page, pageSize, search, sort, from, to);
-  return api.get(`/profile/author/${profileId}/products`, {
+  return api.get(`/profile/author/${userId}/products`, {
     params: { page, pageSize, search, sort, from, to },
     // headers: { Authorization: `Bearer ${token}` },
   });

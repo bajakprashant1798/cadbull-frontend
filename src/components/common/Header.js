@@ -67,6 +67,9 @@ const Header = () => {
   // ✅ State to force UI update after logout
   const [isLoggedOut, setIsLoggedOut] = useState(false);
   // const token = useSelector((state) => state.logininfo.token); 
+
+  // ✅ Production-grade auth check: Add a status to prevent FOUC
+  const [authCheckStatus, setAuthCheckStatus] = useState("pending");
   
   // ✅ Manage token state
   // const [token, setToken] = useState(null);
@@ -160,20 +163,23 @@ const Header = () => {
 
   // Rehydrate Redux state by calling getUserData if not already authenticated.
   useEffect(() => {
-    // Only call if the Redux state doesn't show an authenticated user.
-    if (!isAuthenticated) {
-      getUserData()
-        .then((res) => {
-          if (res.data && res.data.user) {
-            dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
-          }
-        })
-        .catch((err) => {
-          console.error("Error fetching user data:", err);
-          // dispatch(logout());
-        });
-    }
-  }, [isAuthenticated, dispatch]);
+    // This effect runs once on initial mount to check for an existing session.
+    getUserData()
+      .then((res) => {
+        // If we get user data, it means they have a valid session cookie.
+        if (res.data && res.data.user) {
+          dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
+        }
+      })
+      .catch((err) => {
+        // This is an expected and normal error for any visitor who is not logged in.
+        // We can safely ignore it, as it simply means there's no active session.
+      })
+      .finally(() => {
+        // ✅ No matter the outcome, the initial check is now complete.
+        setAuthCheckStatus("done");
+      });
+  }, [dispatch]); // Run only once on component mount.
 
   // useEffect(() => {
   //   const storedUserData = localStorage.getItem("userData");
@@ -323,7 +329,7 @@ const Header = () => {
 
                       <li>
                         <Link
-                          href={`/profile/author/${status?.user?.profileId}`}
+                          href={`/profile/author/${status?.user?.id}`}
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
@@ -511,7 +517,8 @@ const Header = () => {
               </ul>
 
               {/* desktop device responsive */}
-              {isAuthenticated && !isLoggedOut ? (
+              {/* ✅ Only show auth state AFTER the initial check is done */}
+              {authCheckStatus === "done" && (isAuthenticated && !isLoggedOut ? (
                 <>
                   <div className="dropdown-center mb-d-none mt-3 mt-xl-0">
                     <button
@@ -586,7 +593,7 @@ const Header = () => {
 
                       <li>
                         <Link
-                          href={`/profile/author/${status?.user?.profileId}`}
+                          href={`/profile/author/${status?.user?.id}`}
                           onClick={closeHamburgerMenu}
                           className="dropdown-item bg-transparent text-black"
                         >
@@ -755,7 +762,7 @@ const Header = () => {
                     <Icons.User /> <span>LOGIN</span>
                   </Link>
                 </>
-              )}
+              ))}
               {/* desktop device responsive */}
             </div>
           </div>

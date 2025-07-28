@@ -33,9 +33,18 @@ const CompanyProfile = () => {
   // Get profileId from router query
   // const { profileId } = useRouter().query;
   const router = useRouter();
-  const profileIdFromRoute = router.query.profileId;
-  const profileIdFromRedux = useSelector((store) => store.logininfo.user?.profileId);
-  const profileId = profileIdFromRoute || profileIdFromRedux;
+  // const profileIdFromRoute = router.query.profileId;
+  // const profileIdFromRedux = useSelector((store) => store.logininfo.user?.profileId);
+  // const profileId = profileIdFromRoute || profileIdFromRedux;
+
+  // Look for 'userId' in the URL query now
+  const userIdFromRoute = router.query.profileId; 
+  // Get the logged-in user's own ID from Redux
+  const userIdFromRedux = useSelector((store) => store.logininfo.user?.id);
+  console.log(userIdFromRoute, userIdFromRedux, "User ID from Route and Redux");
+  
+  // The final ID to use for fetching
+  const userId = userIdFromRoute || userIdFromRedux;
 
   const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -57,18 +66,26 @@ const CompanyProfile = () => {
   const [totalProducts, setTotalProducts] = useState(0);
 
   // Fetch profileId from URL or Redux store optionally
+  // useEffect(() => {
+  //   if (!profileIdFromRoute && profileIdFromRedux) {
+  //     router.replace(`/profile/author/${profileIdFromRedux}`);
+  //   }
+  // }, [profileIdFromRoute, profileIdFromRedux]);
+
   useEffect(() => {
-    if (!profileIdFromRoute && profileIdFromRedux) {
-      router.replace(`/profile/author/${profileIdFromRedux}`);
+    // Use the new userId variables
+    if (!userIdFromRoute && userIdFromRedux) {
+      router.replace(`/profile/author/${userIdFromRedux}`);
     }
-  }, [profileIdFromRoute, profileIdFromRedux]);
+  }, [userIdFromRoute, userIdFromRedux]); // FIX: Use the new variable names here
 
 
   // Fetch profile info
   const fetchProfile = async () => {
     try {
-      const res = await getCompanyProfile(profileId);
+      const res = await getCompanyProfile(userId);
       setProfile(res.data.profile);
+      console.log("Profile data fetched:", res.data);
     } catch (error) {
       console.error("Error fetching profile", error);
     } finally {
@@ -81,7 +98,7 @@ const CompanyProfile = () => {
     setLoadingProducts(true);
     try {
       const res = await getCompanyProducts(
-        profileId,
+        userId,
         {
           page: currentPage,
           pageSize: 12,
@@ -92,6 +109,8 @@ const CompanyProfile = () => {
       setProducts(res.data.products);
       setTotalProducts(res.data.totalProducts);
       setTotalPages(res.data.totalPages);
+      console.log("Products data fetched:", res.data);
+      
     } catch (error) {
       console.error("Error fetching products", error);
     } finally {
@@ -101,11 +120,11 @@ const CompanyProfile = () => {
 
   // Re-fetch products whenever filters, sorting, or currentPage change
   useEffect(() => {
-    if (profileId) {
+    if (userId) {
       fetchProfile();
       fetchProducts();
     }
-  }, [profileId, isAuthenticated, sortOrder, currentPage]);
+  }, [userId, isAuthenticated, sortOrder, currentPage]);
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -138,9 +157,9 @@ const CompanyProfile = () => {
                   onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                 />
                 <div className="d-md-none">
-                  {(profile?.first_name || profile?.last_name) ? (
+                  {(profile?.firstname || profile?.lastname) ? (
                     <h4 className="fw-semibold text-primary">
-                      {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
+                      {[profile?.firstname, profile?.lastname].filter(Boolean).join(" ")}
                     </h4>
                   ) 
                   : (
@@ -157,9 +176,9 @@ const CompanyProfile = () => {
                 <div className="d-flex gap-lg-5 mb-4">
                   {/* Name  */}
                   <div className="d-none d-md-block">
-                    {(profile?.first_name || profile?.last_name) ? (
+                    {(profile?.firstname || profile?.lastname) ? (
                       <h3 className="fw-semibold text-primary">
-                        {[profile?.first_name, profile?.last_name].filter(Boolean).join(" ")}
+                        {[profile?.firstname, profile?.lastname].filter(Boolean).join(" ")}
                       </h3>
                     ) : (
                       <Link href="/profile/edit"><h3 className="fw-semibold text-primary">Update your profile and add your name.</h3></Link>
