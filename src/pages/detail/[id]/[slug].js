@@ -743,7 +743,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                   </div>
 
-                  <div className="py-4 py-md-5">
+                  {/* <div className="py-4 py-md-5">
                     <div className="row">
                       <div className="col-md-12">
                         <div className="mb-4 mb-md-5 ps-5">
@@ -756,16 +756,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     </div>
                     <div className="row gy-4 mb-4 mb-md-5">
-                      {/* {similarProjects.map((project) => {
-                        return (
-                          <div
-                            className="col-md-6 col-lg-6 col-xxl-4"
-                            key={project.id}
-                          >
-                            <ProjectCard {...project} favorites={favouriteList} />
-                          </div>
-                        );
-                      })} */}
                       {similarProjects.length > 0 ? (
                         similarProjects.map((project) => (
                           <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
@@ -778,8 +768,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         </div>
                       )}
                     </div>
+                  </div> */}
 
-                  </div>
                 </div>
               </div>
             </div>
@@ -905,7 +895,46 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
             </div>
           </div>
+
+          <div className="py-4 py-md-5">
+            <div className="row">
+              <div className="col-md-12">
+                <div className="mb-4 mb-md-5 ps-5">
+                  <SectionHeading
+                    subHeading={"find Latest"}
+                    mainHeading={"Related"}
+                    mainHeadingBold={"Files"}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="row gy-4 mb-4 mb-md-5">
+              {/* {similarProjects.map((project) => {
+                return (
+                  <div
+                    className="col-md-6 col-lg-6 col-xxl-4"
+                    key={project.id}
+                  >
+                    <ProjectCard {...project} favorites={favouriteList} />
+                  </div>
+                );
+              })} */}
+              {similarProjects.length > 0 ? (
+                similarProjects.map((project) => (
+                  <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
+                    <ProjectCard {...project} favorites={favouriteList} />
+                  </div>
+                ))
+              ) : (
+                <div className="col-12 text-center">
+                  <p>No more related files found.</p>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
+        
 
         {/* <div className="border-top border-bottom py-2"> */}
           <AdSense slot="8612944968" format="fluid" layout="in-article" />
