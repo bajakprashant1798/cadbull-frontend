@@ -475,9 +475,9 @@ export default function Home({
             </div>
           </div>
         </div>
-        <div className="border-top border-bottom py-2">
+        {/* <div className="border-top border-bottom py-2"> */}
           <AdSense slot="1744284284" format="fluid" layout="in-article" />
-        </div>
+        {/* </div> */}
       </section>
 
       {/* Project of the Day  */}
@@ -596,9 +596,9 @@ export default function Home({
         </div>
       </section>
 
-      <div className="border-top border-bottom py-2">
+      {/* <div className="border-top border-bottom py-2"> */}
         <AdSense slot="8339598320" format="fluid" layout="in-article" />
-      </div>
+      {/* </div> */}
 
       {/* Categories */}
       <section className="py-md-5 py-4">
@@ -644,9 +644,9 @@ export default function Home({
         </div>
       </section>
 
-      <div className="border-top border-bottom py-2">
+      {/* <div className="border-top border-bottom py-2"> */}
         <AdSense slot="8049838180" format="fluid" layout="in-article" />
-      </div>
+      {/* </div> */}
 
       {/* Main PRINCIPLES  */}
       <section className="py-md-5 py-3">
