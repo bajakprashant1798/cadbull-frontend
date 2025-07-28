@@ -46,6 +46,7 @@ import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import logo from "@/assets/images/logo.png";
 import Image from "next/image";
+import AdSense from "@/components/AdSense";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
