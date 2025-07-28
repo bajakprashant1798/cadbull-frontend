@@ -852,21 +852,21 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* ads image */}
 
                 {/* add component started */}
-                {/* <div className="bg-white shadow-sm p-3 rounded-2"> */}
+                <div className="bg-white shadow-sm p-3 rounded-2">
                   <AdSense slot="2091281415" format="fluid" layout="in-article" />
-                {/* </div> */}
+                </div>
                 {/* add component ended */}
 
                 {/* add component started */}
-                {/* <div className="bg-white shadow-sm p-3 rounded-2"> */}
+                <div className="bg-white  rounded-2">
                   <AdSense slot="4033193448" format="fluid" layout="in-article" />
-                {/* </div> */}
+                </div>
                 {/* add component ended */}
 
                 {/* add component started */}
-                {/* <div className="bg-white shadow-sm p-3 rounded-2"> */}
+                <div className="bg-white  rounded-2">
                   <AdSense slot="7742900751" format="fluid" layout="in-article" />
-                {/* </div> */}
+                </div>
                 {/* add component ended */}
 
                 
