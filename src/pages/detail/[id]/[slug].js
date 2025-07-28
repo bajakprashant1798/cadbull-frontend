@@ -68,7 +68,13 @@ import product from "@/assets/images/product.jpg"
 import parse from "html-react-parser";
 import LoadMore from "@/components/LoadMore";
 import Image from "next/image";
-import AdSense from "@/components/AdSense";
+import dynamic from "next/dynamic";
+
+// Lazy load the AdSense component to improve initial page load performance
+const AdSense = dynamic(() => import("@/components/AdSense"), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: '90px', background: '#f0f0f0', borderRadius: '8px', width: '100%' }} />,
+});
 function transform(node, index) {
   if (node.type === "tag") {
     return createElement(
@@ -442,7 +448,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         
-        <AdSense slot="4597678336" format="fluid" layout="in-article" />
+        <AdSense slot="4597678336" style={{ marginTop: "20px" }} format="fluid" layout="in-article" />
        
       </section>
 
