@@ -47,9 +47,9 @@ const AdSense = ({
   return (
     // The key is crucial for ads to reload on client-side navigation
     // Using the slot as a key ensures each ad unit is unique on the page.
-    <div key={slot} className="">
+    <div key={slot} className="ad-container">
       <ins
-        className="adsbygoogle ad-container"
+        className="adsbygoogle ad-ins"
         style={style}
         data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
         data-ad-slot={slot}
