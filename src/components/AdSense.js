@@ -28,10 +28,10 @@ const AdSense = ({
   if (process.env.NODE_ENV === "development") {
     return (
       <div
+        className="ad-container"
         style={{
           ...style,
           background: "#f0f0f0",
-          border: "1px solid #ccc",
           color: "#999",
           display: "flex",
           alignItems: "center",
@@ -47,7 +47,7 @@ const AdSense = ({
   return (
     // The key is crucial for ads to reload on client-side navigation
     // Using the slot as a key ensures each ad unit is unique on the page.
-    <div key={slot}>
+    <div key={slot} className="ad-container">
       <ins
         className="adsbygoogle"
         style={style}

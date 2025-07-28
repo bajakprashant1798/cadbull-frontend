@@ -266,23 +266,17 @@
       }
     }
   }
-// ad css
-  .sidebar-ad-container {
-    flex-grow: 1; /* This is the key property that makes the container fill available space */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f7f7f7; /* A light background to see the ad area */
-    min-height: 250px; /* Ensures a minimum size for the ad, preventing it from collapsing */
-    border-radius: 8px;
-    width: 100%;
-  }
 
-  /* This ensures the ad itself expands to the width of our container */
-  .sidebar-ad-container .adsbygoogle {
-    width: 100% !important;
-  }
-// ad css
+
+.ad-container {
+  border-top: 1px solid #e9e9eb;    /* A light border color from your theme */
+  border-bottom: 1px solid #e9e9eb; /* A light border color from your theme */
+  padding: 1rem 0;                  /* Adds space inside the borders */
+  margin: 1.5rem 0;                 /* Adds space outside the borders */
+  min-height: 90px;                 /* Prevents layout shift while ad loads */
+  display: flex;
+  justify-content: center;
+}
 
   .project-day-card-image {
     // height: 250px;   // enable it if we want to fix the height

@@ -284,7 +284,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
             </div>
 
             {/* Projects Grid */}
-            <div className="row g-4 justify-content-center">
+            <div className="row g-4 justify-content-center mb-4">
               {projects.map((project) => (
                 <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
                   <ProjectCard {...project} favorites={favouriteList} />
@@ -296,7 +296,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
             <AdSense slot="9615035443" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
-            <div className="row mt-4 justify-content-center mt-md-5">
+            <div className="row  justify-content-center ">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
                   {/* <Pagination

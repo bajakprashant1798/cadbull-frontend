@@ -429,7 +429,7 @@ const Categories = ({
               </div>
             </div>
 
-            <div className="row g-4 justify-content-center">
+            <div className="row g-4 justify-content-center mb-4">
               {isLoading ? null : projects.length > 0 ? (
                 <>
                   {projects.map((project) => (
@@ -451,7 +451,7 @@ const Categories = ({
             <AdSense slot="7739180135" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
-            <div className="row mt-4 justify-content-center mt-md-5">
+            <div className="row  justify-content-center ">
               <div className="col-md-6 col-lg-5 col-xl-4">
                 <div className="text-center">
                   {/* <Pagination
