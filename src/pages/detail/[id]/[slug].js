@@ -441,7 +441,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           </div>
         </div>
 
-        
+        <div className=" pt-2">
+          <AdSense slot="1744284284" format="fluid" layout="in-article" />
+        </div>
       </section>
 
       {/* Categories  */}
@@ -703,6 +705,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                   </div>
 
+                  <div className="border-top border-bottom py-2 mt-4">
+                    <AdSense slot="1744284284" format="fluid" layout="in-article" />
+                  </div>
+
                   <div className="row justify-content-center">
                     <div className="col-md-12 col-12 text-center">
                       <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
@@ -775,6 +781,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
             </div>
+
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div>
@@ -857,10 +864,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                 {/* add component started */}
                 {/* <div className="bg-white shadow-sm p-3 rounded-2"> */}
-                  <AdSense slot="2091281415" format="fluid" layout="in-article" />
+                  {/* <AdSense slot="2091281415" format="fluid" layout="in-article" /> */}
                 {/* </div> */}
                 {/* add component ended */}
                 
+                <div className="border-top border-bottom py-2">
+                  <AdSense slot="1744284284" format="fluid" layout="in-article" />
+                </div>
 
                 {/* <div>
                   <img
@@ -893,6 +903,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="border-top border-bottom py-2">
+          <AdSense slot="1744284284" format="fluid" layout="in-article" />
         </div>
       </section>
     </Fragment>

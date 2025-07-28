@@ -475,9 +475,10 @@ export default function Home({
             </div>
           </div>
         </div>
+        <div className="border-top border-bottom py-2">
+          <AdSense slot="1744284284" format="fluid" layout="in-article" />
+        </div>
       </section>
-
-      <AdSense slot="1744284284" format="fluid" layout="in-article" />
 
       {/* Project of the Day  */}
       <section className="py-md-5 py-3" ref={projectOfDayRef}>
@@ -584,7 +585,7 @@ export default function Home({
             onPageChange={handlePageChange}
           />
           
-          <AdSense slot="8339598320" format="fluid" layout="in-article" />
+          
           {/* <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}
@@ -594,6 +595,10 @@ export default function Home({
           /> */}
         </div>
       </section>
+
+      <div className="border-top border-bottom py-2">
+        <AdSense slot="1744284284" format="fluid" layout="in-article" />
+      </div>
 
       {/* Categories */}
       <section className="py-md-5 py-4">
@@ -639,8 +644,10 @@ export default function Home({
         </div>
       </section>
 
-      <AdSense slot="8049838180" format="fluid" layout="in-article" />
-
+      <div className="border-top border-bottom py-2">
+        <AdSense slot="1744284284" format="fluid" layout="in-article" />
+      </div>
+      
       {/* Main PRINCIPLES  */}
       <section className="py-md-5 py-3">
         <div className="container">
