@@ -183,8 +183,8 @@ const ProjectCard = ({
       <Link onClick={handleviewcount}  className="h-100" href={`/detail/${id}/${slugify(work_title)}`}>
         <div className='project-day-card-image mb-3 position-relative'>
           
-          {/* <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" /> */}
-          <Image
+          <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" />
+          {/* <Image
             src={photo_url || product}
             width={800}                // Just use a safe default!
             height={600}
@@ -198,7 +198,7 @@ const ProjectCard = ({
               display: "block"
             }}
             onError={(e) => { e.target.src = product }}
-          />
+          /> */}
 
 
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
