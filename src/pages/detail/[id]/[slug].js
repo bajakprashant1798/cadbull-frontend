@@ -442,7 +442,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         
-        <AdSense slot="4597678336" format="fluid" layout="in-article" />
+        {/* <AdSense slot="4597678336" format="fluid" layout="in-article" /> */}
        
       </section>
 
