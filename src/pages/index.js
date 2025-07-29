@@ -607,7 +607,7 @@ export default function Home({
             <div className="col-md-12 mb-3">
               <div className="mb-md-5 mb-4 d-flex ps-5">
                 <SectionHeading
-                  subHeading={"find Latest"}
+                  subHeading={"Explore All"}
                   mainHeading={"Categories"}
                   mainHeadingBold={"Cadbull"}
                   alignment="mx-auto"
