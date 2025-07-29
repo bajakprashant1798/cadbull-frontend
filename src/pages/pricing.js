@@ -51,7 +51,7 @@ const Pricing = () => {
           setMessage(`✅ Your Gold account expires on ${expDate.toDateString()}`);
         } else {
           setActiveSubscription(false);
-          setMessage("❌ No active subscription found.");
+          setMessage("❌ Oops! Looks like you’re not on an active subscription yet. But no worries – you're just one click away from accessing our entire CAD library! Subscribe today and explore without limits!");
         }
       } catch (error) {
         console.error("❌ Error fetching user details:", error);
