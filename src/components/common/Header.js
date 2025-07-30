@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { getUserData, logoutApiHandler } from "@/service/api";
 import { persistor } from "../../../redux/app/store";
 import { resetProjectState } from "../../../redux/app/features/projectsSlice";
+import Image from "next/image";
 
 const links = [
   {
@@ -220,7 +221,7 @@ const Header = () => {
         <nav className="navbar navbar-expand-xl">
           <div className="container-fluid">
             <Link href="/">
-              <img src={logo.src} alt="logo" className="logo"    />
+              <Image src={logo.src} width={150} height={36} alt="logo" className="logo"  priority  />
             </Link>
             <button
               className="navbar-toggler border-0 p-0 shadow-none"
@@ -264,12 +265,13 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       {status?.user?.profile_pic == null ? (
-                        <img src={profile_dummy.src} alt="profile" width={30}  />
+                        <Image src={profile_dummy.src} alt="profile" width={30} height={30}  />
                       ) : (
-                        <img
+                        <Image
                           src={status?.user?.profile_pic || profile_dummy.src}
                           alt="profile"
                           width={30}
+                          height={30}
                           style={{borderRadius:"50%"}}
                           onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                         />
@@ -284,12 +286,12 @@ const Header = () => {
                           onClick={closeHamburgerMenu}
                         >
                           {status?.user?.profile_pic == null ? (
-                            <img src={profile_dummy.src} alt="profile" width={30} />
+                            <Image src={profile_dummy.src} alt="profile" width={30} height={30} />
                           ) : (
-                            <img
+                            <Image
                               src={status?.user?.profile_pic || profile_dummy.src}
                               alt="profile"
-                              width={30}
+                              width={30} height={30}
                               style={{borderRadius:"50%"}}
                               onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                             />
@@ -528,12 +530,13 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       {status?.user?.profile_pic == null ? (
-                        <img src={profile_dummy.src} alt="profile" width={30}  />
+                        <Image src={profile_dummy.src} alt="profile" width={30} height={30} />
                       ) : (
-                        <img
+                        <Image
                           src={status?.user?.profile_pic || profile_dummy.src}
                           alt="profile"
                           width={30}
+                          height={30}
                           style={{borderRadius:"50%"}}
                           onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                         />
@@ -548,12 +551,13 @@ const Header = () => {
                           onClick={closeHamburgerMenu}
                         >
                           {status?.user?.profile_pic == null ? (
-                            <img src={profile_dummy.src} alt="profile" width={30} />
+                            <Image src={profile_dummy.src} alt="profile" width={30} height={30} />
                           ) : (
-                            <img
+                            <Image
                               src={status?.user?.profile_pic || profile_dummy.src}
                               alt="profile"
                               width={30}
+                              height={30}
                               style={{borderRadius:"50%"}}
                               onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
                             />
