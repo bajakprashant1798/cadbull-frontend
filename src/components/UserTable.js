@@ -131,15 +131,16 @@ const UserTable = ({ role, title }) => {
     setHasNext(false);
     setHasPrev(false);
     setDeepPage(null);
-    const res = await getUsersByRoleApi(buildParams(null, 1));
+    const params = buildParams(null, 1);
+    const res = await getUsersByRoleApi(params);
     setUsers(res.data.users || []);
     setAfterId(res.data.nextId || null);
     setBeforeId(res.data.prevId || null);
     setHasNext(!!res.data.hasNext);
     setHasPrev(false);
     setTotalPages(res.data.totalPages || 1);
-
-    logPageState('NEXT_FROM_LAST', res, params);
+    
+    logPageState('FIRST_PAGE', res, params);
   };
 
   // Then, for "Previous" from last page, do:
@@ -280,6 +281,7 @@ const UserTable = ({ role, title }) => {
           <table className="table table-striped table-hover">
             <thead>
               <tr>
+                <th style={{ cursor: "pointer" }} onClick={() => handleSort("id")}>ID {sortColumn === "id" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</th>
                 <th style={{ cursor: "pointer" }} onClick={() => handleSort("username")}>Username {sortColumn === "username" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</th>
                 <th style={{ cursor: "pointer" }} onClick={() => handleSort("firstname")}>Name {sortColumn === "firstname" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</th>
                 <th style={{ cursor: "pointer" }} onClick={() => handleSort("email")}>Email {sortColumn === "email" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</th>
@@ -292,6 +294,7 @@ const UserTable = ({ role, title }) => {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
+                  <td>{user.id}</td>
                   <td>{user.username}</td>
                   <td>{user.firstname} {user.lastname}</td>
                   <td>{user.email}</td>
