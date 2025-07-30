@@ -459,6 +459,8 @@ export default function Home({
                           <Image
                             src={drawing.img}
                             alt="icon"
+                            width={32}
+                            height={32}
                             className="img-fluid d-none d-md-block"
                             loading="lazy"
                           />
@@ -628,6 +630,8 @@ export default function Home({
                       <Image
                         src={category.image}
                         alt="icon"
+                        width={55}
+                        height={55}
                         className="img-fluid"
                         loading="lazy"
                       />
@@ -656,7 +660,8 @@ export default function Home({
               <div className="main-principle-image-wrapper">
                 <Image
                   src={principle}
-                  
+                  width={600}
+                  height={450}
                   className="img-fluid"
                   alt="principle"
                   loading="lazy"
@@ -698,6 +703,8 @@ export default function Home({
                         <Image
                           src={visualization}
                           alt="icon"
+                          width={55}
+                          height={55}
                           className="img-fluid"
                           loading="lazy"
                         />
@@ -721,10 +728,13 @@ export default function Home({
                   <div className="col">
                     <div className="d-flex flex-column h-100">
                       <div className="mb-3">
-                        <img
+                        <Image
                           src={indvidual.src}
                           alt="icon"
+                          width={55}
+                          height={55}
                           className="img-fluid"
+                          loading="lazy"
                         />
                       </div>
                       <div>
@@ -859,7 +869,7 @@ export default function Home({
             </div>
             <div className="col-md-6 mb-3">
               <div className="our-skills-image-wrapper">
-                <Image src={ourSkills} alt="skills" className="img-fluid" loading="lazy" />
+                <Image src={ourSkills} alt="skills" className="img-fluid" width={550} height={500} loading="lazy" />
               </div>
             </div>
           </div>
@@ -908,6 +918,8 @@ export default function Home({
                 <Image
                   src={Architecture}
                   className="w-100 img-fluid"
+                  width={1200}
+                  height={400}
                   alt="cta"
                   loading="lazy"
                 />
@@ -916,7 +928,7 @@ export default function Home({
           </div>
           <div className="row bg-danger rounded-xl align-items-center d-none d-lg-flex">
             <div className="col-lg-5 ps-0">
-              <Image src={housePlan} height={200} className="w-100" alt="house plan" loading="lazy" />
+              <Image src={housePlan} width={500} height={200} className="w-100" alt="house plan" loading="lazy" />
             </div>
             <div className="col-lg-4">
               <div className="text-center">
