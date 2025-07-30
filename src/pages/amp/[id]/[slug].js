@@ -131,7 +131,6 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <Head>
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        {/* Removed <meta name="viewport"> as Next.js AMP injects it automatically */}
         <link
           rel="shortcut icon"
           href="/favicon.ico"
@@ -210,7 +209,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
             </li> */}
             {user ? (
               <>
-                <li className="nav-link mbr-bold link text-black display-7"><a href="/ampprofile">{user.firstname}</a></li>
+                <li className="nav-link mbr-bold link text-black display-7"><a href="/profile/edit">{user.firstname}</a></li>
                 <li className="nav-link mbr-bold link text-black display-7"><a href="/logout">Logout</a></li>
               </>
             ) : (
@@ -226,7 +225,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
         <nav className="navbar navbar-dropdown navbar-expand-lg navbar-fixed-top">
           <div className="menu-container container">
             <div className="navbar-brand">
-              <a href="https://cadbull.com/amphome">
+              <a href="/amphome">
                 <div className="navbar-logo">
                   <amp-img
                     src={logo.src}
