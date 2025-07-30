@@ -112,8 +112,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
     : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
   const profilePic =
     publisher?.profiles?.[0]?.profile_pic && publisher?.profiles?.[0]?.profile_pic !== "NA.jpg"
-      ? `https://beta-assets.cadbull.com/img/profile_pic/${publisher.profiles[0].profile_pic}`
-      : "https://thumb.cadbull.com/img/profile_pic/small/default-amp.png";
+      ? `https://beta-assets.cadbull.com/profile_pic/${publisher.profiles[0].profile_pic}`
+      : "https://thumb.cadbull.com/profile_pic/small/default-amp.png";
   const canonical = `https://cadbull.com/detail/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
   const ogUrl = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
 
@@ -490,7 +490,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 
                 // ✅ UPDATED: Construct the image URL with the new path
                 const similarImageUrl = sim.image
-                  ? `https://beta-assets.cadbull.com/img/product_img/large/${sim.image}`
+                  ? `https://beta-assets.cadbull.com/product_img/large/${sim.image}`
                   : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
 
                 return (
