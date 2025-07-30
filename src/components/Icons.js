@@ -72,10 +72,21 @@ const WhiteArrowLeft = () => <svg xmlns="http://www.w3.org/2000/svg" width="6.75
   <path id="Icon_ionic-ios-arrow-forward" data-name="Icon ionic-ios-arrow-forward" d="M13.282,12.1,17.75,7.633a.84.84,0,0,0,0-1.192.851.851,0,0,0-1.2,0L11.492,11.5a.842.842,0,0,0-.025,1.164l5.084,5.094a.844.844,0,0,0,1.2-1.192Z" transform="translate(-11.246 -6.196)" fill="#fff" />
 </svg>
 
+// ******************* BlackArrow *******************
+const CustomArrowLeft = () => <svg xmlns="http://www.w3.org/2000/svg" width="6.752" height="11.808" viewBox="0 0 6.752 11.808">
+  <path id="Icon_ionic-ios-arrow-forward" data-name="Icon ionic-ios-arrow-forward" d="M13.282,12.1,17.75,7.633a.84.84,0,0,0,0-1.192.851.851,0,0,0-1.2,0L11.492,11.5a.842.842,0,0,0-.025,1.164l5.084,5.094a.844.844,0,0,0,1.2-1.192Z" transform="translate(-11.246 -6.196)" fill="currentColor" />
+</svg>
+
+
 // ******************* WhiteArrowRight *******************
-// WhiteArrowLeft with fill="currentColor"
 const WhiteArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="6.751" height="11.808" viewBox="0 0 6.751 11.808">
   <path id="Icon_ionic-ios-arrow-forward" data-name="Icon ionic-ios-arrow-forward" d="M15.963,12.1,11.494,7.633a.84.84,0,0,1,0-1.192.851.851,0,0,1,1.2,0L17.752,11.5a.842.842,0,0,1,.025,1.164l-5.084,5.094a.844.844,0,1,1-1.2-1.192Z" transform="translate(-11.246 -6.196)" fill="#fff" />
+</svg>
+
+// ******************* BlackArrowRight *******************
+// WhiteArrowLeft with fill="currentColor"
+const CustomArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="6.751" height="11.808" viewBox="0 0 6.751 11.808">
+  <path id="Icon_ionic-ios-arrow-forward" data-name="Icon ionic-ios-arrow-forward" d="M15.963,12.1,11.494,7.633a.84.84,0,0,1,0-1.192.851.851,0,0,1,1.2,0L17.752,11.5a.842.842,0,0,1,.025,1.164l-5.084,5.094a.844.844,0,1,1-1.2-1.192Z" transform="translate(-11.246 -6.196)" fill="currentColor" />
 </svg>
 
 // ******************* Like *******************
@@ -395,6 +406,8 @@ const Icons = {
   User,
   WhiteArrowLeft,
   WhiteArrowRight,
+  CustomArrowLeft,
+  CustomArrowRight,
   Whatsapp,
   Password,
   Facebook,

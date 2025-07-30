@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import { getCategoriesApi } from "@/service/api";
 import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
@@ -12,9 +12,10 @@ const CategoryTable = ({ status, title }) => {
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
+  const [modalCategory, setModalCategory] = useState(null); // State for modal
   
   const [categories, setCategories] = useState([]);
-  const [parentCategoryMap, setParentCategoryMap] = useState({});
+  // const [parentCategoryMap, setParentCategoryMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,17 +42,22 @@ const CategoryTable = ({ status, title }) => {
   const fetchCategories = () => {
     getCategoriesApi(status, currentPage, entriesPerPage, searchTerm, sortColumn, sortOrder)
       .then((res) => {
-        const categoryList = res.data.categories;
 
-        // ✅ Create Parent Category Mapping (ID → Name)
-        const parentMap = {};
-        categoryList.forEach(cat => {
-          parentMap[cat.id] = cat.name;
-        });
+        // ✅ SIMPLIFIED: No more manual mapping needed.
+        setCategories(res.data.categories);
+        setTotalPages(res.data.totalPages);
 
-        setCategories(categoryList);
-        setParentCategoryMap(parentMap);
-        setTotalPages(res.data.totalPages); // ✅ FIXED: Now updates based on filtered data
+        // const categoryList = res.data.categories;
+
+        // // ✅ Create Parent Category Mapping (ID → Name)
+        // const parentMap = {};
+        // categoryList.forEach(cat => {
+        //   parentMap[cat.id] = cat.name;
+        // });
+
+        // setCategories(categoryList);
+        // setParentCategoryMap(parentMap);
+        // setTotalPages(res.data.totalPages); // ✅ FIXED: Now updates based on filtered data
       })
       .catch(() => console.error("Error fetching categories"));
   };
@@ -111,8 +117,15 @@ const CategoryTable = ({ status, title }) => {
               {categories.map((category) => (
                 <tr key={category.id}>
                   <td className="wrap-text">{category.name}</td>
-                  <td>{category.parent_id === 0 ? "None" : parentCategoryMap[category.parent_id] || "Unknown"}</td>
-                  <td className="wrap-text">{category.description}</td>
+                  {/* ✅ SIMPLIFIED: Directly display the parent name from the API */}
+                  <td className="wrap-text">{category.parent_category_name}</td>
+                  <td
+                    className="description-cell"
+                    title="Click to read more"
+                    onClick={() => setModalCategory(category)}
+                  >
+                    <div className="description-cell-content">{category.description}</div>
+                  </td>
                   <td>
                     <button onClick={() => handleToggleStatus(category.id)} className="border-0 bg-transparent">
                       {category.status === 1 ? (
@@ -154,6 +167,25 @@ const CategoryTable = ({ status, title }) => {
           dispatchCurrentPage={setCurrentPage}
         />
 
+        {/* Modal for full description */}
+        {modalCategory && (
+          <div className="description-modal-overlay" onClick={() => setModalCategory(null)}>
+            <div className="description-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="description-modal-header">
+                <h5 className="mb-0">{modalCategory.name} - Description</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setModalCategory(null)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="description-modal-body">
+                <p>{modalCategory.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

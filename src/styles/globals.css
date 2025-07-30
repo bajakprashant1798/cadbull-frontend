@@ -856,6 +856,8 @@ select:-webkit-autofill:focus {
     padding: 0.5rem 0;                  /* Adds space inside the borders */
   }
 
+
+
 .project-day-card {
   background: #fff 0% 0% no-repeat padding-box;
   border: 1px solid #E1E1E1;

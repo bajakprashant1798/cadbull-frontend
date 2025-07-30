@@ -490,7 +490,7 @@ export default function Home({
                 <div className="ps-5">
                   <SectionHeading
                     subHeading={"DISCOVER"}
-                    mainHeading={"Project of the day"}
+                    mainHeading={"Files of the day"}
                     mainHeadingBold={"Cadbull"}
                   />
                 </div>

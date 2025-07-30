@@ -122,7 +122,7 @@ const Sidebar = () => {
                 className="nav-link text-white d-flex justify-content-between align-items-center w-100"
                 onClick={() => setProjectMenuOpen(!projectMenuOpen)}
               >
-                <span className="me-2"><Layers size={18} className="me-2" /> Project Management</span>
+                <span className="me-2"><Layers size={18} className="me-2" /> Files Management</span>
                 {projectMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </button>
               {projectMenuOpen && (
@@ -134,7 +134,7 @@ const Sidebar = () => {
                   </li> */}
                   <li>
                     <Link href="/admin/projects/view-projects" className="nav-link text-white">
-                      <span className="me-2"><List size={18} className="me-2" />View Projects</span>
+                      <span className="me-2"><List size={18} className="me-2" />View Files</span>
                     </Link>
                   </li>
                 </ul>
@@ -240,19 +240,19 @@ const Sidebar = () => {
             className="nav-link text-white d-flex justify-content-between align-items-center w-100"
             onClick={() => setProjectMenuOpen(!projectMenuOpen)}
           >
-            <span className="me-2"><Layers size={18} className="me-2" /> Project Management</span>
+            <span className="me-2"><Layers size={18} className="me-2" /> Files Management</span>
             {projectMenuOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
           {projectMenuOpen && (
             <ul className="nav flex-column ms-3">
               <li>
                 <Link href="/admin/projects/add-project" className="nav-link text-white">
-                    <span className="me-2"><PlusCircle size={18} className="me-2" />Add Project</span>
+                    <span className="me-2"><PlusCircle size={18} className="me-2" />Add File</span>
                 </Link>
               </li>
               <li>
                 <Link href="/admin/projects/view-projects" className="nav-link text-white">
-                    <span className="me-2"><List size={18} className="me-2" />View Project</span>
+                    <span className="me-2"><List size={18} className="me-2" />View Files</span>
                 </Link>
               </li>
             </ul>

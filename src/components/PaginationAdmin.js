@@ -116,7 +116,7 @@ const PaginationAdmin = ({
                   disabled={currentPage === 1}
                 >
                   <span aria-hidden="true">
-                    <Icons.WhiteArrowLeft />
+                    <Icons.CustomArrowLeft />
                   </span>
                 </button>
               </li>
@@ -147,14 +147,14 @@ const PaginationAdmin = ({
                   disabled={currentPage === totalPages}
                 >
                   <span aria-hidden="true">
-                    <Icons.WhiteArrowRight />
+                    <Icons.CustomArrowRight />
                   </span>
                 </button>
               </li>
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                 <button 
                   onClick={goToLastPage}
-                  className="page-link"
+                  className="page-link text-white"
                   disabled={currentPage === totalPages}
                 >
                   Last

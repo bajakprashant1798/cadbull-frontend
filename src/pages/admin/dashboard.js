@@ -18,7 +18,7 @@ const Dashboard = () => {
   return (
     <AdminLayout>
       <h1 className="fw-bold">Welcome, Admin!</h1>
-      <p>Manage users, categories, and projects here.</p>
+      <p>Manage users, Categories, and Fiels here.</p>
     </AdminLayout>
   );
 };

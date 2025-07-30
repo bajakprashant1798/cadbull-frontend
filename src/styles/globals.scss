@@ -278,6 +278,15 @@
     // justify-content: center;
   }
 
+  .truncate-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;  /* Shows 3 lines of text */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px; /* Optional: Constrain the width if needed */
+  }
+
   .project-day-card-image {
     // height: 250px;   // enable it if we want to fix the height
     width: 100%;

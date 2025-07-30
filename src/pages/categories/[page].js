@@ -338,7 +338,7 @@ const Categories = ({
                           <small className="text-grey fs-12">{`(${projects.length} RESULTS)`}</small>
                         </h5>
                       </>
-                    ) : `All Projects`}
+                    ) : `All Files`}
                   </div>
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-xl-end justify-content-center flex-column flex-md-row">
