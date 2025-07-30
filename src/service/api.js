@@ -490,6 +490,11 @@ export const removeProject = async ( id) => {
   return api.delete(`/projects/remove/${id}`);
 };
 
+// ✅ ADD THIS
+export const claimCreditsApi = (projectId) => {
+  return api.post(`/projects/${projectId}/claim-credits`);
+};
+
 export const getBlogs = async () => {
   return api.get("/blogs");
 };

@@ -118,6 +118,15 @@ const EditProject = () => {
         if (!projectRes.data) {
           throw new Error("Invalid project details response");
         }
+
+        // Set Form Data from projectRes.data
+        Object.keys(projectRes.data).forEach((key) => {
+          // ✅ ADD THIS CONDITION to skip setting the credit_days value
+          if (key !== 'credit_days') {
+            setValue(key, projectRes.data[key] || "");
+          }
+        });
+
         // ✅ Set Categories
         setCategories(categoriesRes.data);
 
@@ -136,8 +145,8 @@ const EditProject = () => {
         setSlugMode(initialSlugMode);
 
 
-        // ✅ Set Form Data
-        Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
+        //// ✅ Set Form Data
+        // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
 
         setProjectDetails(projectRes.data); // For comparing on duplicate check
@@ -406,6 +415,20 @@ const EditProject = () => {
               <option value="1">Approved</option>
               <option value="2">Rejected</option>
             </select>
+          </div>
+
+          {/* ✅ ADD THIS NEW FIELD */}
+          <div className="mb-3">
+            <label className="form-label">Credit Subscription Days</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="e.g., 30"
+              {...register("credit_days")}
+            />
+            <small className="form-text text-muted">
+              Enter the number of days to add to the uploader's subscription. Leave blank to make no change.
+            </small>
           </div>
 
           {/* Choose Project Type */}

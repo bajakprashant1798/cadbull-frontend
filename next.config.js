@@ -41,11 +41,22 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: [
-      'beta-assets.cadbull.com',
-      // add other image domains here if needed
-      // 'cadbull.com', // allows *.cadbull.com and cadbull.com
-      // 'cdn.cadbull.com',
+    // domains: [
+    //   'beta-assets.cadbull.com',
+    //   'localhost/', // Local development
+    //   // add other image domains here if needed
+    //   // 'cadbull.com', // allows *.cadbull.com and cadbull.com
+    //   // 'cdn.cadbull.com',
+    // ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'beta-assets.cadbull.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
   },
   async redirects() {

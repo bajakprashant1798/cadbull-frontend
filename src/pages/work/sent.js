@@ -12,13 +12,13 @@ import Pagination from "@/components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import useSessionStorageData from "@/utils/useSessionStorageData";
-import { downloadProject, getUploadedProjectList, removeProject } from "@/service/api";
+import { claimCreditsApi, downloadProject, getUploadedProjectList, removeProject } from "@/service/api";
 import { addedFavouriteItem, deleteFavouriteItem } from "../../../redux/app/features/projectsSlice";
 import { downloadFile } from "@/utils/downloadfile";
 import { handledownload } from "@/service/globalfunction";
 import { debounce } from "lodash"; // ✅ Import debounce for optimization
 import { parse } from 'cookie';
-
+import { toast } from "react-toastify";
 
 const tableData = [
   {
@@ -86,6 +86,8 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
           setTableData(res.data.projects);
           dispatch(addedFavouriteItem(res.data.projects));
           setTotalPages(res.data.totalPages);
+          console.log("Projects fetched successfully:", res.data.projects);
+          
         } else {
           setTableData([]); // ✅ Handle empty response
         }
@@ -143,6 +145,24 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
   //     });
   // };
 
+  // ✅ ADD THIS NEW HANDLER
+  const handleClaimCredits = async (projectId) => {
+    try {
+      const res = await claimCreditsApi(projectId);
+      toast.success(res.data.message);
+      // Update the UI locally to hide the button immediately after claiming
+      setTableData(prevData =>
+        prevData.map(p =>
+          p.id === projectId ? { ...p, credit_status: 0 } : p
+        )
+      );
+      // console.log("Credits claimed successfully for project ID:", res);
+      
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to claim credits.");
+    }
+  };
+
   return (
     <Fragment>
       <Head>
@@ -173,6 +193,7 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
                       <td>Status</td>
                       <td>Earning</td>
                       <td>Action</td>
+                      <td>Credits</td>
                     </tr>
                   </thead>
                   <tbody>
@@ -226,6 +247,27 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
                                   </button>
                                 </div>
                               }
+                            </td>
+
+                            <td>
+                              {res.credit_days > 0 ? (
+                                // Case 1: Credit days have been granted
+                                res.credit_status == 1 ? ( // Use == to handle "1" vs 1
+                                  // A) Credits are UNUSED (status is 1) -> Show Button
+                                  <button
+                                    onClick={() => handleClaimCredits(res.id)}
+                                    className="btn btn-sm btn-success"
+                                  >
+                                    Claim {res.credit_days} Days
+                                  </button>
+                                ) : (
+                                  // B) Credits are USED (status is 0) -> Show Badge
+                                  <span className="badge bg-secondary">Claimed</span>
+                                )
+                              ) : (
+                                // Case 2: No credits were ever granted
+                                <span className="text-muted small">No Credits</span>
+                              )}
                             </td>
                           </tr>
                         )

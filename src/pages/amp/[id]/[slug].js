@@ -5,6 +5,19 @@ import logo from "@/assets/images/logo.png";
 // AMP config: Export this to make page AMP-only
 export const config = { amp: true };
 
+// ✅ ADD THIS HELPER FUNCTION HERE
+function slugify(text) {
+  if (!text) return "";
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 export async function getServerSideProps(context) {
   const { params, req } = context;
   const { id } = params;
@@ -22,6 +35,10 @@ export async function getServerSideProps(context) {
     // Try to fetch product
     const productRes = await axios(`${process.env.NEXT_PUBLIC_API_MAIN}/projects/${id}`);
     productData = productRes.data;
+
+    // ✅ LOG THE MAIN PRODUCT IMAGE FILENAME
+    console.log("--- AMP Page Debug ---");
+    console.log("✔️ Main Product Image Filename:", productData?.image);
   } catch (e) {
     // 404 from backend, product not found
     return { notFound: true }; // Next.js will show 404 page
@@ -90,12 +107,12 @@ export async function getServerSideProps(context) {
 export default function AmpProductPage({ product, similar, publisher, categoryName, subcategoryName, user }) {
   const title = product?.work_title || "Product";
   const description = product?.description || "";
-  const imageUrl = product?.photo_url;
-    // ? `https://thumb.cadbull.com/img/product_img/large/${product.image}`
-    // : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
+  const imageUrl = product?.image
+    ? `https://beta-assets.cadbull.com/product_img/original/${product.image}`
+    : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
   const profilePic =
     publisher?.profiles?.[0]?.profile_pic && publisher?.profiles?.[0]?.profile_pic !== "NA.jpg"
-      ? `https://thumb.cadbull.com/img/profile_pic/small/${publisher.profiles[0].profile_pic}`
+      ? `https://beta-assets.cadbull.com/img/profile_pic/${publisher.profiles[0].profile_pic}`
       : "https://thumb.cadbull.com/img/profile_pic/small/default-amp.png";
   const canonical = `https://cadbull.com/detail/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
   const ogUrl = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
@@ -246,7 +263,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       </section>
 
       {/* Product Title/Description */}
-      <section className="heading-section">
+      <section className="heading-section header1 cid-rFCR1GdfS2">
         <div className="container-fluid">
           <div className="mbr-row align-left">
             <div className="title-block">
@@ -291,7 +308,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       </section>
 
       {/* File Details */}
-      <section className="features1">
+      <section className="features1 cid-rFCUSfIaax">
         <div className="container">
           <div className="title-wrap align-center mbr-pb-4">
             <h3 className="title-h3">File Details</h3>
@@ -460,41 +477,51 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
 
       {/* Related Projects (Gallery) */}
       {similar && similar.length > 0 && (
-        <section className="amp-lightbox-gallery">
+        <section className="amp-lightbox-gallery cid-rFD2djIsb5">
           <div className="container-fluid">
             <div className="title mbr-pb-4">
               <h3 className="title-h3 text-center">Related Files</h3>
               <h4 className="title-h4 text-center">Look some related files.</h4>
             </div>
             <div className="mbr-row">
-              {similar.map((sim, idx) => (
-                <div
-                  className="item gallery-image mbr-col-md-6 mbr-col-sm-12 mbr-col-lg-4"
-                  key={sim.id}
-                >
-                  <a href={`/amp/${sim.id}/${encodeURIComponent(sim.work_title)}`}>
-                    <div className="item-wrapper">
-                      <amp-img
-                        lightbox="item-wizard-gallery-1e"
-                        src={`https://thumb.cadbull.com/img/product_img/large/${sim.image}`}
-                        layout="responsive"
-                        width="450"
-                        height="300"
-                        alt={sim.work_title}
-                        className="placeholder-loader"
-                      />
-                      <p className="item-sign">{sim.work_title}</p>
-                    </div>
-                  </a>
-                </div>
-              ))}
+              {similar.map((sim, idx) => {
+                // ✅ UPDATED: Use the slug from the API data for the link
+                const similarProjectSlug = sim.slug || slugify(sim.work_title);
+                
+                // ✅ UPDATED: Construct the image URL with the new path
+                const similarImageUrl = sim.image
+                  ? `https://beta-assets.cadbull.com/img/product_img/large/${sim.image}`
+                  : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
+
+                return (
+                  <div
+                    className="item gallery-image mbr-col-md-6 mbr-col-sm-12 mbr-col-lg-4"
+                    key={sim.id}
+                  >
+                    <a href={`/amp/${sim.id}/${similarProjectSlug}`}>
+                      <div className="item-wrapper">
+                        <amp-img
+                          lightbox="item-wizard-gallery-1e"
+                          src={similarImageUrl}
+                          layout="responsive"
+                          width="450"
+                          height="300"
+                          alt={sim.work_title}
+                          className="placeholder-loader"
+                        />
+                        <p className="item-sign mbr-fonts-style display-7">{sim.work_title}</p>
+                      </div>
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
       )}
 
       {/* Contact Section */}
-      <section className="contacts7 map">
+      <section className="contacts7 map cid-rFD1fLKd4z">
         <div className="container-fluid">
           <div className="title mbr-pb-4 align-center">
             <h3 className="title-h3">Contact Us</h3>
