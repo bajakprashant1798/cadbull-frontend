@@ -125,7 +125,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [similarProjectId, setSimilarProjectId] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  // ✅ ADD THESE NEW STATES
+  const [currentPage, setCurrentPage] = useState(1); // To track the page of similar projects
+  const [isLoading, setIsLoading] = useState(false); // To prevent multiple clicks while loading
+  const [hasMore, setHasMore] = useState(true); // To hide the button when no more projects are left
+
 
   // At component top:
   const shownSimilarIdsRef = useRef(new Set());
@@ -380,6 +384,53 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       router.push(`/${selectedCategory}`);
     }
   };
+
+  const handleLoadMore = async () => {
+    // Prevent function from running if it's already loading or if there are no more pages
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    const nextPage = currentPage + 1;
+
+    try {
+      // Get the IDs of projects already shown to exclude them from the next fetch
+      const excludeIdsArray = Array.from(shownSimilarIdsRef.current);
+      if (!excludeIdsArray.includes(Number(id))) {
+        excludeIdsArray.push(Number(id));
+      }
+
+      // Call your API to get the next page of projects
+      const response = await getsimilerllprojects(
+        nextPage, // The next page number
+        9,        // Fetch 9 more projects as requested
+        similarProjectId,
+        excludeIdsArray.join(",")
+      );
+
+      const newProjects = response.data.projects;
+
+      if (newProjects && newProjects.length > 0) {
+        // Append new projects to the existing list
+        setSimilarProjects(prevProjects => [...prevProjects, ...newProjects]);
+        // Add new project IDs to the set of shown IDs
+        newProjects.forEach(p => shownSimilarIdsRef.current.add(p.id));
+        // Update the current page number
+        setCurrentPage(nextPage);
+      }
+
+      // If the API returns fewer than 9 projects, it means we've reached the end
+      if (!newProjects || newProjects.length < 9) {
+        setHasMore(false);
+      }
+
+    } catch (error) {
+      console.error("Failed to load more projects:", error);
+      setHasMore(false); // Stop trying to load more if an error occurs
+    } finally {
+      setIsLoading(false); // Reset loading state
+    }
+  };
+
   return (
     <Fragment>
       <Head>
@@ -928,6 +979,19 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               ) : (
                 <div className="col-12 text-center">
                   <p>No more related files found.</p>
+                </div>
+              )}
+
+              {/* ✅ ADD THIS NEW "LOAD MORE" BUTTON LOGIC */}
+              {hasMore && similarProjects.length > 0 && (
+                <div className="text-center mt-4">
+                  <button
+                    className="btn btn-primary px-5 py-2"
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Loading..." : "Load More"}
+                  </button>
                 </div>
               )}
             </div>
