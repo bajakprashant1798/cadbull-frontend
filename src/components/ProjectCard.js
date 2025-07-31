@@ -29,67 +29,7 @@ const ProjectCard = ({
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  // console.log("isAuthenticated for projectCard", isAuthenticated);
-  
-  // console.log(photo_url, "photo_url in projectCard");
-  // console.log(type, "type in projectCard");
-  
   const dispatch = useDispatch();
-
-  // // Use a custom hook or parent prop for favorites if available.
-  // // If not provided, fall back to fetching on mount.
-  // useEffect(() => {
-  //   if (!favorites && token) {
-  //     checkFavoriteStatus();
-  //   } else if (favorites) {
-  //     setIsFavorited(favorites.some((fav) => fav.id === id));
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [favorites, id, token]);
-
-  // const checkFavoriteStatus = useCallback(async () => {
-  //   try {
-  //     const response = await getFavouriteItems(token);
-  //     const favoriteProjects = response.data.favorites;
-  //     setIsFavorited(favoriteProjects.some((fav) => fav.id === id));
-  //   } catch (error) {
-  //     console.error("Error checking favorite status:", error);
-  //   }
-  // }, [id, token]);
-
-  // const handleviewcount = (event) => {
-  //   if (event.target.tagName == "IMG"){
-  //     event.preventDefault();
-  //     return ;
-  //   }
-  //   callViewProfileAPI(id).then((res)=>{
-  //       console.log("view",res.data)
-  //     }
-  //     ).catch((err)=>{
-  //       console.log(err)
-  //     })
-  // }
-
-  // const handleLike = useCallback(async () => {
-  //   if (!token) {
-  //     router.push("/auth/login");
-  //     return;
-  //   }
-  //   try {
-  //     if (isFavorited) {
-  //       await removeFavouriteItem(token, id);
-  //       setIsFavorited(false);
-  //       toast.success("Removed from Favorite list", { position: "top-right" });
-  //     } else {
-  //       await addFavouriteItem({ product_id: id }, token);
-  //       setIsFavorited(true);
-  //       toast.success("Added to Favorite list", { position: "top-right" });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error toggling favorite:", error);
-  //     toast.error("Failed to update favorite status");
-  //   }
-  // }, [token, id, isFavorited, router]);
 
   // Use the passed favorites to set initial status
   useEffect(() => {
@@ -104,31 +44,9 @@ const ProjectCard = ({
       event.preventDefault();
       return;
     }
-    // callViewProfileAPI(id)
-    //   .then((res) => console.log("view", res.data))
-    //   .catch((err) => console.error(err));
+    
   }, [id]);
 
-  // const handleLike = useCallback(async () => {
-  //   if (!token) {
-  //     router.push("/auth/login");
-  //     return;
-  //   }
-  //   try {
-  //     if (isFavorited) {
-  //       await removeFavouriteItem(token, id);
-  //       setIsFavorited(false);
-  //       toast.success("Removed from Favorite list", { position: "top-right" });
-  //     } else {
-  //       await addFavouriteItem({ product_id: id }, token);
-  //       setIsFavorited(true);
-  //       toast.success("Added to Favorite list", { position: "top-right" });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error toggling favorite:", error);
-  //     toast.error("Failed to update favorite status");
-  //   }
-  // }, [token, id, isFavorited, router]);
   
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) {

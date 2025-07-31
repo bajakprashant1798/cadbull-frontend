@@ -1,6 +1,6 @@
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
-import { Fragment, useCallback, useEffect, useState, useRef } from "react";
+import { Fragment, useCallback, useEffect, useState, useRef, useMemo } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import Link from "next/link";
 import Icons from "@/components/Icons";
@@ -28,11 +28,10 @@ import category12 from "@/assets/icons/Urbandesign.png";
 import ourSkills from "@/assets/images/our-skills.png";
 import bussiness from "@/assets/images/Interior-Designer.png";
 import housePlan from "@/assets/images/HOUSE-PLAN.png";
-import GetOff from "@/components/GetOff";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import Architecture from "@/assets/images/Architecture.png";
-import { getBlogs, getallprojects, getPaginatedProjects } from "@/service/api";
+import { getallCategories, getallprojects } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../redux/app/features/authSlice";
 import { get, set } from "react-hook-form";
@@ -105,6 +104,7 @@ export default function Home({
     totalProducts, // You can use this prop directly
     lastProductId,
     housePlanFiles,
+    initialCategories,
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
@@ -131,6 +131,21 @@ export default function Home({
   // const [lastProductId, setLastProductId] = useState(0);
 
   const projectOfDayRef = useRef(null);
+
+  const displayCategories = useMemo(() => {
+    if (!initialCategories || initialCategories.length === 0) {
+      return categories; // Fallback to the original hardcoded array
+    }
+    const categoryDataMap = new Map(initialCategories.map(c => [c.slug, c]));
+    return categories.map(cat => {
+      const apiData = categoryDataMap.get(cat.slug);
+      return {
+        ...cat,
+        // Format the count and add a '+' sign
+        count: apiData ? `${Number(apiData.pcount).toLocaleString('en-US')}+` : cat.count,
+      };
+    });
+  }, [initialCategories]);
 
   useEffect(() => {
     setCurrentPage(initialCurrentPage || 1);
@@ -618,7 +633,7 @@ export default function Home({
             </div>
           </div>
           <div className="row g-4 justify-content-center">
-            {categories.map((category, index) => {
+            {displayCategories.map((category, index) => {
               // Convert title to a slug (e.g., "3d Drawing" -> "3d-drawing")
               // const slug = category.slug.replace(/\s+/g, "-");
               const slug = category.slug
@@ -1025,17 +1040,23 @@ export async function getServerSideProps({ query }) {
   const search = query.search || "";
   const file_type = query.file_type || "";
 
-  const res = await getallprojects(page, 9, search, file_type);
+  // Fetch projects and categories in parallel for better performance
+  const [projectRes, categoryRes] = await Promise.all([
+    getallprojects(page, 9, search, file_type),
+    getallCategories()
+  ]);
 
   return {
     props: {
-      initialProjects: res.data.products || [],
-      totalPages: res.data.totalPages || 1,
-      totalProducts: res.data.totalProducts || 0,
-      lastProductId: res.data.lastProductId || 0,
-      housePlanFiles: res.data.housePlanFiles || 0,
+      initialProjects: projectRes.data.products || [],
+      totalPages: projectRes.data.totalPages || 1,
+      totalProducts: projectRes.data.totalProducts || 0,
+      lastProductId: projectRes.data.lastProductId || 0,
+      housePlanFiles: projectRes.data.housePlanFiles || 0,
       currentPage: page,
       filters: { search, file_type },
+      // Add the fetched categories to props
+      initialCategories: categoryRes.data.categories || [],
     },
   };
 }
