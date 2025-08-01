@@ -1,3 +1,5 @@
+import dynamic from 'next/dynamic';
+
 import { Fragment, createElement, useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
@@ -32,22 +34,38 @@ import {
   updatesubcatpage,
   updatesubcatslug,
 } from "../../../../redux/app/features/projectsSlice";
-import {
-  EmailIcon,
-  EmailShareButton,
-  FacebookIcon,
-  FacebookMessengerIcon,
-  FacebookMessengerShareButton,
-  FacebookShareButton,
-  LinkedinIcon,
-  LinkedinShareButton,
-  PinterestIcon,
-  PinterestShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-  WhatsappIcon,
-  WhatsappShareButton,
-} from "react-share";
+// import {
+//   EmailIcon,
+//   EmailShareButton,
+//   FacebookIcon,
+//   FacebookMessengerIcon,
+//   FacebookMessengerShareButton,
+//   FacebookShareButton,
+//   LinkedinIcon,
+//   LinkedinShareButton,
+//   PinterestIcon,
+//   PinterestShareButton,
+//   TwitterIcon,
+//   TwitterShareButton,
+//   WhatsappIcon,
+//   WhatsappShareButton,
+// } from "react-share";
+
+const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon));
+const EmailShareButton = dynamic(() => import('react-share').then(mod => mod.EmailShareButton));
+const FacebookIcon = dynamic(() => import('react-share').then(mod => mod.FacebookIcon));
+const FacebookMessengerIcon = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerIcon));
+const FacebookMessengerShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerShareButton));
+const FacebookShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookShareButton));
+const LinkedinIcon = dynamic(() => import('react-share').then(mod => mod.LinkedinIcon));
+const LinkedinShareButton = dynamic(() => import('react-share').then(mod => mod.LinkedinShareButton));
+const PinterestIcon = dynamic(() => import('react-share').then(mod => mod.PinterestIcon));
+const PinterestShareButton = dynamic(() => import('react-share').then(mod => mod.PinterestShareButton));
+const TwitterIcon = dynamic(() => import('react-share').then(mod => mod.TwitterIcon));
+const TwitterShareButton = dynamic(() => import('react-share').then(mod => mod.TwitterShareButton));
+const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.WhatsappIcon));
+const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton));
+
 import { FaLink } from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
