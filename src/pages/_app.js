@@ -13,6 +13,7 @@ import { store } from "../../redux/app/store";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 config.autoAddCss = false;
 const poppins = Poppins({
@@ -96,6 +97,7 @@ export default function App({ Component, pageProps }) {
         crossOrigin="anonymous"
       />
       <ToastContainer />
+      <WhatsAppButton />
       {/* </PersistGate> */}
       </Provider>
       {/* </Authprovider> */}
