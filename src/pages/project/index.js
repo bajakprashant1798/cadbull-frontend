@@ -9,7 +9,7 @@ import Icons from "@/components/Icons";
 import { deleteUserProject, getUserProjects } from "@/service/api";
 import withAuth from "@/HOC/withAuth";
 // import api from "@/service/api";
- 
+
 const CompletedProjects = ({ initialProjects, totalPages: initialTotalPages, }) => {
 
   const [projects, setProjects] = useState(initialProjects || []);
