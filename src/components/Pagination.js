@@ -1,4 +1,3 @@
-import Icons from './Icons';
 import Link from "next/link";
 import React from 'react';
 
@@ -100,12 +99,6 @@ const Pagination = ({
 
             {/* Desktop view: numbered pages with jump buttons */}
             <ul className="pagination d-none d-md-inline-flex">
-              {/* <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button onClick={() => onPageChange(currentPage - 1)} className="page-link" aria-label="Previous">
-                  <span aria-hidden="true"><Icons.WhiteArrowLeft /></span>
-                </button>
-              </li> */}
-
               {/* Always render jump-back button */}
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button
@@ -117,24 +110,6 @@ const Pagination = ({
                   <span aria-hidden="true" className='text-white'>&laquo;</span>
                 </button>
               </li>
-
-              {/* {pages.map((pageNumber) => (
-                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                  <Link
-                    href={pageNumber === 1 ? `/${slug}` : `/${slug}/${pageNumber}`}
-                    scroll={false}
-                    className="page-link"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (currentPage !== pageNumber) {
-                        onPageChange(pageNumber);
-                      }
-                    }}
-                  >
-                    {pageNumber}
-                  </Link>
-                </li>
-              ))} */}
 
               {pages.map((pageNumber) => (
                 <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
@@ -152,16 +127,6 @@ const Pagination = ({
                 </li>
               ))}
 
-
-
-              {/* {pages.map((pageNumber) => (
-                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
-                  <button onClick={() => onPageChange(pageNumber)} className="page-link">
-                    {pageNumber}
-                  </button>
-                </li>
-              ))} */}
-
               {/* Always render jump-forward button */}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                 <button
@@ -173,16 +138,6 @@ const Pagination = ({
                   <span aria-hidden="true" className='text-white'>&raquo;</span>
                 </button>
               </li>
-
-              {/* <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button
-                  onClick={() => onPageChange(currentPage + 1)}
-                  className="page-link"
-                  aria-label="Next"
-                >
-                  <span aria-hidden="true"><Icons.WhiteArrowRight /></span>
-                </button>
-              </li> */}
             </ul>
           </nav>
         </div>

@@ -72,72 +72,16 @@ const Header = () => {
   // ✅ Production-grade auth check: Add a status to prevent FOUC
   const [authCheckStatus, setAuthCheckStatus] = useState("pending");
   
-  // ✅ Manage token state
-  // const [token, setToken] = useState(null);
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedToken = localStorage.getItem("accessToken");
-  //     if (!storedToken) {
-  //       dispatch(logout());
-  //     }
-  //     setToken(storedToken);
-  //   }
-  // }, [dispatch]);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-
-  // useEffect(() => {
-  //   const checkAuth = () => {
-  //     const storedToken = localStorage.getItem("accessToken");
-  //     if (!storedToken) {
-  //       dispatch(logout());
-  //     }
-  //     setToken(storedToken);
-  //   };
-
-  //   // ✅ Listen for Storage Changes
-  //   window.addEventListener("storage", checkAuth);
-
-  //   return () => {
-  //     window.removeEventListener("storage", checkAuth);
-  //   };
-  // }, [dispatch]);
-  
-  // useEffect(() => {
-  //   const handleUserLogout = () => {
-  //     console.log("🔄 Logout event detected, updating UI...");
-  //     setIsLoggedOut(true);
-  //     dispatch(logout()); // ✅ Ensure Redux state updates
-  //   };
-
-  //   // window.addEventListener("userLoggedOut", handleUserLogout);
-
-  //   // return () => {
-  //   //   window.removeEventListener("userLoggedOut", handleUserLogout);
-  //   // };
-  // }, []);
   
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
   
   const [showHamburgerMenuItem, setShowHamburgerMenuItem] = useState(false);
-
-  
-  // const handleLogout = () => {
-  //   console.log("🔴 User manually logging out...");
-    
-  //   localStorage.removeItem("userData");
-  //   localStorage.removeItem("accessToken");
-  //   localStorage.removeItem("refreshToken");
-    
-  //   dispatch(logout()); // ✅ Ensure Redux state updates
-  //   // setUserLoggedOut(true); // ✅ Triggers UI re-render
-  //   Router.push("/auth/login"); // Redirect to login
-  // };
 
   const handleLogout = async () => {
     // Prevent duplicate logout calls
@@ -152,8 +96,7 @@ const Header = () => {
     } finally {
       // Clear client-side state and storage
       localStorage.removeItem("userData");
-      // localStorage.removeItem("accessToken");
-      // localStorage.removeItem("refreshToken");
+
       dispatch(logout());
       dispatch(resetProjectState());
       Router.push("/auth/login");
@@ -180,36 +123,7 @@ const Header = () => {
         // ✅ No matter the outcome, the initial check is now complete.
         setAuthCheckStatus("done");
       });
-  }, [dispatch]); // Run only once on component mount.
-
-  // useEffect(() => {
-  //   const storedUserData = localStorage.getItem("userData");
-  //   // const storedToken = localStorage.getItem("accessToken");
-  
-  //   // if (!storedToken) {
-  //   //   console.warn("❌ Token missing, triggering logout");
-  //   //   dispatch(logout());
-  //   // }
-  
-  //   if (storedUserData ) {
-  //     try {
-  //       // storedUserData is stored as { user: { … } }
-  //       const parsedData = JSON.parse(storedUserData);
-  //       const user = parsedData.user || parsedData;
-  //       dispatch(loginSuccess({ user,  status: "authenticated" }));
-  //       console.log("userinheader", user, storedToken);
-        
-  //     } catch (error) {
-  //       console.error("❌ JSON Parse Error in Header.js:", error);
-  //       console.log("isLoggedOut from header");
-        
-  //       localStorage.removeItem("userData");
-  //       // localStorage.removeItem("accessToken");
-  //     }
-  //   }
-  // }, [dispatch]);
-
-    
+  }, [dispatch]); // Run only once on component mount.  
 
   const closeHamburgerMenu = () => {
     setShowHamburgerMenuItem(false);

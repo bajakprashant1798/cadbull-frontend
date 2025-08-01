@@ -46,18 +46,6 @@ const CategoryTable = ({ status, title }) => {
         // ✅ SIMPLIFIED: No more manual mapping needed.
         setCategories(res.data.categories);
         setTotalPages(res.data.totalPages);
-
-        // const categoryList = res.data.categories;
-
-        // // ✅ Create Parent Category Mapping (ID → Name)
-        // const parentMap = {};
-        // categoryList.forEach(cat => {
-        //   parentMap[cat.id] = cat.name;
-        // });
-
-        // setCategories(categoryList);
-        // setParentCategoryMap(parentMap);
-        // setTotalPages(res.data.totalPages); // ✅ FIXED: Now updates based on filtered data
       })
       .catch(() => console.error("Error fetching categories"));
   };

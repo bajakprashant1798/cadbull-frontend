@@ -1,4 +1,3 @@
-import HeadingImage from "@/assets/images/heading-image.png"
 const SectionHeading = ({ subHeading, mainHeading, mainHeadingBold }) => {
 
   return (

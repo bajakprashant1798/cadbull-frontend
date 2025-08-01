@@ -9,7 +9,6 @@ import BIM2 from "@/assets/icons/BIM2.png";
 import BIM3 from "@/assets/icons/BIM3.png";
 import BIM4 from "@/assets/icons/BIM4.png";
 import BIM5 from "@/assets/icons/BIM5.png";
-import drawing1 from "@/assets/images/drawing-image.png";
 import principle from "@/assets/images/principal.png";
 import indvidual from "@/assets/icons/induvidual.png";
 import visualization from "@/assets/icons/visualization.png";
@@ -32,12 +31,8 @@ import GetOff from "@/components/GetOff";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import Architecture from "@/assets/images/Architecture.png";
-import { getBlogs, getallprojects, getPaginatedProjects } from "@/service/api";
+import { getallprojects } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess } from "../../redux/app/features/authSlice";
-import { get, set } from "react-hook-form";
-import parser from "html-react-parser";
-import LoadMore from "@/components/LoadMore";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { updateSortList, getserachTerm, setProducts } from "../../redux/app/features/projectsSlice";
@@ -159,21 +154,6 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
       });
   }, []);
 
-
-
-  // useEffect(() => {
-  //   if (blogs.length === 0) {
-  //     getBlogs()
-  //       .then((response) => {
-  //         setBlogs(response.data.blogs);
-  //       })
-  //       .catch((error) => {
-  //         // console.error("error", error);
-  //       });
-  //   }
-  // }, [blogs]);
-  
-
   // Fetch projects with pagination
   const loadProjects = async (page, pageSize = 9) => {
     startLoading(true);
@@ -190,10 +170,6 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
       stopLoading(false);
     }
   };
-  
-  // useEffect(() => {
-  //   loadProjects(currentPage, 3);
-  // }, [currentPage, searchTerm, sortTerm]);
 
   // Initial load and page change effect
   useEffect(() => {
@@ -201,13 +177,6 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
     loadProjects(currentPage, 9);
   }, [currentPage, searchTerm, sortTerm]);
 
-  // Handle page change
-  // const handlePageChange = (newPage) => {
-  //   if (newPage >= 1 && newPage <= totalPages) {
-  //     setCurrentPage(newPage);
-  //     loadProjects(newPage);
-  //   }
-  // };
   const handlePageChange = useCallback((newPage) => {
     // Optionally validate that newPage is within bounds
     if(newPage < 1 || newPage > totalPages) return;
@@ -230,32 +199,6 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
     dispatch(getserachTerm(searchInput.trim()));
     router.push('/categories/search');
   };
-  
-
-
-  // // The search handler dispatches the search term and navigates
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   if (searchTerm.trim()) {
-  //     // Dispatch the search term to Redux store
-  //     dispatch(getserachTerm(searchTerm));
-  //     // Navigate to the search page without query parameters
-  //     router.push('/categories/search');
-  //   }
-  // };
-  
-  // const handleSortChange = (e) => {
-  //   setSortTerm(e.target.value);
-  //   setCurrentPage(1);
-  // };
-  // const handleTypeChange = (e) => {
-  //   setType(e.target.value);
-  //   setCurrentPage(1);
-  // };
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  //   loadProjects(1);
-  // }, [searchTerm, sortTerm]);
 
   return (
     <Fragment>

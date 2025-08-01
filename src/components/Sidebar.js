@@ -22,22 +22,6 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // const handleLogout = async () => {
-  //   dispatch(logout());
-  
-  //   // ✅ Clear session storage
-  //   sessionStorage.removeItem("userData");
-  //   sessionStorage.removeItem("token");
-  
-  //   // ✅ Ensure proper redirection with Next.js router
-  //   router.replace("/auth/login");
-  
-  //   // ✅ Hard reload fallback if router.replace doesn't work
-  //   setTimeout(() => {
-  //     window.location.href = "/auth/login";
-  //   }, 500);
-  // };
-
   const handleLogout = async () => {
     // Prevent duplicate logout calls
     

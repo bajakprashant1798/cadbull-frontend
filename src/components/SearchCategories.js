@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Icons from "./Icons";
-import Link from "next/link";
 import CategoriesList from "./CategoriesList";
 import { useRouter } from "next/router";
 import SortByDrawer from "./drawer/SortByDrawer";
