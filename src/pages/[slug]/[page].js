@@ -59,7 +59,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     return query;
   };
 
-  console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription, "description:", description, "title:", title);
+  // console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription, "description:", description, "title:", title);
   
 
   // Fetch main categories on mount
@@ -422,6 +422,11 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
+  if (params.slug === 'sitemaps') {
+    return {
+      notFound: true,
+    };
+  }
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
   const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
