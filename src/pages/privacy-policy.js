@@ -1,7 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
 import { getTermsPrivacyAndFaqData } from "@/service/api";
-
-import parse from 'html-react-parser'
 import Head from "next/head";
 import Link from "next/link";
 import { Fragment } from "react";

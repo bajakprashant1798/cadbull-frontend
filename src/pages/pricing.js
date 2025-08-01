@@ -1,7 +1,6 @@
 "use client"
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
-import offer from "@/assets/images/20-off.png"
 import { Fragment, useEffect, useState } from "react";
 import Icons from "@/components/Icons";
 import { handleSubscription } from "@/service/api";
@@ -13,7 +12,6 @@ import { useSelector } from "react-redux";
 import logo from "@/assets/images/logo.png";
 
 const progress = '80';
-
 
 const Pricing = () => {
   const router = useRouter();
@@ -28,8 +26,6 @@ const Pricing = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (!isAuthenticated) return;  // ✅ Prevent unnecessary API calls
-
-      // console.log("🔄 Fetching user details with token:", token);
 
       try {
         const response = await getUserDetails();
@@ -124,30 +120,6 @@ const Pricing = () => {
               </div>
             </div>
             </div>
-            {/* <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-5">
-              <div className="switch-wraper d-flex gap-2 justify-content-start justify-content-sm-center align-items-center mb-3 mb-md-4 position-relative">
-                <p className="text-primary fw-semibold">Pay Monthly</p>
-                <div className="form-check form-switch mb-0 py-0" style={{ minHeight: "unset" }}>
-                  <input className="form-check-input shadow-none" type="checkbox" role="switch" />
-                </div>
-                <p className="fw-semibold">Pay Yearly</p>
-                <div className="position-absolute end-0">
-                  <img src={offer.src}
-                    alt="off"
-                    width={110}
-                    className="img-fluid" />
-                </div>
-              </div>
-            </div> */}
-
-            {/* <div className="col-sm-11 col-md-10 col-lg-9 col-xl-8">
-              <div className="pricing-slider text-start mb-5">
-                <p className="mb-2 text-grey">Number of monthly visitors</p>
-                <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                  <div className="progress-bar" data-attr={progress + 'K'} style={{ width: progress + '%' }} ></div>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
     </section>

@@ -197,38 +197,6 @@ export default function Home({
     }
   }, [ favouritesFetched, dispatch]);
 
-
-
-  // useEffect(() => {
-  //   if (blogs.length === 0) {
-  //     getBlogs()
-  //       .then((response) => {
-  //         setBlogs(response.data.blogs);
-  //       })
-  //       .catch((error) => {
-  //         // console.error("error", error);
-  //       });
-  //   }
-  // }, [blogs]);
-  
-
-  // // Fetch projects with pagination
-//   const loadProjects = async (page, pageSize = 9) => {
-//     startLoading(true);
-//     try {
-//       const response = await getallprojects(page, pageSize, searchTerm, sortTerm);
-      
-//       setProjects(response.data.products); // Set the projects for the page
-//       setTotalPages(response.data.totalPages); // Set total pages
-      
-//       // setProductCount(response.data.totalPages * (pageSize - 1)); // Set total products
-//       } catch (error) {
-//       console.error("Failed to fetch projects:", error);
-//     } finally {
-//       stopLoading(false);
-//     }
-//   };
-
     const loadProjects = async (page, pageSize = 9) => {
         startLoading(true);
         try {
@@ -248,24 +216,12 @@ export default function Home({
         }
     };
 
-  
-  // useEffect(() => {
-  //   loadProjects(currentPage, 3);
-  // }, [currentPage, searchTerm, sortTerm]);
-
   // Initial load and page change effect
   useEffect(() => {
     // Load projects whenever currentPage, searchTerm, or sortTerm change
     loadProjects(currentPage, 9);
   }, [currentPage, searchTerm, sortTerm]);
 
-
-//   const handlePageChange = useCallback((newPage) => {
-//     // Optionally validate that newPage is within bounds
-//     if(newPage < 1 || newPage > totalPages) return;
-//     setCurrentPage(newPage);
-//     // Now call your API (or dispatch a Redux action) to load projects for newPage.
-//   }, [totalPages]);
 
   const handlePageChange = (newPage) => {
     const newQuery = { ...router.query, page: newPage };
@@ -333,14 +289,6 @@ export default function Home({
       });
     };
 
-
-    // const handleProjectSearch = (e) => {
-    //   e.preventDefault();
-    //   // Update immediately and trigger navigation if needed
-    //   setSearchTerm(projectSearchInput.trim());
-    //   dispatch(getserachTerm(projectSearchInput.trim()));
-    //   router.push('/categories/search');
-    // };
     const handleProjectSearch = (e) => {
       e.preventDefault();
       const trimmed = projectSearchInput.trim();
@@ -1054,34 +1002,6 @@ export async function getServerSideProps({ query }) {
     },
   };
 }
-
-// --- SSR/SSG Block: Fetch Projects & Total Count ---
-// export async function getStaticProps() {
-//   try {
-//     const projectsResponse = await getallprojects(1, 9, '', '');
-//     const totalProducts = projectsResponse.data.totalProducts || 0;
-
-//     return {
-//       props: {
-//         initialProjects: projectsResponse.data.products || [],
-//         totalPages: projectsResponse.data.totalPages || 1,
-//         totalProducts
-//       },
-//       revalidate: 300, // ISR every 5 minutes
-//     };
-//   } catch (error) {
-//     console.error("Error loading HomePage data:", error);
-//     return {
-//       props: {
-//         initialProjects: [],
-//         totalPages: 1,
-//         totalProducts: 0,
-//       },
-//       revalidate: 300,
-//     };
-//   }
-// }
-
 
 Home.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

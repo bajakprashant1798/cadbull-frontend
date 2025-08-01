@@ -1,4 +1,3 @@
-import GetOff from "@/components/GetOff";
 import { Fragment, createElement, useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
@@ -8,21 +7,13 @@ import FileDescription from "@/components/FileDescription";
 import autoCad from "@/assets/images/filetype/file_white.png";
 import cad from "@/assets/images/filetype/cad.png";
 import goldblocks from "@/assets/images/filetype/file.png";
-import drawing1 from "@/assets/images/drawing-image.png";
 import ProjectCard from "@/components/ProjectCard";
-import ad_1 from "@/assets/images/ad-1.png";
-import ad_2 from "@/assets/images/ad-2.png";
-import banner_1 from "@/assets/images/banner-1.png";
-import banner_2 from "@/assets/images/banner-2.png";
 import MainLayout from "@/layouts/MainLayout";
 import link from "@/assets/icons/social/link.png";
-import india from "@/assets/icons/social/india.png";
-import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
 import {
   addFavouriteItem,
   removeFavouriteItem,
-  checkIfFavorited,
   getCategoriesWithSubcategories,
   getallCategories,
   getsimilerllprojects,
@@ -36,13 +27,11 @@ import {
   addCategoryAndSubCategoryData,
   addedFavouriteItem,
   deleteFavouriteItem,
-  getSimilarProjects,
   getSimilarProjectsPage,
   setFavouriteList,
   updatesubcatpage,
   updatesubcatslug,
 } from "../../../../redux/app/features/projectsSlice";
-import { set } from "react-hook-form";
 import {
   EmailIcon,
   EmailShareButton,
@@ -66,7 +55,6 @@ import Head from "next/head";
 import product from "@/assets/images/product.jpg"
 
 import parse from "html-react-parser";
-import LoadMore from "@/components/LoadMore";
 import Image from "next/image";
 import AdSense from "@/components/AdSense";
 function transform(node, index) {
@@ -794,33 +782,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                   </div>
 
-                  {/* <div className="py-4 py-md-5">
-                    <div className="row">
-                      <div className="col-md-12">
-                        <div className="mb-4 mb-md-5 ps-5">
-                          <SectionHeading
-                            subHeading={"find Latest"}
-                            mainHeading={"Related"}
-                            mainHeadingBold={"Files"}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row gy-4 mb-4 mb-md-5">
-                      {similarProjects.length > 0 ? (
-                        similarProjects.map((project) => (
-                          <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
-                            <ProjectCard {...project} favorites={favouriteList} />
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-12 text-center">
-                          <p>No more related files found.</p>
-                        </div>
-                      )}
-                    </div>
-                  </div> */}
-
                 </div>
               </div>
             </div>
@@ -915,34 +876,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
                 {/* </div> */}
 
-                {/* <div>
-                  <img
-                    src={banner_1.src}
-                    className="img-fluid w-100 rounded-2 shadow-sm"
-                    alt="ad"
-                  />
-                </div>
-                <div>
-                  <img
-                    src={banner_2.src}
-                    className="img- w-100  rounded-2 shadow-sm"
-                    alt="ad"
-                  />
-                </div>
-                <div>
-                  <img
-                    src={ad_1.src}
-                    className="img-fluid w-100  rounded-2 shadow-sm"
-                    alt="ad"
-                  />
-                </div>
-                <div>
-                  <img
-                    src={ad_2.src}
-                    className="img-fluid w-100  rounded-2 shadow-sm"
-                    alt="ad"
-                  />
-                </div> */}
               </div>
             </div>
           </div>

@@ -1,8 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import { Fragment } from "react";
 import Head from "next/head";
-import about from "@/assets/images/about-us.png"
-import aboutmobile from "@/assets/images/about-mobile.png"
 import logo from "@/assets/images/logo.png";
 
 const About = () => {

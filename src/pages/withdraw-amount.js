@@ -1,6 +1,4 @@
-import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import Icons from "@/components/Icons";
 import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";

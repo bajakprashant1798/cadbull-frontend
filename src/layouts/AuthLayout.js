@@ -1,4 +1,3 @@
-import formImage from "@/assets/images/register.jpg"
 import PageHeading from "@/components/PageHeading";
 const AuthLayout = ({ title, description, children }) => {
   return (

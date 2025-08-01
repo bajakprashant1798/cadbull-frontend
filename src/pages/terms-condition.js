@@ -1,9 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import { getTermsPrivacyAndFaqData } from "@/service/api";
 import logo from "@/assets/images/logo.png";
-
-import parse from 'html-react-parser'
-import Link from "next/link";
 import { Fragment } from "react";
 import Head from "next/head";
 
@@ -240,7 +237,6 @@ TermsPrivacyFaq.getLayout = function getLayout(page) {
     </MainLayout>
   )
 }
-
 
 export default TermsPrivacyFaq;
 

@@ -1,30 +1,17 @@
-import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import Icons from "@/components/Icons";
-import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
-import drawing from "@/assets/images/drawing-image.png";
 import deleteIcon from "@/assets/icons/delete.png";
-import downloadIcon from "@/assets/icons/download.png";
-import Pagination from "@/components/Pagination";
 import {
-  addFavouriteItem,
-  // downloadHistory,
-  downloadProject,
-  getFavouriteItems,
   getUploadedProjectList,
-  removeFavouriteItem,
   removeProject,
-  useFileDownloader,
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addedFavouriteItem,
   deleteFavouriteItem,
 } from "../../redux/app/features/projectsSlice";
-import { downloadFile } from "@/utils/downloadfile";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import useSessionStorageData from "@/utils/useSessionStorageData";
@@ -84,24 +71,6 @@ const myProjects = () => {
         console.log(err.message);
       });
   };
-
-  // const handledownload = (id) => {
-  //   downloadProject( id)
-  //     .then((res) => {
-  //       const zipUrl = res.data.zip_url;
-  //       downloadFile(zipUrl);
-  //       downloadHistory( id)
-  //         .then((res) => {
-  //           console.log("download", res.data);
-  //         })
-  //         .catch((err) => {
-  //           console.log(err);
-  //         });
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
   return (
     <Fragment>

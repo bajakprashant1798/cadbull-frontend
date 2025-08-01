@@ -1,12 +1,9 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
 import { Fragment, useCallback, useEffect, useState } from "react";
-import drawing1 from "@/assets/images/drawing-image.png";
 import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
-import Link from "next/link";
-import icon from "@/assets/icons/categories.png";
 import { useRouter } from "next/router";
 import { getallCategories, getallprojects, getallsubCategories, getFavouriteItems } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,11 +15,9 @@ import {
   updatesubcatpage,
   updatesubcatserachTerm,
 } from "../../../redux/app/features/projectsSlice";
-import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { drawings } from "..";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
-import LoadMore from "@/components/LoadMore";
 import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
@@ -77,23 +72,6 @@ const Categories = ({
     return query;
   };
 
-
-  // csr setup
-  // useEffect(() => {
-  //   if (isAuthenticated && !favouritesFetched) {
-  //     getFavouriteItems()
-  //       .then((favRes) => {
-  //         dispatch(setFavouriteList(favRes.data.favorites || []));
-  //         setFavouritesFetched(true); // Mark as fetched so we don't re-fetch
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching favorites:", error);
-  //         // Optionally mark as fetched to avoid repeated attempts
-  //         setFavouritesFetched(true);
-  //       });
-  //   }
-  // }, [isAuthenticated, favouritesFetched, dispatch]);
-
   // ssg setup
   useEffect(() => {
     if (isAuthenticated && initialFavourites?.length > 0) {
@@ -127,18 +105,6 @@ const Categories = ({
     loadRecords(currentPage, search, file_type, type);
   }, [currentPage, search, file_type, type]); // Call loadRecords whenever it changes or currentPage changes
 
-  // Handle changes to search term, sort term, and sort type
-//   useEffect(() => {
-//     // Reset currentPage to 1 when search term, sort term, or sort type changes
-//     setCurrentPage(1);
-//   }, [searchedText]);
-
-  // //update sortTerm state by redux state change
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  //   // setSortTerm(sortList);
-  // }, [searchedText]);
-
   // Keep filter state in sync with query params
   useEffect(() => {
     setSortType(type);
@@ -147,14 +113,6 @@ const Categories = ({
     setSearchedText(search);
   }, [type, file_type, search]); // The URL is the single source of truth for filters.
 
-  // // Debounced search
-  // const debouncedSearch = useCallback(
-  //   debounce((value) => {
-  //     setSearchedText(value);
-  //   //   setCurrentPage(1);
-  //   }, 500),
-  //   []
-  // );
   const debouncedSearch = useCallback(
     debounce((value) => {
       setSearchedText(value);
@@ -176,13 +134,6 @@ const Categories = ({
     [router, sortType, sortTerm] // Make sure these are in deps!
   );
 
-
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   // setCurrentPage(1);
-  //   setShowSearchBreadCrumb(true);
-  //   setSearchedText(searchTerm);
-  // };
   const handleSearch = (e) => {
     e.preventDefault();
     debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
@@ -245,22 +196,6 @@ const Categories = ({
         type: "Categories",
       };
 
-    // const handlePageChange = (newPage) => {
-    //     if (newPage === 1) {
-    //         router.push('/categories');
-    //     } else {
-    //         router.push(`/categories/${newPage}`);
-    //     }
-    //     // setCurrentPage(newPage);
-    // };
-
-    // useEffect(() => {
-    //   setSortType(type);
-    //   setSortTerm(file_type);
-    //   setSearchTerm(search);
-    // }, [type, file_type, search]);
-
-
     const handleTypeChange = (e) => {
       const newType = e.target.value;
       setSortType(newType);
@@ -300,9 +235,6 @@ const Categories = ({
         })
       }, undefined, { shallow: true });
     };
-
-  
-    
 
   return (
     <Fragment>
@@ -527,39 +459,6 @@ export async function getStaticProps({ params }) {
     };
   }
 }
-
-
-// export async function getStaticProps() {
-//   try {
-//     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
-//       getallCategories(""),             // Fetch all categories
-//       getallprojects(1, 9, "", "", ""), // Fetch first page of projects
-//       getFavouriteItems()               // Fetch favorites if needed (optional, only if token is not required)
-//     ]);
-
-//     return {
-//       props: {
-//         initialCategories: categoriesRes?.data?.categories || [],
-//         initialProjects: projectsRes?.data?.products || [],
-//         totalPages: projectsRes?.data?.totalPages || 1,
-//         initialFavourites: favouritesRes?.data?.favorites || []
-//       },
-//       revalidate: 300 // Rebuild page every 5 mins
-//     };
-//   } catch (err) {
-//     console.error("❌ Error in getStaticProps:", err);
-//     return {
-//       props: {
-//         initialCategories: [],
-//         initialProjects: [],
-//         totalPages: 1,
-//         initialFavourites: []
-//       },
-//       revalidate: 300
-//     };
-//   }
-// }
-
 
 Categories.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

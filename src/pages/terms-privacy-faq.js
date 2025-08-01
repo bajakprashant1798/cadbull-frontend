@@ -31,7 +31,6 @@ TermsPrivacyFaqPage.getLayout = function getLayout(page) {
   )
 }
 
-
 export default TermsPrivacyFaqPage;
 export async function getServerSideProps(){
   try {

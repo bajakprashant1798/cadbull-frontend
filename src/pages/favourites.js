@@ -1,35 +1,24 @@
-import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
-import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
-import drawing from "@/assets/images/drawing-image.png";
-import deleteIcon from "@/assets/icons/delete.png";
-import downloadIcon from "@/assets/icons/download.png";
 import Pagination from "@/components/Pagination";
 import {
-  addFavouriteItem,
-  // downloadHistory,
-  downloadProject,
   getPaginatedFavouriteItems,
   removeFavouriteItem,
-  useFileDownloader,
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addedFavouriteItem,
   deleteFavouriteItem,
 } from "../../redux/app/features/projectsSlice";
-import { downloadFile } from "@/utils/downloadfile";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import withAuth from "@/HOC/withAuth";
 import { handledownload } from "@/service/globalfunction";
 import cookie from 'cookie';
 import { parse } from 'cookie';
-
 
 // {
 //   drawing: drawing,

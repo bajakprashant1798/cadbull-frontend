@@ -1,9 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
-import profile from "@/assets/icons/profile.png";
-import upload from "@/assets/icons/upload.png";
 import flag from "@/assets/icons/flag.png";
-import contact from "@/assets/icons/contact.png";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
@@ -344,6 +341,5 @@ ContactUs.getLayout = function getLayout(page) {
 //     revalidate: 300, // Revalidate every 5 minutes (optional)
 //   };
 // }
-
 
 export default ContactUs;

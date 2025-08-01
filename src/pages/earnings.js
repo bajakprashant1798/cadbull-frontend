@@ -1,14 +1,8 @@
-import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import Icons from "@/components/Icons";
-import Link from "next/link";
 import Head from "next/head";
 import { Fragment } from "react";
 import PageHeading from "@/components/PageHeading";
-import drawing from "@/assets/images/drawing-image.png";
-import deleteIcon from "@/assets/icons/delete.png";
-import downloadIcon from "@/assets/icons/download.png";
-import Pagination from "@/components/Pagination";
+
 
 const tableData = [
   {

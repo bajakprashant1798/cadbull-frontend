@@ -1,11 +1,9 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
 import PageHeading from "@/components/PageHeading";
 import SectionHeading from "@/components/SectionHeading";
-import Pagination from "@/components/Pagination";
 import { getOccupations, addExperience, getExperiences } from "@/service/api"; // Import API functions
 import { parse } from "cookie";
 

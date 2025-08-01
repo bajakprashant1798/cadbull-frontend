@@ -1,8 +1,6 @@
-import GetOff from "@/components/GetOff";
 import { Fragment } from "react";
 import SearchCategories from "@/components/SearchCategories";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 import Link from "next/link";
 import AdSense from "@/components/AdSense";
 export const makeTitle = (slug) => {

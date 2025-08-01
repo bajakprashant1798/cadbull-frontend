@@ -92,15 +92,6 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     }
   }, [slug, currentPage, dispatch]);
 
-  // // Debounced search input
-  // const debouncedSearch = useCallback(
-  //   debounce((value) => {
-  //     setSearchedText(value);
-  //     dispatch(updatesubcatpage(1));
-  //     dispatch(updatesubcatserachTerm(value));
-  //   }, 500),
-  //   [dispatch]
-  // );
 
   const debouncedSearch = useCallback(
     debounce((value) => {
@@ -126,14 +117,6 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     debouncedSearch(value);
   };
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   if (searchText.length >= 3) {
-  //     setSearchedText(searchText);
-  //     dispatch(updatesubcatpage(1));
-  //     dispatch(updatesubcatserachTerm(searchText));
-  //   }
-  // };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -149,26 +132,6 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     });
   };
 
-
-  // Load projects when Redux filter or slug changes
-  // const loadProjects = () => {
-  //   startLoading();
-  //   if (!subcatfilter.slug) {
-  //     stopLoading();
-  //     return;
-  //   }
-  //   const filterWithPageSize = { ...subcatfilter, pageSize: 9 };
-  //   getSubCategories(filterWithPageSize)
-  //     .then((response) => {
-  //       dispatch(getSubCategory(response.projects));
-  //       setTotalPages(response.totalPages);
-  //       stopLoading();
-  //     })
-  //     .catch((error) => {
-  //       stopLoading();
-  //       // log or ignore
-  //     });
-  // };
   const loadProjects = (slug, page, type, file_type, search) => {
     startLoading();
     getSubCategories({ slug, currentPage: page, pageSize: 9, type, file_type, search })

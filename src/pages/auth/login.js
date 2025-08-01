@@ -10,11 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
 import { useForm, Controller } from "react-hook-form";
-import { loginApiHandler, socialLogin, getUserProfile, getUserData, } from "@/service/api";
-import withAuth from "@/HOC/withAuth";
+import { loginApiHandler } from "@/service/api";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
-import useSessionStorageData from "@/utils/useSessionStorageData";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -61,34 +59,6 @@ const Login = () => {
       router.replace("/");
     }
   }, [isAuthenticated, router]);
-
-  // Effect to try to rehydrate user data ONLY if we are not already authenticated.
-  // useEffect(() => {
-  //   // Only attempt rehydration if there’s no authenticated user already.
-  //   if (!isAuthenticated) {
-  //     getUserData()
-  //       .then((res) => {
-  //         // Update Redux state only if we actually get valid user data.
-  //         console.log("userData login: ", res);
-          
-  //         if (res.data && res.data.user) {
-  //           dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
-  //           // Redirect based on role if needed
-  //           const { role } = res.data.user;
-  //           if (role === 1) router.push("/admin/dashboard");
-  //           else if (role === 5) router.push("/admin/projects/view-project");
-  //           else router.push("/");
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         // If not authenticated, simply log and allow the login form to render.
-  //         console.warn("User not authenticated yet", err);
-  //       });
-  //   }
-  // }, [dispatch, router, isAuthenticated]);
-
-  
-  
 
   const {
     handleSubmit,
@@ -175,68 +145,6 @@ const Login = () => {
       });
   };
 
-  // // ✅ Allow public access to home page after logout
-  // useEffect(() => {
-  //   if (!isAuthenticated && router.pathname.startsWith("/admin")) {
-  //     router.push("/auth/login"); // ✅ Redirect only for protected pages
-  //   }
-  // }, [router, isAuthenticated]);
-
-
-  // Optionally, prevent logged-in users from accessing the login page.
-  // useEffect(() => {
-  //   const storedUserData = localStorage.getItem("userData");
-  //   if (storedUserData) {
-  //     const user = JSON.parse(storedUserData);
-  //     if (user.role === 1) router.push("/admin/dashboard");
-  //     else if (user.role === 5) router.push("/admin/projects/view-project");
-  //     else router.push("/");
-  //   }
-  // }, [router]);
-
-  // ✅ Handle OAuth Redirect (Google Login)
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const accessToken = urlParams.get("accessToken");
-  //   const refreshToken = urlParams.get("refreshToken");
-    
-  //   if (accessToken && refreshToken) {
-  //     // ✅ Store tokens and user data in localStorage
-  //     localStorage.setItem("accessToken", accessToken);
-  //     localStorage.setItem("refreshToken", refreshToken);
-
-  //     // IMPORTANT: Use the correct variable name – here, we use accessToken
-  //     getUserData(accessToken)
-  //       .then((res) => {
-  //         const userData = res.data;
-          
-  //         // ✅ Store user data persistently in localStorage
-  //         localStorage.setItem("userData", JSON.stringify(userData));
-
-  //         dispatch(loginSuccess({ user: userData, accessToken, status: "authenticated" }));
-
-  //         // ✅ Sync authentication across tabs
-  //         window.dispatchEvent(new Event("userLoggedIn"));
-    
-  //         // Redirect based on role:
-  //         if (userData.role === 1) {
-  //           router.push("/admin/dashboard");
-  //         } else if (userData.role === 5) {
-  //           router.push("/admin/projects/view-projects");
-  //         } else {
-  //           router.push("/");
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("❌ Failed to fetch user details:", error);
-  //         toast.error("Failed to retrieve user details.");
-  //         router.push("/auth/login");
-  //       });
-  //   } else {
-  //     console.error("❌ No token or user data found in URL.");
-  //   }
-  // }, [router]);
-
   // ✅ Google Login Handler
   const handleGoogleSignIn = async () => {
     try {
@@ -248,25 +156,6 @@ const Login = () => {
   };
   
 
-  // const handleFacebookSignIn = async () => {
-  //   try {
-  //     await signIn("facebook");
-  //     const socialLoginResponse = await socialLogin(session.user);
-  //     const userData = socialLoginResponse.data;
-  //     localStorage.setItem("userData", JSON.stringify(userData));
-  //     localStorage.setItem("accessToken", userData.accessToken);
-  //     localStorage.setItem("refreshToken", refreshToken);
-
-  //     dispatch(
-  //       loginSuccess({
-  //         user: userData,
-  //         status: "authenticated",
-  //       })
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const handleFacebookSignIn = async () => {
     try {
@@ -283,14 +172,6 @@ const Login = () => {
       toast.success("Email verified successfully. Please login.");
     }
   }, [router.query.verified]);
-
-
-  // ✅ Prevent logged-in users from accessing login page, but allow others to access home page freely
-  // useEffect(() => {
-  //   if (isAuthenticated !== null && router.pathname.startsWith("/auth")) {
-  //     router.push("/");
-  //   }
-  // }, [router, isAuthenticated]);
 
 
   return (
