@@ -25,7 +25,7 @@ const Footer = () => {
           <div className="row mt-md-4 gy-4">
             <div className="col-md-6 col-lg-5 col-xl-5">
              
-                <h4 className="text-white mb-4">Get In Touch</h4>
+                <h6 className="text-white mb-4 h4">Get In Touch</h6>
                 <ul className="list-unstyled d-flex gap-2 gap-md-4 flex-column">
                   <li>
                     <div className="d-flex align-items-start gap-2">
@@ -66,7 +66,7 @@ const Footer = () => {
             </div>
             <div className="col-md-12 col-lg-3 col-xl-4">
               <div>
-                <h4 className="text-white mb-4">Quick Links</h4>
+                <h6 className="text-white mb-4 h4">Quick Links</h6>
                 <div className="d-flex  gap-5 justify-content-lg-around flex-lg-column gap-lg-2 gap-xl-5 flex-xl-row">
                   <ul className="list-unstyled d-flex flex-column gap-3 justify-content-center mb-0">
                     <li>
