@@ -207,6 +207,14 @@
         font: normal normal 600 10px/11px 'Poppins', sans-serif;
       }
     }
+    span {
+      font: normal normal 600 15px/15px 'Poppins', sans-serif !important;
+      color: $black;
+
+      @media all and (max-width:767px) {
+        font: normal normal 600 10px/11px 'Poppins', sans-serif;
+      }
+    }
 
     p {
       font: normal normal 500 12px/15px 'Poppins', sans-serif;
@@ -377,12 +385,24 @@
     }
   }
 
+  h4 {
+    font: normal normal 600 16px/1 'Poppins', sans-serif;
+    color: $black;
+
+    @media all and (max-width:767px) {
+      font: normal normal 600 14px/1 'Poppins', sans-serif;
+    }
+  }
+
   &:hover {
     h6 {
       color: #20325A; // change to your desired hover color
     }
     p {
       color: #3D6098; // change to your desired hover color
+    }
+    h4 {
+      color: #20325A; // change to your desired hover color
     }
   }
 }

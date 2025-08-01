@@ -480,7 +480,7 @@ export default function Home({
                             loading="lazy"
                           />
                           <div>
-                            <h6 className="mb-1">{drawing.type}</h6>
+                            <span className="mb-1 ">{drawing.type}</span>
                             <p>{drawing.description}</p>
                           </div>
                         </div>
@@ -651,7 +651,7 @@ export default function Home({
                         loading="lazy"
                       />
                       <div>
-                        <h6 className="mb-1">{category.title}</h6>
+                        <h4 className="mb-1 h6">{category.title}</h4>
                         <p>{category.count}</p>
                       </div>
                     </div>
@@ -725,9 +725,9 @@ export default function Home({
                         />
                       </div>
                       <div>
-                        <h6 className="fw-bold text-primary text-capitalize">
+                        <h4 className="fw-bold text-primary text-capitalize h6">
                           Cad Visualization
-                        </h6>
+                        </h4>
                         <p className="mb-2">
                           Cad plan of each detail of your future interior.
                         </p>
@@ -753,9 +753,9 @@ export default function Home({
                         />
                       </div>
                       <div>
-                        <h6 className="fw-bold text-primary text-capitalize">
+                        <h4 className="fw-bold text-primary text-capitalize h6">
                           Individual Project
-                        </h6>
+                        </h4>
                         <p className="mb-2">
                           The basic philosophy of studio is to create individual
                           design.
@@ -823,8 +823,8 @@ export default function Home({
                 {/* CAD Planing Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="text-gray">CAD Planing Design</h5>
-                    <h5 className="text-gray">98%</h5>
+                    <h4 className="text-gray h5 mb-0">CAD Planing Design</h4>
+                    <h4 className="text-gray h5 mb-0">98%</h4>
                   </div>
                   <div
                     className="progress"
@@ -843,8 +843,8 @@ export default function Home({
                 {/* 3d Modeling Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="text-gray">3d Modeling Design</h5>
-                    <h5 className="text-gray">95%</h5>
+                    <h4 className="text-gray h5 mb-0">3d Modeling Design</h4>
+                    <h4 className="text-gray h5 mb-0">95%</h4>
                   </div>
                   <div
                     className="progress"
@@ -863,8 +863,8 @@ export default function Home({
                 {/* 2d Planning Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="text-gray">2d Planning Design</h5>
-                    <h5 className="text-gray">90%</h5>
+                    <h4 className="text-gray h5 mb-0">2d Planning Design</h4>
+                    <h4 className="text-gray h5 mb-0">90%</h4>
                   </div>
                   <div
                     className="progress"

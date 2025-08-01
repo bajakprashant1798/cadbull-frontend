@@ -831,6 +831,10 @@ select:-webkit-autofill:focus {
   font: normal normal 600 15px/15px "Poppins", sans-serif !important;
   color: #1A1A1A;
 }
+/* .hero .drawing-type-wrapper span {
+  font: normal normal 600 15px/15px "Poppins", sans-serif !important;
+  color: #1A1A1A !important;
+} */
 @media all and (max-width: 767px) {
   .hero .drawing-type-wrapper h6 {
     font: normal normal 600 10px/11px "Poppins", sans-serif;
