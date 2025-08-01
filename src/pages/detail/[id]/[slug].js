@@ -686,12 +686,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             <div className="d-flex align-items-center gap-md-3 gap-2">
                               <div className="flex-shrink-0">
                                 {project?.profile_pic ? (
-                                  <img
-                                    src={project.profile_pic || profile_dummy.src}
+                                  <Image
+                                    src={project.profile_pic || profile_dummy}
                                     alt="Profile"
+                                    width={80}     // Set the base width
+                                    height={80}    // Set the base height
                                     className="rounded-circle"
-                                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
-                                    onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
+                                    style={{ objectFit: "cover" }} 
+                                    onError={e => { e.target.src = profile_dummy; }}
                                     loading="lazy"
                                   />
                                   // <Image
