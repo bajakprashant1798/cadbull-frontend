@@ -535,6 +535,13 @@
   box-shadow: $shadowMd;
 }
 
+.authLayout-login-wrapper {
+  width: 50%;
+  @media screen and (max-width: 991px) {
+    width: 100%;
+  }
+}
+
 // ******** Dropdown ********
 ul.dropdown-menu {
   max-height: 200px;

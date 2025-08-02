@@ -31,7 +31,7 @@ const Categories = ({
   initialCategories,
   initialProjects,
   totalPages: initialTotalPages,
-  initialFavourites,
+  // initialFavourites,
 }) => {
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [catalog, setCatalog] = useState(initialCategories || []);
@@ -60,6 +60,20 @@ const Categories = ({
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
   // console.log("favouriteList cat", favouriteList);
 
+  useEffect(() => {
+    // Only run this if the user is logged in
+    if (isAuthenticated) {
+      getFavouriteItems()
+        .then((favRes) => {
+          dispatch(setFavouriteList(favRes.data.favorites || []));
+        })
+        .catch((error) => {
+          console.error("Error fetching favorites on client side:", error);
+        });
+    }
+  }, [isAuthenticated, dispatch]); // This hook runs when the authentication state changes
+
+
   // Fetch favorites if not already fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
@@ -72,12 +86,12 @@ const Categories = ({
     return query;
   };
 
-  // ssg setup
-  useEffect(() => {
-    if (isAuthenticated && initialFavourites?.length > 0) {
-      dispatch(setFavouriteList(initialFavourites));
-    }
-  }, [isAuthenticated, initialFavourites, dispatch]);
+  // // ssg setup
+  // useEffect(() => {
+  //   if (isAuthenticated && initialFavourites?.length > 0) {
+  //     dispatch(setFavouriteList(initialFavourites));
+  //   }
+  // }, [isAuthenticated, initialFavourites, dispatch]);
 
   // Memoize the loadRecords function to prevent re-creation on re-renders
   // API data loader: always use args from query
@@ -427,38 +441,73 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
+  const currentPage = parseInt(params?.page || "1", 10);
 
   try {
-    const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
+    // ✅ CORRECTED: Only fetch public data here.
+    // Removed getFavouriteItems() from this Promise.all().
+    const [categoriesRes, projectsRes] = await Promise.all([
       getallCategories(""),
       getallprojects(currentPage, 9, "", "", ""),
-      getFavouriteItems(),
     ]);
+
     return {
       props: {
         initialCategories: categoriesRes?.data?.categories || [],
         initialProjects: projectsRes?.data?.products || [],
         totalPages: projectsRes?.data?.totalPages || 1,
-        initialFavourites: favouritesRes?.data?.favorites || [],
-        currentPage, // add this if you want to use in component
+        currentPage,
       },
-      revalidate: 300,
+      revalidate: 300, // Re-generate page every 5 minutes
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);
+    // Return a valid props object even on error to prevent crashes
     return {
       props: {
         initialCategories: [],
         initialProjects: [],
         totalPages: 1,
-        initialFavourites: [],
         currentPage,
       },
       revalidate: 300,
     };
   }
 }
+
+// export async function getStaticProps({ params }) {
+//   const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
+
+//   try {
+//     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
+//       getallCategories(""),
+//       getallprojects(currentPage, 9, "", "", ""),
+//       getFavouriteItems(),
+//     ]);
+//     return {
+//       props: {
+//         initialCategories: categoriesRes?.data?.categories || [],
+//         initialProjects: projectsRes?.data?.products || [],
+//         totalPages: projectsRes?.data?.totalPages || 1,
+//         initialFavourites: favouritesRes?.data?.favorites || [],
+//         currentPage, // add this if you want to use in component
+//       },
+//       revalidate: 300,
+//     };
+//   } catch (err) {
+//     console.error("❌ Error in getStaticProps:", err);
+//     return {
+//       props: {
+//         initialCategories: [],
+//         initialProjects: [],
+//         totalPages: 1,
+//         initialFavourites: [],
+//         currentPage,
+//       },
+//       revalidate: 300,
+//     };
+//   }
+// }
 
 Categories.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

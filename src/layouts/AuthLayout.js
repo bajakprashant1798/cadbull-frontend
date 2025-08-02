@@ -9,7 +9,7 @@ const AuthLayout = ({ title, description, children }) => {
           </div>
         </div>
 
-        <div className="row gy-3 gx-0 form-wrapper rounded-xxl align-items-center w-50 mx-auto">
+        <div className="row gy-3 gx-0 form-wrapper authLayout-login-wrapper rounded-xxl align-items-center mx-auto">
           <div className="col-md-12">
             <div className="p-md-4 px-2 py-0">
               <div className="mb-3 mb-md-4">

@@ -422,11 +422,11 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  if (params.slug === 'sitemaps') {
-    return {
-      notFound: true,
-    };
-  }
+  // if (params.slug === 'sitemaps') {
+  //   return {
+  //     notFound: true,
+  //   };
+  // }
   const slug = params.slug;
   const page = parseInt(params.page, 10) || 1;
   const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });

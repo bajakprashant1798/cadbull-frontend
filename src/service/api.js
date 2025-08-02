@@ -461,6 +461,10 @@ export const getCompanyProducts = (
   });
 };
 
+export const sendVerificationEmailApi = (data) => {
+  return api.post("/profile/send-verification-email", data);
+};
+
 // profile api
 
 export const getCategoriesWithSubcategories = async () => {

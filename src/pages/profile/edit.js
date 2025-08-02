@@ -8,18 +8,15 @@ import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
 import { useForm } from "react-hook-form";
 import {
-  deleteAccount,
   getArchitectProfileInfo,
-  getUserProfile,
   registerNewArchitechProfile,
-  removeFavouriteItem,
   requestAccountDeletion,
   updateProfilePicture,
-  updateProfileWithoutPicture,
   updateUserProfileInfo,
   getCountries,
   getOccupations,
   getInterests,
+  sendVerificationEmailApi,
 } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
@@ -41,26 +38,26 @@ const validationSchema = Yup.object().shape({
     .matches(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, {
       message: "Please enter a valid email address",
     }),
-  paypal: Yup.string().required("This field is required."),
-  // phone_no: Yup.string()
-  //   .required("This field  is required.")
-  //   .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
-  zipcode:Yup.string()
-      .required("This field  is required.")
-      .matches(/^\d{6}$/, "Zip code must be 6 digits."),
-  gender: Yup.string().required("This field  is required."),
+  // paypal: Yup.string().required("This field is required."),
+  // // phone_no: Yup.string()
+  // //   .required("This field  is required.")
+  // //   .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
+  // zipcode:Yup.string()
+  //     .required("This field  is required.")
+  //     .matches(/^\d{6}$/, "Zip code must be 6 digits."),
+  // gender: Yup.string().required("This field  is required."),
 
   
-  address1: Yup.string().required("This field is required."),
-  address2: Yup.string().required("This field is required."),
-  city: Yup.string().required("This field is required."),
-  state: Yup.string().required("This field is required."),
-  occupation: Yup.string().required("This field is required."),
-  interest: Yup.string().required("This field is required."),
-  summary: Yup.string()
-    .required("This field is required.")
-    .matches(/^[a-zA-Z\s].*$/, "Summary must contain letters."),
-  dob: Yup.string().required("This field is required."),
+  // address1: Yup.string().required("This field is required."),
+  // address2: Yup.string().required("This field is required."),
+  // city: Yup.string().required("This field is required."),
+  // state: Yup.string().required("This field is required."),
+  // occupation: Yup.string().required("This field is required."),
+  // interest: Yup.string().required("This field is required."),
+  // summary: Yup.string()
+  //   .required("This field is required.")
+  //   .matches(/^[a-zA-Z\s].*$/, "Summary must contain letters."),
+  // dob: Yup.string().required("This field is required."),
 });
 
 const EditProfile = () => {
@@ -91,11 +88,13 @@ const EditProfile = () => {
   const [countriesList, setCountriesList] = useState([]);
   const [occupationsList, setOccupationsList] = useState([]);
   const [interestsList, setInterestsList] = useState([]);
+  const [verificationStatus, setVerificationStatus] = useState("idle");
 
   const {
     register,
     handleSubmit,
     reset,
+    getValues, // Get this function from useForm
     formState: { errors,isDirty },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -121,6 +120,7 @@ const EditProfile = () => {
       first_name: "",
       last_name: "",
       email: "",
+      
       address1: "",
       address2: "",
       city: "",
@@ -145,6 +145,37 @@ const EditProfile = () => {
     },
     
   });
+
+  // This helper checks if the email is a valid email format
+  const isValidEmail = (email) => {
+    return email && /^\S+@\S+\.\S+$/.test(email);
+  };
+  
+  // Get the verification status from the profile data
+  const isVerified = profileData?.is_email_verify == 1;
+  console.log(profileData, "profileData");
+  
+  const hasNoRealEmail = !profileData?.email || !isValidEmail(profileData.email);
+
+  // ✅ ADD THIS NEW HANDLER for the "Verify" button
+  const handleSendVerification = async () => {
+    const email = getValues("email"); // Get current value from the form field
+
+    if (!isValidEmail(email)) {
+        toast.error("Please enter a valid email address before verifying.");
+        return;
+    }
+
+    setVerificationStatus("sending");
+    try {
+        await sendVerificationEmailApi({ email });
+        toast.success("Verification email has been sent. Please check your inbox.");
+        setVerificationStatus("sent");
+    } catch (error) {
+        toast.error(error.response?.data?.error || "Failed to send verification email.");
+        setVerificationStatus("idle");
+    }
+  };
 
   // onSubmitHandler: if profileData has an id, update; otherwise, create.
   const onSubmitHandler = (data) => {
@@ -215,7 +246,12 @@ const EditProfile = () => {
         }
       })
       .catch((err) => {
-        toast.error("Profile operation failed");
+        // Display specific error message from backend if available
+        if (err.response && err.response.data && err.response.data.message) {
+          toast.error(err.response.data.message);
+        } else {
+          toast.error("Profile operation failed. Please try again.");
+        }
         console.error(err);
       });
   };
@@ -328,6 +364,7 @@ const EditProfile = () => {
         // Merge social defaults with the rest of the profile data
         const formDefaults = { ...profile, ...socialDefaults };
         setProfileData(formDefaults);
+        
         reset(formDefaults);
       })
       .catch((err) => {
@@ -367,7 +404,13 @@ const EditProfile = () => {
         throw new Error("Failed to initiate account deletion.");
       }
     } catch (err) {
-      toast.error(err.message || "An error occurred while initiating deletion.");
+      if (err.response && err.response.data && err.response.data.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Profile operation failed. Please try again.");
+      }
+      // console.error(err);
+      // toast.error(err.message || "An error occurred while initiating deletion.");
     }
   };
   {console.log("handleSubmit(onSubmitHandler)", handleSubmit(onSubmitHandler));
@@ -500,7 +543,7 @@ const EditProfile = () => {
                     )}
                   </div>
                   {/* Email  */}
-                  <div className="col-lg-6 col-md-6">
+                  {/* <div className="col-lg-6 col-md-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
                       <Icons.Email />
                       <label>Email Address</label>
@@ -521,7 +564,55 @@ const EditProfile = () => {
                         {errors.email?.message}{" "}
                       </div>
                     )}
+                  </div> */}
+                  {/* Email Field - with new verification logic */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <Icons.Email />
+                      <label>Email Address</label>
+                    </div>
+                    <div className="input-group">
+                      <input
+                        type="email"
+                        {...register("email")}
+                        className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                        placeholder="Enter Your Email Address"
+                      />
+                      {/* ✅ Conditional rendering for the verification button */}
+                      {!isVerified && (
+                        <button 
+                          type="button" 
+                          className="btn btn-outline-secondary"
+                          onClick={handleSendVerification}
+                          disabled={verificationStatus !== 'idle'}
+                        >
+                          {verificationStatus === 'sending' && 'Sending...'}
+                          {verificationStatus === 'sent' && 'Email Sent!'}
+                          {verificationStatus === 'idle' && 'Verify'}
+                        </button>
+                      )}
+                      {isVerified && (
+                          <span className="input-group-text text-success">✓ Verified</span>
+                      )}
+                    </div>
+                    {/* ✅ Conditional warning messages */}
+                    {hasNoRealEmail && !errors.email && (
+                      <p className="text-danger mt-1 small">
+                        You do not have an email associated with your account. Please add and verify one.
+                      </p>
+                    )}
+                    {!isVerified && profileData.email && isValidEmail(profileData.email) && (
+                      <p className="text-warning mt-1 small">
+                        Your email is not verified. <a href="#" onClick={handleSendVerification} className="link-primary">Click here to resend verification link.</a>
+                      </p>
+                    )}
+                    {errors.email?.message && (
+                      <div className="invalid-feedback text-danger">
+                        {errors.email?.message}
+                      </div>
+                    )}
                   </div>
+
                   {/* PayPal ID  */}
                   <div className="col-lg-6 col-md-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
@@ -544,6 +635,21 @@ const EditProfile = () => {
                         {errors.paypal?.message}{" "}
                       </div>
                     )}
+                  </div>
+
+                  {/* ✅ ADD THIS NEW BLOCK FOR THE PHONE NUMBER */}
+                  <div className="col-lg-6 col-md-6">
+                    <div className="d-flex gap-2 align-items-center mb-1">
+                      <Icons.Phone />
+                      <label>Mobile</label>
+                    </div>
+                    <input
+                      type="tel"
+                      {...register("phone")}
+                      className="form-control"
+                      placeholder="Enter Your Phone Number"
+                    />
+                    {/* You can add validation errors here if you make it required */}
                   </div>
                   {/* Mobile  */}
                   {/* <div className="col-lg-6 col-md-6">

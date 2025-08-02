@@ -38,8 +38,8 @@ const WhatsAppButton = () => {
       <Image
         src={whatsappImg} // This image must be in your `public` folder
         alt="WhatsApp Chat"
-        width={120}
-        height={50}
+        width={60}
+        height={60}
         quality={100}
       />
     </div>

@@ -48,6 +48,7 @@ const UploadWork = () => {
     image: null,
   });
 
+  const { user } = useSelector((store) => store.logininfo);
   // Inside UploadWork component:
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
@@ -75,6 +76,12 @@ const UploadWork = () => {
   //       stopLoading();
   //     });
   // };
+
+  // ✅ Helper function to check for a valid email
+  const hasValidEmail = (email) => {
+    return email && /^\S+@\S+\.\S+$/.test(email);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -169,6 +176,19 @@ const UploadWork = () => {
                 title={"Upload Work"}
                 description={"Simple. Fast. Beautiful."}
               />
+
+              {/* ✅ START: NEW CONDITIONAL MESSAGE BLOCK */}
+              {!hasValidEmail(user?.email) && (
+                <div className="alert alert-warning d-flex flex-column flex-md-row align-items-center justify-content-between p-3 mb-4">
+                  <span>
+                    To receive updates on your project's approval status, please add an email to your profile.
+                  </span>
+                  <Link href="/profile/edit" className="btn btn-primary rounded btn-sm mt-2 mt-md-0">
+                    Add Email
+                  </Link>
+                </div>
+              )}
+              {/* ✅ END: NEW CONDITIONAL MESSAGE BLOCK */}
             </div>
           </div>
           <div className="row justify-content-center">

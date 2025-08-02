@@ -783,7 +783,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           <span>
                             <Icons.Download />
                           </span>
-                          <span className="w-100">Download</span>
+                          <span>Download</span>
                         </button>
 
                         {/* add to fevorite btn */}
@@ -939,7 +939,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               {hasMore && similarProjects.length > 0 && (
                 <div className="text-center mt-4">
                   <button
-                    className="btn btn-primary px-5 py-2"
+                    className="btn btn-primary px-5 py-3 rounded"
                     onClick={handleLoadMore}
                     disabled={isLoading}
                   >

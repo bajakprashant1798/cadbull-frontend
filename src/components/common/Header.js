@@ -213,11 +213,11 @@ const Header = () => {
                           <div>
                             <p className="lh-sm text-black fw-bold h6 mb-0">
                               <small>
-                                {status?.user?.firstname} {status?.user?.lastname}
+                                {status?.user?.firstname || status.user?.id} {status?.user?.lastname}
                               </small>
                             </p>
                             <p className="lh-sm">
-                              <small>{status?.user?.email}</small>
+                              <small>{status?.user?.email || "email"} </small>
                             </p>
                           </div>
                         </Link>
@@ -479,11 +479,11 @@ const Header = () => {
                           <div>
                             <p className="lh-sm text-black fw-bold h6 mb-0">
                               <small>
-                                {status?.user?.firstname} {status?.user?.lastname}
+                                {status?.user?.firstname || status.user?.id} {status?.user?.lastname}
                               </small>
                             </p>
                             <p className="lh-sm">
-                              <small>{status?.user?.email}</small>
+                              <small>{status?.user?.email || "email"}</small>
                             </p>
                           </div>
                         </Link>

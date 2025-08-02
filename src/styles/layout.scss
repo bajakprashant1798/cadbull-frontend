@@ -40,6 +40,9 @@ header {
   .active {
     color: $secondary;
   }
+  :hover {
+    color: $secondary;
+  }
 }
 
 
