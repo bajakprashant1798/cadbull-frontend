@@ -14,6 +14,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import * as gtag from '../utils/gtag';
 
 config.autoAddCss = false;
 const poppins = Poppins({
@@ -70,6 +71,26 @@ export default function App({ Component, pageProps }) {
   }
   return (
     <Fragment>
+      {/* ✅ START: ADD GOOGLE ANALYTICS SCRIPTS */}
+      <Script
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
+      />
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gtag.GA_TRACKING_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
+      {/* ✅ END: ADD GOOGLE ANALYTICS SCRIPTS */}
       {/* <Authprovider> */}
       <Provider store={store}>
       
