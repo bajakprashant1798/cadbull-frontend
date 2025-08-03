@@ -154,6 +154,23 @@ const Register = () => {
       toast.error("Google login failed. Please try again.");
     }
   };
+
+  // Add error handling for OAuth callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get("error");
+    
+    if (errorParam) {
+      // Decode the error message
+      const errorMessage = decodeURIComponent(errorParam);
+      toast.error(errorMessage);
+      
+      // Clean up the URL
+      const url = new URL(window.location);
+      url.searchParams.delete('error');
+      window.history.replaceState({}, document.title, url.pathname);
+    }
+  }, []);
   
   const handleFacebookSignIn = async () => {
     try {
