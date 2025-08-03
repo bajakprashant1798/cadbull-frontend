@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from 'next/document'
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export default function Document() {
   return (
@@ -9,7 +8,7 @@ export default function Document() {
         {/* ✅ Google Tag Manager (noscript) Fallback */}
         <noscript>
           <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            src={`https://www.googletagmanager.com/ns.html?id=GTM-TX9TH7B`}
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
