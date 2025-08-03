@@ -103,6 +103,26 @@ export default function App({ Component, pageProps }) {
         }}
       /> */}
 
+      {/* ✅ Direct GA4 Implementation as backup */}
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-ESHYNTB32B"
+      />
+      <Script
+        id="gtag-init"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ESHYNTB32B', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
+
       {/* ✅ CORRECTED: Add Google Tag Manager Script */}
       <Script
         id="gtm-script"
@@ -113,7 +133,7 @@ export default function App({ Component, pageProps }) {
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${GTM_ID}');
+            })(window,document,'script','dataLayer','GTM-TX9TH7B');
           `,
         }}
       />
