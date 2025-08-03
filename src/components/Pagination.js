@@ -74,7 +74,7 @@ const Pagination = ({
                   </button> */}
                   <Link
                     href={getPageHref(currentPage - 1)}
-                    className="page-link"
+                    className="page-link text-white"
                     onClick={e => {
                       e.preventDefault();
                       if (currentPage > 1) onPageChange(currentPage - 1);
