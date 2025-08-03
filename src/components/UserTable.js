@@ -42,19 +42,19 @@ const UserTable = ({ role, title }) => {
   };
   const debouncedSearch = useCallback(debounce((val) => setSearchTerm(val), 500), []);
 
-  const logPageState = (action, res, params) => {
-    console.log(
-      `[${action}] Users:`, (res.data.users || []).map(u => u.id),
-      '| afterId:', res.data.nextId,
-      '| beforeId:', res.data.prevId,
-      '| deepPage:', deepPage,
-      '| currentPage:', currentPage,
-      '| lastPageMode:', lastPageMode,
-      '| hasNext:', res.data.hasNext,
-      '| hasPrev:', res.data.hasPrev,
-      '| params:', params
-    );
-  };
+  // const logPageState = (action, res, params) => {
+  //   console.log(
+  //     `[${action}] Users:`, (res.data.users || []).map(u => u.id),
+  //     '| afterId:', res.data.nextId,
+  //     '| beforeId:', res.data.prevId,
+  //     '| deepPage:', deepPage,
+  //     '| currentPage:', currentPage,
+  //     '| lastPageMode:', lastPageMode,
+  //     '| hasNext:', res.data.hasNext,
+  //     '| hasPrev:', res.data.hasPrev,
+  //     '| params:', params
+  //   );
+  // };
 
   // --- Handler for "Last Page" button (fetch oldest users, reverse keyset) ---
   const goToLastPage = async () => {

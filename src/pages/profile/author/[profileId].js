@@ -41,7 +41,7 @@ const CompanyProfile = () => {
   const userIdFromRoute = router.query.profileId; 
   // Get the logged-in user's own ID from Redux
   const userIdFromRedux = useSelector((store) => store.logininfo.user?.id);
-  console.log(userIdFromRoute, userIdFromRedux, "User ID from Route and Redux");
+  // console.log(userIdFromRoute, userIdFromRedux, "User ID from Route and Redux");
   
   // The final ID to use for fetching
   const userId = userIdFromRoute || userIdFromRedux;
@@ -85,7 +85,7 @@ const CompanyProfile = () => {
     try {
       const res = await getCompanyProfile(userId);
       setProfile(res.data.profile);
-      console.log("Profile data fetched:", res.data);
+      // console.log("Profile data fetched:", res.data);
     } catch (error) {
       console.error("Error fetching profile", error);
     } finally {
@@ -109,7 +109,7 @@ const CompanyProfile = () => {
       setProducts(res.data.products);
       setTotalProducts(res.data.totalProducts);
       setTotalPages(res.data.totalPages);
-      console.log("Products data fetched:", res.data);
+      // console.log("Products data fetched:", res.data);
       
     } catch (error) {
       console.error("Error fetching products", error);

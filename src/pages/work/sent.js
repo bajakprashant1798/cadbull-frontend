@@ -78,7 +78,7 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
 
   // ✅ Fetch Projects List with Debounce (Optimized API Calls)
   const fetchProjects = debounce((page) => {
-    console.log("Fetching projects for page:", page);
+    // console.log("Fetching projects for page:", page);
     
     getUploadedProjectList( page, 10)
       .then((res) => {
@@ -86,7 +86,7 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
           setTableData(res.data.projects);
           dispatch(addedFavouriteItem(res.data.projects));
           setTotalPages(res.data.totalPages);
-          console.log("Projects fetched successfully:", res.data.projects);
+          // console.log("Projects fetched successfully:", res.data.projects);
           
         } else {
           setTableData([]); // ✅ Handle empty response

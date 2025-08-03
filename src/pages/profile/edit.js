@@ -74,7 +74,7 @@ const EditProfile = () => {
     ? `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/profile_pic/medium/${user.profile_pic}`
     : null;
 
-  console.log(profile_pic, "profile_pic edit page");
+  // console.log(profile_pic, "profile_pic edit page");
     
   // console.log("tokenedit: ", token);
   // console.log("useredit: ", user);
@@ -153,7 +153,7 @@ const EditProfile = () => {
   
   // Get the verification status from the profile data
   const isVerified = profileData?.is_email_verify == 1;
-  console.log(profileData, "profileData");
+  // console.log(profileData, "profileData");
   
   const hasNoRealEmail = !profileData?.email || !isValidEmail(profileData.email);
 
@@ -179,9 +179,9 @@ const EditProfile = () => {
 
   // onSubmitHandler: if profileData has an id, update; otherwise, create.
   const onSubmitHandler = (data) => {
-    console.log("onSubmitHandler called with data:", data);
+    // console.log("onSubmitHandler called with data:", data);
     if (!isDirty) {
-      console.log("Form is not dirty. Submission halted.");
+      // console.log("Form is not dirty. Submission halted.");
       return;
     }
   
@@ -238,7 +238,7 @@ const EditProfile = () => {
             userData.profileId = updatedProfile.profileId || updatedProfile.id;
           }
           localStorage.setItem("userData", JSON.stringify(userData));
-          console.log("Updated userData:", userData);
+          // console.log("Updated userData:", userData);
   
           // Dispatch to update Redux state
           dispatch(loginSuccess({ user: updatedUser, status: true }));
@@ -379,9 +379,9 @@ const EditProfile = () => {
   
 
 
-  useEffect(() => {
-    console.log("Updated profileData:", profileData);
-  }, [profileData]);
+  // useEffect(() => {
+  //   console.log("Updated profileData:", profileData);
+  // }, [profileData]);
   
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -413,12 +413,13 @@ const EditProfile = () => {
       // toast.error(err.message || "An error occurred while initiating deletion.");
     }
   };
-  {console.log("handleSubmit(onSubmitHandler)", handleSubmit(onSubmitHandler));
-  }
+  // {
+  //   console.log("handleSubmit(onSubmitHandler)", handleSubmit(onSubmitHandler));
+  // }
 
-  useEffect(() => {
-    console.log("Validation errors:", errors);
-  }, [errors])
+  // useEffect(() => {
+  //   console.log("Validation errors:", errors);
+  // }, [errors])
   return (
     <Fragment>
       <Head>
@@ -1143,7 +1144,7 @@ const EditProfile = () => {
                     <button
                       type="submit"
                       className="btn btn-secondary w-100 rounded-2"
-                      onClick={() => console.log("Submit button clicked")}
+                      // onClick={() => console.log("Submit button clicked")}
                     >
                       Save Change
                     </button>

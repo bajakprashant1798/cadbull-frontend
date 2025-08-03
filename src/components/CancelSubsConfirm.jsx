@@ -7,11 +7,11 @@ export default function CancelSubsConfirm({subscriptionId}) {
     const dispatch=useDispatch()
     const handleCancellationReq=()=>{
       cancelSubscriptionRequest(subscriptionId).then((res)=>{
-        console.log('cancel subscription result ',res.data);
+        // console.log('cancel subscription result ',res.data);
         dispatch(closeModalHandler())
         toast.success("Your subscription has been canceled")
       }).catch((err)=>{
-         console.log('error',err)
+        //  console.log('error',err)
          toast.error("Subscription cancellation failed!")
          dispatch(closeModalHandler())
       })

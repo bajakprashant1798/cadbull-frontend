@@ -24,10 +24,10 @@ const WithdrawAmount = () => {
   useEffect(() => {
     if (isAuthenticated) {
       getWalletBalance().then((res)=>{        
-        console.log("Balance Response: ", res.data.amount);
+        // console.log("Balance Response: ", res.data.amount);
         setBalance(res.data.amount); // ✅ Now subtracts pending withdrawals
       }).catch((err)=>{
-          console.log('error',err)
+          // console.log('error',err)
       });
          
       getRedeemRequestList()
@@ -37,7 +37,7 @@ const WithdrawAmount = () => {
         
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
       });
     }
   }, [isAuthenticated,balance]);
@@ -45,7 +45,7 @@ const WithdrawAmount = () => {
   const handleWithdraw = (e) => {
     e.preventDefault();
 
-    console.log(e , amount);
+    // console.log(e , amount);
 
     // Check if there is any pending request.
     if (tableData.some((req) => req.status === 0)) {
@@ -71,15 +71,15 @@ const WithdrawAmount = () => {
       // Proceed with withdrawal
       redeemWalletBalance(amount)
         .then((res) => {
-          console.log("withdraw-amout: ", res);
+          // console.log("withdraw-amout: ", res);
           
           // setBalance(res.data.updatedWallet.amount);
           setBalance((prevBalance) => prevBalance - amount); // Update balance locally
           toast.success("Withdrawal request submitted successfully.");
         })
         .catch((err) => {
-          console.error(err);
-          console.log("error message", err.response.data.error);
+          // console.error(err);
+          // console.log("error message", err.response.data.error);
           toast.error(`${err?.response?.data?.error}`);
         });
     }

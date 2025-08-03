@@ -91,7 +91,7 @@ const UploadWork = () => {
     }
   
     startLoading();
-    console.log("formData: ", formData);
+    // console.log("formData: ", formData);
     
     try {
       await uploadProjectApiHandler(formData);

@@ -200,7 +200,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         const singleProjectResponse = await getsingleallprojects("", projectId);
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
-        console.log("singleProjectData: ", singleProjectData);
+        // console.log("singleProjectData: ", singleProjectData);
         
         // console.log("singleProjectData: ", singleProjectData);
         

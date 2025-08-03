@@ -54,29 +54,29 @@ const ManageBilling = ({ initialSubscribedPlan }) => {
   useEffect(()=>{
     if((router.query.session_id && router.query.session_id.trim()!=='') && typeof window !==undefined){
       const userData=JSON.parse(localStorage.getItem('userData')) || {};
-     console.log('user Data',userData)
+    //  console.log('user Data',userData)
       getPaymentInformation(userData?.id, router.query.session_id).then((res)=>{
         // console.log('api res',res.data)
       getSubscriptionDetail()
       .then((subRes) => {
-        console.log("subscribed plan res", subRes.data);
+        // console.log("subscribed plan res", subRes.data);
         setSubscribedPlan(subRes.data.plan);
       })
       .catch((err) => {
-        console.log("error", err);
+        // console.log("error", err);
       });
        }).catch((err)=>{
-        console.log('error',err)
+        // console.log('error',err)
        })
     }
     else{
       getSubscriptionDetail()
       .then((subRes) => {
-        console.log("subscribed plan res", subRes.data);
+        // console.log("subscribed plan res", subRes.data);
         setSubscribedPlan(subRes.data.plan);
       })
       .catch((err) => {
-        console.log("error", err);
+        // console.log("error", err);
       });
     }
 },[router.query])
@@ -89,7 +89,7 @@ const handleCancelSubscription = () => {
 
   cancelSubscriptionRequest(subscribedPlan.subscription_id)
     .then(response => {
-      console.log("✅ Subscription Cancelled at End of Billing Cycle:", response.data);
+      // console.log("✅ Subscription Cancelled at End of Billing Cycle:", response.data);
 
       // 🟢 Update UI to show "Cancelled" state
       setSubscribedPlan(prevState => ({
@@ -187,7 +187,7 @@ const handleCancelSubscription = () => {
                             className="btn btn-lg btn-primary w-100 rounded"
                             onClick={() => {
                               if (subscribedPlan.invoice_url) {
-                                console.log("invoice: ", subscribedPlan.invoice_url);
+                                // console.log("invoice: ", subscribedPlan.invoice_url);
                                 
                                 window.open(subscribedPlan.invoice_url, "_blank");
                               } else {

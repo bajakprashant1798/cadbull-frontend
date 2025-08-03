@@ -6,7 +6,7 @@ import { closeModalHandler } from "../../../redux/app/features/modalSlice";
 export default function Modal({children}) {
   const { showModal } = useSelector((store) => store.modalState);
   const dispatch=useDispatch()
-  console.log('modal state',showModal)
+  // console.log('modal state',showModal)
   return (
     <>
       <div

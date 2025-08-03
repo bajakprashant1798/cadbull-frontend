@@ -34,7 +34,7 @@ const myProjects = () => {
     if (!tableData || tableData.length === 0) { // ✅ Additional check
         getUploadedProjectList( 1, 10)
         .then((res) => {
-          console.log("my-projects: ", res);
+          // console.log("my-projects: ", res);
           if (Array.isArray(res.data.projects)) {
             setTableData(res.data.projects);
           } else {
@@ -45,7 +45,7 @@ const myProjects = () => {
           setTotalPages(res.data.totalPages);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     }
   }, [tableData,isAuthenticated, currentPage]);
@@ -68,7 +68,7 @@ const myProjects = () => {
         toast.success("Removed Favourite list", { position: "top-right" });
       })
       .catch((err) => {
-        console.log(err.message);
+        // console.log(err.message);
       });
   };
 
@@ -146,7 +146,7 @@ const myProjects = () => {
                           <td>
                             <div className="title-wrapper">
                               {res.project_category_title}
-                              {console.log("project_category: ", res)}
+                              {/* {console.log("project_category: ", res)} */}
                             </div>
                           </td>
                           <td>

@@ -34,7 +34,7 @@ const Pricing = () => {
           return;
         }
 
-        console.log(response);
+        // console.log(response);
         
 
         setUser(response.data);
@@ -171,10 +171,10 @@ const Pricing = () => {
                       return
                     }
                        handleSubscription("price_1RjmFTFy6VKViPpJkGvSFWuJ", user.id).then((res)=>{
-                        console.log("API Response:", res.data); // Log response
+                        // console.log("API Response:", res.data); // Log response
                         window.location.href=res.data.url
                        }).catch((err)=>{
-                        console.log('error',err)
+                        // console.log('error',err)
                        })
                   }}
                   //  disabled={activeSubscription}
@@ -226,7 +226,7 @@ const Pricing = () => {
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{
-                      console.log('error',err)
+                      // console.log('error',err)
                      })
                   }}
                   // disabled={activeSubscription}
@@ -281,7 +281,7 @@ const Pricing = () => {
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{
-                      console.log('error',err)
+                      // console.log('error',err)
                      })
                   }}
                   // disabled={activeSubscription}
@@ -333,7 +333,7 @@ const Pricing = () => {
                     
                       window.location.href=res.data.url
                      }).catch((err)=>{
-                      console.log('error',err)
+                      // console.log('error',err)
                      })
                   }}
                   // disabled={activeSubscription}

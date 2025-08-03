@@ -11,7 +11,7 @@ const Experiences = ({ initialOccupations, initialExperiences }) => {
   // const { token } = useSelector((store) => store.logininfo); // Get user token
   const [occupations, setOccupations] = useState(initialOccupations || []);
   const [experiences, setExperiences] = useState(initialExperiences || []);
-  console.log(initialExperiences, "initialExperiences");
+  // console.log(initialExperiences, "initialExperiences");
   
   const [formData, setFormData] = useState({
     company_name: "",

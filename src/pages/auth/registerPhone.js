@@ -101,7 +101,7 @@ const RegisterPhone = () => {
         }
       } catch (err) {
         // Silence or log error as needed
-        console.log("Error clearing recaptcha verifier:", err);
+        // console.log("Error clearing recaptcha verifier:", err);
         
       }
     };
@@ -402,7 +402,7 @@ const RegisterPhone = () => {
         email: emailValue,
         phone_number: otpStepData.phoneNumber,
       });
-      console.log("Link phone success:", response.data);
+      // console.log("Link phone success:", response.data);
       localStorage.setItem("userData", JSON.stringify(response.data.user));
       dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
       router.push("/profile/edit");

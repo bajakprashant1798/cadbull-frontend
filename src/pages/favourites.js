@@ -48,20 +48,20 @@ const Favourites = ({ initialData, currentPage: initialPage, totalPages: initial
       getPaginatedFavouriteItems( currentPage, 10)
         .then((res) => {
           setTableData(res.data.favorites);
-          console.log(res);
+          // console.log(res);
           
           dispatch(addedFavouriteItem(res.data.favorites));
           setCurrentPage(res.data.currentPage);
           setTotalPages(res.data.totalPages);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     }
   }, [isAuthenticated, currentPage, removeItemTrigger, dispatch]);
 
   const handleremoveitem = (id) => {
-    console.log(id);
+    // console.log(id);
     
     removeFavouriteItem( id)
       .then((res) => {
@@ -72,7 +72,7 @@ const Favourites = ({ initialData, currentPage: initialPage, totalPages: initial
        
       })
       .catch((err) => {
-        console.log(err.message);
+        // console.log(err.message);
       });
   };
 
