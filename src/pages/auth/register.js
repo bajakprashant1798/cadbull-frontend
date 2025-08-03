@@ -157,9 +157,64 @@ const Register = () => {
   
   const handleFacebookSignIn = async () => {
     try {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+      // For Safari compatibility, use a popup approach instead of direct redirect
+      const width = 600;
+      const height = 600;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      
+      const popup = window.open(
+        `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`,
+        'facebook-login',
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+      );
+
+      // Check if popup was blocked
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        // Fallback to direct redirect if popup is blocked
+        window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+        return;
+      }
+
+      // Listen for messages from popup
+      const handleMessage = (event) => {
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data.type === 'SOCIAL_LOGIN_SUCCESS') {
+          const userData = event.data.userData;
+          
+          // Store user data
+          localStorage.setItem("userData", JSON.stringify(userData));
+          dispatch(loginSuccess({ user: userData, status: "authenticated" }));
+          window.dispatchEvent(new Event("userLoggedIn"));
+          
+          // Redirect based on role
+          if (userData.role === 1) {
+            router.replace("/admin/dashboard");
+          } else {
+            router.replace("/");
+          }
+          
+          window.removeEventListener('message', handleMessage);
+        } else if (event.data.type === 'SOCIAL_LOGIN_ERROR') {
+          toast.error("Facebook registration failed. Please try again.");
+          window.removeEventListener('message', handleMessage);
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      // Check if popup is closed manually
+      const checkPopup = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkPopup);
+          window.removeEventListener('message', handleMessage);
+        }
+      }, 1000);
+
     } catch (error) {
-      toast.error("Facebook login failed. Please try again.");
+      console.error("Facebook registration error:", error);
+      toast.error("Facebook registration failed. Please try again.");
     }
   };
 
