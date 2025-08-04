@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 const AdSense = ({
@@ -9,6 +9,8 @@ const AdSense = ({
   responsive = "true",
 }) => {
   const router = useRouter();
+  const adRef = useRef(null);
+  const isAdLoaded = useRef(false);
 
   useEffect(() => {
     // Don't run ad code in development to prevent errors and allow for styling.
@@ -16,15 +18,50 @@ const AdSense = ({
       return;
     }
 
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error("AdSense error:", err);
-    }
+    // ✅ Enhanced ad loading with better error handling
+    const loadAd = () => {
+      try {
+        // Check if adsbygoogle is available
+        if (typeof window !== 'undefined' && window.adsbygoogle) {
+          // Clear any existing ad content
+          if (adRef.current) {
+            // Remove any existing ad content but keep the ins element
+            const existingAds = adRef.current.querySelectorAll('.adsbygoogle');
+            existingAds.forEach(ad => {
+              if (ad !== adRef.current.querySelector('.adsbygoogle')) {
+                ad.remove();
+              }
+            });
+          }
+
+          // Push the ad request
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+          isAdLoaded.current = true;
+          console.log(`AdSense ad loaded for slot: ${slot}`);
+        } else {
+          console.warn('AdSense script not loaded yet, retrying...');
+          // Retry after a short delay
+          setTimeout(loadAd, 1000);
+        }
+      } catch (err) {
+        console.error("AdSense error:", err);
+        // Retry once after error
+        if (!isAdLoaded.current) {
+          setTimeout(loadAd, 2000);
+        }
+      }
+    };
+
+    // ✅ Delay initial load to ensure script is ready
+    const timer = setTimeout(loadAd, 100);
+
+    return () => {
+      clearTimeout(timer);
+      isAdLoaded.current = false;
+    };
   }, [router.asPath, slot]); // Re-run effect when path or slot changes
 
   // In development, render a placeholder for layout purposes.
-  // This is the "box" you are seeing, which is correct for localhost.
   if (process.env.NODE_ENV === "development") {
     return (
       <div
@@ -36,18 +73,18 @@ const AdSense = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: '90px'
+          minHeight: '90px',
+          border: '1px dashed #ccc',
+          borderRadius: '4px'
         }}
       >
-        Ad Placeholder (Slot: {slot})
+        🟦 Ad Placeholder (Slot: {slot})
       </div>
     );
   }
 
   return (
-    // The key is crucial for ads to reload on client-side navigation
-    // Using the slot as a key ensures each ad unit is unique on the page.
-    <div key={slot} className="ad-container">
+    <div ref={adRef} key={`${slot}-${router.asPath}`} className="ad-container">
       <ins
         className="adsbygoogle"
         style={style}

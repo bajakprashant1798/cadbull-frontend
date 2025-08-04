@@ -15,6 +15,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GTM_ID, pageview } from '../lib/gtm';
+import { initializeAdSense } from '../lib/adsense';
 
 config.autoAddCss = false;
 const poppins = Poppins({
@@ -34,6 +35,9 @@ export default function App({ Component, pageProps }) {
     typeof document !== undefined
       ? require("bootstrap/dist/js/bootstrap.bundle.min")
       : null;
+
+    // ✅ Initialize AdSense
+    initializeAdSense();
 
     // Track route changes
     const handleRouteChange = (url) => {
@@ -156,15 +160,21 @@ export default function App({ Component, pageProps }) {
       `}</style>
       {getLayout(<Component {...pageProps} />)}
       {/* <AppContent Component={Component} pageProps={pageProps} /> */}
+      {/* ✅ IMPROVED: AdSense Script with proper error handling */}
       <Script
         id="adsense-script"
         async
         strategy="afterInteractive"
-        // strategy="lazyOnload"
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
         crossOrigin="anonymous"
+        onLoad={() => {
+          console.log('AdSense script loaded successfully');
+        }}
+        onError={(e) => {
+          console.error('AdSense script failed to load:', e);
+        }}
       />
+      
       <ToastContainer />
       <WhatsAppButton />
       {/* </PersistGate> */}
