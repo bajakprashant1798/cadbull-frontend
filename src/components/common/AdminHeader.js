@@ -35,7 +35,7 @@ const AdminHeader = () => {
   
 
   return (
-    <header className="admin-header d-flex justify-content-between align-items-center p-3 bg-white shadow">
+    <nav className="admin-header d-flex justify-content-between align-items-center p-3 bg-white shadow">
       <h2 className="text-primary m-0">Admin Dashboard</h2>
       <div className="d-flex align-items-center gap-3">
         <span>{user?.firstname} {user?.lastname}</span>
@@ -44,7 +44,7 @@ const AdminHeader = () => {
         </Link>
         <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
       </div>
-    </header>
+    </nav>
   );
 };
 
