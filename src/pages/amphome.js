@@ -204,11 +204,11 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
                       <div className="item-wrapper">
                         <amp-img
                           lightbox="item-wizard-gallery-1m"
-                          src={project.photo_url} // change as needed (S3 URL etc)
+                          src={project.photo_url || `https://cadbull.com/default-img.png`}
                           layout="responsive"
                           width="394.5"
                           height="263"
-                          alt={project.work_title}
+                          alt={project.work_title || "CAD Drawing"}
                           class="placeholder-loader"
                         >
                           <div placeholder="" className="placeholder">
@@ -252,11 +252,11 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
                       <div className="item-wrapper">
                         <amp-img
                           lightbox="item-wizard-gallery-1m"
-                          src={project.photo_url} // change as needed (S3 URL etc)
+                          src={project.photo_url || `https://cadbull.com/default-img.png`}
                           layout="responsive"
                           width="394.5"
                           height="263"
-                          alt={project.work_title}
+                          alt={project.work_title || "CAD Drawing"}
                           class="placeholder-loader"
                         >
                           <div placeholder="" className="placeholder">

@@ -95,9 +95,10 @@ const CompletedProjects = ({ initialProjects, totalPages: initialTotalPages, }) 
                           <tr key={project.id}>
                             <td>
                               <img
-                                src={project.photo_url}
+                                src={project.photo_url && project.photo_url.trim() !== '' ? project.photo_url : '/assets/images/product.jpg'}
                                 width={100}
-                                alt="project"
+                                alt={project.title || "project"}
+                                onError={(e) => { e.target.src = '/assets/images/product.jpg' }}
                               />
                             </td>
                             <td>{project.title}</td>

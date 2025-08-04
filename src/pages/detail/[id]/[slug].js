@@ -446,11 +446,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
-        <meta property="og:image" content={project?.photo_url} />
+        <meta property="og:image" content={project?.photo_url || `https://cadbull.com/default-img.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={project?.meta_title || project?.work_title} />
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
-        <meta name="twitter:image" content={project?.photo_url} />
+        <meta name="twitter:image" content={project?.photo_url || `https://cadbull.com/default-img.png`} />
         <meta name="keywords" content={project?.tags || ""} />
 
         <link rel="canonical" href={canonicalUrl} />
@@ -625,14 +625,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   style={{ maxWidth: "100%" }} // Optional, if you want to constrain inner div too
                 >
                   <Image
-                    src={project.photo_url || product}
+                    src={project.photo_url && project.photo_url.trim() !== '' ? project.photo_url : product}
                     width={project.image_width || 800}
                     height={project.image_height || 600}
-                    alt="drawing"
+                    alt={project.work_title || "drawing"}
                     className="img-fluid"
                     // DO NOT SET loading="lazy" for LCP image!
                     priority={true} // <-- This is required for LCP
-                    onError={(e) => (e.target.src = product.src)}
+                    onError={(e) => (e.target.src = product.src || product)}
                     style={{
                       width: "100%",
                       height: "auto",
