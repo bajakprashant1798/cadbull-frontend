@@ -10,6 +10,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 const Footer = () => {
+  // Get current year dynamically
+  const currentYear = new Date().getFullYear();
   return ( 
     <footer className="mt-auto pt-4 pt-sm-5">
       <hr className="border-top-footer opacity-100 d-none d-lg-block" />
@@ -119,7 +121,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-lower-wrapper text-center">
           <div className="d-flex align-items-center gap-2 gap-md-3 flex-column-reverse flex-md-row pb-3 justify-content-md-center">
-            <p className="text-white">&copy; 2025 <span className="text-danger">CADBULL</span> | All Rights Reserved.</p>
+            <p className="text-white">&copy; {currentYear} <span className="text-danger">CADBULL</span> | All Rights Reserved.</p>
             <ul className="list-unstyled d-flex align-items-center gap-3 gap-md-4 mb-0 justify-content-center ">
               <li>
                 <Link href="/terms-condition">Term & Conditions</Link>
