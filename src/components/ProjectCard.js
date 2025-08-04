@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { handledownload } from "@/service/globalfunction";
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 
 const ProjectCard = ({  
   view_count, 
@@ -99,8 +100,8 @@ const ProjectCard = ({
           
           {/* <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" /> */}
           <Image
-            src={photo_url && photo_url.trim() !== '' ? photo_url : product}
-            width={800}                // Just use a safe default!
+            src={getSafeImageUrl(photo_url)}
+            width={800}
             height={600}
             alt={work_title || "project"}
             className="w-100 img-fluid"
@@ -111,9 +112,7 @@ const ProjectCard = ({
               objectFit: "contain",
               display: "block"
             }}
-            onError={(e) => { 
-              e.target.src = product.src || product;
-            }}
+            onError={(e) => handleImageError(e)}
           />
 
 

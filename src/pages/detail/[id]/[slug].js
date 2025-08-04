@@ -71,6 +71,7 @@ import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
 import product from "@/assets/images/product.jpg"
+import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
 import Image from "next/image";
@@ -625,14 +626,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   style={{ maxWidth: "100%" }} // Optional, if you want to constrain inner div too
                 >
                   <Image
-                    src={project.photo_url && project.photo_url.trim() !== '' ? project.photo_url : product}
+                    src={getSafeImageUrl(project.photo_url)}
                     width={project.image_width || 800}
                     height={project.image_height || 600}
                     alt={project.work_title || "drawing"}
                     className="img-fluid"
                     // DO NOT SET loading="lazy" for LCP image!
                     priority={true} // <-- This is required for LCP
-                    onError={(e) => (e.target.src = product.src || product)}
+                    onError={(e) => handleImageError(e)}
                     style={{
                       width: "100%",
                       height: "auto",
