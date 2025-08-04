@@ -157,7 +157,7 @@ const Header = () => {
                 }}
                 className="btn btn-secondary d-inline-flex d-xl-none gap-1 align-items-center text-white me-2"
               >
-                <Icons.User />
+                <Icons.User /> <span>LOGIN</span>
               </Link>}
               <span>
                 <Icons.HamBurger />
