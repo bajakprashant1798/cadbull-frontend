@@ -422,57 +422,55 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  // if (params.slug === 'sitemaps') {
-  //   return {
-  //     notFound: true,
-  //   };
-  // }
-  const slug = params.slug;
-  const page = parseInt(params.page, 10) || 1;
-  const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-  if (!data || !data.projects) {
+  try {
+    // Validate slug parameter - reject numeric slugs
+    const slug = params.slug;
+    const page = parseInt(params.page, 10) || 1;
+    
+    // If slug is purely numeric, return 404
+    if (/^\d+$/.test(slug)) {
+      return { notFound: true };
+    }
+    
+    const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+    if (!data || !data.projects) {
+      return { notFound: true };
+    }
+
+    // Fetch meta fields for any slug (parent or subcategory)
+    let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
+    try {
+      const catRes = await getCategoryBySlug(slug);
+      const cat = catRes?.data?.category;
+      if (cat) {
+        metaTitle = cat.meta_title || null;
+        metaKeywords = cat.meta_keywords || null;
+        metaDescription = cat.meta_description || null;
+        description = cat.description || null;
+        title = cat.name || makeTitle(slug);
+      }
+    } catch (e) {
+      // fallback: meta fields remain null
+    }
+
+    return {
+      props: {
+        initialProjects: data.projects,
+        initialTotalPages: data.totalPages || 1,
+        initialSlug: slug,
+        page,
+        metaTitle,
+        metaKeywords,
+        metaDescription,
+        description,
+        title
+      },
+      revalidate: 300,
+    };
+  } catch (error) {
+    console.error('Error in getStaticProps:', error);
     return { notFound: true };
   }
-
-  // // Fetch all categories to get meta for the current one
-  // const catRes = await getallCategories("");
-  // const categories = catRes?.data?.categories || [];
-  // // Find current category by slug
-  // const currentCategory = categories.find(cat => cat.slug === slug);
-
-  // 👇 NEW: Fetch meta fields for any slug (parent or subcategory)
-  let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
-  try {
-    const catRes = await getCategoryBySlug(slug);
-    const cat = catRes?.data?.category;
-    if (cat) {
-      metaTitle = cat.meta_title || null;
-      metaKeywords = cat.meta_keywords || null;
-      metaDescription = cat.meta_description || null;
-      description = cat.description || null; // Use description from category if available
-      title = cat.name || makeTitle(slug); // Fallback to slug if name is not available
-    }
-  } catch (e) {
-    // fallback: meta fields remain null
-  }
-
-  return {
-    props: {
-      initialProjects: data.projects,
-      initialTotalPages: data.totalPages || 1,
-      initialSlug: slug,
-      page,
-      // metaTitle: currentCategory?.meta_title || null,
-      // metaKeywords: currentCategory?.meta_keywords || null,
-      // metaDescription: currentCategory?.meta_description || null,
-      metaTitle,
-      metaKeywords,
-      metaDescription,
-      description,
-      title
-    },
-    revalidate: 300,
-  };
 }
 
 CadLandscaping.getLayout = function getLayout(page) {

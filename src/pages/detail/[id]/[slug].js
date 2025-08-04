@@ -986,20 +986,19 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const id = params.id;
   
-
   try {
-    const projectRes = await getsingleallprojects("", id);
-    const project = projectRes.data;
-    // const expectedSlug = slugify(project.work_title);
+    // Validate ID parameter - must be a valid number
+    if (!id || isNaN(parseInt(id))) {
+      return { notFound: true };
+    }
 
-    // if (params.slug !== expectedSlug) {
-    //   return {
-    //     redirect: {
-    //       destination: `/detail/${id}/${expectedSlug}`,
-    //       permanent: true,
-    //     },
-    //   };
-    // }
+    const projectRes = await getsingleallprojects("", id);
+    
+    if (!projectRes || !projectRes.data) {
+      return { notFound: true };
+    }
+    
+    const project = projectRes.data;
 
     // Use DB slug!
     const canonicalSlug = project.slug || slugify(project.work_title); // fallback for missing
@@ -1024,6 +1023,7 @@ export async function getStaticProps({ params }) {
       revalidate: 300,
     };
   } catch (err) {
+    console.error('Error in detail page getStaticProps:', err);
     return {
       notFound: true,
     };
