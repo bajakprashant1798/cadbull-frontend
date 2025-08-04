@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
 const AdSense = ({
@@ -11,6 +11,7 @@ const AdSense = ({
   const router = useRouter();
   const adRef = useRef(null);
   const isAdLoaded = useRef(false);
+  const [uniqueKey, setUniqueKey] = useState(0);
 
   useEffect(() => {
     // Don't run ad code in development to prevent errors and allow for styling.
@@ -18,26 +19,43 @@ const AdSense = ({
       return;
     }
 
+    // Reset on route change
+    isAdLoaded.current = false;
+    setUniqueKey(prev => prev + 1);
+
     // ✅ Enhanced ad loading with better error handling
     const loadAd = () => {
       try {
+        const adElement = adRef.current?.querySelector('.adsbygoogle');
+        
+        // Check if element exists and is empty
+        if (!adElement) {
+          console.warn(`AdSense element not found for slot: ${slot}`);
+          return;
+        }
+
+        // Check if already loaded
+        if (adElement.getAttribute('data-ad-status') === 'filled' || 
+            adElement.children.length > 0 ||
+            isAdLoaded.current) {
+          console.log(`AdSense slot ${slot} already loaded`);
+          return;
+        }
+
         // Check if adsbygoogle is available
         if (typeof window !== 'undefined' && window.adsbygoogle) {
-          // Clear any existing ad content
-          if (adRef.current) {
-            // Remove any existing ad content but keep the ins element
-            const existingAds = adRef.current.querySelectorAll('.adsbygoogle');
-            existingAds.forEach(ad => {
-              if (ad !== adRef.current.querySelector('.adsbygoogle')) {
-                ad.remove();
-              }
-            });
+          try {
+            // Push the ad request
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+            isAdLoaded.current = true;
+            console.log(`✅ AdSense ad loaded for slot: ${slot}`);
+          } catch (pushError) {
+            console.error("AdSense push error:", pushError);
+            // Handle "already have ads" error gracefully
+            if (pushError.message && pushError.message.includes('already have ads')) {
+              isAdLoaded.current = true;
+            }
           }
-
-          // Push the ad request
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-          isAdLoaded.current = true;
-          console.log(`AdSense ad loaded for slot: ${slot}`);
         } else {
           console.warn('AdSense script not loaded yet, retrying...');
           // Retry after a short delay
@@ -53,11 +71,10 @@ const AdSense = ({
     };
 
     // ✅ Delay initial load to ensure script is ready
-    const timer = setTimeout(loadAd, 100);
+    const timer = setTimeout(loadAd, 500);
 
     return () => {
       clearTimeout(timer);
-      isAdLoaded.current = false;
     };
   }, [router.asPath, slot]); // Re-run effect when path or slot changes
 
@@ -84,8 +101,9 @@ const AdSense = ({
   }
 
   return (
-    <div ref={adRef} key={`${slot}-${router.asPath}`} className="ad-container">
+    <div ref={adRef} className="ad-container">
       <ins
+        key={`adsense-${slot}-${uniqueKey}`}
         className="adsbygoogle"
         style={style}
         data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}

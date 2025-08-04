@@ -119,7 +119,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-lower-wrapper text-center">
           <div className="d-flex align-items-center gap-2 gap-md-3 flex-column-reverse flex-md-row pb-3 justify-content-md-center">
-            <p className="text-white">&copy; 2022 <span className="text-danger">CADBULL</span> | All Rights Reserved.</p>
+            <p className="text-white">&copy; 2025 <span className="text-danger">CADBULL</span> | All Rights Reserved.</p>
             <ul className="list-unstyled d-flex align-items-center gap-3 gap-md-4 mb-0 justify-content-center ">
               <li>
                 <Link href="/terms-condition">Term & Conditions</Link>

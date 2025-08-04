@@ -15,7 +15,8 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GTM_ID, pageview } from '../lib/gtm';
-import { initializeAdSense } from '../lib/adsense';
+// Remove conflicting adsense lib import
+// import { initializeAdSense } from '../lib/adsense';
 
 config.autoAddCss = false;
 const poppins = Poppins({
@@ -36,8 +37,7 @@ export default function App({ Component, pageProps }) {
       ? require("bootstrap/dist/js/bootstrap.bundle.min")
       : null;
 
-    // ✅ Initialize AdSense
-    initializeAdSense();
+    // ✅ REMOVED: initializeAdSense() - using component-based loading instead
 
     // Track route changes
     const handleRouteChange = (url) => {
@@ -74,6 +74,7 @@ export default function App({ Component, pageProps }) {
           }
         `}</style>
         {getLayout(<Component {...pageProps} />)}
+      {/* ✅ Single AdSense Script - Only for AMP pages */}
       <Script
         id="adsense-script-amp"
         async
@@ -81,6 +82,9 @@ export default function App({ Component, pageProps }) {
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
         data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
         crossOrigin="anonymous"
+        onLoad={() => {
+          console.log('AdSense AMP script loaded');
+        }}
       />
       </Fragment>
     );
@@ -160,7 +164,8 @@ export default function App({ Component, pageProps }) {
       `}</style>
       {getLayout(<Component {...pageProps} />)}
       {/* <AppContent Component={Component} pageProps={pageProps} /> */}
-      {/* ✅ IMPROVED: AdSense Script with proper error handling */}
+      
+      {/* ✅ Single AdSense Script for non-AMP pages */}
       <Script
         id="adsense-script"
         async
@@ -169,6 +174,8 @@ export default function App({ Component, pageProps }) {
         crossOrigin="anonymous"
         onLoad={() => {
           console.log('AdSense script loaded successfully');
+          // Initialize the adsbygoogle array
+          window.adsbygoogle = window.adsbygoogle || [];
         }}
         onError={(e) => {
           console.error('AdSense script failed to load:', e);
