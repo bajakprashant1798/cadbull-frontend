@@ -26,6 +26,10 @@ body {
 header {
   background: $offWhite 0% 0% no-repeat padding-box;
   border-bottom: 2px solid #a8a8a840;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 999;
 
   img {
     mix-blend-mode: darken;
