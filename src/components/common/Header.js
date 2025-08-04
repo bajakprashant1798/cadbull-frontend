@@ -421,7 +421,7 @@ const Header = () => {
                        }}
                         className={`${
                           link.url === Router.asPath ? "active" : ""
-                        }`}
+                        } nav-link`}
                         aria-current="page"
                         href={link.url}
                       >
