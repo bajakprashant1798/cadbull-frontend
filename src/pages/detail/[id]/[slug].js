@@ -808,11 +808,12 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
             </div>
 
-            <div className="d-none d-lg-block">
-              <AdSense slot="2091281415" format="fluid" layout="in-article" />
-            </div>
+        
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
+                <div className="d-none d-lg-block">
+                  <AdSense slot="2091281415" format="fluid" layout="in-article" />
+                </div>
                 <div>
                   <aside>
                     <h5 className="bg-secondary text-white px-3 py-2">
