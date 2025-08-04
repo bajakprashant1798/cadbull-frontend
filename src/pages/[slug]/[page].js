@@ -244,7 +244,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
     dispatch(updatesubcatserachTerm(search));
   }, [type, file_type, search]);
 
-  const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}${currentPage > 1 ? `/${currentPage}` : ""}`;
+  // const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}${currentPage > 1 ? `/${currentPage}` : ""}`;
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}`;
 
   return (
     <Fragment>
