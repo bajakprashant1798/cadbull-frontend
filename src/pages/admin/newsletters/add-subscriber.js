@@ -24,7 +24,7 @@ const AddSubscriber = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Add Subscriber</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Name Field */}

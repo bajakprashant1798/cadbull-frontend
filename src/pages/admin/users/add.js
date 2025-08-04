@@ -72,7 +72,7 @@ const AddUser = () => {
       <Head>
         <title>Add User | Admin</title>
       </Head>
-      <section className="py-lg-5 py-4 profile-page">
+      <section className="profile-page">
         <div className="container">
           <h2 className="mb-4">Add New User</h2>
           <form onSubmit={handleSubmit(addUserHandler)}>

@@ -31,7 +31,7 @@ const SearchWords = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Search Words</h2>
         <TableComponent
           fetchData={fetchSearchWords}

@@ -36,7 +36,7 @@ const ChangePassword = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container">
         <h2>Change Password</h2>
         <form onSubmit={handlePasswordChange} className="mt-4">
           <div className="mb-3">

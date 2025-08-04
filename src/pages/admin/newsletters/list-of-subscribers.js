@@ -48,7 +48,7 @@ const ListSubscribers = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>List of Subscribers</h2>
 
         {/* Search & Entries Filter */}

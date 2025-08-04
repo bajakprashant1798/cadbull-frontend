@@ -51,7 +51,7 @@ const AdminLayout = ({ children }) => {
       <Sidebar />
       <div className="main-content">
         <AdminHeader />
-        <main className="p-4">{children}</main>
+        <main className="p-4 main-mt-0">{children}</main>
       </div>
     </div>
   );

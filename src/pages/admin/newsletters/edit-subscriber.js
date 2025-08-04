@@ -52,7 +52,7 @@ const EditSubscriber = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Edit Subscriber</h2>
 
         <form onSubmit={handleSubmit} className="mt-4">

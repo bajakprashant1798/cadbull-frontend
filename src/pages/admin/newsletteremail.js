@@ -68,7 +68,7 @@ const NewsletterEmail = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Newsletter Email</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

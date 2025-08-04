@@ -96,7 +96,7 @@ const EditUser = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Edit User</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">

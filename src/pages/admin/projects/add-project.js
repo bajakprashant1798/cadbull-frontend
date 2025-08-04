@@ -289,7 +289,7 @@ const AddProject = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Add New Project</h2>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
           

@@ -38,7 +38,7 @@ const ListOccupations = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>List of Occupations</h2>
         <TableComponent
           fetchData={fetchOccupations}

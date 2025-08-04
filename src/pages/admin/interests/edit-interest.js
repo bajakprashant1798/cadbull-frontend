@@ -35,7 +35,7 @@ const EditInterest = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Edit Interest</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">

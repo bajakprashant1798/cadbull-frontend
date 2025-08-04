@@ -254,7 +254,7 @@ const UserTable = ({ role, title }) => {
 
 
   return (
-    <section className="py-lg-5 py-4 profile-page">
+    <section className="profile-page">
       <div className="container">
         <h2 className="mb-4">{title}</h2>
         {/* Filters */}

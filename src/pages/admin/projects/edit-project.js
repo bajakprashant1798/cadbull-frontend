@@ -262,7 +262,7 @@ const EditProject = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="container py-5 text-center">
+        <div className="container  text-center">
           <h4>Loading project details...</h4>
         </div>
       </AdminLayout>
@@ -271,7 +271,7 @@ const EditProject = () => {
 
   return (
     <AdminLayout>
-      <div className="container py-5">
+      <div className="container ">
         <h2>Edit Project</h2>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
           {/* Work Title */}
