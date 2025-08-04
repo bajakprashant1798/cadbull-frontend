@@ -47,6 +47,53 @@ const AddProject = () => {
   const [slug, setSlug] = useState("");         // Slug input
   const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
 
+  // ✅ Add user selection state
+  const [selectedUserId, setSelectedUserId] = useState("");
+
+  // ✅ Predefined users list (same as old site)
+  const predefinedUsers = [
+    { id: 7481, name: 'Eiz Luna' },
+    { id: 7491, name: 'Fernando Zapata' },
+    { id: 7492, name: 'Harriet Burrows' },
+    { id: 7494, name: 'Jafania Waxy' },
+    { id: 7495, name: 'Jong kelly' },
+    { id: 7497, name: 'Liam White' },
+    { id: 7499, name: 'Neha Mishra' },
+    { id: 7500, name: 'Niraj Yadav' },
+    { id: 7502, name: 'Umar mehmood' },
+    { id: 7503, name: 'Wang Fang' },
+    { id: 187903, name: 'Priyanka' },
+    { id: 188335, name: 'Zalak' },
+    { id: 188338, name: 'K.H.J' },
+    { id: 217174, name: 'Manveen' },
+    { id: 221223, name: 'Piyap' },
+    { id: 223239, name: 'apoorva' },
+    { id: 223249, name: 'viddhi' },
+    { id: 332154, name: 'Dipika' },
+    { id: 332155, name: 'Nilam' },
+    { id: 332156, name: 'Poonam' },
+    { id: 332157, name: 'Jiya' },
+    { id: 332158, name: 'Chirag' },
+    { id: 332159, name: 'Komal' },
+    { id: 332160, name: 'Vaishali' },
+    { id: 420447, name: 'Justine' },
+    { id: 420455, name: 'Marvel' },
+    { id: 420459, name: 'Robert' },
+    { id: 420468, name: 'Keval' },
+    { id: 420471, name: 'Parth' },
+    { id: 420473, name: 'Dhara' },
+    { id: 420475, name: 'Guptil' },
+    { id: 420477, name: 'Ravindra' },
+    { id: 420481, name: 'Forel' },
+    { id: 420487, name: 'Vaas' },
+    { id: 1135846, name: 'Rashmi' },
+    { id: 784758, name: 'Akanksha' },
+    { id: 1102609, name: 'Sethupathi' },
+    { id: 1418808, name: 'Meera' },
+    { id: 1418820, name: 'Pavithra' },
+    { id: 1418824, name: 'Rachna Jilka' }
+  ];
+
 
   // ✅ Fetch Categories on Component Mount
   useEffect(() => {
@@ -182,6 +229,10 @@ const AddProject = () => {
       toast.error("Slug cannot be empty.");
       return;
     }
+    if (!selectedUserId) {
+      toast.error("Please select a username.");
+      return;
+    }
     try {
         const formData = new FormData();
 
@@ -201,6 +252,9 @@ const AddProject = () => {
         formData.append("category_id", data.category_id || "");
         formData.append("subcategory_id", data.subcategory_id ? data.subcategory_id : null);
         formData.append("type", data.type || "Free");
+        
+        // ✅ Add selected user_id
+        formData.append("user_id", selectedUserId);
 
         // ✅ Ensure file & image exist before appending
         if (data.file && data.file.length > 0) {
@@ -222,6 +276,7 @@ const AddProject = () => {
         await addProjectApi(formData);
         toast.success("Project added successfully!");
         reset();
+        setSelectedUserId(""); // Reset user selection
         router.push("/admin/projects/view-projects");
     } catch (error) {
         console.error("❌ Error Adding Project:", error.response?.data || error.message);
@@ -237,6 +292,28 @@ const AddProject = () => {
       <div className="container py-5">
         <h2>Add New Project</h2>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+          
+          {/* ✅ Choose Username */}
+          <div className="mb-3">
+            <label className="form-label">Choose Username *</label>
+            <select 
+              className="form-control" 
+              value={selectedUserId} 
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              required
+            >
+              <option value="">Select Username</option>
+              {predefinedUsers.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} (ID: {user.id})
+                </option>
+              ))}
+            </select>
+            <small className="form-text text-muted">
+              This project will be attributed to the selected user, not the admin.
+            </small>
+          </div>
+
           {/* Work Title */}
           <div className="mb-3">
             <label className="form-label">Work Title</label>
@@ -379,7 +456,7 @@ const AddProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId}>
             {/* Add Project */}
             Upload
           </button>
