@@ -318,6 +318,12 @@ const AddProject = () => {
               <option value="DXF">DXF</option>
               <option value="PDF">PDF</option>
               <option value="JPEG">JPEG</option>
+              <option value="3d sketchup">SKP (3D Sketchup)</option>
+              <option value="3d max">MAX (3D Max)</option>
+              <option value="Revit">Revit</option>
+              <option value="Photoshop">Photoshop</option>
+              <option value="App">App</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -374,7 +380,8 @@ const AddProject = () => {
 
           {/* Submit Button */}
           <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
-            Add Project
+            {/* Add Project */}
+            Upload
           </button>
 
         </form>

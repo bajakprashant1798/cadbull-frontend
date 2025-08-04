@@ -47,13 +47,13 @@ export const drawings = [
   { img: BIM4, type: "MAX", description: "3D MODELS", value: "3d max" },
   { img: BIM1, type: "Revit", description: "Revit", value: "Revit" },
   { img: BIM1, type: "PDF", description: "PDF", value: "PDF" },
-  { img: BIM2, type: "BIM", description: "BIM", value: "BIM" },
-  {
-    img: BIM5,
-    type: "3DS",
-    description: "3D STUDIO MAX",
-    value: "3d sketchup",
-  },
+  // { img: BIM2, type: "BIM", description: "BIM", value: "BIM" },
+  // {
+  //   img: BIM5,
+  //   type: "3DS",
+  //   description: "3D STUDIO MAX",
+  //   value: "3d sketchup",
+  // },
   { img: BIM1, type: "DXF", description: "CAD BLOCKS", value: "DXF" },
   { img: BIM2, type: "JPEG", description: "BIM OBJECTS", value: "JPEG" },
   {
