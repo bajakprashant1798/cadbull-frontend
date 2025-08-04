@@ -6,6 +6,127 @@ import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
 
+// ✅ Image Exists Checker Component
+const ImageExistsChecker = ({ imagePath, projectId }) => {
+    const [imageExists, setImageExists] = useState(null); // null = loading, true = exists, false = missing
+    const [imageUrl, setImageUrl] = useState("");
+
+    useEffect(() => {
+        if (!imagePath) {
+            setImageExists(false);
+            return;
+        }
+
+        const checkImageExists = async () => {
+            // ✅ Construct possible image URLs
+            const baseUrl = process.env.NEXT_PUBLIC_S3_PUBLIC_URL;
+            
+            let possibleUrls = [];
+            
+            if (imagePath.includes('/')) {
+                // ✅ New format with year/month: "2025/01/filename.jpg"
+                const sizes = ['small', 'medium', 'large', 'original'];
+                possibleUrls = sizes.map(size => 
+                    `${baseUrl}/product_img/${size}/${imagePath}`
+                );
+            } else {
+                // ✅ Old format without subfolders: "filename.jpg"
+                const sizes = ['small', 'medium', 'large', 'original'];
+                possibleUrls = sizes.map(size => 
+                    `${baseUrl}/product_img/${size}/${imagePath}`
+                );
+            }
+
+            // ✅ Also try the old thumb.cadbull.com format
+            // possibleUrls.push(`https://thumb.cadbull.com/img/product_img/original/${imagePath}`);
+            // possibleUrls.push(`https://thumb.cadbull.com/img/product_img/small/${imagePath}`);
+
+            // ✅ Test each URL until one works
+            for (const url of possibleUrls) {
+                try {
+                    const response = await fetch(url, { 
+                        method: 'HEAD',
+                        mode: 'cors'
+                    });
+                    if (response.ok) {
+                        setImageUrl(url);
+                        setImageExists(true);
+                        return;
+                    }
+                } catch (error) {
+                    // Continue to next URL
+                    console.log(`Image not found at: ${url}`);
+                }
+            }
+            
+            // ✅ If no image found anywhere
+            console.warn(`No image found for project ${projectId} with path: ${imagePath}`);
+            setImageExists(false);
+        };
+
+        checkImageExists();
+    }, [imagePath, projectId]);
+
+    // ✅ Loading state
+    if (imageExists === null) {
+        return (
+            <div style={{ 
+                padding: "8px 12px", 
+                textAlign: "center", 
+                backgroundColor: "#f8f9fa",
+                border: "1px solid #dee2e6",
+                borderRadius: "4px",
+                fontSize: "12px"
+            }}>
+                Checking...
+            </div>
+        );
+    }
+
+    // ✅ Missing image state
+    if (imageExists === false || !imagePath) {
+        return (
+            <div style={{ 
+                padding: "8px 12px", 
+                textAlign: "center", 
+                backgroundColor: "#dc3545",
+                color: "white",
+                border: "1px solid #dc3545",
+                borderRadius: "4px",
+                fontWeight: "bold",
+                fontSize: "12px"
+            }}>
+                Missing Image
+                {!imagePath && <><br/><small>(No path)</small></>}
+            </div>
+        );
+    }
+
+    // ✅ Image exists - show it
+    return (
+        <div style={{ textAlign: "center" }}>
+            <img 
+                src={imageUrl}
+                alt={`Product ${projectId}`}
+                style={{ 
+                    maxWidth: "80px", 
+                    maxHeight: "80px",
+                    border: "1px solid #28a745",
+                    borderRadius: "4px",
+                    objectFit: "cover"
+                }}
+                onError={() => {
+                    console.error(`Failed to load image: ${imageUrl}`);
+                    setImageExists(false);
+                }}
+                onLoad={() => {
+                    console.log(`✅ Image loaded successfully: ${imageUrl}`);
+                }}
+            />
+        </div>
+    );
+};
+
 const ViewProjects = () => {
     // const { token } = useSelector((store) => store.logininfo);
     const isAuthenticated = useSelector(
@@ -142,6 +263,7 @@ const ViewProjects = () => {
                                 <th style={{ maxWidth: "150px", wordWrap: "break-word", whiteSpace: "normal" }}>Category</th>
                                 <th>Status</th>
                                 <th>Actions</th>
+                                <th>Image Exists</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -157,6 +279,7 @@ const ViewProjects = () => {
                                             {project.category_name || "N/A"}
                                         </td>
                                         <td>{project.status === "1" ? "Approved" : project.status === "2" ? "Rejected" : "Pending"}</td>
+                                        
                                         <td>
                                             <button className="btn btn-primary btn-sm" onClick={() => router.push(`/admin/projects/edit-project?id=${project.id}`)}>Edit</button>
                                             {/* <a href={`${process.env.NEXT_PUBLIC_API_MAIN_NO_API}/uploads/project_files/${project.file}`} className="btn btn-sm btn-success ms-2" download>Download</a> */}
@@ -168,11 +291,19 @@ const ViewProjects = () => {
                                             </button>
 
                                         </td>
+
+                                        {/* ✅ Image Exists Column */}
+                                        <td style={{ textAlign: "center", minWidth: "120px" }}>
+                                            <ImageExistsChecker 
+                                                imagePath={project.image} 
+                                                projectId={project.id}
+                                            />
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center">No projects found</td>
+                                    <td colSpan="7" className="text-center">No projects found</td>
                                 </tr>
                             )}
                         </tbody>
