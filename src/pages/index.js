@@ -120,7 +120,7 @@ export default function Home({
 
   // ssg setup
   const [projects, setProjects] = useState(initialProjects);
-  const [productCount, setProductCount] = useState(totalProducts || lastProductId);
+  const [lastId, setLastId] = useState(lastProductId);
 
   // const [lastProductId, setLastProductId] = useState(0);
 
@@ -361,7 +361,7 @@ export default function Home({
 
                 <p className="mb-4 mb-md-5">
                   {/* User */}
-                  <span className="text-danger">{Number(productCount).toLocaleString("en-US")}+</span> <span className="fw-light"> Free & Premium
+                  <span className="text-danger">{Number(lastId).toLocaleString("en-US")}+</span> <span className="fw-light"> Free & Premium
                   CADFiles
                   </span>
                 </p>
