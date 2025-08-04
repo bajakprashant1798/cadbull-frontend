@@ -352,10 +352,17 @@ const EditProject = () => {
           <div className="mb-3">
             <label className="form-label">File Type</label>
             <select className="form-control" {...register("file_type")}>
+              <option value="">Select File Type</option>
               <option value="DWG">DWG</option>
               <option value="DXF">DXF</option>
               <option value="PDF">PDF</option>
               <option value="JPEG">JPEG</option>
+              <option value="3d sketchup">SKP (3D Sketchup)</option>
+              <option value="3d max">MAX (3D Max)</option>
+              <option value="Revit">Revit</option>
+              <option value="Photoshop">Photoshop</option>
+              <option value="App">App</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
