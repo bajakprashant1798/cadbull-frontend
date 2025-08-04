@@ -76,6 +76,7 @@ import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 import parse from "html-react-parser";
 import Image from "next/image";
 import AdSense from "@/components/AdSense";
+
 function transform(node, index) {
   if (node.type === "tag") {
     return createElement(
@@ -807,6 +808,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
             </div>
 
+            <div className="d-none d-lg-block">
+              <AdSense slot="2091281415" format="fluid" layout="in-article" />
+            </div>
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div>
@@ -893,9 +897,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* </div> */}
                 {/* add component ended */}
                 
-                {/* <div className="border-top border-bottom py-2"> */}
+                <div className="d-block d-lg-none">
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
-                {/* </div> */}
+                </div>
 
               </div>
             </div>
