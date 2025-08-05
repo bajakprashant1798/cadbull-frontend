@@ -98,7 +98,7 @@ const CategoriesLayout = ({
                       // url="categories/sub/"
                     />
                   </div>
-                  <div className="mb-4">
+                  <div className="mb-4 d-none d-xl-block">
                     <SearchCategories
                       categories={mainCategories}
                       type="Categories"

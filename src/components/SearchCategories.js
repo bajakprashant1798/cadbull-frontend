@@ -79,7 +79,7 @@ const SearchCategories = ({ categories, type }) => {
 
   return (
     <Fragment>
-      <div className="d-xl-none">
+      <div className="d-xl-none d-block">
         <ul className="list-unstyled gap-md-3 justify-content-center d-flex gap-2 gap-md-2 align-items-center justify-content-md-center">
           <li>
             <button
