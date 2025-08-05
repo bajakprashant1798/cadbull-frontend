@@ -55,11 +55,12 @@
 import { downloadFile } from "@/utils/downloadfile";
 import { downloadProject } from "./api";
 import { toast } from "react-toastify";
+import { redirectToLogin } from "@/utils/redirectHelpers";
 
 export const handledownload = async (id, isAuthenticated, router) => {
   if (!isAuthenticated) {
     toast.warning("Please login to download the file");
-    return router.push("/auth/login");
+    return redirectToLogin(router);
   }
 
   try {

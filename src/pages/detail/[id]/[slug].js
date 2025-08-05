@@ -23,6 +23,7 @@ import {
   getFavouriteItems,
   getallprojects, // ✅ Add this here
 } from "@/service/api";
+import { requireAuth } from "@/utils/redirectHelpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllCategoriesData,
@@ -282,8 +283,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   // Updated handleLike function with Redux dispatch
   const handleLike = async () => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
+    if (!requireAuth(isAuthenticated, router)) {
       return;
     }
     try {
@@ -322,8 +322,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   // New handler for "Add to libary" button
   const handleAddToLibrary = async () => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
+    if (!requireAuth(isAuthenticated, router)) {
       return;
     }
     if (isFavorited) {

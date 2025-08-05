@@ -13,6 +13,7 @@ import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ReCAPTCHA from "react-google-recaptcha";
+import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -147,8 +148,12 @@ const Register = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      // ✅ Redirect user to backend OAuth route
-      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
+      const redirectUrl = router.query.redirect;
+      const googleAuthUrl = redirectUrl 
+        ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
+        : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
+      
+      window.location.href = googleAuthUrl;
     } catch (error) {
       console.error("❌ Google Login Error:", error);
       toast.error("Google login failed. Please try again.");
@@ -174,6 +179,11 @@ const Register = () => {
   
   const handleFacebookSignIn = async () => {
     try {
+      const redirectUrl = router.query.redirect;
+      const facebookAuthUrl = redirectUrl 
+        ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`
+        : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+      
       // For Safari compatibility, use a popup approach instead of direct redirect
       const width = 600;
       const height = 600;
@@ -181,7 +191,7 @@ const Register = () => {
       const top = window.screen.height / 2 - height / 2;
       
       const popup = window.open(
-        `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`,
+        facebookAuthUrl,
         'facebook-login',
         `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
       );
@@ -189,7 +199,7 @@ const Register = () => {
       // Check if popup was blocked
       if (!popup || popup.closed || typeof popup.closed === 'undefined') {
         // Fallback to direct redirect if popup is blocked
-        window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+        window.location.href = facebookAuthUrl;
         return;
       }
 
@@ -205,12 +215,8 @@ const Register = () => {
           dispatch(loginSuccess({ user: userData, status: "authenticated" }));
           window.dispatchEvent(new Event("userLoggedIn"));
           
-          // Redirect based on role
-          if (userData.role === 1) {
-            router.replace("/admin/dashboard");
-          } else {
-            router.replace("/");
-          }
+          // Use redirect helper for consistent redirect logic
+          redirectAfterLogin(router, userData);
           
           window.removeEventListener('message', handleMessage);
         } else if (event.data.type === 'SOCIAL_LOGIN_ERROR') {
@@ -485,7 +491,6 @@ const Register = () => {
           <button
             onClick={() => {
               handleFacebookSignIn();
-              router.push("/");
             }}
             type="button"
             className="btn btn-secondary-variant d-flex gap-1 align-items-center justify-content-center"

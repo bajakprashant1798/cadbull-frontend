@@ -13,6 +13,7 @@ import { verifyOtpApiHandler, linkPhoneApiHandler } from "@/service/api";
 import api from "@/service/api"
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
+import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
 
 const pageTitle = {
@@ -255,7 +256,9 @@ const RegisterPhone = () => {
       if (response.data && response.data.user) {
         localStorage.setItem("userData", JSON.stringify(response.data.user));
         dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
-        router.push("/profile/edit");
+        
+        // Use redirect helper for consistent redirect logic
+        redirectAfterLogin(router, response.data.user, "/profile/edit");
         return;
       }
 
@@ -346,7 +349,9 @@ const RegisterPhone = () => {
       if (response.data && response.data.user) {
         localStorage.setItem("userData", JSON.stringify(response.data.user));
         dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
-        router.push("/profile/edit");
+        
+        // Use redirect helper for consistent redirect logic
+        redirectAfterLogin(router, response.data.user, "/profile/edit");
         return;
       }
 
@@ -405,7 +410,9 @@ const RegisterPhone = () => {
       // console.log("Link phone success:", response.data);
       localStorage.setItem("userData", JSON.stringify(response.data.user));
       dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
-      router.push("/profile/edit");
+      
+      // Use redirect helper for consistent redirect logic
+      redirectAfterLogin(router, response.data.user, "/profile/edit");
     } catch (err) {
       console.error("Link phone error:", err, err?.response?.data);
       setError(

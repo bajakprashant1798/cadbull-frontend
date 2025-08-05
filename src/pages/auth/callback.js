@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { toast } from "react-toastify";
+import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
 const OAuthCallback = () => {
   const router = useRouter();
@@ -12,6 +13,7 @@ const OAuthCallback = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get("user");
+    const redirectParam = urlParams.get("redirect");
   
     if (userParam) {
       try {
@@ -28,24 +30,26 @@ const OAuthCallback = () => {
           try {
             window.opener.postMessage({
               type: 'SOCIAL_LOGIN_SUCCESS',
-              userData: userData
+              userData: userData,
+              redirect: redirectParam
             }, window.location.origin);
             window.close();
           } catch (error) {
             // If postMessage fails, redirect parent window
-            window.opener.location.href = userData.role === 1 ? "/admin/dashboard" : "/";
+            const redirectUrl = redirectParam && redirectParam !== '/auth/login' 
+              ? decodeURIComponent(redirectParam)
+              : (userData.role === 1 ? "/admin/dashboard" : "/");
+            window.opener.location.href = redirectUrl;
             window.close();
           }
         } else {
-          // Normal redirect flow
+          // Normal redirect flow - use helper function
           setTimeout(() => {
-            if (userData.role === 1) {
-              router.replace("/admin/dashboard");
-            } else if (userData.role === 5) {
-              router.replace("/admin/dashboard");
-            } else {
-              router.replace("/");
+            // If we have a redirect parameter, add it to the router query
+            if (redirectParam) {
+              router.query.redirect = redirectParam;
             }
+            redirectAfterLogin(router, userData);
           }, 500);
         }
       } catch (error) {

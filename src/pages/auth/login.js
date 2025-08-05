@@ -18,6 +18,7 @@ import { setFavouriteList } from "../../../redux/app/features/projectsSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import ReCAPTCHA from "react-google-recaptcha";
+import { redirectAfterLogin } from "@/utils/redirectHelpers";
 // import RecaptchaComponent from "@/components/RecaptchaComponent";
 
 
@@ -49,14 +50,16 @@ const Login = () => {
   // Immediately redirect if localStorage already has user data
   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem("userData")) {
-      router.replace("/");
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      redirectAfterLogin(router, userData);
     }
   }, [router]);
 
   // Also, if Redux state is updated to "authenticated", redirect away from the login page
   useEffect(() => {
     if (isAuthenticated === true) {
-      router.replace("/");
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      redirectAfterLogin(router, userData);
     }
   }, [isAuthenticated, router]);
 
@@ -89,6 +92,11 @@ const Login = () => {
       toast.error("Please verify that you are not a robot.");
       return;
     }
+    
+    console.log('📝 Form Login - Router Query:', router.query);
+    console.log('📝 Form Login - Redirect URL:', router.query.redirect);
+    console.log('📝 Form Login - Full URL:', window.location.href);
+    
     // Handle form submission here
     startLoading()
     // loginApiHandler(data)
@@ -135,14 +143,8 @@ const Login = () => {
 
         stopLoading()
 
-        // Redirect user based on role
-        if (user.role === 1) {
-          router.push("/admin/dashboard"); // Super Admin
-        } else if (user.role === 5) {
-          router.push("/admin/dashboard"); // Content Creator
-        } else {
-          router.push("/"); // Default for other users
-        }
+        // ✅ Use helper function for redirect
+        redirectAfterLogin(router, user);
       })
       .catch((err) => {
         stopLoading();
@@ -165,7 +167,18 @@ const Login = () => {
   // ✅ Google Login Handler
   const handleGoogleSignIn = async () => {
     try {
-      window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
+      const redirectUrl = router.query.redirect;
+      console.log('🔗 Google Login - Router Ready:', router.isReady);
+      console.log('🔗 Google Login - Router Query:', router.query);
+      console.log('🔗 Google Login - Redirect URL:', redirectUrl);
+      console.log('🔗 Google Login - Full URL:', window.location.href);
+      
+      const googleAuthUrl = redirectUrl 
+        ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
+        : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
+      
+      console.log('🔗 Google Auth URL:', googleAuthUrl);
+      window.location.href = googleAuthUrl;
     } catch (error) {
       console.error("❌ Google Login Error:", error);
       toast.error("Google login failed. Please try again.");
@@ -176,6 +189,17 @@ const Login = () => {
 
   const handleFacebookSignIn = async () => {
     try {
+      const redirectUrl = router.query.redirect;
+      console.log('📘 Facebook Login - Router Query:', router.query);
+      console.log('📘 Facebook Login - Redirect URL:', redirectUrl);
+      console.log('📘 Facebook Login - Full URL:', window.location.href);
+      
+      const facebookAuthUrl = redirectUrl 
+        ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`
+        : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+      
+      console.log('📘 Facebook Auth URL:', facebookAuthUrl);
+      
       // For Safari compatibility, use a popup approach instead of direct redirect
       const width = 600;
       const height = 600;
@@ -183,7 +207,7 @@ const Login = () => {
       const top = window.screen.height / 2 - height / 2;
       
       const popup = window.open(
-        `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`,
+        facebookAuthUrl,
         'facebook-login',
         `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
       );
@@ -191,7 +215,7 @@ const Login = () => {
       // Check if popup was blocked
       if (!popup || popup.closed || typeof popup.closed === 'undefined') {
         // Fallback to direct redirect if popup is blocked
-        window.location.href = `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
+        window.location.href = facebookAuthUrl;
         return;
       }
 
@@ -207,12 +231,8 @@ const Login = () => {
           dispatch(loginSuccess({ user: userData, status: "authenticated" }));
           window.dispatchEvent(new Event("userLoggedIn"));
           
-          // Redirect based on role
-          if (userData.role === 1) {
-            router.replace("/admin/dashboard");
-          } else {
-            router.replace("/");
-          }
+          // Use helper function for redirect
+          redirectAfterLogin(router, userData);
           
           window.removeEventListener('message', handleMessage);
         } else if (event.data.type === 'SOCIAL_LOGIN_ERROR') {
@@ -359,7 +379,6 @@ const Login = () => {
           <button
             onClick={() => {
               handleFacebookSignIn();
-              router.push("/");
             }}
             type="button"
             className="btn btn-secondary-variant d-flex gap-1 align-items-center justify-content-center"

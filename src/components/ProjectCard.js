@@ -11,6 +11,7 @@ import { handledownload } from "@/service/globalfunction";
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
+import { redirectToLogin } from "@/utils/redirectHelpers";
 
 const ProjectCard = ({  
   view_count, 
@@ -47,7 +48,7 @@ const ProjectCard = ({
   
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      redirectToLogin(router);
       return;
     }
     try {
