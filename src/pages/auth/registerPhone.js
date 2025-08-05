@@ -258,7 +258,7 @@ const RegisterPhone = () => {
         dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
         
         // Use redirect helper for consistent redirect logic
-        redirectAfterLogin(router, response.data.user, "/profile/edit");
+        redirectAfterLogin(router, response.data.user);
         return;
       }
 
@@ -351,7 +351,7 @@ const RegisterPhone = () => {
         dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
         
         // Use redirect helper for consistent redirect logic
-        redirectAfterLogin(router, response.data.user, "/profile/edit");
+        redirectAfterLogin(router, response.data.user);
         return;
       }
 
@@ -412,7 +412,7 @@ const RegisterPhone = () => {
       dispatch(loginSuccess({ user: response.data.user, status: "authenticated" }));
       
       // Use redirect helper for consistent redirect logic
-      redirectAfterLogin(router, response.data.user, "/profile/edit");
+      redirectAfterLogin(router, response.data.user);
     } catch (err) {
       console.error("Link phone error:", err, err?.response?.data);
       setError(
