@@ -110,8 +110,15 @@ const Pricing = () => {
             <div className="text-center">
               <div className="mb-3 mb-md-4 mt-3 mt-md-5">
               <div>
-                {message && <p className="alert alert-warning text-center">{message}</p>}
-                
+                {/* {message && <p className="alert alert-warning text-center">{message}</p>} */}
+                {message && (
+                  <p 
+                    className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center`}
+                    style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
+                  >
+                    {message}
+                  </p>
+                )}
               </div>
                 {/* <h1>Choose Your Pricing Plan</h1>
                 <p>Choose the Right plan. No commission</p> */}
