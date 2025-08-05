@@ -193,7 +193,7 @@ const ContactUs = () => {
                 </div>
               </div>
             </div>
-            <div className="col-md-5">
+            <div className="col-md-12">
               <div className="p-lg-4">
                 {/* Form  */}
                 <form onSubmit={handleSubmit(contactSubmitHandler)} className="row g-3 mb-3 mb-md-4">
@@ -341,7 +341,7 @@ const ContactUs = () => {
                 </form>
               </div>
             </div>
-            <div className="col-md-7">
+            {/* <div className="col-md-7">
               <div className="form-wrapper-map">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3670.494254112248!2d72.49892347456726!3d23.078996079134274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e9cc0b90151e1%3A0x9e601a850ba19348!2sFortune%20Business%20Hub!5e0!3m2!1sen!2sin!4v1707131007386!5m2!1sen!2sin"
@@ -353,7 +353,7 @@ const ContactUs = () => {
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

@@ -667,7 +667,7 @@ export default function Home({
                           Cad Visualization
                         </h4>
                         <p className="mb-2">
-                          Cad plan of each detail of your future interior.
+                          High-quality CAD drawings for precise interior and architectural design.
                         </p>
                       </div>
                       {/* <div className="mt-auto">
@@ -692,11 +692,10 @@ export default function Home({
                       </div>
                       <div>
                         <h4 className="fw-bold text-primary text-capitalize h6">
-                          Individual Project
+                          Customized Projects
                         </h4>
                         <p className="mb-2">
-                          The basic philosophy of studio is to create individual
-                          design.
+                          Editable CAD files tailored for all types of design projects.
                         </p>
                       </div>
                       {/* <div className="mt-auto">
@@ -720,11 +719,13 @@ export default function Home({
             <div className="col-md-12">
               <div className="text-center">
                 <h3 className="text-white mb-2 mb-md-3">
-                  Get Incredible Files Right Now!
+                  {/* Get Incredible Files Right Now! */}
+                  Custom CAD Drawing Services for Your Project Needs
                 </h3>
                 <p className="mb-4 mb-md-5 text-white">
-                  At every stage, we could supervise your project – controlling
-                  all the details and consulting the builders.
+                  {/* At every stage, we could supervise your project – controlling
+                  all the details and consulting the builders. */}
+                  Our team is equipped to develop drawings tailored to your specific requirements. Please feel free to contact us to discuss your project needs.
                 </p>
                 <Link href="/contact-us" passHref>
                   <button className="btn btn-light">GET IN TOUCH</button>
@@ -743,17 +744,16 @@ export default function Home({
               <div>
                 <div className="mb-md-4 mb-3 d-flex ps-5">
                   <SectionHeading
-                    subHeading={"OUR SKILLS"}
-                    mainHeading={"The Core Company Values"}
+                    subHeading={"OUR EXPERTISE"}
+                    mainHeading={"The Core Strengths of"}
                     mainHeadingBold={"Cadbull"}
                   />
                 </div>
-                <p className="mb-3 mb-md-4">
-                  One complete exquisite place to shape-up imagination, crafting
-                  to express so that you can impress the rest with the best. Get
-                  started, create your account and get the maximumof the
-                  community. Share expertise and connect with your peers on
-                  Cadbull Auto desk idea station.
+                <p className="mb-1 mb-md-2">
+                  <strong>Cadbull</strong> is a trusted global platform offering 270,000+ ready-to-use CAD blocks, AutoCAD drawings, 2D floor plans, and 3D models. Whether you’re an architect, engineer, interior designer, or student, Cadbull makes designing faster, smarter, and more professional. From residential layouts to mechanical schematics and landscaping plans, we provide high-quality resources to power every project.
+                </p>
+                <p className="mb-3 mb-md-3 pb-3 pb-md-3 border-bottom ">
+                  Join thousands of professionals who rely on Cadbull for precise drafting, creative inspiration, and time-saving CAD solutions.
                 </p>
               </div>
 
@@ -761,7 +761,10 @@ export default function Home({
                 {/* CAD Planing Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h4 className="text-gray h5 mb-0">CAD Planing Design</h4>
+                    <div>
+                      <h4 className="text-gray h5 mb-0">CAD Planning & Drafting</h4>
+                      <p>Complete sets of architectural, civil, and structural planning files to <br /> suit all building types.</p>
+                    </div>
                     <h4 className="text-gray h5 mb-0">98%</h4>
                   </div>
                   <div
@@ -781,7 +784,10 @@ export default function Home({
                 {/* 3d Modeling Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h4 className="text-gray h5 mb-0">3d Modeling Design</h4>
+                    <div>
+                      <h4 className="text-gray h5 mb-0">3D Modeling & Visualization</h4>
+                      <p>Explore a wide range of 3D blocks and designs for realistic modeling and presentation.</p>
+                    </div>
                     <h4 className="text-gray h5 mb-0">95%</h4>
                   </div>
                   <div
@@ -801,7 +807,10 @@ export default function Home({
                 {/* 2d Planning Design */}
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h4 className="text-gray h5 mb-0">2d Planning Design</h4>
+                    <div>
+                      <h4 className="text-gray h5 mb-0">2D Floor Plans & Layout Design</h4>
+                      <p>Accurate, scalable 2D drawings ready for residential, commercial,<br /> and industrial projects.</p>
+                    </div>
                     <h4 className="text-gray h5 mb-0">90%</h4>
                   </div>
                   <div
