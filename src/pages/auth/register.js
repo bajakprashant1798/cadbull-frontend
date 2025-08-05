@@ -499,7 +499,7 @@ const Register = () => {
             <span>Login in with Facebook</span>
           </button>
           <Link
-            href={"/auth/registerPhone"}
+            href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             type="button"
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
           >
