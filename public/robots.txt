@@ -2,3 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://cadbull.com/sitemap.xml
+
+# AdSense
+User-agent: Googlebot
+Allow: /ads.txt
