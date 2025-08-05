@@ -629,20 +629,16 @@ export default function Home({
               <div className="main-principle-content-wrapper">
                 <div className="mb-md-4 mb-3 ps-5">
                   <SectionHeading
-                    subHeading={"MAIN PRINCIPLES"}
-                    mainHeading={"Crafting Imagination to"}
-                    mainHeadingBold={"Impression."}
+                    subHeading={"About Cadbull"}
+                    mainHeading={"Don’t draw from scratch, draw from"}
+                    mainHeadingBold={"Cadbull."}
                   />
                 </div>
                 <div className="mb-4">
                   <p className="mb-2">
-                    Cadbull is an exclusive forum that connects the creative
-                    community of innovative Auto cad designers, firms and
-                    organizations. The forum connects people with innovative
-                    designs and makes them share their creativity and
-                    visualization across the globe.
+                    Cadbull is a leading online platform offering a vast collection of free and premium CAD files, including AutoCAD drawings, DWG blocks, 2D designs, 3D models, and architectural plans. Ideal for architects, engineers, interior designers, and students, Cadbull provides easy access to house plans, furniture layouts, structural details, and electrical schematics. With over 270,000+ CAD files, the site helps professionals save time and boost productivity. Its user-friendly interface and well-organized categories make file browsing simple. Whether for residential or commercial projects, Cadbull is a trusted source for high-quality CAD resources and design inspiration. Visit www.cadbull.com to explore more.
                   </p>
-                  <p>
+                  {/* <p>
                     Cadbull is an advanced professional platform to interact and
                     excel with, offering a wide range of high quality auto cad
                     utility areas like architecture, interior and product
@@ -650,7 +646,7 @@ export default function Home({
                     furniture, landscaping, machinery, structural details, 3D
                     images, symbols and urban designs. Catering to more than 100
                     such categories to begin with, Cadbull is just starting out!
-                  </p>
+                  </p> */}
                 </div>
                 <div className="row row-cols-2">
                   {/* 1  */}
