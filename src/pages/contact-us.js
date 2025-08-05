@@ -1,8 +1,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
-import flag from "@/assets/icons/flag.png";
 import Head from "next/head";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import PageHeading from "@/components/PageHeading";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,6 +10,9 @@ import { useForm } from "react-hook-form";
 import { getallprojects, sendContactForm } from "@/service/api";
 import { useSelector } from "react-redux";
 import logo from "@/assets/images/logo.png";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -26,8 +28,8 @@ const validationSchema = Yup.object().shape({
       message: "Please enter a valid email address",
     }),
   phone_no: Yup.string()
-    .required("This field  is required.")
-    .matches(/^\d{10}$/, "Mobile number must be 10 digits."),
+    .required("This field is required.")
+    .min(8, "Please enter a valid phone number."),
   message: Yup.string()
     .required("This field is required.")
     .matches(/^[a-zA-Z\s].*$/, "Message must contain letters."),
@@ -54,22 +56,51 @@ const ContactUs = () => {
   const [productCount, setProductCount] = useState(null);
   const token = useSelector((store) => store.logininfo.token);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
+  
+  // State for phone number
+  const [phone, setPhone] = useState("");
+  
+  // State for reCAPTCHA
+  const [recaptchaValue, setRecaptchaValue] = useState(null);
+  const recaptchaRef = useRef(null);
 
   // State for the contact form
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
+  const handleCaptchaChange = (value) => {
+    setRecaptchaValue(value);
+  };
+
   const contactSubmitHandler = async (contactData) => {
     try {
-      await sendContactForm(contactData);
+      // Check if reCAPTCHA is completed
+      if (!recaptchaValue) {
+        toast.error("Please complete the reCAPTCHA.");
+        return;
+      }
+
+      // Include the phone number and captcha in the contact data
+      const formDataWithPhone = {
+        ...contactData,
+        phone_no: phone,
+        captcha: recaptchaValue
+      };
+      await sendContactForm(formDataWithPhone);
       toast.success('Your query has been sent successfully!');
       reset(); // Reset the form
+      setPhone(""); // Reset phone state
+      setRecaptchaValue(null); // Reset reCAPTCHA state
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset(); // Reset reCAPTCHA widget
+      }
     } catch (error) {
       console.error("❌ Error sending contact form:", error);
       toast.error("Failed to send your query. Please try again later.");
@@ -88,6 +119,11 @@ const ContactUs = () => {
         console.error("Error fetching product count:", error);
       });
   }, [isAuthenticated]);
+
+  // Update form value when phone changes
+  useEffect(() => {
+    setValue("phone_no", phone);
+  }, [phone, setValue]);
 
 
   // You can format productCount as needed (for example, using commas)
@@ -213,48 +249,34 @@ const ContactUs = () => {
                       <Icons.Phone />
                       <label>Phone Number</label>
                     </div>
-                    <div className="input-group">
-                      <div 
-                      className={` input-group-text pe-0 bg-white ${errors.phone_no?" form-control is-invalid":""}`}
-                      >
-                        <div className="dropdown">
-                          <button
-                            className="dropdown-toggle border-0 bg-white"
-                            type="button"
-                            // data-bs-toggle="dropdown"
-                            // aria-expanded="false"
-                          >
-                            <img src={flag.src} width={24} alt="profile" />{" "}
-                            <span> +91</span>
-                          </button>
-                          {/* <ul className="dropdown-menu  border-0 shadow-lg pt-1 mt-2">
-                            <li>
-                              <a className="dropdown-item">+92</a>
-                            </li>
-                            <li>
-                              <a className="dropdown-item">+93</a>
-                            </li>
-                            <li>
-                              <a className="dropdown-item">+93</a>
-                            </li>
-                          </ul> */}
-                        </div>
-                      </div>
-                      <input
-                        type="text"
-                        {...register("phone_no")}
-                        name="phone_no"
-                        className={`ps-1 border-start-0 form-control  ${errors.phone_no?"is-invalid":""}`}
-                        placeholder="Enter Your Phone Number"
-                        // value=""
-                      />
-                       {errors.phone_no?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.phone_no?.message}{" "}
+                    <PhoneInput
+                      country={'in'} // Default to India
+                      value={phone}
+                      onChange={val => setPhone('+' + val.replace(/^\+/, ''))}
+                      enableSearch
+                      inputProps={{
+                        name: 'phone_no',
+                        required: true,
+                        className: `form-control ${errors.phone_no ? "is-invalid" : ""}`,
+                      }}
+                      inputStyle={{ 
+                        width: "100%",
+                        borderColor: errors.phone_no ? "#dc3545" : "#ced4da"
+                      }}
+                      containerStyle={{ width: "100%" }}
+                      // Optional: onlyCountries={['us', 'in', 'ae', ...]}
+                    />
+                    {/* Hidden input for form validation */}
+                    <input
+                      type="hidden"
+                      {...register("phone_no")}
+                      value={phone}
+                    />
+                    {errors.phone_no?.message && (
+                      <div className="invalid-feedback text-danger d-block">
+                        {errors.phone_no?.message}
                       </div>
                     )}
-                    </div>
                   </div>
                   {/* Email  */}
                   <div className="col-lg-12">
@@ -295,6 +317,15 @@ const ContactUs = () => {
                         {errors.message?.message}{" "}
                       </div>
                     )}
+                  </div>
+
+                  {/* reCAPTCHA */}
+                  <div className="col-lg-12">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                      onChange={handleCaptchaChange}
+                    />
                   </div>
 
                   <div className="col-lg-12">
