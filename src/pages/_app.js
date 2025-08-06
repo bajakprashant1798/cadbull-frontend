@@ -15,6 +15,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GTM_ID, pageview } from '../lib/gtm';
+import { trackPageView } from '../lib/fbpixel';
 // Remove conflicting adsense lib import
 // import { initializeAdSense } from '../lib/adsense';
 
@@ -42,6 +43,8 @@ export default function App({ Component, pageProps }) {
     // Track route changes
     const handleRouteChange = (url) => {
       pageview(url);
+      // Track page view with Meta Pixel
+      trackPageView();
     };
     
     router.events.on('routeChangeComplete', handleRouteChange);

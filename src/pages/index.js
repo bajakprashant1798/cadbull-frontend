@@ -40,6 +40,7 @@ import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import logo from "@/assets/images/logo.png";
 import Image from "next/image";
 import AdSense from "@/components/AdSense";
+import { trackSearch } from "@/lib/fbpixel";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -280,6 +281,10 @@ export default function Home({
     const handleSearch = (e) => {
       e.preventDefault();
       const trimmedSearch = searchInput.trim();
+      if (trimmedSearch) {
+        // Track search with Meta Pixel
+        trackSearch(trimmedSearch);
+      }
       setSearchTerm(trimmedSearch);
       dispatch(getserachTerm(trimmedSearch));
       // Now pass the search as a query parameter!
@@ -292,6 +297,10 @@ export default function Home({
     const handleProjectSearch = (e) => {
       e.preventDefault();
       const trimmed = projectSearchInput.trim();
+      if (trimmed) {
+        // Track search with Meta Pixel
+        trackSearch(trimmed);
+      }
       setSearchTerm(trimmed);
       dispatch(getserachTerm(trimmed));
       router.push({

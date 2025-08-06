@@ -56,8 +56,9 @@ import { downloadFile } from "@/utils/downloadfile";
 import { downloadProject } from "./api";
 import { toast } from "react-toastify";
 import { redirectToLogin } from "@/utils/redirectHelpers";
+import { trackDownload, trackCustomEvent } from "@/lib/fbpixel";
 
-export const handledownload = async (id, isAuthenticated, router) => {
+export const handledownload = async (id, isAuthenticated, router, projectName = '', fileType = 'dwg') => {
   if (!isAuthenticated) {
     toast.warning("Please login to download the file");
     return redirectToLogin(router);
@@ -85,6 +86,10 @@ export const handledownload = async (id, isAuthenticated, router) => {
     if (typeof res?.data?.url === "string") {
       downloadFile(res.data.url);
       toast.success("Download started.");
+      
+      // Track download with Meta Pixel
+      trackDownload(projectName || `project_${id}`, fileType);
+      
       return;
     } else {
       console.error("Unexpected download response format:", res.data);

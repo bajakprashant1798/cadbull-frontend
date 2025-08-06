@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ReCAPTCHA from "react-google-recaptcha";
 import { redirectAfterLogin } from "@/utils/redirectHelpers";
+import { trackCompleteRegistration } from "@/lib/fbpixel";
 
 const pageTitle = {
   title: "Register A New Account",
@@ -80,10 +81,12 @@ const Register = () => {
           return;
         } else if (code === "REACTIVATED") {
           toast.success(message);
+          trackCompleteRegistration(); // Track successful registration
           router.push("/auth/login");
           return;
         } else if (code === "REGISTERED") {
           toast.success(message);
+          trackCompleteRegistration(); // Track successful registration
           router.push("/auth/login");
           return;
         }

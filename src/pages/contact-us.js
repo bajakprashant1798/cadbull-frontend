@@ -13,6 +13,7 @@ import logo from "@/assets/images/logo.png";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import ReCAPTCHA from "react-google-recaptcha";
+import { trackContact, trackLead } from "@/lib/fbpixel";
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -94,6 +95,11 @@ const ContactUs = () => {
         captcha: recaptchaValue
       };
       await sendContactForm(formDataWithPhone);
+      
+      // Track contact form submission with Meta Pixel
+      trackContact();
+      trackLead();
+      
       toast.success('Your query has been sent successfully!');
       reset(); // Reset the form
       setPhone(""); // Reset phone state
