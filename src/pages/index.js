@@ -908,7 +908,10 @@ export default function Home({
                 </h4>
                 <h4 className="text-white">
                   {/* <b>{Number(housePlanFiles).toLocaleString()} Files</b> */}
-                  <b>{Number(housePlanFiles).toLocaleString("en-US")}+ Files</b>
+                  <b>
+                    {/* {Number(housePlanFiles).toLocaleString("en-US")} */}
+                    30000+ Files
+                  </b>
                 </h4>
               </div>
             </div>
