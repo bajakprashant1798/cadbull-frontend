@@ -411,15 +411,45 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
 };
 
 export async function getStaticPaths() {
-  const catRes = await getallCategories("");
-  const categories = catRes?.data?.categories || [];
-  // You can prebuild a few pages, or just 1/2 as before
-  const paths = [];
-  categories.forEach(cat => {
-    paths.push({ params: { slug: cat.slug, page: "1" }});
-    paths.push({ params: { slug: cat.slug, page: "2" }});
-  });
-  return { paths, fallback: "blocking" };
+  try {
+    const catRes = await getallCategories("");
+    const categories = catRes?.data?.categories || [];
+    
+    const paths = [];
+    
+    // Always include the house plan category
+    paths.push({ params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "1" }});
+    paths.push({ params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "2" }});
+    
+    // Add other popular categories
+    categories.forEach(cat => {
+      if (cat.slug && cat.slug !== "Architecture-House-Plan-CAD-Drawings") {
+        paths.push({ params: { slug: cat.slug, page: "1" }});
+        // Only add page 2 for categories with high count
+        if (cat.pcount && parseInt(cat.pcount) > 100) {
+          paths.push({ params: { slug: cat.slug, page: "2" }});
+        }
+      }
+    });
+    
+    console.log(`[getStaticPaths] Generated ${paths.length} paths`);
+    
+    return { 
+      paths, 
+      fallback: "blocking" // This ensures pages not pre-generated will be generated on demand
+    };
+  } catch (error) {
+    console.error('[getStaticPaths] Error connecting to API during build:', error.message);
+    // Return minimal paths as fallback when API is not available
+    return { 
+      paths: [
+        { params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "1" }},
+        { params: { slug: "DWG-Blocks", page: "1" }},
+        { params: { slug: "Cad-Architecture", page: "1" }}
+      ], 
+      fallback: "blocking" 
+    };
+  }
 }
 
 export async function getStaticProps({ params }) {
@@ -428,15 +458,41 @@ export async function getStaticProps({ params }) {
     const slug = params.slug;
     const page = parseInt(params.page, 10) || 1;
     
+    console.log(`[getStaticProps] Generating page for slug: ${slug}, page: ${page}`);
+    
     // If slug is purely numeric, return 404
     if (/^\d+$/.test(slug)) {
+      console.log(`[getStaticProps] Rejected numeric slug: ${slug}`);
       return { notFound: true };
     }
     
-    const data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+    // Add retry logic for API calls
+    let data = null;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (!data && retryCount < maxRetries) {
+      try {
+        data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
+        if (data && data.projects) {
+          break;
+        }
+      } catch (apiError) {
+        retryCount++;
+        console.log(`[getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: ${slug}`, apiError.message);
+        if (retryCount < maxRetries) {
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
+    }
+    
     if (!data || !data.projects) {
+      console.log(`[getStaticProps] No data found after ${retryCount} attempts for slug: ${slug}, page: ${page}`);
       return { notFound: true };
     }
+
+    console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
 
     // Fetch meta fields for any slug (parent or subcategory)
     let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
@@ -449,8 +505,12 @@ export async function getStaticProps({ params }) {
         metaDescription = cat.meta_description || null;
         description = cat.description || null;
         title = cat.name || makeTitle(slug);
+        console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
+      } else {
+        console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
       }
     } catch (e) {
+      console.log(`[getStaticProps] Error fetching category meta for slug: ${slug}`, e.message);
       // fallback: meta fields remain null
     }
 
@@ -466,10 +526,10 @@ export async function getStaticProps({ params }) {
         description,
         title
       },
-      revalidate: 300,
+      revalidate: 300, // Revalidate every 5 minutes
     };
   } catch (error) {
-    console.error('Error in getStaticProps:', error);
+    console.error(`[getStaticProps] Error for slug: ${params.slug}, page: ${params.page}`, error);
     return { notFound: true };
   }
 }

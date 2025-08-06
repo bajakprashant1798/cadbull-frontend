@@ -734,7 +734,7 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
             </div>
             <div className="col-lg-3">
               <div className="text-center">
-                <Link href="/house-plan" passHref>
+                <Link href="/Architecture-House-Plan-CAD-Drawings" passHref>
                   <button className="btn btn-danger">GET YOUR HOUSE PLAN</button>
                 </Link>
               </div>

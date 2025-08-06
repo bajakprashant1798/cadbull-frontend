@@ -41,11 +41,11 @@ const CategoriesLayout = ({
               <div className="mt-4">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb justify-content-center justify-content-md-start">
-                     {router.asPath ==='/house-plan'?  <>
+                     {router.asPath === '/Architecture-House-Plan-CAD-Drawings' || router.asPath.startsWith('/Architecture-House-Plan-CAD-Drawings/')?  <>
                     <li className="breadcrumb-item">
                       <Link href="/">Home</Link>
                     </li>
-                     <li className="breadcrumb-item"><Link href="/house-plan">House Plan</Link></li>
+                     <li className="breadcrumb-item"><Link href="/Architecture-House-Plan-CAD-Drawings">House Plan</Link></li>
                      </>:<>
                      <li className="breadcrumb-item">
                       <Link href="/">Home</Link>
@@ -53,7 +53,7 @@ const CategoriesLayout = ({
                     <li className="breadcrumb-item">
                       <Link href="/categories">Categories</Link>
                     </li></>}
-                    {router.asPath !== "/categories"  && (
+                    {router.asPath !== "/categories" && router.asPath !== "/Architecture-House-Plan-CAD-Drawings" && !router.asPath.startsWith('/Architecture-House-Plan-CAD-Drawings/') && (
                       <li className="breadcrumb-item">{makeTitle(title)}</li>
                     )}
                   </ol>

@@ -66,6 +66,11 @@ const nextConfig = {
         destination: '/detail/:id/:slug',
         permanent: true,
       },
+      {
+        source: '/house-plan',
+        destination: '/Architecture-House-Plan-CAD-Drawings',
+        permanent: true,
+      },
     ];
   },
   // Uncomment if you want to add rewrites (API proxy)
