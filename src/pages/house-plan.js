@@ -13,11 +13,5 @@ export default function HousePlanRedirect() {
 }
 
 // Server-side redirect
-export async function getServerSideProps() {
-  return {
-    redirect: {
-      destination: '/Architecture-House-Plan-CAD-Drawings',
-      permanent: true, // 301 redirect
-    },
-  };
-}
+// No SSR needed - redirect handled in next.config.js for better performance
+// This eliminates server cost for this route entirely

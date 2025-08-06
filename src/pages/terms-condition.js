@@ -240,14 +240,16 @@ TermsPrivacyFaq.getLayout = function getLayout(page) {
 
 export default TermsPrivacyFaq;
 
-export async function getServerSideProps(){
+// Convert to SSG for cost savings - Terms don't change frequently
+export async function getStaticProps(){
     try {
         const  response = await getTermsPrivacyAndFaqData();
          const termsData= response.data?.terms?.term_condition;
          return {
             props:{
                 termsData
-            }
+            },
+            revalidate: 86400, // 24 hours - terms rarely change
          }
         
     } catch (error) {

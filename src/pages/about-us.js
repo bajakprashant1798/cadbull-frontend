@@ -115,7 +115,7 @@ export async function getStaticProps() {
   // No dynamic data to fetch, but enabling SSG + ISR
   return {
     props: {},         // You can add props later if needed
-    revalidate: 300,   // Regenerate page every 5 minutes
+    revalidate: 86400,   // Reduced from 300 (5 min) to 86400 (24 hours)
   };
 }
 

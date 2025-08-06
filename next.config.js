@@ -40,14 +40,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  
+  // Build optimizations to reduce compute costs
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
   images: {
-    // domains: [
-    //   'beta-assets.cadbull.com',
-    //   'localhost/', // Local development
-    //   // add other image domains here if needed
-    //   // 'cadbull.com', // allows *.cadbull.com and cadbull.com
-    //   // 'cdn.cadbull.com',
-    // ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -58,6 +57,11 @@ const nextConfig = {
         hostname: 'localhost',
       },
     ],
+    // Add optimization settings to reduce bandwidth
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year cache
   },
   async redirects() {
     return [

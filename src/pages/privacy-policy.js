@@ -487,14 +487,16 @@ PrivacyPolicy.getLayout = function getLayout(page) {
 
 
 export default PrivacyPolicy;
-export async function getServerSideProps(){
+// Convert to SSG for cost savings - Privacy policy doesn't change frequently
+export async function getStaticProps(){
   try {
       const  response = await getTermsPrivacyAndFaqData();
        const privacy_policy= response.data?.terms?.privacy_policy;
        return {
           props:{
               privacy_policy
-          }
+          },
+          revalidate: 86400, // 24 hours - privacy policy rarely changes
        }
       
   } catch (error) {

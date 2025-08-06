@@ -994,30 +994,49 @@ export default function Home({
   );
 }
 
-export async function getServerSideProps({ query }) {
-  const page = parseInt(query.page, 10) || 1;
-  const search = query.search || "";
-  const file_type = query.file_type || "";
+// Convert to SSG with ISR for massive cost savings on homepage
+export async function getStaticProps() {
+  try {
+    // Static generation for default homepage - no query parameters needed
+    const page = 1;
+    const search = "";
+    const file_type = "";
 
-  // Fetch projects and categories in parallel for better performance
-  const [projectRes, categoryRes] = await Promise.all([
-    getallprojects(page, 9, search, file_type),
-    getallCategories()
-  ]);
+    // Fetch projects and categories in parallel for better performance
+    const [projectRes, categoryRes] = await Promise.all([
+      getallprojects(page, 9, search, file_type),
+      getallCategories()
+    ]);
 
-  return {
-    props: {
-      initialProjects: projectRes.data.products || [],
+    return {
+      props: {
+        initialProjects: projectRes.data.products || [],
       totalPages: projectRes.data.totalPages || 1,
       totalProducts: projectRes.data.totalProducts || 0,
       lastProductId: projectRes.data.lastProductId || 0,
       housePlanFiles: projectRes.data.housePlanFiles || 0,
-      currentPage: page,
-      filters: { search, file_type },
+      currentPage: 1, // Static for SSG
+      filters: { search: "", file_type: "" }, // Static for SSG
       // Add the fetched categories to props
       initialCategories: categoryRes.data.categories || [],
     },
+    revalidate: 1800, // 30 minutes - Homepage updates moderately frequently
   };
+  } catch (error) {
+    console.error('Error in homepage getStaticProps:', error);
+    return {
+      props: {
+        initialProjects: [],
+        totalProducts: 0,
+        lastProductId: 0,
+        housePlanFiles: 0,
+        currentPage: 1,
+        filters: { search: "", file_type: "" },
+        initialCategories: [],
+      },
+      revalidate: 600, // 10 minutes retry on error
+    };
+  }
 }
 
 Home.getLayout = function getLayout(page) {

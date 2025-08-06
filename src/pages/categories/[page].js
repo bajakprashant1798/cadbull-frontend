@@ -458,7 +458,7 @@ export async function getStaticProps({ params }) {
         totalPages: projectsRes?.data?.totalPages || 1,
         currentPage,
       },
-      revalidate: 300, // Re-generate page every 5 minutes
+      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);
@@ -470,7 +470,7 @@ export async function getStaticProps({ params }) {
         totalPages: 1,
         currentPage,
       },
-      revalidate: 300,
+      revalidate: 3600,
     };
   }
 }

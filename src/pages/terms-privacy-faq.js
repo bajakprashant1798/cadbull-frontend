@@ -32,14 +32,16 @@ TermsPrivacyFaqPage.getLayout = function getLayout(page) {
 }
 
 export default TermsPrivacyFaqPage;
-export async function getServerSideProps(){
+// Convert to SSG for cost savings - FAQ doesn't change frequently
+export async function getStaticProps(){
   try {
       const  response = await getTermsPrivacyAndFaqData();
        const faqData= response.data?.terms?.faq;
        return {
           props:{
               faqData
-          }
+          },
+          revalidate: 86400, // 24 hours - FAQ rarely changes
        }
       
   } catch (error) {

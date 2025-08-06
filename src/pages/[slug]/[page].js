@@ -526,7 +526,7 @@ export async function getStaticProps({ params }) {
         description,
         title
       },
-      revalidate: 300, // Revalidate every 5 minutes
+      revalidate: 7200, // Reduced from 300 (5 min) to 7200 (2 hours)
     };
   } catch (error) {
     console.error(`[getStaticProps] Error for slug: ${params.slug}, page: ${params.page}`, error);

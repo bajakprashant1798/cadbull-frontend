@@ -971,7 +971,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
 export async function getStaticPaths() {
-  const res = await getallprojects(1, 100); // Or popular projects only
+  // Reduce pre-generated paths to save build costs - only most popular projects
+  const res = await getallprojects(1, 20); // Reduced from 100 to 20 most popular
   const paths = res.data.products.map((proj) => ({
     params: { 
         id: proj.id.toString(),
@@ -981,7 +982,7 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: "blocking", // or "true" if you want loading spinner
+    fallback: "blocking", // Generate other pages on-demand
   };
 }
 
@@ -1023,7 +1024,7 @@ export async function getStaticProps({ params }) {
         initialSimilar: similarRes.data.projects || [],
         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
-      revalidate: 300,
+      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
     };
   } catch (err) {
     console.error('Error in detail page getStaticProps:', err);

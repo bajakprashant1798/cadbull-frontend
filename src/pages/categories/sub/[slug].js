@@ -370,7 +370,7 @@ export async function getStaticProps({ params }) {
         initialTotalPages: initialData.totalPages || 1,
         initialSlug: slug,
       },
-      revalidate: 300, // Rebuild every 5 mins
+      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
     };
   } catch (error) {
     return {
