@@ -118,10 +118,13 @@ const social = [
 function slugify(title) {
   if (!title) return '';
   return title
-    .replace(/\s+/g, '-')                  // Replace spaces with dashes
-    .replace(/-+/g, '-')                   // Remove duplicate dashes
-    .replace(/^-+|-+$/g, '');              // Trim dashes from start/end
-    // Do NOT lowercase, do NOT remove special chars like &
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars (including special chars)
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
 }
 
 
@@ -661,7 +664,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             subHeading={" "}
                             mainHeadingBold={"Description"}
                           />
-                          <p>{parse(`${project.description}`)}</p>
+                          <div>{parse(`${project.description}`)}</div>
                           
                         </div>
                       </div>
@@ -999,8 +1002,9 @@ export async function getStaticProps({ params }) {
     
     const project = projectRes.data;
 
-    // Use DB slug!
-    const canonicalSlug = project.slug || slugify(project.work_title); // fallback for missing
+    // Generate canonical slug from work_title
+    const canonicalSlug = slugify(project.work_title);
+    
     // Redirect if param slug is wrong
     if (params.slug !== canonicalSlug) {
       return {
