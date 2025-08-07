@@ -17,7 +17,7 @@ export default function Document() {
               "logo": "https://cadbull.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.380b44c9.png&w=384&q=75",
               "description": "Download Free & Premium CAD Files, DWG Files, and AutoCAD Blocks for Architecture, Interior Design, and Engineering Projects. Access 1000+ high-quality CAD drawings and design resources.",
               "foundingDate": "2014",
-              "industry": "Computer-Aided Design (CAD)",
+              "knowsAbout": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings"],
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "403 Fortune Business Hub Beside Shell Petrol Pump Science City Road, Sola",
