@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import SearchCategories from "@/components/SearchCategories";
+import FAQSection from "@/components/FAQSection";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import AdSense from "@/components/AdSense";
@@ -123,6 +124,9 @@ const CategoriesLayout = ({
           </div>
         </div>
       </section>
+
+      {/* FAQs Section */}
+      <FAQSection title="Frequently Asked Questions" showLimit={8} />
 
       {/* Get Off  */}
       {/* <GetOff /> */}

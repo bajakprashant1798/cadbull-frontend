@@ -141,6 +141,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [currentPage, setCurrentPage] = useState(1); // To track the page of similar projects
   const [isLoading, setIsLoading] = useState(false); // To prevent multiple clicks while loading
   const [hasMore, setHasMore] = useState(true); // To hide the button when no more projects are left
+  // ✅ ADD STATE FOR PROFILE IMAGE ERROR HANDLING
+  const [profileImageError, setProfileImageError] = useState(false);
 
 
   // At component top:
@@ -195,6 +197,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       setIsFavorited(favouriteList.some((fav) => fav.id ===  Number(projectId)));
     // }
   }, [favouriteList, projectId, id]);
+
+  // Reset profile image error when project changes
+  useEffect(() => {
+    setProfileImageError(false);
+  }, [project?.profile_pic]);
 
 
   //current project fetch
@@ -707,31 +714,27 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           <div className="col-md-7">
                             <div className="d-flex align-items-center gap-md-3 gap-2">
                               <div className="flex-shrink-0">
-                                {project?.profile_pic ? (
+                                {(project?.profile_pic && !profileImageError) ? (
                                   <Image
-                                    src={project.profile_pic || profile_dummy}
+                                    src={project.profile_pic}
                                     alt="Profile"
-                                    width={80}     // Set the base width
-                                    height={80}    // Set the base height
+                                    width={80}
+                                    height={80}
                                     className="rounded-circle"
-                                    style={{ objectFit: "cover" }} 
-                                    onError={e => { e.target.src = profile_dummy; }}
+                                    style={{ objectFit: "cover" }}
+                                    loading="lazy"
+                                    onError={() => setProfileImageError(true)}
+                                  />
+                                ) : (
+                                  <Image
+                                    src={profile_dummy}
+                                    alt="Profile"
+                                    width={80}
+                                    height={80}
+                                    className="rounded-circle"
+                                    style={{ objectFit: "cover" }}
                                     loading="lazy"
                                   />
-                                  // <Image
-                                  //   src={project.profile_pic || profile_dummy.src}
-                                  //   alt="Profile"
-                                  //   width={80}     // <= REQUIRED
-                                  //   height={80}    // <= REQUIRED
-                                  //   loading="lazy"
-                                  //   className="rounded-circle"
-                                  //   style={{ width: "80px", height: "80px", objectFit: "cover" }}
-                                  //   onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
-                                  // />
-
-
-                                ) : (
-                                  <Icons.Avatar />
                                 )}
                               </div>
                               <div>

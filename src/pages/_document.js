@@ -4,6 +4,40 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* Schema.org Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Corporation",
+              "name": "Cadbull",
+              "alternateName": "Cadbull",
+              "url": "https://cadbull.com/",
+              "logo": "https://cadbull.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.380b44c9.png&w=384&q=75",
+              "description": "Download Free & Premium CAD Files, DWG Files, and AutoCAD Blocks for Architecture, Interior Design, and Engineering Projects. Access 1000+ high-quality CAD drawings and design resources.",
+              "foundingDate": "2014",
+              "industry": "Computer-Aided Design (CAD)",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "403 Fortune Business Hub Beside Shell Petrol Pump Science City Road, Sola",
+                "addressLocality": "Ahmedabad",
+                "addressCountry": "India"
+              },
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+91-989-874-8697",
+                "contactType": "customer service",
+                "email": "support@cadbull.com"
+              },
+              "sameAs": [
+                "https://www.facebook.com/cadbull/"
+              ],
+              "keywords": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings", "Free CAD downloads", "Premium CAD files"]
+            })
+          }}
+        />
+
         {/* Meta Pixel Code */}
         <script
           dangerouslySetInnerHTML={{

@@ -5,6 +5,7 @@ import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
+import FAQSection from "@/components/FAQSection";
 import { useSelector, useDispatch } from "react-redux";
 import { getSearchResults, getFavouriteItems } from "@/service/api";
 import { debounce } from "lodash";

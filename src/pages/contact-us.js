@@ -3,6 +3,7 @@ import Icons from "@/components/Icons";
 import Head from "next/head";
 import { Fragment, useEffect, useState, useRef } from "react";
 import PageHeading from "@/components/PageHeading";
+import ContactSuccessModal from "@/components/ContactSuccessModal";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "react-toastify";
@@ -64,6 +65,9 @@ const ContactUs = () => {
   // State for reCAPTCHA
   const [recaptchaValue, setRecaptchaValue] = useState(null);
   const recaptchaRef = useRef(null);
+  
+  // State for success modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // State for the contact form
   const {
@@ -100,12 +104,15 @@ const ContactUs = () => {
       trackContact();
       trackLead();
       
-      toast.success('Your query has been sent successfully!');
-      reset(); // Reset the form
-      setPhone(""); // Reset phone state
-      setRecaptchaValue(null); // Reset reCAPTCHA state
+      // Show success modal instead of toast
+      setShowSuccessModal(true);
+      
+      // Reset the form
+      reset();
+      setPhone("");
+      setRecaptchaValue(null);
       if (recaptchaRef.current) {
-        recaptchaRef.current.reset(); // Reset reCAPTCHA widget
+        recaptchaRef.current.reset();
       }
     } catch (error) {
       console.error("❌ Error sending contact form:", error);
@@ -113,18 +120,18 @@ const ContactUs = () => {
     }
   };
 
-  useEffect(() => {
-    // We assume your API returns an object with a property like `totalProducts`
-    getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
-      .then((response) => {
-        // Use total count from the API response (adjust field name accordingly)
-        const count = response.data.totalProducts || 0;
-        setProductCount(count);
-      })
-      .catch((error) => {
-        console.error("Error fetching product count:", error);
-      });
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   // We assume your API returns an object with a property like `totalProducts`
+  //   getallprojects(1, 1, "", "", "") // Fetch only one product (or use a dedicated endpoint)
+  //     .then((response) => {
+  //       // Use total count from the API response (adjust field name accordingly)
+  //       const count = response.data.totalProducts || 0;
+  //       setProductCount(count);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching product count:", error);
+  //     });
+  // }, [isAuthenticated]);
 
   // Update form value when phone changes
   useEffect(() => {
@@ -158,33 +165,17 @@ const ContactUs = () => {
             <div className="col-xxl-12">
               <PageHeading
                 title={"Contact Us"}
+                // description={
+                //   `Choose from ${productCount}+ Free & Premium CAD Files with new additions published every second month.`
+                // }
                 description={
-                  `Choose from ${productCount}+ Free & Premium CAD Files with new additions published every second month.`
+                  `Got a question, idea, or just want to chat? We’re always happy to hear from you!`
                 }
               />
-
-              {/* Contact Detail  */}
-              {/* <div className="text-md-center mt-3 mb-4">
-                <ul className="d-xxl-flex justify-content-between gap-2 align-content-center mb-0">
-                  {contactDetail.map((res, index) => {
-                    return (
-                      <li
-                        key={index}
-                        className="d-flex gap-2 align-items-center mb-3 mb-xxl-0"
-                      >
-                        <span>{res.image}</span>
-                        <h6 className="text-primary fw-semibold">
-                          {res.detail}
-                        </h6>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div> */}
             </div>
           </div>
-
-          <div className="row mx-2 gx-4 gy-3 form-wrapper rounded-xxl align-items-center">
+                
+          <div className="row mx-2 gx-4 gy-3 col-lg-8 mx-auto form-wrapper rounded-xxl align-items-center">
             <div className="col-md-12">
               <div className="mb-3 mb-md-4 p-md-4">
                 <h3 className="mb-1 text-primary">
@@ -363,6 +354,12 @@ const ContactUs = () => {
           </div>
         </div>
       </section>
+      
+      {/* Success Modal */}
+      <ContactSuccessModal 
+        isOpen={showSuccessModal} 
+        onClose={() => setShowSuccessModal(false)} 
+      />
     </Fragment>
   );
 };
