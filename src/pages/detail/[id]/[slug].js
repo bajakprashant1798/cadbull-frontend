@@ -461,7 +461,17 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
+        <meta property="og:site_name" content="Cadbull" />
+        <meta property="fb:app_id" content="1018457459282520" />
+        
+        {/* Pinterest specific tags */}
+        <meta name="pinterest-rich-pin" content="true" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@cadbull" />
+        <meta name="twitter:creator" content="@cadbull" />
         <meta name="twitter:title" content={project?.meta_title || project?.work_title} />
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta name="twitter:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />

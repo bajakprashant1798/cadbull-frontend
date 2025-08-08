@@ -356,7 +356,16 @@ export default function Home({
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
+        <meta property="og:site_name" content="Cadbull" />
+        <meta property="fb:app_id" content="1018457459282520" />
+        
+        {/* Pinterest specific tags */}
+        <meta name="pinterest-rich-pin" content="true" />
+        <meta property="og:locale" content="en_US" />
+        
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@cadbull" />
+        <meta name="twitter:creator" content="@cadbull" />
         <meta name="twitter:title" content={currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'} />
         <meta name="twitter:description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
         <meta name="twitter:image" content={projects && projects.length > 0 ? projects[0]?.photo_url || logo : logo} />

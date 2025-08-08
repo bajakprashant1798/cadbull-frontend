@@ -146,7 +146,16 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content={`${product?.work_title} - CAD Drawing from Cadbull AMP`} />
         <meta property="og:url" content={ogUrl} />
+        <meta property="og:site_name" content="Cadbull" />
+        <meta property="fb:app_id" content="1018457459282520" />
+        
+        {/* Pinterest specific tags */}
+        <meta name="pinterest-rich-pin" content="true" />
+        <meta property="og:locale" content="en_US" />
+        
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@cadbull" />
+        <meta name="twitter:creator" content="@cadbull" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={imageUrl} />
