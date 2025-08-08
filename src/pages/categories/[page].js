@@ -253,17 +253,25 @@ const Categories = ({
   return (
     <Fragment>
       <Head>
-        <title>Cadbull Categories | Free & Premium AutoCAD DWG Files </title>
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories`} />
-        <meta name="description" content="Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More." />
+        <title>{currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'}</title>
+        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage}`} />
+        <meta name="description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
 
-        <meta property="og:title" content="Cadbull Categories | Free & Premium AutoCAD DWG Files" />
-        <meta property="og:description" content="Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More." />
+        {/* Pagination SEO: Previous/Next links */}
+        {currentPage > 1 && (
+          <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage - 1}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage + 1}`} />
+        )}
+
+        <meta property="og:title" content={currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'} />
+        <meta property="og:description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories`} />
+        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage}`} />
         <meta property="og:image" content={logo} />
-        <meta name="twitter:title" content="Cadbull Categories | Free & Premium AutoCAD DWG Files" />
-        <meta name="twitter:description" content="Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More." />
+        <meta name="twitter:title" content={currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'} />
+        <meta name="twitter:description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
         <meta name="twitter:image" content={logo} />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
       </Head>

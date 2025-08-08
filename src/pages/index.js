@@ -336,18 +336,31 @@ export default function Home({
   return (
     <Fragment>
       <Head>
-        <title>Autocad 2D and 3D CAD Blocks & Models Library | Cadbull</title>
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
-        <meta name="description" content="Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more." />
+        <title>{currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'}</title>
+        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage}`} />
+        <meta name="description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
 
-        <meta property="og:title" content="Autocad 2D and 3D CAD Blocks & Models Library | Cadbull" />
-        <meta property="og:description" content="Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more." />
+        {/* Pagination SEO: Previous/Next links */}
+        {currentPage > 1 && (
+          <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage - 1}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage + 1}`} />
+        )}
+
+        <meta property="og:title" content={currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'} />
+        <meta property="og:description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
-        <meta property="og:image" content={logo} />
-        <meta name="twitter:title" content="Autocad 2D and 3D CAD Blocks & Models Library | Cadbull" />
-        <meta name="twitter:description" content="Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more." />
-        <meta name="twitter:image" content={logo} />
+        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage}`} />
+        <meta property="og:image" content={projects && projects.length > 0 ? projects[0]?.photo_url || logo : logo} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'} />
+        <meta name="twitter:description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
+        <meta name="twitter:image" content={projects && projects.length > 0 ? projects[0]?.photo_url || logo : logo} />
+        <meta name="twitter:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
       </Head>
 

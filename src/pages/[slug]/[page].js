@@ -245,26 +245,34 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   }, [type, file_type, search]);
 
   // const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}${currentPage > 1 ? `/${currentPage}` : ""}`;
-  const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}`;
+  const canonicalUrl = currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage}`;
 
   return (
     <Fragment>
       <Head>
-        <title>{metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"}</title>
+        <title>{currentPage > 1 ? `${metaTitle ? metaTitle : makeTitle(slug)} - Page ${currentPage} | Cadbull` : `${metaTitle ? metaTitle : makeTitle(slug)} | Cadbull`}</title>
         <meta
           name="description"
-          content={metaDescription || "World Largest 2d CAD Library."}
+          content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")}
         />
         {metaKeywords && <meta name="keywords" content={metaKeywords} />}
         
-        <meta property="og:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
-        <meta property="og:description" content={metaDescription || "World Largest 2d CAD Library."} />
+        {/* Pagination SEO: Previous/Next links */}
+        {currentPage > 1 && (
+          <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage - 1}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage + 1}`} />
+        )}
+        
+        <meta property="og:title" content={currentPage > 1 ? `${metaTitle ? metaTitle : makeTitle(slug)} - Page ${currentPage} | Cadbull` : `${metaTitle ? metaTitle : makeTitle(slug)} | Cadbull`} />
+        <meta property="og:description" content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
+        <meta property="og:url" content={canonicalUrl} />
         {/* <meta property="og:image" content={project?.photo_url} /> */}
         {/* <meta name="twitter:card" content="summary_large_image" /> */}
-        <meta name="twitter:title" content={metaTitle ? `${metaTitle}` : makeTitle(slug) + " | Cadbull"} />
-        <meta name="twitter:description" content={metaDescription || "World Largest 2d CAD Library."} />
+        <meta name="twitter:title" content={currentPage > 1 ? `${metaTitle ? metaTitle : makeTitle(slug)} - Page ${currentPage} | Cadbull` : `${metaTitle ? metaTitle : makeTitle(slug)} | Cadbull`} />
+        <meta name="twitter:description" content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
         <link rel="canonical" href={canonicalUrl} />
       </Head>

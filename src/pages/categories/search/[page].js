@@ -178,18 +178,27 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
   return (
     <Fragment>
       <Head>
-        <title>Find Your Perfect Design | Cadbull AutoCAD File Search</title>
+        <title>{currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search'}</title>
 
-        <meta name="description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
-        <meta property="og:title" content="Find Your Perfect Design | Cadbull AutoCAD File Search" />
-        <meta property="og:description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
+        <meta name="description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
+        
+        {/* Pagination SEO: Previous/Next links */}
+        {currentPage > 1 && (
+          <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage - 1}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage + 1}`} />
+        )}
+        
+        <meta property="og:title" content={currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search'} />
+        <meta property="og:description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
+        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage}`} />
         {/* <meta property="og:image" content={project?.photo_url} /> */}
         {/* <meta name="twitter:card" content="summary_large_image" /> */}
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
-        <meta name="twitter:title" content="Find Your Perfect Design | Cadbull AutoCAD File Search" />
-        <meta name="twitter:description" content="Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more." />
+        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage}`} />
+        <meta name="twitter:title" content={currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search'} />
+        <meta name="twitter:description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad" />
       </Head>
