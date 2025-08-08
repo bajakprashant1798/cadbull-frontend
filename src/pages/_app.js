@@ -180,7 +180,7 @@ export default function App({ Component, pageProps }) {
       
       <style jsx global>{`
         * {
-          font-family: ${poppins.style.fontFamily} !important;
+          font-family: 'Poppins', system-ui, arial !important;
         }
       `}</style>
       {getLayout(<Component {...pageProps} />)}
