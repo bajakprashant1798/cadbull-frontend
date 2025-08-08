@@ -41,9 +41,22 @@
 const nextConfig = {
   reactStrictMode: false,
   
+  // AMP configuration
+  amp: {
+    canonicalBase: 'https://cadbull.com',
+    skipValidation: false,
+  },
+  
   // Build optimizations to reduce compute costs
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+    // Disable styled-jsx to prevent empty amp-custom tag injection
+    styledJsx: false,
+  },
+  
+  // Disable automatic CSS optimization for AMP compatibility
+  experimental: {
+    optimizeCss: false,
   },
   
   images: {

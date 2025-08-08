@@ -45,6 +45,24 @@ export default function App({ Component, pageProps }) {
       pageview(url);
       // Track page view with Meta Pixel
       trackPageView();
+      
+      // ✅ ADDED: Force AdSense refresh on route change for SSG pages
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.adsbygoogle) {
+          try {
+            // Remove existing status attributes to force refresh
+            const allAds = document.querySelectorAll('.adsbygoogle');
+            allAds.forEach(ad => {
+              if (ad.hasAttribute('data-adsbygoogle-status')) {
+                ad.removeAttribute('data-adsbygoogle-status');
+              }
+            });
+            console.log('🔄 AdSense refresh triggered for SSG page');
+          } catch (error) {
+            console.warn('AdSense refresh failed:', error);
+          }
+        }
+      }, 1000);
     };
     
     router.events.on('routeChangeComplete', handleRouteChange);
@@ -71,11 +89,11 @@ export default function App({ Component, pageProps }) {
           
         </Head>
 
-        <style jsx global>{`
+        {/* <style jsx global>{`
           * {
             font-family: ${poppins.style.fontFamily} !important;
           }
-        `}</style>
+        `}</style> */}
         {getLayout(<Component {...pageProps} />)}
       {/* ✅ Single AdSense Script - Only for AMP pages */}
       <Script

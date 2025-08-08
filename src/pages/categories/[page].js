@@ -458,7 +458,7 @@ export async function getStaticProps({ params }) {
         totalPages: projectsRes?.data?.totalPages || 1,
         currentPage,
       },
-      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
+      revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
     };
   } catch (err) {
     console.error("❌ Error in getStaticProps:", err);

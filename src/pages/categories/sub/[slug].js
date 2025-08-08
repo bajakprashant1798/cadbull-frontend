@@ -370,7 +370,7 @@ export async function getStaticProps({ params }) {
         initialTotalPages: initialData.totalPages || 1,
         initialSlug: slug,
       },
-      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
+      revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
     };
   } catch (error) {
     return {

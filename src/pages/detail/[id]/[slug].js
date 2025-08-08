@@ -973,23 +973,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 };
 
 
-export async function getStaticPaths() {
-  // Reduce pre-generated paths to save build costs - only most popular projects
-  const res = await getallprojects(1, 20); // Reduced from 100 to 20 most popular
-  const paths = res.data.products.map((proj) => ({
-    params: { 
-        id: proj.id.toString(),
-        slug: slugify(proj.work_title)
-    }
-  }));
+// ✅ REMOVED: getStaticPaths not needed for SSR
+// Dynamic pages with SSR don't need static path generation
 
-  return {
-    paths,
-    fallback: "blocking", // Generate other pages on-demand
-  };
-}
-
-export async function getStaticProps({ params }) {
+// ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
+export async function getServerSideProps({ params }) {
   const id = params.id;
   
   try {
@@ -1027,10 +1015,9 @@ export async function getStaticProps({ params }) {
         initialSimilar: similarRes.data.projects || [],
         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
-      revalidate: 3600, // Reduced from 300 (5 min) to 3600 (1 hour)
     };
   } catch (err) {
-    console.error('Error in detail page getStaticProps:', err);
+    console.error('Error in detail page getServerSideProps:', err);
     return {
       notFound: true,
     };

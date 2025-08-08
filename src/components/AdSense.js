@@ -14,14 +14,14 @@ const AdSense = ({
   const [uniqueKey, setUniqueKey] = useState(0);
 
   useEffect(() => {
+    // Reset on route change
+    isAdLoaded.current = false;
+    setUniqueKey(prev => prev + 1);
+
     // Don't run ad code in development to prevent errors and allow for styling.
     if (process.env.NODE_ENV === "development") {
       return;
     }
-
-    // Reset on route change
-    isAdLoaded.current = false;
-    setUniqueKey(prev => prev + 1);
 
     // ✅ Enhanced ad loading with better error handling
     const loadAd = () => {
@@ -45,6 +45,11 @@ const AdSense = ({
         // Check if adsbygoogle is available
         if (typeof window !== 'undefined' && window.adsbygoogle) {
           try {
+            // ✅ FIXED: Force refresh for SSG pages
+            if (adElement.hasAttribute('data-adsbygoogle-status')) {
+              adElement.removeAttribute('data-adsbygoogle-status');
+            }
+            
             // Push the ad request
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             isAdLoaded.current = true;

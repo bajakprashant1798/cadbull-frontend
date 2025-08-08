@@ -526,7 +526,7 @@ export async function getStaticProps({ params }) {
         description,
         title
       },
-      revalidate: 7200, // Reduced from 300 (5 min) to 7200 (2 hours)
+      revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
     };
   } catch (error) {
     console.error(`[getStaticProps] Error for slug: ${params.slug}, page: ${params.page}`, error);

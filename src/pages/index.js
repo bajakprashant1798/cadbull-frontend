@@ -994,13 +994,13 @@ export default function Home({
   );
 }
 
-// Convert to SSG with ISR for massive cost savings on homepage
-export async function getStaticProps() {
+// ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
+export async function getServerSideProps({ query }) {
   try {
-    // Static generation for default homepage - no query parameters needed
-    const page = 1;
-    const search = "";
-    const file_type = "";
+    // Dynamic rendering ensures fresh ad requests and maximum revenue
+    const page = parseInt(query.page) || 1;
+    const search = query.search || "";
+    const file_type = query.file_type || "";
 
     // Fetch projects and categories in parallel for better performance
     const [projectRes, categoryRes] = await Promise.all([
@@ -1011,19 +1011,17 @@ export async function getStaticProps() {
     return {
       props: {
         initialProjects: projectRes.data.products || [],
-      totalPages: projectRes.data.totalPages || 1,
-      totalProducts: projectRes.data.totalProducts || 0,
-      lastProductId: projectRes.data.lastProductId || 0,
-      housePlanFiles: projectRes.data.housePlanFiles || 0,
-      currentPage: 1, // Static for SSG
-      filters: { search: "", file_type: "" }, // Static for SSG
-      // Add the fetched categories to props
-      initialCategories: categoryRes.data.categories || [],
-    },
-    revalidate: 1800, // 30 minutes - Homepage updates moderately frequently
-  };
+        totalPages: projectRes.data.totalPages || 1,
+        totalProducts: projectRes.data.totalProducts || 0,
+        lastProductId: projectRes.data.lastProductId || 0,
+        housePlanFiles: projectRes.data.housePlanFiles || 0,
+        currentPage: page,
+        filters: { search, file_type },
+        initialCategories: categoryRes.data.categories || [],
+      },
+    };
   } catch (error) {
-    console.error('Error in homepage getStaticProps:', error);
+    console.error('Error in homepage getServerSideProps:', error);
     return {
       props: {
         initialProjects: [],
@@ -1034,7 +1032,6 @@ export async function getStaticProps() {
         filters: { search: "", file_type: "" },
         initialCategories: [],
       },
-      revalidate: 600, // 10 minutes retry on error
     };
   }
 }

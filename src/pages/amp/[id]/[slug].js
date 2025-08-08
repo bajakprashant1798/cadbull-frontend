@@ -131,6 +131,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <Head>
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
         <link
           rel="shortcut icon"
           href="/favicon.ico"
@@ -145,9 +146,10 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
         <link rel="canonical" href={canonical} />
         <meta name="theme-color" content="#7d5bd9" />
         {/* Removed all <script> tags from <Head> as Next.js AMP injects them automatically */}
-        <style amp-boilerplate>{`body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}`}</style>
+        {/* AMP Boilerplate CSS */}
+        <style amp-boilerplate="">{`body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}`}</style>
         <noscript>
-          <style amp-boilerplate>{`body{-webkit-animation:none;animation:none}`}</style>
+          <style amp-boilerplate="">{`body{-webkit-animation:none;animation:none}`}</style>
         </noscript>
         
         <style amp-custom>{`
@@ -337,8 +339,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 </div>
                 <div className="card-box">
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">File type</h3>
-                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
-                    <span style={{ fontWeight: "normal" }}>
+                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style display-7">
+                    <span className="font-normal">
                       {product.file_type || "-"}
                     </span>
                   </h4>
@@ -358,8 +360,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 </div>
                 <div className="card-box">
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">Category</h3>
-                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
-                    <span style={{ fontWeight: "normal" }}>
+                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style display-7">
+                    <span className="font-normal">
                       {categoryName || "-"}
                     </span>
                   </h4>
@@ -380,8 +382,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 </div>
                 <div className="card-box">
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">Sub Category</h3>
-                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
-                    <span style={{ fontWeight: "normal" }}>
+                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style display-7">
+                    <span className="font-normal">
                       {subcategoryName || "-"}
                     </span>
                   </h4>
@@ -401,8 +403,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 </div>
                 <div className="card-box">
                   <h3 className="card-title mbr-bold mbr-fonts-style display-5">File ID</h3>
-                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style mbr-bold display-7">
-                    <span style={{ fontWeight: "normal" }}>
+                  <h4 className="card-subtitle mbr-pt-3 mbr-fonts-style display-7">
+                    <span className="font-normal">
                       {product.id || "-"}
                     </span>
                   </h4>
@@ -582,7 +584,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       </section>
 
       {/* Analytics and AMP auto-ads */}
-      <amp-analytics type="googleanalytics">
+      {/* <amp-analytics type="googleanalytics">
         <script type="application/json" dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             vars: { gtag_id: "G-ESHYNTB32B" },
@@ -609,7 +611,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <amp-analytics
         type="facebookpixel"
         config="https://www.facebook.com/tr?id=605038071805340&ev=PageView&noscript=1"
-      />
+      /> */}
       <amp-auto-ads
         type="adsense"
         data-ad-client="ca-pub-2488270605722778"
