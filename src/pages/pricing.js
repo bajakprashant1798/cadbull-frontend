@@ -21,6 +21,7 @@ const Pricing = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [activeSubscription, setActiveSubscription] = useState(false); // ✅ Check if user has an active plan
+  const [showMessage, setShowMessage] = useState(true); // ✅ Control message visibility
 
   // const status = useSelector((store) => store.logininfo)
   useEffect(() => {
@@ -111,13 +112,36 @@ const Pricing = () => {
               <div className="mb-3 mb-md-4 mt-3 mt-md-5">
               <div>
                 {/* {message && <p className="alert alert-warning text-center">{message}</p>} */}
-                {message && (
-                  <p 
-                    className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center`}
-                    style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
-                  >
-                    {message}
-                  </p>
+                {message && showMessage && (
+                  <div className="position-relative mb-4">
+                    <div 
+                      className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center mb-0`}
+                      style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
+                    >
+                      <p className="mb-0" style={{ color: 'white' }}>
+                        {message}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="button btn-light rounded-circle d-flex align-items-center justify-content-center position-absolute"
+                      aria-label="Close"
+                      style={{ 
+                        width: '30px',
+                        height: '30px',
+                        top: '-10px',
+                        right: '-10px',
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        border: '2px solid white',
+                        zIndex: 10
+                      }}
+                      onClick={() => setShowMessage(false)}
+                    >
+                      ×
+                    </button>
+                  </div>
                 )}
               </div>
                 {/* <h1>Choose Your Pricing Plan</h1>
