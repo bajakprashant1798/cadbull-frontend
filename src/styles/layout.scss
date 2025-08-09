@@ -67,6 +67,10 @@ footer {
   border-top: 0.5px solid $borderDarkColor;
 }
 
+// Nav color
+.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+  color: #20325a;
+}
 
 .pagination {
   justify-content: center;

@@ -26,6 +26,57 @@ function oldSiteSlugify(text) {
     .replace(/^\-+|\-+$/g, '');
 }
 
+// ✅ Validate work title for URL safety
+function validateWorkTitle(title) {
+  if (!title || !title.trim()) {
+    return { isValid: false, message: "Work title cannot be empty." };
+  }
+
+  // Check for URL-unsafe characters that would break routing
+  const unsafeChars = /[\/\\?#%&=+<>{}[\]|^`"']/;
+  if (unsafeChars.test(title)) {
+    const foundChars = title.match(/[\/\\?#%&=+<>{}[\]|^`"']/g);
+    return { 
+      isValid: false, 
+      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.` 
+    };
+  }
+
+  // Check for multiple consecutive spaces (can cause slug issues)
+  if (/\s{2,}/.test(title)) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot contain multiple consecutive spaces." 
+    };
+  }
+
+  // Check for leading/trailing spaces
+  if (title !== title.trim()) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot start or end with spaces." 
+    };
+  }
+
+  // Check minimum length
+  if (title.trim().length < 3) {
+    return { 
+      isValid: false, 
+      message: "Work title must be at least 3 characters long." 
+    };
+  }
+
+  // Check maximum length
+  if (title.length > 100) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot exceed 100 characters." 
+    };
+  }
+
+  return { isValid: true, message: "" };
+}
+
 
 const AddProject = () => {
   // const { token } = useSelector((store) => store.logininfo);
@@ -42,6 +93,7 @@ const AddProject = () => {
   const [workTitle, setWorkTitle] = useState(""); // Controlled input for title
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [titleValidation, setTitleValidation] = useState({ isValid: true, message: "" });
   const typingTimeout = useRef(null);
 
   const [slug, setSlug] = useState("");         // Slug input
@@ -162,11 +214,23 @@ const AddProject = () => {
     setWorkTitle(value);
     setValue("work_title", value); // Sync with react-hook-form
 
+    // ✅ Reset states
     setIsDuplicate(false);
-    if (slugMode === "standard" || slug.trim() === "") {
+    setTitleValidation({ isValid: true, message: "" });
+
+    // ✅ Validate work title for URL safety
+    const validation = validateWorkTitle(value);
+    setTitleValidation(validation);
+
+    // ✅ Auto-generate slug only if title is valid
+    if (validation.isValid && (slugMode === "standard" || slug.trim() === "")) {
       setSlug(standardSlugify(value));
     }
-    checkDuplicateTitle(value); // Use debounced function
+
+    // ✅ Only check for duplicates if title is valid
+    if (validation.isValid && value.trim()) {
+      checkDuplicateTitle(value); // Use debounced function
+    }
   };
 
   useEffect(() => {
@@ -284,9 +348,6 @@ const AddProject = () => {
     }
   };
 
-  
-  
-
   return (
     <AdminLayout>
       <div className="container ">
@@ -316,19 +377,31 @@ const AddProject = () => {
 
           {/* Work Title */}
           <div className="mb-3">
-            <label className="form-label">Work Title</label>
-            {/* <input className="form-control" {...register("work_title", { required: true })} /> */}
+            <label className="form-label">Work Title *</label>
             <input
               className="form-control"
               {...register("work_title", { required: true })}
               value={workTitle}
               onChange={handleWorkTitleChange}
               autoComplete="off"
+              placeholder="Enter project title (will be used in URL)"
             />
+            <small className="form-text text-muted">
+              ⚠️ <strong>Important:</strong> Avoid special characters like / \ ? # % & = + &lt; &gt; as they will break the product URL.
+              <br />
+              <strong>Good example:</strong> "Modern House Design 2024"
+              <br />
+              <strong>Bad example:</strong> "House/Villa Design 50% Off"
+            </small>
             {checking && (
               <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
             )}
-            {isDuplicate && (
+            {!titleValidation.isValid && (
+              <span style={{ color: "red", fontSize: "14px" }}>
+                {titleValidation.message}
+              </span>
+            )}
+            {isDuplicate && titleValidation.isValid && (
               <span style={{ color: "red", fontSize: "14px" }}>
                 This project title already exists. Please choose another.
               </span>
@@ -456,7 +529,7 @@ const AddProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId}>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId || !titleValidation.isValid}>
             {/* Add Project */}
             Upload
           </button>

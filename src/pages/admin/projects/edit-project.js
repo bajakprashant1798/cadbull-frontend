@@ -26,6 +26,57 @@ function oldSiteSlugify(text) {
     .replace(/^\-+|\-+$/g, '');
 }
 
+// ✅ Validate work title for URL safety
+function validateWorkTitle(title) {
+  if (!title || !title.trim()) {
+    return { isValid: false, message: "Work title cannot be empty." };
+  }
+
+  // Check for URL-unsafe characters that would break routing
+  const unsafeChars = /[\/\\?#%&=+<>{}[\]|^`"']/;
+  if (unsafeChars.test(title)) {
+    const foundChars = title.match(/[\/\\?#%&=+<>{}[\]|^`"']/g);
+    return { 
+      isValid: false, 
+      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.` 
+    };
+  }
+
+  // Check for multiple consecutive spaces (can cause slug issues)
+  if (/\s{2,}/.test(title)) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot contain multiple consecutive spaces." 
+    };
+  }
+
+  // Check for leading/trailing spaces
+  if (title !== title.trim()) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot start or end with spaces." 
+    };
+  }
+
+  // Check minimum length
+  if (title.trim().length < 3) {
+    return { 
+      isValid: false, 
+      message: "Work title must be at least 3 characters long." 
+    };
+  }
+
+  // Check maximum length
+  if (title.length > 100) {
+    return { 
+      isValid: false, 
+      message: "Work title cannot exceed 100 characters." 
+    };
+  }
+
+  return { isValid: true, message: "" };
+}
+
 const EditProject = () => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector(
@@ -39,6 +90,7 @@ const EditProject = () => {
   const [workTitle, setWorkTitle] = useState(""); // Controlled input
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [titleValidation, setTitleValidation] = useState({ isValid: true, message: "" });
   const typingTimeout = useRef(null); // You need to import useRef!
 
   const user = useSelector((store) => store.logininfo.user);
@@ -177,24 +229,37 @@ const EditProject = () => {
     setWorkTitle(value);
     setValue("work_title", value); // Sync with react-hook-form
 
-    setIsDuplicate(false); // Reset state
+    // ✅ Reset states
+    setIsDuplicate(false);
+    setTitleValidation({ isValid: true, message: "" });
 
-    if (typingTimeout.current) clearTimeout(typingTimeout.current);
-    typingTimeout.current = setTimeout(async () => {
-      if (!value.trim() || value.trim() === projectDetails?.work_title) {
-        setIsDuplicate(false);
+    // ✅ Validate work title for URL safety
+    const validation = validateWorkTitle(value);
+    setTitleValidation(validation);
+
+    // ✅ Only check for duplicates if title is valid
+    if (validation.isValid) {
+      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+      typingTimeout.current = setTimeout(async () => {
+        if (!value.trim() || value.trim() === projectDetails?.work_title) {
+          setIsDuplicate(false);
+          setChecking(false);
+          return;
+        }
+        setChecking(true);
+        try {
+          const res = await checkProjectNameApi(value.trim(), id || "");
+          setIsDuplicate(res.data.exists);
+        } catch (err) {
+          setIsDuplicate(false);
+        }
         setChecking(false);
-        return;
-      }
-      setChecking(true);
-      try {
-        const res = await checkProjectNameApi(value.trim(), id || "");
-        setIsDuplicate(res.data.exists);
-      } catch (err) {
-        setIsDuplicate(false);
-      }
+      }, 350);
+    } else {
+      // Clear duplicate check if title is invalid
       setChecking(false);
-    }, 350);
+      setIsDuplicate(false);
+    }
   };
 
 
@@ -276,19 +341,31 @@ const EditProject = () => {
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
           {/* Work Title */}
           <div className="mb-3">
-            <label className="form-label">Work Title</label>
-            {/* <input className="form-control" {...register("work_title", { required: true })} /> */}
+            <label className="form-label">Work Title *</label>
             <input
               className="form-control"
               {...register("work_title", { required: true })}
               value={workTitle}
               onChange={handleWorkTitleChange}
               autoComplete="off"
+              placeholder="Enter project title (will be used in URL)"
             />
+            <small className="form-text text-muted">
+              ⚠️ <strong>Important:</strong> Avoid special characters like / \ ? # % & = + &lt; &gt; as they will break the product URL.
+              <br />
+              <strong>Good example:</strong> "Modern House Design 2024"
+              <br />
+              <strong>Bad example:</strong> "House/Villa Design 50% Off"
+            </small>
             {checking && (
               <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
             )}
-            {isDuplicate && (
+            {!titleValidation.isValid && (
+              <span style={{ color: "red", fontSize: "14px" }}>
+                {titleValidation.message}
+              </span>
+            )}
+            {isDuplicate && titleValidation.isValid && (
               <span style={{ color: "red", fontSize: "14px" }}>
                 This project title already exists. Please choose another.
               </span>
@@ -448,7 +525,7 @@ const EditProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking}>
+          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !titleValidation.isValid}>
             Save Changes
           </button>
         </form>
