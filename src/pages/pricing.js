@@ -118,7 +118,12 @@ const Pricing = () => {
                       className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center mb-0`}
                       style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
                     >
-                      <p className="mb-0" style={{ color: 'white' }}>
+                      <p 
+                        className="mb-0" 
+                        style={{ 
+                          color: activeSubscription ? 'black' : 'white' 
+                        }}
+                      >
                         {message}
                       </p>
                     </div>
