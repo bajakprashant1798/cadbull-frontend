@@ -99,6 +99,8 @@ import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 import parse from "html-react-parser";
 import Image from "next/image";
 import AdSense from "@/components/AdSense";
+// ✅ PERFORMANCE OPTIMIZATION: Import optimized image component
+import OptimizedImage from "@/components/OptimizedImage";
 
 function transform(node, index) {
   if (node.type === "tag") {
@@ -681,15 +683,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   className="bg-light p-3 rounded-2 shadow-sm"
                   style={{ maxWidth: "100%" }}
                 >
-                  <Image
-                    src={getSafeImageUrl(project.photo_url)}
-                    width={project.image_width || 800}
-                    height={project.image_height || 600}
-                    alt={project.work_title || "drawing"}
+                  <OptimizedImage
+                    src={project?.photo_url}
+                    width={project?.image_width || 800}
+                    height={project?.image_height || 600}
+                    alt={project?.work_title || "CAD Drawing"}
                     className="img-fluid"
-                    priority={true} // ✅ Required for LCP
-                    fetchPriority="high" // ✅ Additional optimization
-                    onError={(e) => handleImageError(e)}
+                    priority={true} // ✅ Required for LCP optimization
+                    quality={90} // ✅ High quality for main project image
+                    responsive={true} // ✅ Enable responsive sizing for mobile
                     style={{
                       width: "100%",
                       height: "auto",
@@ -697,8 +699,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       display: "block",
                       margin: "0 auto"
                     }}
-                    // ✅ SPEED OPTIMIZATION: Specify sizes for responsive images
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 800px"
+                    // ✅ MOBILE OPTIMIZATION: Different sizes for different devices
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
                   />
                 </div>
               </div>
@@ -763,25 +765,28 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             <div className="d-flex align-items-center gap-md-3 gap-2">
                               <div className="flex-shrink-0">
                                 {(project?.profile_pic && !profileImageError) ? (
-                                  <Image
+                                  <OptimizedImage
                                     src={project.profile_pic}
                                     alt="Profile"
                                     width={80}
                                     height={80}
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
-                                    loading="lazy"
+                                    priority={false}
+                                    quality={75} // ✅ Lower quality for profile images
+                                    responsive={false} // ✅ Fixed size, no need for responsive
                                     onError={() => setProfileImageError(true)}
                                   />
                                 ) : (
-                                  <Image
+                                  <OptimizedImage
                                     src={profile_dummy}
                                     alt="Profile"
                                     width={80}
                                     height={80}
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
-                                    loading="lazy"
+                                    priority={false}
+                                    responsive={false}
                                   />
                                 )}
                               </div>

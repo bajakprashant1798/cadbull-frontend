@@ -9,6 +9,25 @@ export default function Document(props) {
   return (
     <Html lang="en">
       <Head>
+        {/* ✅ CRITICAL CSS: Inline critical styles for LCP optimization */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            body{font-family:'Poppins',system-ui,arial,sans-serif!important;margin:0;padding:0}
+            .container{max-width:1200px;margin:0 auto;padding:0 15px}
+            .row{display:flex;flex-wrap:wrap;margin:0 -15px}
+            .col-lg-9{flex:0 0 75%;max-width:75%;padding:0 15px}
+            .col-lg-3{flex:0 0 25%;max-width:25%;padding:0 15px}
+            @media(max-width:991px){.col-lg-9,.col-lg-3{flex:0 0 100%;max-width:100%}}
+            .bg-light{background-color:#f8f9fa!important}
+            .p-3{padding:1rem!important}
+            .rounded-2{border-radius:0.375rem!important}
+            .shadow-sm{box-shadow:0 0.125rem 0.25rem rgba(0,0,0,0.075)!important}
+            .img-fluid{max-width:100%;height:auto}
+            .text-primary{color:#0d6efd!important}
+            .fw-bold{font-weight:700!important}
+          `
+        }} />
+        
         {/* Only load fonts for non-AMP pages to prevent duplicate amp-custom */}
         {!isAmp && (
           <>
@@ -22,11 +41,23 @@ export default function Document(props) {
             <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
             <link rel="dns-prefetch" href="https://connect.facebook.net" />
             
-            {/* ✅ SPEED OPTIMIZATION: Optimized font loading with all weights preserved */}
+            {/* ✅ PERFORMANCE: Preload critical resources */}
+            <link rel="preload" href="/favicon.ico" as="image" />
+            <link rel="modulepreload" href="/_next/static/chunks/main.js" />
+            
+            {/* ✅ SPEED OPTIMIZATION: Optimized font loading with display=swap and reduced weight variations */}
             <link
-              href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-              rel="stylesheet"
+              rel="preload"
+              href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+              as="style"
+              onLoad="this.onload=null;this.rel='stylesheet'"
             />
+            <noscript>
+              <link
+                href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+                rel="stylesheet"
+              />
+            </noscript>
           </>
         )}
         
