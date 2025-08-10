@@ -9,15 +9,18 @@ const nextConfig = {
   },
   
   // Build optimizations to reduce compute costs
-  // compiler: {
-  //   removeConsole: process.env.NODE_ENV === 'production',
-  //   // Disable styled-jsx to prevent empty amp-custom tag injection
-  //   styledJsx: false,
-  // },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+    // ✅ SPEED OPTIMIZATION: Enable styled-jsx for better CSS optimization
+    styledJsx: true,
+  },
   
-  // Disable automatic CSS optimization for AMP compatibility
+  // ✅ SPEED OPTIMIZATION: Enable CSS optimization for better performance
   experimental: {
-    optimizeCss: false,
+    // optimizeCss: true, // Disabled temporarily due to missing critters dependency
+    // Other experimental features  
+    esmExternals: true, // Better tree-shaking
+    scrollRestoration: true, // Better UX
   },
   
   images: {

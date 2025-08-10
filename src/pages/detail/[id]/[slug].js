@@ -52,20 +52,42 @@ import {
 //   WhatsappShareButton,
 // } from "react-share";
 
-const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon));
-const EmailShareButton = dynamic(() => import('react-share').then(mod => mod.EmailShareButton));
-const FacebookIcon = dynamic(() => import('react-share').then(mod => mod.FacebookIcon));
-const FacebookMessengerIcon = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerIcon));
-const FacebookMessengerShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerShareButton));
-const FacebookShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookShareButton));
-const LinkedinIcon = dynamic(() => import('react-share').then(mod => mod.LinkedinIcon));
-const LinkedinShareButton = dynamic(() => import('react-share').then(mod => mod.LinkedinShareButton));
-const PinterestIcon = dynamic(() => import('react-share').then(mod => mod.PinterestIcon));
-const PinterestShareButton = dynamic(() => import('react-share').then(mod => mod.PinterestShareButton));
-const TwitterIcon = dynamic(() => import('react-share').then(mod => mod.TwitterIcon));
-const TwitterShareButton = dynamic(() => import('react-share').then(mod => mod.TwitterShareButton));
-const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.WhatsappIcon));
-const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton));
+// ✅ SPEED OPTIMIZATION: Lazy load social share components for better performance
+const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#f0f0f0' }} />
+});
+const EmailShareButton = dynamic(() => import('react-share').then(mod => mod.EmailShareButton), { ssr: false });
+const FacebookIcon = dynamic(() => import('react-share').then(mod => mod.FacebookIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#1877f2' }} />
+});
+const FacebookMessengerIcon = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#00b2ff' }} />
+});
+const FacebookMessengerShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerShareButton), { ssr: false });
+const FacebookShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookShareButton), { ssr: false });
+const LinkedinIcon = dynamic(() => import('react-share').then(mod => mod.LinkedinIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#0077b5' }} />
+});
+const LinkedinShareButton = dynamic(() => import('react-share').then(mod => mod.LinkedinShareButton), { ssr: false });
+const PinterestIcon = dynamic(() => import('react-share').then(mod => mod.PinterestIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#bd081c' }} />
+});
+const PinterestShareButton = dynamic(() => import('react-share').then(mod => mod.PinterestShareButton), { ssr: false });
+const TwitterIcon = dynamic(() => import('react-share').then(mod => mod.TwitterIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#1da1f2' }} />
+});
+const TwitterShareButton = dynamic(() => import('react-share').then(mod => mod.TwitterShareButton), { ssr: false });
+const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.WhatsappIcon), { 
+  ssr: false,
+  loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#25d366' }} />
+});
+const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton), { ssr: false });
 
 import { FaLink } from 'react-icons/fa';
 import { toast } from "react-toastify";
@@ -480,6 +502,16 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
         <link rel="canonical" href={canonicalUrl} />
         <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
+        
+        {/* ✅ SPEED OPTIMIZATION: Preload LCP image for faster loading */}
+        {project?.photo_url && (
+          <link
+            rel="preload"
+            as="image"
+            href={getSafeImageUrl(project.photo_url)}
+            fetchPriority="high"
+          />
+        )}
 
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
@@ -647,7 +679,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               >
                 <div
                   className="bg-light p-3 rounded-2 shadow-sm"
-                  style={{ maxWidth: "100%" }} // Optional, if you want to constrain inner div too
+                  style={{ maxWidth: "100%" }}
                 >
                   <Image
                     src={getSafeImageUrl(project.photo_url)}
@@ -655,8 +687,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     height={project.image_height || 600}
                     alt={project.work_title || "drawing"}
                     className="img-fluid"
-                    // DO NOT SET loading="lazy" for LCP image!
-                    priority={true} // <-- This is required for LCP
+                    priority={true} // ✅ Required for LCP
+                    fetchPriority="high" // ✅ Additional optimization
                     onError={(e) => handleImageError(e)}
                     style={{
                       width: "100%",
@@ -665,6 +697,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       display: "block",
                       margin: "0 auto"
                     }}
+                    // ✅ SPEED OPTIMIZATION: Specify sizes for responsive images
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 800px"
                   />
                 </div>
               </div>

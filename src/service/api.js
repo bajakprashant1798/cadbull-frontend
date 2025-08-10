@@ -929,4 +929,29 @@ export const sendContactForm = async (contactData) => {
   }
 };
 
+// ========================
+// ✅ Static Content API Endpoints
+// ========================
+
+export const getTermsPrivacyAndFaqData = async () => {
+  try {
+    // This function can be expanded later to fetch dynamic content from backend
+    // For now, returning empty structure to prevent import errors
+    return {
+      data: {
+        terms: {
+          privacy_policy: null,
+          term_condition: null,
+          terms_conditions: null
+        },
+        privacy: null,
+        faq: []
+      }
+    };
+  } catch (error) {
+    console.error("❌ Error fetching terms/privacy/FAQ data:", error);
+    throw new Error("Failed to fetch content data.");
+  }
+};
+
 export default api;
