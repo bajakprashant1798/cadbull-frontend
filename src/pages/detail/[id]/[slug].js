@@ -97,9 +97,8 @@ import product from "@/assets/images/product.jpg"
 import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
-import Image from "next/image";
 import AdSense from "@/components/AdSense";
-// ✅ PERFORMANCE OPTIMIZATION: Import optimized image component
+// ✅ PERFORMANCE OPTIMIZATION: Import optimized image component with skeleton loading
 import OptimizedImage from "@/components/OptimizedImage";
 
 function transform(node, index) {
