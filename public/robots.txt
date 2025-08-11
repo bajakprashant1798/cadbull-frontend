@@ -1,6 +1,24 @@
 User-agent: *
 Allow: /
 
+# Block old download URLs that no longer exist
+Disallow: /products/download/
+Disallow: /products/ampdownload/
+
+# Block old URL patterns
+Disallow: /gold?
+Disallow: /1.CAD?
+
+# Block invalid detail URLs (those without proper slug format)
+Disallow: /detail/*/*?*
+
+# ✅ BLOCK SPECIFIC PROBLEMATIC PRODUCT URLs (rejected/pending products)
+Disallow: /detail/71588/
+Disallow: /amp/71588/
+
+# ✅ BLOCK PATTERN FOR POTENTIAL REJECTED PRODUCTS
+# Add more specific product IDs as needed
+
 Sitemap: https://cadbull.com/sitemap.xml
 
 # AdSense

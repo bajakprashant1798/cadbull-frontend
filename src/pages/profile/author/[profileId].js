@@ -29,7 +29,7 @@ import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 
-const CompanyProfile = () => {
+const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, seoData }) => {
   // Get profileId from router query
   // const { profileId } = useRouter().query;
   const router = useRouter();
@@ -49,21 +49,21 @@ const CompanyProfile = () => {
   const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
 
-  // State for profile and products
-  const [profile, setProfile] = useState(null);
-  const [products, setProducts] = useState([]);
+  // State for profile and products - initialized with SSR data
+  const [profile, setProfile] = useState(initialProfile);
+  const [products, setProducts] = useState(initialProducts);
 
   // Loading states
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   // Sorting state (for A to Z / Z to A)
   const [sortOrder, setSortOrder] = useState(""); // default: "" (i.e. by date)
   
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
+  // Pagination states - initialized with SSR data
+  const [currentPage, setCurrentPage] = useState(initialPagination.currentPage);
+  const [totalPages, setTotalPages] = useState(initialPagination.totalPages);
+  const [totalProducts, setTotalProducts] = useState(initialPagination.totalProducts);
 
   // Fetch profileId from URL or Redux store optionally
   // useEffect(() => {
@@ -80,12 +80,11 @@ const CompanyProfile = () => {
   }, [userIdFromRoute, userIdFromRedux]); // FIX: Use the new variable names here
 
 
-  // Fetch profile info
+  // Fetch profile info (only when needed for updates)
   const fetchProfile = async () => {
     try {
       const res = await getCompanyProfile(userId);
       setProfile(res.data.profile);
-      // console.log("Profile data fetched:", res.data);
     } catch (error) {
       console.error("Error fetching profile", error);
     } finally {
@@ -93,7 +92,7 @@ const CompanyProfile = () => {
     }
   };
 
-  // Fetch company products with sort filter and pagination
+  // Fetch company products (only when needed for client-side updates)
   const fetchProducts = async () => {
     setLoadingProducts(true);
     try {
@@ -102,15 +101,13 @@ const CompanyProfile = () => {
         {
           page: currentPage,
           pageSize: 12,
-          search: "", // Update if you add search functionality later
-          sort: sortOrder, // "asc" for A→Z, "desc" for Z→A. Leave empty for default sorting.
+          search: "",
+          sort: sortOrder,
         }
       );
       setProducts(res.data.products);
       setTotalProducts(res.data.totalProducts);
       setTotalPages(res.data.totalPages);
-      // console.log("Products data fetched:", res.data);
-      
     } catch (error) {
       console.error("Error fetching products", error);
     } finally {
@@ -118,31 +115,66 @@ const CompanyProfile = () => {
     }
   };
 
-  // Re-fetch products whenever filters, sorting, or currentPage change
+  // Only re-fetch if user ID changes or if we need to update client-side
   useEffect(() => {
-    if (userId) {
-      fetchProfile();
-      fetchProducts();
-    }
-  }, [userId, isAuthenticated, sortOrder, currentPage]);
+    // Update currentPage and sortOrder from URL when route changes
+    const page = parseInt(router.query.page) || 1;
+    const sort = router.query.sort || "";
+    
+    setCurrentPage(page);
+    setSortOrder(sort);
+  }, [router.query.page, router.query.sort]);
 
-  // Handle page change
+  // Handle page change - use router.push to update URL
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
-    setCurrentPage(newPage);
+    
+    // Update URL with new page parameter
+    const currentUrl = router.asPath.split('?')[0]; // Get base URL without query params
+    const newUrl = newPage === 1 
+      ? currentUrl 
+      : `${currentUrl}?page=${newPage}`;
+    
+    router.push(newUrl);
   };
 
   // Handler for sort order change
   const handleSortChange = (e) => {
-    setCurrentPage(1);
-    setSortOrder(e.target.value);
+    const newSort = e.target.value;
+    const currentUrl = router.asPath.split('?')[0];
+    const newUrl = newSort 
+      ? `${currentUrl}?sort=${newSort}`
+      : currentUrl;
+    
+    router.push(newUrl);
   };
 
   return (
     <Fragment>
       <Head>
-        <title>{profile ? profile.companyName : "Company Profile"} | Cadbull </title>
-        <meta name="description" content="World Largest 2d CAD Library." />
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        
+        {/* ✅ CANONICAL URL - Always point to main profile page (page 1) */}
+        <link rel="canonical" href={seoData.canonicalUrl} />
+        
+        {/* ✅ NOINDEX AND NOFOLLOW for paginated pages (page 2+) */}
+        {seoData.noindex && <meta name="robots" content="noindex, nofollow" />}
+        
+        {/* ✅ PAGINATION META TAGS */}
+        {seoData.prevPage && <link rel="prev" href={seoData.prevPage} />}
+        {seoData.nextPage && <link rel="next" href={seoData.nextPage} />}
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={seoData.title} />
+        <meta property="og:description" content={seoData.description} />
+        <meta property="og:url" content={seoData.canonicalUrl} />
+        <meta property="og:type" content="profile" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={seoData.title} />
+        <meta name="twitter:description" content={seoData.description} />
       </Head>
       <section className="py-lg-5 py-4 company-page">
         <div className="container">
@@ -235,11 +267,11 @@ const CompanyProfile = () => {
                     <span className="input-group-text bg-white border-end-0 rounded-end-0 pe-0">
                       Sort by :
                     </span>
-                    <select defaultValue="A to Z"  
+                    <select 
                       value={sortOrder}
                       onChange={handleSortChange} 
                       className="form-select border-start-0 rounded-start-0" 
-                      aria-label=".form-select-sm example"
+                      aria-label="Sort products"
                     >
                       <option value="">Default (by Date)</option>
                       <option value="asc">A to Z</option>
@@ -310,5 +342,73 @@ CompanyProfile.getLayout = function getLayout(page) {
   )
 }
 
+// ✅ SERVER-SIDE RENDERING with SEO optimization for pagination
+export async function getServerSideProps({ params, query, req }) {
+  const profileId = params.profileId;
+  const page = parseInt(query.page) || 1;
+  const sortOrder = query.sort || "";
+  
+  try {
+    // Fetch profile data
+    const profileRes = await getCompanyProfile(profileId);
+    const profile = profileRes.data.profile;
+    
+    if (!profile) {
+      return { notFound: true };
+    }
+    
+    // Fetch products data
+    const productsRes = await getCompanyProducts(profileId, {
+      page,
+      pageSize: 12,
+      search: "",
+      sort: sortOrder,
+    });
+    
+    const products = productsRes.data.products || [];
+    const totalProducts = productsRes.data.totalProducts || 0;
+    const totalPages = productsRes.data.totalPages || 1;
+    
+    // Generate SEO data
+    const profileName = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
+    const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+    
+    // ✅ SEO Configuration
+    const seoData = {
+      title: page === 1 
+        ? `${profileName} - CAD Designer Profile | Cadbull`
+        : `${profileName} - CAD Designer Profile | Page ${page} | Cadbull`,
+      
+      description: page === 1
+        ? `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull.`
+        : `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull. Page ${page} of ${totalPages}.`,
+      
+      canonicalUrl: baseUrl, // Always point to main page (no pagination in canonical)
+      
+      noindex: page > 1, // Only index the first page
+      
+      // Pagination navigation
+      prevPage: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
+      nextPage: page < totalPages ? `${baseUrl}?page=${page + 1}` : null,
+    };
+    
+    return {
+      props: {
+        initialProfile: profile,
+        initialProducts: products,
+        initialPagination: {
+          currentPage: page,
+          totalPages,
+          totalProducts,
+        },
+        seoData,
+      },
+    };
+    
+  } catch (error) {
+    console.error('Error in profile getServerSideProps:', error);
+    return { notFound: true };
+  }
+}
 
 export default CompanyProfile;

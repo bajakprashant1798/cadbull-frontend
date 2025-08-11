@@ -58,6 +58,43 @@ const nextConfig = {
         destination: '/?page=:pageNumber',
         permanent: true,
       },
+      
+      // ✅ BLOCK OLD DOWNLOAD URLS - Return 410 Gone
+      {
+        source: '/products/download/:path*',
+        destination: '/410',
+        permanent: true,
+      },
+      {
+        source: '/products/ampdownload/:path*',
+        destination: '/410',
+        permanent: true,
+      },
+      
+      // ✅ BLOCK OLD URL PATTERNS
+      {
+        source: '/gold',
+        destination: '/categories',
+        permanent: true,
+      },
+      {
+        source: '/1.CAD',
+        destination: '/categories',
+        permanent: true,
+      },
+      
+      // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
+      {
+        source: '/detail/:id/:slug*',
+        has: [
+          {
+            type: 'query',
+            key: 'redirect_old_format',
+          },
+        ],
+        destination: '/404',
+        permanent: false,
+      },
     ];
   },
   // Uncomment if you want to add rewrites (API proxy)
