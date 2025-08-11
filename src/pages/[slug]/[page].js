@@ -245,7 +245,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   }, [type, file_type, search]);
 
   // const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}${currentPage > 1 ? `/${currentPage}` : ""}`;
-  const canonicalUrl = currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage}`;
+  const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}`;
 
   return (
     <Fragment>
@@ -256,6 +256,13 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
           content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")}
         />
         {metaKeywords && <meta name="keywords" content={metaKeywords} />}
+        
+        {/* Pagination SEO: noindex for pagination pages */}
+        {currentPage > 1 && (
+          <>
+            <meta name="robots" content="noindex,nofollow" />
+          </>
+        )}
         
         {/* Pagination SEO: Previous/Next links */}
         {currentPage > 1 && (

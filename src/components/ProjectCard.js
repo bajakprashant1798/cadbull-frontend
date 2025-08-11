@@ -109,7 +109,7 @@ const ProjectCard = ({
             loading="lazy"
             style={{
               width: "100%",
-              height: "auto",
+              height: "100%",
               objectFit: "contain",
               display: "block"
             }}

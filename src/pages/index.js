@@ -337,7 +337,15 @@ export default function Home({
     <Fragment>
       <Head>
         <title>{currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'}</title>
-        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage}`} />
+        
+        {/* ✅ SEO PAGINATION: Only index the main page, noindex pagination pages */}
+        {currentPage > 1 && (
+          <meta name="robots" content="noindex, nofollow" />
+        )}
+        
+        {/* ✅ CANONICAL: Always point to main page for pagination */}
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
+        
         <meta name="description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
 
         {/* Pagination SEO: Previous/Next links */}
@@ -351,7 +359,7 @@ export default function Home({
         <meta property="og:title" content={currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'} />
         <meta property="og:description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}?page=${currentPage}`} />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
         <meta property="og:image" content={projects && projects.length > 0 ? projects[0]?.photo_url || logo : logo} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />

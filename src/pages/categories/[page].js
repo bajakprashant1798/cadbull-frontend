@@ -254,8 +254,15 @@ const Categories = ({
     <Fragment>
       <Head>
         <title>{currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'}</title>
-        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage}`} />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories`} />
         <meta name="description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
+
+        {/* Pagination SEO: noindex for pagination pages */}
+        {currentPage > 1 && (
+          <>
+            <meta name="robots" content="noindex,nofollow" />
+          </>
+        )}
 
         {/* Pagination SEO: Previous/Next links */}
         {currentPage > 1 && (
@@ -268,7 +275,7 @@ const Categories = ({
         <meta property="og:title" content={currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'} />
         <meta property="og:description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/${currentPage}`} />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories`} />
         <meta property="og:image" content={logo} />
         <meta name="twitter:title" content={currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files'} />
         <meta name="twitter:description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />

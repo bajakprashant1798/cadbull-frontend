@@ -182,6 +182,13 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
 
         <meta name="description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         
+        {/* Pagination SEO: noindex for pagination pages */}
+        {currentPage > 1 && (
+          <>
+            <meta name="robots" content="noindex,nofollow" />
+          </>
+        )}
+        
         {/* Pagination SEO: Previous/Next links */}
         {currentPage > 1 && (
           <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage - 1}`} />
@@ -193,10 +200,10 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
         <meta property="og:title" content={currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search'} />
         <meta property="og:description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage}`} />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search`} />
         {/* <meta property="og:image" content={project?.photo_url} /> */}
         {/* <meta name="twitter:card" content="summary_large_image" /> */}
-        <link rel="canonical" href={currentPage === 1 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search` : `${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search/${currentPage}`} />
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/categories/search`} />
         <meta name="twitter:title" content={currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search'} />
         <meta name="twitter:description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
