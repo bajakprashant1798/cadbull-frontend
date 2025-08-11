@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /ads.txt
 
 # Block old download URLs that no longer exist
 Disallow: /products/download/
@@ -20,7 +21,3 @@ Disallow: /amp/71588/
 # Add more specific product IDs as needed
 
 Sitemap: https://cadbull.com/sitemap.xml
-
-# AdSense
-User-agent: Googlebot
-Allow: /ads.txt
