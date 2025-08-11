@@ -127,27 +127,13 @@ const social = [
   // { image: pinit, url: "/" },
 ];
 
-// function slugify(text) {
-//   if (!text) return "";
-//   return text
-//     .toString()
-//     .toLowerCase()
-//     .replace(/\s+/g, '-')           // Replace spaces with -
-//     .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-//     .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-//     .replace(/^-+/, '')             // Trim - from start of text
-//     .replace(/-+$/, '');            // Trim - from end of text
-// }
+// --- Old site slug function (matches backend oldSiteSlugify) ---
 function slugify(title) {
   if (!title) return '';
   return title
-    .toString()
-    .toLowerCase()
     .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars (including special chars)
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '');            // Trim - from end of text
+    .replace(/\-+/g, '-')           // Collapse multiple dashes
+    .replace(/^\-+|\-+$/g, '');     // Trim dashes from start and end
 }
 
 
