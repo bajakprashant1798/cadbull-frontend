@@ -8,6 +8,14 @@ export function middleware(request) {
     return NextResponse.rewrite(new URL('/410', request.url));
   }
   
+  // ✅ REDIRECT OLD AUTHOR PROFILE URLs to new format
+  const oldAuthorMatch = pathname.match(/^\/author-profile\/(\d+)$/);
+  if (oldAuthorMatch) {
+    const [, profileId] = oldAuthorMatch;
+    // Redirect to new profile URL format
+    return NextResponse.redirect(new URL(`/profile/author/${profileId}`, request.url), 301);
+  }
+  
   // ✅ BLOCK OLD URL PATTERNS
   if (pathname === '/gold' || pathname === '/1.CAD') {
     return NextResponse.redirect(new URL('/categories', request.url), 301);

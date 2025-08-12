@@ -6,6 +6,9 @@ Allow: /ads.txt
 Disallow: /products/download/
 Disallow: /products/ampdownload/
 
+# Block old author profile URLs (now redirected to new format)
+Disallow: /author-profile/
+
 # Block old URL patterns
 Disallow: /gold?
 Disallow: /1.CAD?
