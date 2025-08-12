@@ -674,9 +674,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     height={project?.image_height || 600}
                     alt={project?.work_title || "CAD Drawing"}
                     className="img-fluid"
-                    priority={true} // ✅ Required for LCP optimization
-                    quality={90} // ✅ High quality for main project image
-                    responsive={true} // ✅ Enable responsive sizing for mobile
+                    priority={true}
+                    quality={90}
                     style={{
                       width: "100%",
                       height: "auto",
@@ -684,7 +683,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       display: "block",
                       margin: "0 auto"
                     }}
-                    // ✅ MOBILE OPTIMIZATION: Different sizes for different devices
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
                   />
                 </div>
@@ -758,8 +756,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
                                     priority={false}
-                                    quality={75} // ✅ Lower quality for profile images
-                                    responsive={false} // ✅ Fixed size, no need for responsive
+                                    quality={75}
                                     onError={() => setProfileImageError(true)}
                                   />
                                 ) : (
@@ -771,7 +768,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
                                     priority={false}
-                                    responsive={false}
                                   />
                                 )}
                               </div>
