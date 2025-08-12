@@ -1027,6 +1027,12 @@ export default function Home({
 
 // ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction + Better AdSense performance
 export async function getStaticProps({ params }) {
+  // ===== TEST LOGS FOR CLOUDWATCH DEBUGGING =====
+  console.log('🧪 [TEST-LOG] Homepage getStaticProps started');
+  console.log('🧪 [TEST-LOG] Environment:', process.env.NODE_ENV);
+  console.log('🧪 [TEST-LOG] Timestamp:', new Date().toISOString());
+  console.log('🧪 [TEST-LOG] AWS Request ID:', process.env.AWS_REQUEST_ID || 'local');
+  
   const timings = {};
   const startTime = Date.now();
   
@@ -1036,6 +1042,8 @@ export async function getStaticProps({ params }) {
     cacheStatus: 'generating' 
   }, async () => {
     try {
+      console.log('🧪 [TEST-LOG] Inside performance tracking function');
+      
       // Static generation with ISR = much cheaper than SSR but maintains fresh content
       const page = 1; // Homepage always shows page 1 for ISR
       const search = "";
@@ -1043,6 +1051,8 @@ export async function getStaticProps({ params }) {
 
       performance.logMemoryUsage('Homepage-Start');
 
+      console.log('🧪 [TEST-LOG] About to call projects API');
+      
       // Track projects API call
       const projectRes = await performance.timeAPICall(
         'GetAllProjects-Homepage',
@@ -1050,6 +1060,8 @@ export async function getStaticProps({ params }) {
         `getallprojects?page=${page}&limit=9`
       );
       timings.projectsAPI = Date.now() - startTime;
+
+      console.log('🧪 [TEST-LOG] Projects API completed, calling categories API');
 
       // Track categories API call
       const categoryRes = await performance.timeAPICall(
@@ -1060,6 +1072,8 @@ export async function getStaticProps({ params }) {
       timings.categoriesAPI = Date.now() - startTime - timings.projectsAPI;
 
       performance.logMemoryUsage('Homepage-AfterAPIs');
+
+      console.log('🧪 [TEST-LOG] Both APIs completed successfully');
 
       // Log cost event for ISR generation
       performance.logCostEvent('ISR-Generation', {
@@ -1086,8 +1100,11 @@ export async function getStaticProps({ params }) {
       timings.total = Date.now() - startTime;
       performance.generateSummary('Homepage-ISR', timings);
       
+      console.log('🧪 [TEST-LOG] Homepage getStaticProps completed successfully');
+      
       return result;
     } catch (error) {
+      console.error('🧪 [TEST-LOG] ERROR in homepage getStaticProps:', error);
       console.error('Error in homepage getStaticProps:', error);
       performance.logCostEvent('ISR-Error', {
         page: 'Homepage',

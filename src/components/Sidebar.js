@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Briefcase, Users, Layers, Folder, Mail, Search, CreditCard, Settings, List, LogOut, ChevronDown, ChevronUp, PlusCircle, Edit, BarChart3 } from "lucide-react";
+import { Briefcase, Users, Layers, Folder, Mail, Search, CreditCard, Settings, List, LogOut, ChevronDown, ChevronUp, PlusCircle, Edit } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/app/features/authSlice"
 import { useRouter } from "next/router";
@@ -361,13 +361,6 @@ const Sidebar = () => {
         <li className="nav-item">
             <Link href="/admin/users-earning" className="nav-link text-white">
                 <CreditCard size={18} className="me-2" /> Users Earning
-            </Link>
-        </li>
-
-        {/* Performance Dashboard - Super Admin Only */}
-        <li className="nav-item">
-            <Link href="/admin/performance" className="nav-link text-white">
-                <BarChart3 size={18} className="me-2" /> Performance Dashboard
             </Link>
         </li>
 
