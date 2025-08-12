@@ -98,8 +98,8 @@ import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
 import AdSense from "@/components/AdSense";
-// ✅ PERFORMANCE OPTIMIZATION: Import optimized image component with skeleton loading
-import OptimizedImage from "@/components/OptimizedImage";
+// ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
+import Image from 'next/image';
 
 function transform(node, index) {
   if (node.type === "tag") {
@@ -668,8 +668,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   className="bg-light p-3 rounded-2 shadow-sm"
                   style={{ maxWidth: "100%" }}
                 >
-                  <OptimizedImage
-                    src={project?.photo_url}
+                  <Image
+                    src={getSafeImageUrl(project?.photo_url)}
                     width={project?.image_width || 800}
                     height={project?.image_height || 600}
                     alt={project?.work_title || "CAD Drawing"}
@@ -748,8 +748,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             <div className="d-flex align-items-center gap-md-3 gap-2">
                               <div className="flex-shrink-0">
                                 {(project?.profile_pic && !profileImageError) ? (
-                                  <OptimizedImage
-                                    src={project.profile_pic}
+                                  <Image
+                                    src={getSafeImageUrl(project.profile_pic)}
                                     alt="Profile"
                                     width={80}
                                     height={80}
@@ -760,7 +760,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     onError={() => setProfileImageError(true)}
                                   />
                                 ) : (
-                                  <OptimizedImage
+                                  <Image
                                     src={profile_dummy}
                                     alt="Profile"
                                     width={80}
