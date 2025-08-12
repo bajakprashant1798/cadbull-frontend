@@ -10,7 +10,10 @@ const nextConfig = {
   
   // Build optimizations to reduce compute costs
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // ✅ SELECTIVE CONSOLE REMOVAL: Keep performance logs, remove debug logs
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['info', 'warn', 'error'] // Keep these for CloudWatch logging
+    } : false,
     // ✅ SPEED OPTIMIZATION: Enable styled-jsx for better CSS optimization
     styledJsx: true,
   },

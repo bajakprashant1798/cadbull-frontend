@@ -42,6 +42,7 @@ import Image from "next/image";
 import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
 import { performance } from "@/utils/performance";
+import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, logISRPerformance, trackPageEvent } from "@/utils/amplifyLogger";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -1049,37 +1050,73 @@ export async function getStaticProps({ params }) {
       const search = "";
       const file_type = "";
 
+      // 🧠 Memory tracking for both systems
       performance.logMemoryUsage('Homepage-Start');
+      const initialMemory = process.memoryUsage();
+      logMemoryUsage('Homepage', initialMemory);
 
-      console.log('🧪 [TEST-LOG] About to call projects API');
+      console.info('🧪 [AMPLIFY-LOG] About to call projects API');
       
-      // Track projects API call
+      // Track projects API call with both systems
+      const projectsStartTime = Date.now();
       const projectRes = await performance.timeAPICall(
         'GetAllProjects-Homepage',
         () => getallprojects(page, 9, search, file_type),
         `getallprojects?page=${page}&limit=9`
       );
-      timings.projectsAPI = Date.now() - startTime;
+      const projectsDuration = Date.now() - projectsStartTime;
+      timings.projectsAPI = projectsDuration;
 
-      console.log('🧪 [TEST-LOG] Projects API completed, calling categories API');
+      // 🌐 Amplify: Log API call performance
+      logAPICall('getallprojects', projectsDuration, 200, JSON.stringify(projectRes.data).length);
 
-      // Track categories API call
+      console.info('🧪 [AMPLIFY-LOG] Projects API completed, calling categories API');
+
+      // Track categories API call with both systems
+      const categoriesStartTime = Date.now();
       const categoryRes = await performance.timeAPICall(
         'GetAllCategories-Homepage',
         () => getallCategories(),
         'getallCategories'
       );
-      timings.categoriesAPI = Date.now() - startTime - timings.projectsAPI;
+      const categoriesDuration = Date.now() - categoriesStartTime;
+      timings.categoriesAPI = categoriesDuration;
 
+      // 🌐 Amplify: Log API call performance
+      logAPICall('getallCategories', categoriesDuration, 200, JSON.stringify(categoryRes.data).length);
+
+      // 🧠 Memory tracking after APIs
       performance.logMemoryUsage('Homepage-AfterAPIs');
+      const afterAPIMemory = process.memoryUsage();
+      logMemoryUsage('Homepage-AfterAPIs', afterAPIMemory);
 
-      console.log('🧪 [TEST-LOG] Both APIs completed successfully');
+      console.info('🧪 [AMPLIFY-LOG] Both APIs completed successfully');
 
-      // Log cost event for ISR generation
+      // Log cost event for ISR generation (existing)
       performance.logCostEvent('ISR-Generation', {
         page: 'Homepage',
         itemCount: projectRes.data.products?.length || 0,
         categoryCount: categoryRes.data.categories?.length || 0,
+      });
+
+      const totalTime = Date.now() - startTime;
+      
+      // 📊 Amplify: Log ISR performance
+      logISRPerformance('Homepage', {
+        generationTime: totalTime,
+        cacheHit: false, // This is always a miss for ISR generation
+        projectsCount: projectRes.data.products?.length || 0,
+        categoriesCount: categoryRes.data.categories?.length || 0,
+        memoryUsed: afterAPIMemory.heapUsed,
+        apiCallsCount: 2
+      });
+
+      // 💰 Amplify: Log cost metrics
+      logCostMetrics('Homepage', {
+        computeTime: totalTime,
+        memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+        apiCalls: 2,
+        dataSize: (JSON.stringify(projectRes.data).length + JSON.stringify(categoryRes.data).length) / 1024 // KB
       });
 
       const result = {
@@ -1097,18 +1134,38 @@ export async function getStaticProps({ params }) {
         revalidate: 1800, // 30 minutes = fresh content without constant server load
       };
 
-      timings.total = Date.now() - startTime;
+      timings.total = totalTime;
       performance.generateSummary('Homepage-ISR', timings);
       
-      console.log('🧪 [TEST-LOG] Homepage getStaticProps completed successfully');
+      // 🚀 Amplify: Log final performance summary
+      logPagePerformance('Homepage', {
+        totalTime,
+        projectsAPITime: projectsDuration,
+        categoriesAPITime: categoriesDuration,
+        memoryPeak: afterAPIMemory.heapUsed,
+        dataTransferred: (JSON.stringify(result.props).length / 1024).toFixed(2) + 'KB',
+        isrRevalidate: 1800
+      });
+      
+      console.info('🧪 [AMPLIFY-LOG] Homepage getStaticProps completed successfully');
       
       return result;
     } catch (error) {
-      console.error('🧪 [TEST-LOG] ERROR in homepage getStaticProps:', error);
+      console.error('🧪 [AMPLIFY-ERROR] ERROR in homepage getStaticProps:', error);
       console.error('Error in homepage getStaticProps:', error);
+      
+      // Log error with both systems
       performance.logCostEvent('ISR-Error', {
         page: 'Homepage',
         error: error.message,
+      });
+      
+      // 📊 Amplify: Log error details
+      logCostMetrics('Homepage-Error', {
+        computeTime: Date.now() - startTime,
+        memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+        apiCalls: 0,
+        dataSize: 0
       });
       
       return {
