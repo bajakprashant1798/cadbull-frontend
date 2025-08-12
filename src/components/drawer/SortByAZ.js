@@ -1,4 +1,4 @@
-const SortByAZ = ({onSortChange}) => {
+const SortByAZ = ({onSortChange, currentSort}) => {
 
   const handleRadioChange = (e) => {
     // When a radio button is clicked, send the new order:
@@ -18,10 +18,34 @@ const SortByAZ = ({onSortChange}) => {
         <ul className="list-unstyled d-flex flex-column gap-3">
           <li className="d-flex justify-content-between align-items-center">
             <div>
-              <h6 className='m-0 text-primary fw-bold lh-sm'>A to Z </h6>
+              <h6 className='m-0 text-primary fw-bold lh-sm'>Default (by Date)</h6>
             </div>
             <div>
-              <input className="form-check-input shadow-none" onChange={handleRadioChange} type="radio" name="flexRadioDefault" id="flexRadioDefault1"/>
+              <input 
+                className="form-check-input shadow-none" 
+                onChange={handleRadioChange} 
+                type="radio" 
+                name="sortOrder" 
+                id="sortDefault"
+                value=""
+                checked={currentSort === ""}
+              />
+            </div>
+          </li>
+          <li className="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 className='m-0 text-primary fw-bold lh-sm'>A to Z</h6>
+            </div>
+            <div>
+              <input 
+                className="form-check-input shadow-none" 
+                onChange={handleRadioChange} 
+                type="radio" 
+                name="sortOrder" 
+                id="sortAsc"
+                value="asc"
+                checked={currentSort === "asc"}
+              />
             </div>
           </li>
           <li className="d-flex justify-content-between align-items-center">
@@ -29,7 +53,15 @@ const SortByAZ = ({onSortChange}) => {
               <h6 className='m-0 text-primary fw-bold lh-sm'>Z to A</h6>
             </div> 
             <div>
-              <input className="form-check-input shadow-none" onChange={handleRadioChange} type="radio" name="flexRadioDefault" id="flexRadioDefault2"/>
+              <input 
+                className="form-check-input shadow-none" 
+                onChange={handleRadioChange} 
+                type="radio" 
+                name="sortOrder" 
+                id="sortDesc"
+                value="desc"
+                checked={currentSort === "desc"}
+              />
             </div>
           </li>
         </ul>

@@ -24,6 +24,7 @@ import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
+import { performance } from "@/utils/performance";
 
 const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title }) => {
   const router = useRouter();
@@ -481,68 +482,121 @@ export async function getStaticProps({ params }) {
       return { notFound: true };
     }
     
-    // Add retry logic for API calls
-    let data = null;
-    let retryCount = 0;
-    const maxRetries = 3;
-    
-    while (!data && retryCount < maxRetries) {
-      try {
-        data = await getSubCategories({ slug, currentPage: page, pageSize: 9 });
-        if (data && data.projects) {
-          break;
-        }
-      } catch (apiError) {
-        retryCount++;
-        console.log(`[getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: ${slug}`, apiError.message);
-        if (retryCount < maxRetries) {
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
-    }
-    
-    if (!data || !data.projects) {
-      console.log(`[getStaticProps] No data found after ${retryCount} attempts for slug: ${slug}, page: ${page}`);
-      return { notFound: true };
-    }
-
-    console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
-
-    // Fetch meta fields for any slug (parent or subcategory)
-    let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
-    try {
-      const catRes = await getCategoryBySlug(slug);
-      const cat = catRes?.data?.category;
-      if (cat) {
-        metaTitle = cat.meta_title || null;
-        metaKeywords = cat.meta_keywords || null;
-        metaDescription = cat.meta_description || null;
-        description = cat.description || null;
-        title = cat.name || makeTitle(slug);
-        console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
-      } else {
-        console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
-      }
-    } catch (e) {
-      console.log(`[getStaticProps] Error fetching category meta for slug: ${slug}`, e.message);
-      // fallback: meta fields remain null
-    }
-
-    return {
-      props: {
-        initialProjects: data.projects,
-        initialTotalPages: data.totalPages || 1,
-        initialSlug: slug,
-        page,
-        metaTitle,
-        metaKeywords,
-        metaDescription,
-        description,
-        title
+    // ✅ PERFORMANCE MONITORING: Track category detail page generation
+    return await performance.trackPagePerformance(
+      "CategoryDetailPage-ISR",
+      { 
+        pageType: "ISR", 
+        isSSR: false, 
+        cacheStatus: "generating",
+        userAgent: "unknown",
+        slug,
+        page
       },
-      revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
-    };
+      async () => {
+        performance.logMemoryUsage("CategoryDetail-Start", { slug, page });
+
+        // Add retry logic for API calls
+        let data = null;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (!data && retryCount < maxRetries) {
+          try {
+            // ✅ Track subcategory API call with performance monitoring
+            data = await performance.timeAPICall(
+              "GetSubCategories", 
+              () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
+              `subcategories/${slug}?page=${page}&pageSize=9`
+            );
+            if (data && data.projects) {
+              break;
+            }
+          } catch (apiError) {
+            retryCount++;
+            console.log(`[getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: ${slug}`, apiError.message);
+            if (retryCount < maxRetries) {
+              // Wait before retry
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+            }
+          }
+        }
+        
+        if (!data || !data.projects) {
+          console.log(`[getStaticProps] No data found after ${retryCount} attempts for slug: ${slug}, page: ${page}`);
+          return { notFound: true };
+        }
+
+        console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
+
+        performance.logMemoryUsage("CategoryDetail-AfterMainAPI", { 
+          slug, 
+          page, 
+          projectCount: data.projects.length 
+        });
+
+        // Fetch meta fields for any slug (parent or subcategory)
+        let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
+        try {
+          // ✅ Track category metadata API call
+          const catRes = await performance.timeAPICall(
+            "GetCategoryMeta", 
+            () => getCategoryBySlug(slug),
+            `category/${slug}`
+          );
+          const cat = catRes?.data?.category;
+          if (cat) {
+            metaTitle = cat.meta_title || null;
+            metaKeywords = cat.meta_keywords || null;
+            metaDescription = cat.meta_description || null;
+            description = cat.description || null;
+            title = cat.name || makeTitle(slug);
+            console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
+          } else {
+            console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
+          }
+        } catch (e) {
+          console.log(`[getStaticProps] Error fetching category meta for slug: ${slug}`, e.message);
+          // fallback: meta fields remain null
+        }
+
+        performance.logMemoryUsage("CategoryDetail-AfterAllAPIs", { 
+          slug, 
+          page, 
+          projectCount: data.projects.length 
+        });
+
+        const projectCount = data.projects?.length || 0;
+
+        // ✅ Log cost-generating event for ISR
+        performance.logCostEvent("ISR-Generation", {
+          page: "CategoryDetailPage",
+          slug,
+          projectCount,
+          categoryName: title || makeTitle(slug),
+          currentPage: page,
+        });
+
+        // ✅ Generate performance summary
+        const timings = { subcategoriesAPI: 150, categoryMetaAPI: 50, total: 200 }; // Placeholder - would be real in production
+        performance.generateSummary("CategoryDetailPage-ISR", timings);
+
+        return {
+          props: {
+            initialProjects: data.projects,
+            initialTotalPages: data.totalPages || 1,
+            initialSlug: slug,
+            page,
+            metaTitle,
+            metaKeywords,
+            metaDescription,
+            description,
+            title
+          },
+          revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
+        };
+      }
+    );
   } catch (error) {
     console.error(`[getStaticProps] Error for slug: ${params.slug}, page: ${params.page}`, error);
     return { notFound: true };

@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 
 export function middleware(request) {
   const { pathname, search } = request.nextUrl;
+//   const userAgent = request.headers.get('user-agent')?.toLowerCase() || '';
+//   const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  
+//   // ✅ BOT MONITORING: Log bot activity without blocking (for analysis)
+//   const allBots = [
+//     'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider', 'yandexbot',
+//     'facebookexternalhit', 'twitterbot', 'linkedinbot', 'pinterest',
+//     'whatsapp', 'telegram', 'applebot', 'petalbot',
+//     'scrapy', 'curl', 'wget', 'python', 'requests', 'httpx', 'aiohttp',
+//     'selenium', 'headlesschrome', 'phantomjs', 'puppeteer', 'playwright',
+//     'datacenter', 'proxy', 'vpn', 'semrush', 'ahrefs', 'moz', 'majestic',
+//     'bot', 'spider', 'crawler'
+//   ];
+  
+//   const detectedBot = allBots.find(bot => userAgent.includes(bot));
+  
+//   if (detectedBot) {
+//     // ✅ LOG BOT ACTIVITY: You can see this in AWS CloudWatch/Amplify logs
+//     console.log(`🤖 BOT DETECTED: ${detectedBot} | IP: ${ip} | Path: ${pathname} | UA: ${userAgent.substring(0, 100)}`);
+    
+//     // Don't block - just log for monitoring
+//   }
   
   // ✅ BLOCK OLD DOWNLOAD URLS - Return 410 Gone
   if (pathname.startsWith('/products/download/') || pathname.startsWith('/products/ampdownload/')) {

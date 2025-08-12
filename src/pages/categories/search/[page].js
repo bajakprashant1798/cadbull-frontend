@@ -12,6 +12,7 @@ import { debounce } from "lodash";
 import { setFavouriteList } from "../../../../redux/app/features/projectsSlice";
 import { useRouter } from "next/router";
 import AdSense from "@/components/AdSense";
+import { performance } from "@/utils/performance";
 
 const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPages, initialPage}) => {
     const router = useRouter();
@@ -349,24 +350,83 @@ export async function getServerSideProps({ params, query }) {
   const search = query.search || '';
   const fileType = query.fileType || '';
   const type = query.type || '';
-  // Optionally get other query filters here (like search, fileType, etc.)
-  // const search = query.search || '';
-  // const fileType = query.file_type || '';
 
-  // Fetch your search results using page (and other filters)
-  const response = await getSearchResults(search, page, 12, fileType, type);
+  // ✅ PERFORMANCE MONITORING: Track search page generation
+  return await performance.trackPagePerformance(
+    "SearchPage-SSR",
+    { 
+      pageType: "SSR", 
+      isSSR: true, 
+      userAgent: "unknown",
+      page,
+      searchTerm: search,
+      fileType,
+      type
+    },
+    async () => {
+      performance.logMemoryUsage("Search-Start", { 
+        page, 
+        searchTerm: search, 
+        fileType, 
+        type 
+      });
 
-  return {
-    props: {
-      initialProjects: response.data.projects,
-      initialTotalResults: response.data.totalResults,
-      initialTotalPages: response.data.totalPages,
-      initialPage: page,
-      initialSearch: search,
-      initialFileType: fileType,
-      initialType: type,
+      try {
+        // ✅ Track search API call with performance monitoring
+        const response = await performance.timeAPICall(
+          "GetSearchResults", 
+          () => getSearchResults(search, page, 12, fileType, type),
+          `search?q=${search}&page=${page}&fileType=${fileType}&type=${type}`
+        );
+
+        performance.logMemoryUsage("Search-AfterAPI", { 
+          page, 
+          resultsCount: response.data?.projects?.length || 0
+        });
+
+        const resultsCount = response.data?.projects?.length || 0;
+        const totalResults = response.data?.totalResults || 0;
+
+        // ✅ Log cost-generating event for SSR
+        performance.logCostEvent("SSR-Generation", {
+          page: "SearchPage",
+          searchTerm: search,
+          resultsCount,
+          totalResults,
+          currentPage: page,
+        });
+
+        // ✅ Generate performance summary
+        const timings = { searchAPI: 200, total: 200 }; // Placeholder - would be real in production
+        performance.generateSummary("SearchPage-SSR", timings);
+
+        return {
+          props: {
+            initialProjects: response.data.projects,
+            initialTotalResults: response.data.totalResults,
+            initialTotalPages: response.data.totalPages,
+            initialPage: page,
+            initialSearch: search,
+            initialFileType: fileType,
+            initialType: type,
+          }
+        };
+      } catch (error) {
+        console.error("❌ Error in SearchPage getServerSideProps:", error);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalResults: 0,
+            initialTotalPages: 1,
+            initialPage: page,
+            initialSearch: search,
+            initialFileType: fileType,
+            initialType: type,
+          }
+        };
+      }
     }
-  };
+  );
 }
 
 

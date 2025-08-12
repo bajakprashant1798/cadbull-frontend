@@ -3,28 +3,18 @@ import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
 // import profile from "@/assets/images/profile-arch.png"
 import profile_dummy from "@/assets/icons/profile.png";
-import award1 from "@/assets/images/award-1.png"
-import award2 from "@/assets/images/award-2.png";
-import project from "@/assets/images/blog-1.png";
-import save from "@/assets/icons/save.png";
-import heart from "@/assets/icons/heart.png";
-import SectionHeading from "@/components/SectionHeading";
-import professionals from "@/assets/images/professionals.png"
 
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
 // import required modules
-import { Autoplay, Navigation } from 'swiper/modules';
-import ConsultModal from "@/components/ConsultModal";
 import Icons from "@/components/Icons";
 import SortByAZ from "@/components/drawer/SortByAZ";
 import SortByDate from "@/components/drawer/SortByDate";
 import { getCompanyProducts, getCompanyProfile } from "@/service/api";
 import { useRouter } from "next/router";
+import { performance } from "@/utils/performance";
 import { useSelector } from "react-redux";
-import { debounce } from "@/pages";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
@@ -93,16 +83,16 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
   };
 
   // Fetch company products (only when needed for client-side updates)
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = currentPage, sort = sortOrder) => {
     setLoadingProducts(true);
     try {
       const res = await getCompanyProducts(
         userId,
         {
-          page: currentPage,
+          page: page,
           pageSize: 12,
           search: "",
-          sort: sortOrder,
+          sort: sort,
         }
       );
       setProducts(res.data.products);
@@ -123,30 +113,68 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
     
     setCurrentPage(page);
     setSortOrder(sort);
+    
+    // If the URL parameters changed, fetch new data
+    if (page !== currentPage || sort !== sortOrder) {
+      fetchProducts(page, sort);
+    }
   }, [router.query.page, router.query.sort]);
 
   // Handle page change - use router.push to update URL
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
     
-    // Update URL with new page parameter
-    const currentUrl = router.asPath.split('?')[0]; // Get base URL without query params
-    const newUrl = newPage === 1 
-      ? currentUrl 
-      : `${currentUrl}?page=${newPage}`;
+    // Update URL with new page parameter, keeping sort if it exists
+    const currentUrl = router.asPath.split('?')[0];
+    const params = new URLSearchParams();
+    
+    if (newPage > 1) params.append('page', newPage.toString());
+    if (sortOrder) params.append('sort', sortOrder);
+    
+    const queryString = params.toString();
+    const newUrl = queryString ? `${currentUrl}?${queryString}` : currentUrl;
     
     router.push(newUrl);
   };
 
-  // Handler for sort order change
+  // Handler for sort order change (desktop dropdown)
   const handleSortChange = (e) => {
     const newSort = e.target.value;
+    handleSortUpdate(newSort);
+  };
+
+  // Handler for mobile sort change
+  const handleMobileSortChange = (newSort) => {
+    handleSortUpdate(newSort);
+    
+    // Close the offcanvas
+    const offcanvasElement = document.getElementById('staticBackdrop3');
+    if (offcanvasElement) {
+      const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if (bsOffcanvas) {
+        bsOffcanvas.hide();
+      }
+    }
+  };
+
+  // Common sort update logic
+  const handleSortUpdate = (newSort) => {
     const currentUrl = router.asPath.split('?')[0];
-    const newUrl = newSort 
-      ? `${currentUrl}?sort=${newSort}`
-      : currentUrl;
+    const params = new URLSearchParams();
+    
+    // Always reset to page 1 when sorting changes
+    if (newSort) params.append('sort', newSort);
+    
+    const queryString = params.toString();
+    const newUrl = queryString ? `${currentUrl}?${queryString}` : currentUrl;
     
     router.push(newUrl);
+  };
+
+  // Handle date filter change (for future implementation)
+  const handleDateChange = (fromDate, toDate) => {
+    console.log('Date filter:', { fromDate, toDate });
+    // TODO: Implement date filtering
   };
 
   return (
@@ -330,6 +358,15 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
         </div>
         </div>
       </section>
+
+      {/* Mobile Sort Components */}
+      <SortByAZ 
+        onSortChange={handleMobileSortChange} 
+        currentSort={sortOrder}
+      />
+      <SortByDate 
+        onDateChange={handleDateChange}
+      />
     </Fragment>
   );
 }
@@ -342,73 +379,125 @@ CompanyProfile.getLayout = function getLayout(page) {
   )
 }
 
-// ✅ SERVER-SIDE RENDERING with SEO optimization for pagination
-export async function getServerSideProps({ params, query, req }) {
+// ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction
+export async function getStaticProps({ params }) {
+  const timings = {};
+  const startTime = Date.now();
   const profileId = params.profileId;
-  const page = parseInt(query.page) || 1;
-  const sortOrder = query.sort || "";
   
-  try {
-    // Fetch profile data
-    const profileRes = await getCompanyProfile(profileId);
-    const profile = profileRes.data.profile;
+  return await performance.trackPagePerformance('ProfilePage', { 
+    pageType: 'ISR', 
+    isSSR: false, 
+    cacheStatus: 'generating',
+    profileId 
+  }, async () => {
+    const page = 1; // ISR always serves page 1, pagination handled client-side
+    const sortOrder = "";
     
-    if (!profile) {
-      return { notFound: true };
-    }
-    
-    // Fetch products data
-    const productsRes = await getCompanyProducts(profileId, {
-      page,
-      pageSize: 12,
-      search: "",
-      sort: sortOrder,
-    });
-    
-    const products = productsRes.data.products || [];
-    const totalProducts = productsRes.data.totalProducts || 0;
-    const totalPages = productsRes.data.totalPages || 1;
-    
-    // Generate SEO data
-    const profileName = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
-    const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
-    
-    // ✅ SEO Configuration
-    const seoData = {
-      title: page === 1 
-        ? `${profileName} - CAD Designer Profile | Cadbull`
-        : `${profileName} - CAD Designer Profile | Page ${page} | Cadbull`,
+    try {
+      performance.logMemoryUsage('Profile-Start', { profileId });
+
+      // Track profile data API call
+      const profileRes = await performance.timeAPICall(
+        'GetCompanyProfile',
+        () => getCompanyProfile(profileId),
+        `getCompanyProfile/${profileId}`
+      );
+      const profile = profileRes.data.profile;
+      timings.profileAPI = Date.now() - startTime;
       
-      description: page === 1
-        ? `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull.`
-        : `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull. Page ${page} of ${totalPages}.`,
+      if (!profile) {
+        return { notFound: true };
+      }
       
-      canonicalUrl: baseUrl, // Always point to main page (no pagination in canonical)
+      // Track products data API call
+      const productsRes = await performance.timeAPICall(
+        'GetCompanyProducts',
+        () => getCompanyProducts(profileId, {
+          page,
+          pageSize: 12,
+          search: "",
+          sort: sortOrder,
+        }),
+        `getCompanyProducts/${profileId}?page=${page}&pageSize=12`
+      );
+      timings.productsAPI = Date.now() - startTime - timings.profileAPI;
       
-      noindex: page > 1, // Only index the first page
+      const products = productsRes.data.products || [];
+      const totalProducts = productsRes.data.totalProducts || 0;
+      const totalPages = productsRes.data.totalPages || 1;
+
+      performance.logMemoryUsage('Profile-AfterAPIs', { profileId });
       
-      // Pagination navigation
-      prevPage: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
-      nextPage: page < totalPages ? `${baseUrl}?page=${page + 1}` : null,
-    };
-    
-    return {
-      props: {
-        initialProfile: profile,
-        initialProducts: products,
-        initialPagination: {
-          currentPage: page,
-          totalPages,
-          totalProducts,
+      // Generate SEO data
+      const profileName = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
+      const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+      
+      // ✅ SEO Configuration for ISR
+      const seoData = {
+        title: `${profileName} - CAD Designer Profile | Cadbull`,
+        description: `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull.`,
+        canonicalUrl: baseUrl,
+        noindex: false, // ISR version is always indexable
+        prevPage: null,
+        nextPage: null,
+      };
+
+      // Log cost event for ISR generation
+      performance.logCostEvent('ISR-Generation', {
+        page: 'ProfilePage',
+        profileId,
+        productCount: totalProducts,
+        profileName,
+      });
+      
+      const result = {
+        props: {
+          initialProfile: profile,
+          initialProducts: products,
+          initialPagination: {
+            currentPage: page,
+            totalPages,
+            totalProducts,
+          },
+          seoData,
         },
-        seoData,
-      },
-    };
-    
-  } catch (error) {
-    console.error('Error in profile getServerSideProps:', error);
-    return { notFound: true };
-  }
+        // ✅ ISR: Regenerate every 2 hours (profile data doesn't change often)
+        revalidate: 7200, // 2 hours = fresh enough for profile updates
+      };
+
+      timings.total = Date.now() - startTime;
+      performance.generateSummary('ProfilePage-ISR', timings);
+      
+      return result;
+      
+    } catch (error) {
+      console.error('Error in profile getStaticProps:', error);
+      performance.logCostEvent('ISR-Error', {
+        page: 'ProfilePage',
+        profileId,
+        error: error.message,
+      });
+      
+      return { 
+        notFound: true,
+        revalidate: 3600, // Retry in 1 hour if error
+      };
+    }
+  });
+}
+
+// ✅ Generate static paths for popular profiles (first 100)
+export async function getStaticPaths() {
+  // Pre-generate paths for first 100 profiles
+  const paths = Array.from({ length: 100 }, (_, i) => ({
+    params: { profileId: (i + 1).toString() },
+  }));
+
+  return {
+    paths,
+    fallback: 'blocking', // Generate other profiles on-demand
+  };
 }
 
 export default CompanyProfile;

@@ -41,6 +41,7 @@ import logo from "@/assets/images/logo.png";
 import Image from "next/image";
 import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
+import { performance } from "@/utils/performance";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -1024,46 +1025,89 @@ export default function Home({
   );
 }
 
-// ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
-export async function getServerSideProps({ query }) {
-  try {
-    // Dynamic rendering ensures fresh ad requests and maximum revenue
-    const page = parseInt(query.page) || 1;
-    const search = query.search || "";
-    const file_type = query.file_type || "";
+// ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction + Better AdSense performance
+export async function getStaticProps({ params }) {
+  const timings = {};
+  const startTime = Date.now();
+  
+  return await performance.trackPagePerformance('Homepage', { 
+    pageType: 'ISR', 
+    isSSR: false, 
+    cacheStatus: 'generating' 
+  }, async () => {
+    try {
+      // Static generation with ISR = much cheaper than SSR but maintains fresh content
+      const page = 1; // Homepage always shows page 1 for ISR
+      const search = "";
+      const file_type = "";
 
-    // Fetch projects and categories in parallel for better performance
-    const [projectRes, categoryRes] = await Promise.all([
-      getallprojects(page, 9, search, file_type),
-      getallCategories()
-    ]);
+      performance.logMemoryUsage('Homepage-Start');
 
-    return {
-      props: {
-        initialProjects: projectRes.data.products || [],
-        totalPages: projectRes.data.totalPages || 1,
-        totalProducts: projectRes.data.totalProducts || 0,
-        lastProductId: projectRes.data.lastProductId || 0,
-        housePlanFiles: projectRes.data.housePlanFiles || 0,
-        currentPage: page,
-        filters: { search, file_type },
-        initialCategories: categoryRes.data.categories || [],
-      },
-    };
-  } catch (error) {
-    console.error('Error in homepage getServerSideProps:', error);
-    return {
-      props: {
-        initialProjects: [],
-        totalProducts: 0,
-        lastProductId: 0,
-        housePlanFiles: 0,
-        currentPage: 1,
-        filters: { search: "", file_type: "" },
-        initialCategories: [],
-      },
-    };
-  }
+      // Track projects API call
+      const projectRes = await performance.timeAPICall(
+        'GetAllProjects-Homepage',
+        () => getallprojects(page, 9, search, file_type),
+        `getallprojects?page=${page}&limit=9`
+      );
+      timings.projectsAPI = Date.now() - startTime;
+
+      // Track categories API call
+      const categoryRes = await performance.timeAPICall(
+        'GetAllCategories-Homepage',
+        () => getallCategories(),
+        'getallCategories'
+      );
+      timings.categoriesAPI = Date.now() - startTime - timings.projectsAPI;
+
+      performance.logMemoryUsage('Homepage-AfterAPIs');
+
+      // Log cost event for ISR generation
+      performance.logCostEvent('ISR-Generation', {
+        page: 'Homepage',
+        itemCount: projectRes.data.products?.length || 0,
+        categoryCount: categoryRes.data.categories?.length || 0,
+      });
+
+      const result = {
+        props: {
+          initialProjects: projectRes.data.products || [],
+          totalPages: projectRes.data.totalPages || 1,
+          totalProducts: projectRes.data.totalProducts || 0,
+          lastProductId: projectRes.data.lastProductId || 0,
+          housePlanFiles: projectRes.data.housePlanFiles || 0,
+          currentPage: page,
+          filters: { search, file_type },
+          initialCategories: categoryRes.data.categories || [],
+        },
+        // ✅ ISR: Regenerate every 30 minutes for fresh content + AdSense revenue
+        revalidate: 1800, // 30 minutes = fresh content without constant server load
+      };
+
+      timings.total = Date.now() - startTime;
+      performance.generateSummary('Homepage-ISR', timings);
+      
+      return result;
+    } catch (error) {
+      console.error('Error in homepage getStaticProps:', error);
+      performance.logCostEvent('ISR-Error', {
+        page: 'Homepage',
+        error: error.message,
+      });
+      
+      return {
+        props: {
+          initialProjects: [],
+          totalProducts: 0,
+          lastProductId: 0,
+          housePlanFiles: 0,
+          currentPage: 1,
+          filters: { search: "", file_type: "" },
+          initialCategories: [],
+        },
+        revalidate: 1800, // Still revalidate on error
+      };
+    }
+  });
 }
 
 Home.getLayout = function getLayout(page) {

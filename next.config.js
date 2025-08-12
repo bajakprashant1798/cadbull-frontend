@@ -40,6 +40,13 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000, // 1 year cache
   },
+  
+  // ✅ PERFORMANCE MONITORING: Add logging configuration
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   async redirects() {
     return [
       {
