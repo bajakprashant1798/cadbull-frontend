@@ -459,6 +459,24 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const currentPage = parseInt(params?.page || "1", 10);
 
+  const startTime = Date.now();
+  console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
+    timestamp: startTime,
+    type: "PAGE_EVENT",
+    page: "CategoriesPage",
+    event: "ISR_START",
+    pageNum: params?.page || 1,
+    environment: process.env.NODE_ENV
+  })}`);
+  console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
+    timestamp: new Date().toISOString(),
+    type: "MEMORY_USAGE",
+    page: "CategoriesPage-Start",
+    ...process.memoryUsage(),
+    environment: process.env.NODE_ENV
+  })}`);
+
+
   // ✅ PERFORMANCE MONITORING: Track categories page generation
   return await performance.trackPagePerformance(
     "CategoriesPage-ISR",
@@ -501,6 +519,40 @@ export async function getStaticProps({ params }) {
         // ✅ Generate performance summary
         const timings = { categoriesAPI: 50, projectsAPI: 100, total: 150 }; // Placeholder - would be real in production
         performance.generateSummary("CategoriesPage-ISR", timings);
+
+        
+        const totalTime = Date.now() - startTime;
+        const SLOW_MS = 1500;
+        if (totalTime > SLOW_MS) {
+          console.warn(`⚠️ [SLOW-PAGE-ALERT] SearchPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
+        }
+
+        console.log(`💰 AMPLIFY-COST: ${j({
+          timestamp: new Date().toISOString(),
+          type: "COST_METRICS",
+          page: "SearchPage",
+          computeTime: totalTime,
+          memoryUsed: safeMemory().heapUsed / 1024 / 1024,
+          apiCalls: 1,
+          estimatedCost: {
+            requestCost: "0.00000020",
+            computeCost: "0.00000005",
+            totalCost: "0.00000025",
+            currency: "USD",
+          },
+          environment: envName,
+        })}`);
+
+        console.log(`🧠 AMPLIFY-MEMORY: ${j({
+          timestamp: new Date().toISOString(),
+          type: "MEMORY_USAGE",
+          page: "SearchPage-End",
+          ...safeMemory(),
+          environment: envName,
+        })}`);
+
+
+
 
         return {
           props: {
