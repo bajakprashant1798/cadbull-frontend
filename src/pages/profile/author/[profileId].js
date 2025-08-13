@@ -2,7 +2,11 @@ import { Fragment, useState, useEffect, useCallback } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
 // import profile from "@/assets/images/profile-arch.png"
-import profile_dummy from "@/assets/icons/profile.png";
+import { assets } from "@/utils/assets";
+const profile_dummy = assets.icons("profile.png");
+// import profile_dummy from "@/assets/icons/profile.png";
+
+
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -211,10 +215,10 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
             <div className="col-md-2">
               <div className="profile-image-wrapper d-flex gap-2">
                 <img 
-                  src={profile?.profile_pic || profile_dummy.src} 
+                  src={profile?.profile_pic || profile_dummy} 
                   className="rounded-circle company-logo-info { object-fit-cover"  
                   alt="profile" 
-                  onError={e => { e.target.onerror = null; e.target.src = profile_dummy.src }}
+                  onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
                 />
                 <div className="d-md-none">
                   {(profile?.firstname || profile?.lastname) ? (

@@ -5,9 +5,10 @@ import Link from "next/link";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
-import drawing from "@/assets/images/drawing-image.png";
-import deleteIcon from "@/assets/icons/delete.png";
-import downloadIcon from "@/assets/icons/download.png";
+// import drawing from "@/assets/images/drawing-image.png";
+import { assets } from "@/utils/assets";
+const drawing = assets.image("drawing-image.png");
+
 import Pagination from "@/components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";

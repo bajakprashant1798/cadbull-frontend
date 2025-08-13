@@ -1,7 +1,9 @@
 // src/components/WhatsAppButton.js
 import React from 'react';
 import Image from 'next/image';
-import whatsappImg from "@/assets/images/whatsappImg.png";
+import { assets } from "@/utils/assets";
+// import whatsappImg from "@/assets/images/whatsappImg.png";
+const whatsappImg = assets.image("whatsappImg.png");
 
 const WhatsAppButton = () => {
   // IMPORTANT: Replace with your actual WhatsApp phone number including the country code.

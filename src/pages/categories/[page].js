@@ -444,178 +444,182 @@ const Categories = ({
 
 // pages/categories/index.js
 
+// export async function getStaticPaths() {
+//   // You can generate a few pages (for demo) or as many as you want.
+//   // Example: Pre-render first 10 pages statically, and use fallback: "blocking" for others.
+//   const paths = Array.from({ length: 10 }).map((_, idx) => ({
+//     params: { page: `${idx + 1}` },
+//   }));
+//   return {
+//     paths,
+//     fallback: "blocking", // so other pages are generated on-demand
+//   };
+// }
+
+// export async function getStaticProps({ params }) {
+//   const currentPage = parseInt(params?.page || "1", 10);
+
+//   const startTime = Date.now();
+//   console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
+//     timestamp: startTime,
+//     type: "PAGE_EVENT",
+//     page: "CategoriesPage",
+//     event: "ISR_START",
+//     pageNum: params?.page || 1,
+//     environment: process.env.NODE_ENV
+//   })}`);
+//   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
+//     timestamp: new Date().toISOString(),
+//     type: "MEMORY_USAGE",
+//     page: "CategoriesPage-Start",
+//     ...process.memoryUsage(),
+//     environment: process.env.NODE_ENV
+//   })}`);
+
+
+//   // ✅ PERFORMANCE MONITORING: Track categories page generation
+//   return await performance.trackPagePerformance(
+//     "CategoriesPage-ISR",
+//     { 
+//       pageType: "ISR", 
+//       isSSR: false, 
+//       cacheStatus: "generating",
+//       userAgent: "unknown",
+//       page: currentPage
+//     },
+//     async () => {
+//       performance.logMemoryUsage("Categories-Start", { page: currentPage });
+
+//       try {
+//         // ✅ Track API calls with performance monitoring
+//         const [categoriesRes, projectsRes] = await Promise.all([
+//           performance.timeAPICall("GetAllCategories-Categories", 
+//             () => getallCategories(""), 
+//             "getallCategories"
+//           ),
+//           performance.timeAPICall("GetAllProjects-Categories", 
+//             () => getallprojects(currentPage, 9, "", "", ""), 
+//             `getallprojects?page=${currentPage}&limit=9`
+//           ),
+//         ]);
+
+//         performance.logMemoryUsage("Categories-AfterAPIs", { page: currentPage });
+
+//         const projectCount = projectsRes?.data?.products?.length || 0;
+//         const categoryCount = categoriesRes?.data?.categories?.length || 0;
+
+//         // ✅ Log cost-generating event for ISR
+//         performance.logCostEvent("ISR-Generation", {
+//           page: "CategoriesPage",
+//           itemCount: projectCount,
+//           categoryCount: categoryCount,
+//           currentPage,
+//         });
+
+//         // ✅ Generate performance summary
+//         const timings = { categoriesAPI: 50, projectsAPI: 100, total: 150 }; // Placeholder - would be real in production
+//         performance.generateSummary("CategoriesPage-ISR", timings);
+
+        
+//         const totalTime = Date.now() - startTime;
+//         const SLOW_MS = 1500;
+//         if (totalTime > SLOW_MS) {
+//           console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoriesPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
+//         }
+
+//         // 💰 Normalized cost log (easy to parse in CloudWatch)
+//         console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
+//           timestamp: new Date().toISOString(),
+//           type: "COST_METRICS",
+//           page: "CategoriesPage",
+//           computeTime: totalTime,
+//           memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+//           apiCalls: 2,
+//           estimatedCost: {
+//             requestCost: "0.00000020",
+//             computeCost: "0.00000005",
+//             totalCost: "0.00000025",
+//             currency: "USD",
+//           },
+//           environment: process.env.NODE_ENV,
+//         })}`);
+
+//         // 🧠 Normalized memory log
+//         console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
+//           timestamp: new Date().toISOString(),
+//           type: "MEMORY_USAGE",
+//           page: "CategoriesPage-End",
+//           ...process.memoryUsage(),
+//           environment: process.env.NODE_ENV,
+//         })}`);
+
+//         return {
+//           props: {
+//             initialCategories: categoriesRes?.data?.categories || [],
+//             initialProjects: projectsRes?.data?.products || [],
+//             // totalPages: projectsRes?.data?.totalPages || 1,
+//             totalPages: Math.max(1, projectsRes?.data?.totalPages || 1),
+//             currentPage,
+//           },
+//           revalidate: 180, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
+//         };
+//       } catch (err) {
+//         console.error("❌ Error in getStaticProps:", err);
+//         // Return a valid props object even on error to prevent crashes
+//         return {
+//           props: {
+//             initialCategories: [],
+//             initialProjects: [],
+//             totalPages: 1,
+//             currentPage,
+//           },
+//           revalidate: 3600,
+//         };
+//       }
+//     }
+//   );
+// }
+
 export async function getStaticPaths() {
-  // You can generate a few pages (for demo) or as many as you want.
-  // Example: Pre-render first 10 pages statically, and use fallback: "blocking" for others.
+  // Prebuild first 10 pages to keep TTFB fast; others build on-demand.
   const paths = Array.from({ length: 10 }).map((_, idx) => ({
-    params: { page: `${idx + 1}` },
+    params: { page: String(idx + 1) },
   }));
-  return {
-    paths,
-    fallback: "blocking", // so other pages are generated on-demand
-  };
+  return { paths, fallback: 'blocking' };
 }
 
 export async function getStaticProps({ params }) {
   const currentPage = parseInt(params?.page || "1", 10);
 
-  const startTime = Date.now();
-  console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
-    timestamp: startTime,
-    type: "PAGE_EVENT",
-    page: "CategoriesPage",
-    event: "ISR_START",
-    pageNum: params?.page || 1,
-    environment: process.env.NODE_ENV
-  })}`);
-  console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-    timestamp: new Date().toISOString(),
-    type: "MEMORY_USAGE",
-    page: "CategoriesPage-Start",
-    ...process.memoryUsage(),
-    environment: process.env.NODE_ENV
-  })}`);
+  try {
+    const [categoriesRes, projectsRes] = await Promise.all([
+      getallCategories(""),
+      getallprojects(currentPage, 9, "", "", ""),
+    ]);
 
-
-  // ✅ PERFORMANCE MONITORING: Track categories page generation
-  return await performance.trackPagePerformance(
-    "CategoriesPage-ISR",
-    { 
-      pageType: "ISR", 
-      isSSR: false, 
-      cacheStatus: "generating",
-      userAgent: "unknown",
-      page: currentPage
-    },
-    async () => {
-      performance.logMemoryUsage("Categories-Start", { page: currentPage });
-
-      try {
-        // ✅ Track API calls with performance monitoring
-        const [categoriesRes, projectsRes] = await Promise.all([
-          performance.timeAPICall("GetAllCategories-Categories", 
-            () => getallCategories(""), 
-            "getallCategories"
-          ),
-          performance.timeAPICall("GetAllProjects-Categories", 
-            () => getallprojects(currentPage, 9, "", "", ""), 
-            `getallprojects?page=${currentPage}&limit=9`
-          ),
-        ]);
-
-        performance.logMemoryUsage("Categories-AfterAPIs", { page: currentPage });
-
-        const projectCount = projectsRes?.data?.products?.length || 0;
-        const categoryCount = categoriesRes?.data?.categories?.length || 0;
-
-        // ✅ Log cost-generating event for ISR
-        performance.logCostEvent("ISR-Generation", {
-          page: "CategoriesPage",
-          itemCount: projectCount,
-          categoryCount: categoryCount,
-          currentPage,
-        });
-
-        // ✅ Generate performance summary
-        const timings = { categoriesAPI: 50, projectsAPI: 100, total: 150 }; // Placeholder - would be real in production
-        performance.generateSummary("CategoriesPage-ISR", timings);
-
-        
-        const totalTime = Date.now() - startTime;
-        const SLOW_MS = 1500;
-        if (totalTime > SLOW_MS) {
-          console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoriesPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
-        }
-
-        // 💰 Normalized cost log (easy to parse in CloudWatch)
-        console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
-          timestamp: new Date().toISOString(),
-          type: "COST_METRICS",
-          page: "CategoriesPage",
-          computeTime: totalTime,
-          memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-          apiCalls: 2,
-          estimatedCost: {
-            requestCost: "0.00000020",
-            computeCost: "0.00000005",
-            totalCost: "0.00000025",
-            currency: "USD",
-          },
-          environment: process.env.NODE_ENV,
-        })}`);
-
-        // 🧠 Normalized memory log
-        console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-          timestamp: new Date().toISOString(),
-          type: "MEMORY_USAGE",
-          page: "CategoriesPage-End",
-          ...process.memoryUsage(),
-          environment: process.env.NODE_ENV,
-        })}`);
-
-
-
-
-
-        return {
-          props: {
-            initialCategories: categoriesRes?.data?.categories || [],
-            initialProjects: projectsRes?.data?.products || [],
-            totalPages: projectsRes?.data?.totalPages || 1,
-            currentPage,
-          },
-          revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
-        };
-      } catch (err) {
-        console.error("❌ Error in getStaticProps:", err);
-        // Return a valid props object even on error to prevent crashes
-        return {
-          props: {
-            initialCategories: [],
-            initialProjects: [],
-            totalPages: 1,
-            currentPage,
-          },
-          revalidate: 3600,
-        };
-      }
-    }
-  );
+    return {
+      props: {
+        initialCategories: categoriesRes?.data?.categories || [],
+        initialProjects: projectsRes?.data?.products || [],
+        totalPages: projectsRes?.data?.totalPages || 1,
+        currentPage,
+      },
+      // 5 min background revalidate keeps the grid fresh and cheap
+      revalidate: 300,
+    };
+  } catch (err) {
+    console.error("❌ Categories getStaticProps error:", err);
+    return {
+      props: {
+        initialCategories: [],
+        initialProjects: [],
+        totalPages: 1,
+        currentPage,
+      },
+      revalidate: 300,
+    };
+  }
 }
-
-// export async function getStaticProps({ params }) {
-//   const currentPage = parseInt(params?.page || "1", 10); // default to 1 if undefined
-
-//   try {
-//     const [categoriesRes, projectsRes, favouritesRes] = await Promise.all([
-//       getallCategories(""),
-//       getallprojects(currentPage, 9, "", "", ""),
-//       getFavouriteItems(),
-//     ]);
-//     return {
-//       props: {
-//         initialCategories: categoriesRes?.data?.categories || [],
-//         initialProjects: projectsRes?.data?.products || [],
-//         totalPages: projectsRes?.data?.totalPages || 1,
-//         initialFavourites: favouritesRes?.data?.favorites || [],
-//         currentPage, // add this if you want to use in component
-//       },
-//       revalidate: 300,
-//     };
-//   } catch (err) {
-//     console.error("❌ Error in getStaticProps:", err);
-//     return {
-//       props: {
-//         initialCategories: [],
-//         initialProjects: [],
-//         totalPages: 1,
-//         initialFavourites: [],
-//         currentPage,
-//       },
-//       revalidate: 300,
-//     };
-//   }
-// }
 
 Categories.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

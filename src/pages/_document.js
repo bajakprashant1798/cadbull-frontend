@@ -9,6 +9,8 @@ export default function Document(props) {
   return (
     <Html lang="en">
       <Head>
+        <meta name="google-adsense-account" content="ca-pub-2488270605722778" />
+
         {/* ✅ CRITICAL CSS: Inline critical styles for LCP optimization */}
         <style dangerouslySetInnerHTML={{
           __html: `

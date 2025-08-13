@@ -345,7 +345,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
   );
 };
 
-export async function getServerSideProps({ params, query }) {
+export async function getServerSideProps({ params, query, res }) {
   const page = params?.page ? parseInt(params.page, 10) : 1;
   const search = query.search || '';
   const fileType = query.fileType || '';
@@ -373,6 +373,7 @@ export async function getServerSideProps({ params, query }) {
       environment: process.env.NODE_ENV
     })}`);
 
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
 
   // ✅ PERFORMANCE MONITORING: Track search page generation
   return await performance.trackPagePerformance(

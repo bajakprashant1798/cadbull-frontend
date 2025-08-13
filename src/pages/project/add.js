@@ -1,14 +1,19 @@
 import MainLayout from "@/layouts/MainLayout";
 import ProjectsLayout from "@/layouts/ProjectsLayout";
-import drawing from "@/assets/icons/company-profile/servies.png";
+// import drawing from "@/assets/icons/company-profile/servies.png";
 import SectionHeading from "@/components/SectionHeading";
 import Pagination from "@/components/Pagination";
 import { Fragment } from "react";
 import Head from "next/head";
-import premium from "@/assets/icons/premium.png";
-import save from "@/assets/icons/save.png";
-import heart from "@/assets/icons/heart.png";
+
+// import save from "@/assets/icons/save.png";
+// import heart from "@/assets/icons/heart.png";
 import Icons from "@/components/Icons";
+
+import { assets } from "@/utils/assets";
+const save = assets.icons("save.png");
+const heart = assets.icons("heart.png");
+
 
 
 const projects = [

@@ -1,6 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import ProjectsLayout from "@/layouts/ProjectsLayout";
-import drawing from "@/assets/images/drawing-image.png";
+// import drawing from "@/assets/images/drawing-image.png";
 import SectionHeading from "@/components/SectionHeading";
 import Pagination from "@/components/Pagination";
 import { Fragment, useEffect, useState } from "react";

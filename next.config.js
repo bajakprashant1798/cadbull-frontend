@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  compress: true,
   
   // AMP configuration
   amp: {
@@ -50,6 +51,20 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  
+  async headers() {
+    return [
+      // Long cache for static assets (not HTML)
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      // Let Next/CloudFront control ISR HTML caching. No extra header here.
+    ];
+  },
+
   async redirects() {
     return [
       {

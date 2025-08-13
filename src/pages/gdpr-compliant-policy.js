@@ -28,12 +28,12 @@ const PrivacyPolicy = ({privacy_policy}) => {
       <div className="container">
         <div className="row">
           <div className="col-md-12">
-            <img
+            {/* <img
               src="https://img.freepik.com/free-photo/business-concept-with-team-close-up_23-2149151159.jpg?w=996&t=st=1689992075~exp=1689992675~hmac=d498ed8f133f12b3b6905ffbbdd7427865feecb214c682a44a27a208f09d1695"
               className="w-100 rounded-2 mb-3 mb-md-4 object-fit-cover"
               alt="cover"
               height={350}
-            />
+            /> */}
             <div>
               <h1 className="mb-3">Privacy Policy</h1>
               <h3 className="mb-4">EFFECTIVE 18th Sept. 2021</h3>

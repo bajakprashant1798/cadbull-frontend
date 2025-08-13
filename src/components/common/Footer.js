@@ -1,11 +1,21 @@
-import logo from "@/assets/images/logo-footer.png";
-import map from "@/assets/icons/map.png";
-import phone from "@/assets/icons/phone.png";
-import email from "@/assets/icons/email.png";
-import arrow from "@/assets/icons/arrow.png";
-import fb from "@/assets/icons/fb.png";
-import twitter from "@/assets/icons/twitter.png";
-import youtube from "@/assets/icons/youtube.png";
+// import logo from "@/assets/images/logo-footer.png";
+// import map from "@/assets/icons/map.png";
+// import phone from "@/assets/icons/phone.png";
+// import email from "@/assets/icons/email.png";
+// import arrow from "@/assets/icons/arrow.png";
+// import fb from "@/assets/icons/fb.png";
+// import twitter from "@/assets/icons/twitter.png";
+// import youtube from "@/assets/icons/youtube.png";
+import { assets } from "@/utils/assets";
+const logo = assets.image("logo.png");
+const map = assets.icons("map.png");
+const phone = assets.icons("phone.png");
+const email = assets.icons("email.png");
+const arrow = assets.icons("arrow.png");
+const fb = assets.icons("fb.png");
+const twitter = assets.icons("twitter.png");
+const youtube = assets.icons("youtube.png");
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -20,7 +30,7 @@ const Footer = () => {
           <div className="row d-lg-block d-none">
             <div className="col-md-12">
               <div className="logo-wrapper text-center">
-                <Image src={logo.src} alt="logo" width={200} height={50} className="img-fluid logo" />
+                <Image src={logo} alt="logo" width={200} height={50} className="img-fluid logo" />
               </div>
             </div>
           </div>
@@ -31,17 +41,17 @@ const Footer = () => {
                 <ul className="list-unstyled d-flex gap-2 gap-md-4 flex-column">
                   <li>
                     <div className="d-flex align-items-start gap-2">
-                      <Image src={map.src} alt="icon" width={32} height={32} />
+                      <Image src={map} alt="icon" width={32} height={32} />
                       <p className="text-white">403, Fortune Business Hub, Beside science city, Science City Road Sola, Ahmedabad, Gujarat 380060</p>
                     </div>
                   </li>
                   <li className="d-flex align-items-start gap-3 flex-column flex-xl-row">
                     <div className="d-flex align-items-center gap-2">
-                      <Image src={phone.src} alt="icon" width={32} height={32} />
+                      <Image src={phone} alt="icon" width={32} height={32} />
                       <p className="text-white">+91 989 874 8697</p>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <Image src={email.src} alt="icon" width={32} height={32} />
+                      <Image src={email} alt="icon" width={32} height={32} />
                       <p className="text-white">support@cadbull.com</p>
                     </div>
                   </li>
@@ -50,18 +60,18 @@ const Footer = () => {
             </div>
             <div className="col-md-6 col-lg-4 col-xl-3 ">
               <div className="text-start text-md-center">
-                <Image src={logo.src} alt="logo" width={200} height={50} className="img-fluid mb-3 d-block d-lg-none mx-md-auto logo" />
+                <Image src={logo} alt="logo" width={200} height={50} className="img-fluid mb-3 d-block d-lg-none mx-md-auto logo" />
                 <h4 className="text-white mb-md-4 d-none d-lg-block opacity-0">info</h4>
                 <p className="text-white mb-3 mb-md-4">Cadbull is an exclusive forum that connects the creative community of innovative Auto cad designers, firms and organizations.</p>
                 <ul className="list-unstyled d-flex gap-2 justify-content-md-center">
                   <li>
-                    <a href="https://www.facebook.com/cadbull/" target="_blank"> <Image src={fb.src} alt="icon" width={40} height={40} /></a>
+                    <a href="https://www.facebook.com/cadbull/" target="_blank"> <Image src={fb} alt="icon" width={40} height={40} /></a>
                   </li>
                   <li>
-                    <a href="https://twitter.com/cadbull" target="_blank"> <Image src={twitter.src} alt="icon" width={40} height={40} /></a>
+                    <a href="https://twitter.com/cadbull" target="_blank"> <Image src={twitter} alt="icon" width={40} height={40} /></a>
                   </li>
                   <li>
-                    <a href="https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ" target="_blank"> <Image src={youtube.src} alt="icon" width={40} height={40} /></a>
+                    <a href="https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ" target="_blank"> <Image src={youtube} alt="icon" width={40} height={40} /></a>
                   </li>
                 </ul>
               </div>
@@ -72,41 +82,41 @@ const Footer = () => {
                 <div className="d-flex  gap-5 justify-content-lg-around flex-lg-column gap-lg-2 gap-xl-5 flex-xl-row">
                   <ul className="list-unstyled d-flex flex-column gap-3 justify-content-center mb-0">
                     <li>
-                      <Link href="/3d-Drawings"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span>3d Drawing</span></Link>
+                      <Link href="/3d-Drawings"> <Image src={arrow} width={8} height={10} alt="icon" /> <span>3d Drawing</span></Link>
                     </li>
                     <li>
                       <Link href="/Cad-Architecture">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>CAD Architecture</span></Link>
                     </li>
                     <li>
                       <Link href="/Cad-Landscaping">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>CAD Landscape</span></Link>
                     </li>
                     <li>
                       <Link href="/Autocad-Machinery-Blocks-&-DWG-Models">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>CAD Machinery</span></Link>
                     </li>
                   </ul>
                   <ul className="list-unstyled flex-column d-flex gap-2 justify-content-center mb-0">
                     <li>
-                      <Link href="/Detail"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span> CAD Detail</span></Link>
+                      <Link href="/Detail"> <Image src={arrow} width={8} height={10} alt="icon" /> <span> CAD Detail</span></Link>
                     </li>
                     <li>
                       <Link href="/DWG-Blocks">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>DWG Blocks</span></Link>
                     </li>
                     <li>
                       <Link href="/Electrical-Cad">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>Electrical CAD</span></Link>
                     </li>
                     <li>
                       <Link href="/Autocad-Furniture-Blocks--&-DWG-Models">
-                        <Image src={arrow.src} width={8} height={10} alt="icon" />
+                        <Image src={arrow} width={8} height={10} alt="icon" />
                         <span>Furniture Blocks</span></Link>
                     </li>
                   </ul>

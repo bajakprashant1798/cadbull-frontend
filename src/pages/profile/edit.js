@@ -1,8 +1,13 @@
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
-import profile from "@/assets/icons/profile.png";
-import upload from "@/assets/icons/upload.png";
-import flag from "@/assets/icons/flag.png";
+
+import { assets } from "@/utils/assets";
+const profile = assets.icons("profile.png");
+const upload = assets.icons("upload.png");
+
+// import profile from "@/assets/icons/profile.png";
+// import upload from "@/assets/icons/upload.png";
+// import flag from "@/assets/icons/flag.png";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
@@ -458,7 +463,7 @@ const EditProfile = () => {
                         <div className="upload-icon-wraper position-absolute end-0 bottom-0">
                           <input onChange={handleFileChange} type="file" className="opacity-0" />
                           <div className="icon-upload">
-                            <img src={upload.src} width={24} alt="profile" />
+                            <img src={upload} width={24} alt="profile" />
                           </div>
                         </div>
                       </div>
@@ -467,11 +472,11 @@ const EditProfile = () => {
                       ):(
                         <>
                          <div className="position-relative d-inline-block">
-                        <img src={profile.src} width={80} alt="profile" />
+                        <img src={profile} width={80} alt="profile" />
                         <div className="upload-icon-wraper position-absolute end-0 bottom-0">
                           <input onChange={handleFileChange} type="file" className="opacity-0" />
                           <div className="icon-upload">
-                            <img src={upload.src} width={24} alt="profile" />
+                            <img src={upload} width={24} alt="profile" />
                           </div>
                         </div>
                       </div>

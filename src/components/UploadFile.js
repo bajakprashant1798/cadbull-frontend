@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import uploadFiles from "@/assets/icons/upload-files.svg";
-import secure from "@/assets/icons/secure.svg";
-import pause from "@/assets/icons/pause.svg";
-import cancel from "@/assets/icons/cancel.svg";
+import { assets } from "@/utils/assets";
+const uploadFiles = assets.icons("upload-files.svg");
+const secure = assets.icons("secure.svg");
+const cancel = assets.icons("cancel.svg");
+// import uploadFiles from "@/assets/icons/upload-files.svg";
+// import secure from "@/assets/icons/secure.svg";
+// import cancel from "@/assets/icons/cancel.svg";
 
 const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
   const [progressWidth, setProgressWidth] = useState(0);
@@ -41,7 +44,7 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
       {/* File Upload */}
       <div className="upload-files-wrapper text-center position-relative">
         <div>
-          <img src={uploadFiles.src} className="img-fluid" alt="icon" />
+          <img src={uploadFiles} className="img-fluid" alt="icon" />
           <h5 className="mt-2">
             <span className="text-primary">Drap your file(s) or</span>{" "}
             <span className="text-danger">browse</span>
@@ -61,7 +64,7 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
           <span className="fw-light">{acceptedFiles}</span>
         </p>
         <p className="text-primary d-flex align-items-center">
-          <img src={secure.src} alt="icon" />
+          <img src={secure} alt="icon" />
           <span className="fw-medium ms-2">100% Secure. Zero Spam</span>
         </p>
       </div>
@@ -85,7 +88,7 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
               type="button"
               className="link-btn"
             >
-              <img src={cancel.src} alt="icon" />
+              <img src={cancel} alt="icon" />
             </button>
           </div>
         </div>

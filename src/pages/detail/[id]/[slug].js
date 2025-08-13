@@ -1,17 +1,17 @@
 import dynamic from 'next/dynamic';
-
+import { assets } from "@/utils/assets";
 import { Fragment, createElement, useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Icons from "@/components/Icons";
-import profile_dummy from "@/assets/icons/profile.png";
+// import profile_dummy from "@/assets/icons/profile.png";
 import SectionHeading from "@/components/SectionHeading";
 import FileDescription from "@/components/FileDescription";
-import autoCad from "@/assets/images/filetype/file_white.png";
-import cad from "@/assets/images/filetype/cad.png";
-import goldblocks from "@/assets/images/filetype/file.png";
+// import autoCad from "@/assets/images/filetype/file_white.png";
+// import cad from "@/assets/images/filetype/cad.png";
+// import goldblocks from "@/assets/images/filetype/file.png";
 import ProjectCard from "@/components/ProjectCard";
 import MainLayout from "@/layouts/MainLayout";
-import link from "@/assets/icons/social/link.png";
+// import link from "@/assets/icons/social/link.png";
 import { useRouter } from "next/router";
 import {
   addFavouriteItem,
@@ -101,6 +101,14 @@ import parse from "html-react-parser";
 import AdSense from "@/components/AdSense";
 // ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
 import Image from 'next/image';
+
+// CDN asset URLs (no local imports)
+const autoCad       = assets.images.filetype("file_white.png");
+const cad        = assets.images.filetype("cad.png");
+const goldblocks       = assets.images.filetype("file.png");
+const profile_dummy   = assets.images.icons("profile.png");
+const link       = assets.images.social("link.png"); // if you ever need the image file
+
 
 function transform(node, index) {
   if (node.type === "tag") {
@@ -1054,150 +1062,204 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 };
 
 
-// ✅ REMOVED: getStaticPaths not needed for SSR
-// Dynamic pages with SSR don't need static path generation
+// // ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
+// export async function getServerSideProps({ params }) {
+//   const startTime = Date.now();
+//   const id = params.id;
+  
+//   console.log(JSON.stringify({
+//     type: "PAGE_EVENT",
+//     page: "ProjectDetailPage",
+//     event: "SSR_START",
+//     projectId: id,
+//     slug: params.slug,
+//     timestamp: startTime
+//   }));
 
-// ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
-export async function getServerSideProps({ params }) {
+//   // 🔍 Amplify: Track page generation start
+//   trackPageEvent('ProjectDetailPage', 'SSR_START', { 
+//     projectId: id, 
+//     slug: params.slug, 
+//     timestamp: startTime 
+//   });
+  
+//   try {
+//     // Validate ID parameter - must be a valid number
+//     if (!id || isNaN(parseInt(id))) {
+//       return { notFound: true };
+//     }
+
+//     // 🧠 Memory tracking
+//     const initialMemory = process.memoryUsage();
+//     logMemoryUsage('ProjectDetailPage-Start', initialMemory);
+
+//     // 🌐 Track project API call
+//     const projectAPIStart = Date.now();
+//     const projectRes = await getsingleallprojects("", id);
+//     const projectAPITime = Date.now() - projectAPIStart;
+    
+//     logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
+    
+//     if (!projectRes || !projectRes.data) {
+//       return { notFound: true };
+//     }
+    
+//     const project = projectRes.data;
+
+//     // Generate canonical slug from work_title
+//     const canonicalSlug = slugify(project.work_title);
+    
+//     // Redirect if param slug is wrong
+//     if (params.slug !== canonicalSlug) {
+//       return {
+//         redirect: {
+//           destination: `/detail/${id}/${canonicalSlug}`,
+//           permanent: true,
+//         },
+//       };
+//     }
+
+//     // 🌐 Track similar projects API call
+//     const similarAPIStart = Date.now();
+//     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+//     const similarAPITime = Date.now() - similarAPIStart;
+    
+//     logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
+    
+//     // 🧠 Memory tracking after APIs
+//     const afterAPIMemory = process.memoryUsage();
+//     logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
+    
+//     const totalTime = Date.now() - startTime;
+    
+//     // 💰 Amplify: Log cost metrics
+//     logCostMetrics('ProjectDetailPage', {
+//       projectId: id,
+//       slug: params.slug,
+//       computeTime: totalTime,
+//       memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+//       apiCalls: 2,
+//       dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
+//     });
+    
+//     // 🚀 Amplify: Log performance summary
+//     logPagePerformance('ProjectDetailPage', {
+//       projectId: id,
+//       slug: params.slug,
+//       totalTime,
+//       projectAPITime,
+//       similarAPITime,
+//       memoryPeak: afterAPIMemory.heapUsed,
+//       dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
+//       renderMode: 'SSR'
+//     });
+    
+//     console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
+//     trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
+//       projectId: id, 
+//       slug: params.slug, 
+//       duration: totalTime,
+//       success: true 
+//     });
+
+//     console.log(JSON.stringify({
+//       type: "PAGE_EVENT",
+//       page: "ProjectDetailPage",
+//       event: "SSR_COMPLETE",
+//       projectId: id,
+//       slug: params.slug,
+//       duration: Date.now() - startTime
+//     }));
+
+    
+//     return {
+//       props: {
+//         initialProject: project,
+//         initialSimilar: similarRes.data.projects || [],
+//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
+//       },
+//     };
+//   } catch (err) {
+//     console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
+//     console.error('Error in detail page getServerSideProps:', err);
+    
+//     // 💰 Amplify: Log error cost metrics
+//     logCostMetrics('ProjectDetailPage-Error', {
+//       projectId: id,
+//       slug: params.slug,
+//       computeTime: Date.now() - startTime,
+//       memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+//       apiCalls: 0,
+//       dataSize: 0
+//     });
+    
+//     trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
+//       projectId: id, 
+//       slug: params.slug, 
+//       error: err.message,
+//       duration: Date.now() - startTime
+//     });
+    
+//     return {
+//       notFound: true,
+//     };
+//   }
+// }
+
+export async function getStaticPaths() {
+  // We don't prebuild many; fallback will build on first request.
+  return { paths: [], fallback: 'blocking' };
+}
+
+export async function getStaticProps({ params }) {
   const startTime = Date.now();
-  const id = params.id;
-  
-  console.log(JSON.stringify({
-    type: "PAGE_EVENT",
-    page: "ProjectDetailPage",
-    event: "SSR_START",
-    projectId: id,
-    slug: params.slug,
-    timestamp: startTime
-  }));
+  const { id, slug } = params;
 
-  // 🔍 Amplify: Track page generation start
-  trackPageEvent('ProjectDetailPage', 'SSR_START', { 
-    projectId: id, 
-    slug: params.slug, 
-    timestamp: startTime 
-  });
-  
+  // Validate id
+  const numericId = parseInt(id, 10);
+  if (!numericId) {
+    return { notFound: true, revalidate: 60 };
+  }
+
   try {
-    // Validate ID parameter - must be a valid number
-    if (!id || isNaN(parseInt(id))) {
-      return { notFound: true };
+    // 1) Fetch product
+    const projectRes = await getsingleallprojects("", numericId);
+    const project = projectRes?.data;
+    if (!project) {
+      return { notFound: true, revalidate: 60 };
     }
 
-    // 🧠 Memory tracking
-    const initialMemory = process.memoryUsage();
-    logMemoryUsage('ProjectDetailPage-Start', initialMemory);
-
-    // 🌐 Track project API call
-    const projectAPIStart = Date.now();
-    const projectRes = await getsingleallprojects("", id);
-    const projectAPITime = Date.now() - projectAPIStart;
-    
-    logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
-    
-    if (!projectRes || !projectRes.data) {
-      return { notFound: true };
-    }
-    
-    const project = projectRes.data;
-
-    // Generate canonical slug from work_title
+    // 2) Canonical slug enforcement (SEO)
     const canonicalSlug = slugify(project.work_title);
-    
-    // Redirect if param slug is wrong
-    if (params.slug !== canonicalSlug) {
+    if (slug !== canonicalSlug) {
       return {
         redirect: {
-          destination: `/detail/${id}/${canonicalSlug}`,
+          destination: `/detail/${numericId}/${canonicalSlug}`,
           permanent: true,
         },
       };
     }
 
-    // 🌐 Track similar projects API call
-    const similarAPIStart = Date.now();
-    const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-    const similarAPITime = Date.now() - similarAPIStart;
-    
-    logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
-    
-    // 🧠 Memory tracking after APIs
-    const afterAPIMemory = process.memoryUsage();
-    logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
-    
-    const totalTime = Date.now() - startTime;
-    
-    // 💰 Amplify: Log cost metrics
-    logCostMetrics('ProjectDetailPage', {
-      projectId: id,
-      slug: params.slug,
-      computeTime: totalTime,
-      memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
-      apiCalls: 2,
-      dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
-    });
-    
-    // 🚀 Amplify: Log performance summary
-    logPagePerformance('ProjectDetailPage', {
-      projectId: id,
-      slug: params.slug,
-      totalTime,
-      projectAPITime,
-      similarAPITime,
-      memoryPeak: afterAPIMemory.heapUsed,
-      dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
-      renderMode: 'SSR'
-    });
-    
-    console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
-    trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
-      projectId: id, 
-      slug: params.slug, 
-      duration: totalTime,
-      success: true 
-    });
+    // 3) Fetch similar
+    const similarRes = await getsimilerllprojects(1, 12, project.product_sub_category_id);
+    const similar = similarRes?.data?.projects || [];
 
-    console.log(JSON.stringify({
-      type: "PAGE_EVENT",
-      page: "ProjectDetailPage",
-      event: "SSR_COMPLETE",
-      projectId: id,
-      slug: params.slug,
-      duration: Date.now() - startTime
-    }));
-
-    
+    // 4) Return ISR props
     return {
       props: {
         initialProject: project,
-        initialSimilar: similarRes.data.projects || [],
-        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
+        initialSimilar: similar,
+        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${numericId}/${canonicalSlug}`,
       },
+      // Rebuild in background every 5 minutes (tune as you like)
+      revalidate: 300,
     };
   } catch (err) {
-    console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
-    console.error('Error in detail page getServerSideProps:', err);
-    
-    // 💰 Amplify: Log error cost metrics
-    logCostMetrics('ProjectDetailPage-Error', {
-      projectId: id,
-      slug: params.slug,
-      computeTime: Date.now() - startTime,
-      memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-      apiCalls: 0,
-      dataSize: 0
-    });
-    
-    trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
-      projectId: id, 
-      slug: params.slug, 
-      error: err.message,
-      duration: Date.now() - startTime
-    });
-    
-    return {
-      notFound: true,
-    };
+    // Soft fail → try again soon
+    return { notFound: true, revalidate: 60 };
+  } finally {
+    // optional: you can keep your logging here if desired
+    // logCostMetrics / trackPageEvent etc.
   }
 }
 
