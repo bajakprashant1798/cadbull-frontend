@@ -351,29 +351,6 @@ export async function getServerSideProps({ params, query }) {
   const fileType = query.fileType || '';
   const type = query.type || '';
 
-
-  const startTime = Date.now();
-    console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
-      timestamp: startTime,
-      type: "PAGE_EVENT",
-      page: "SearchPage",
-      event: "SSR_START",
-      pageNum: params?.page,
-      searchTerm: query.search || '',
-      fileType: query.fileType || '',
-      projectType: query.type || '',
-      environment: process.env.NODE_ENV
-    })}`);
-
-    console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-      timestamp: new Date().toISOString(),
-      type: "MEMORY_USAGE",
-      page: "SearchPage-Start",
-      ...process.memoryUsage(),
-      environment: process.env.NODE_ENV
-    })}`);
-
-
   // ✅ PERFORMANCE MONITORING: Track search page generation
   return await performance.trackPagePerformance(
     "SearchPage-SSR",
@@ -422,36 +399,6 @@ export async function getServerSideProps({ params, query }) {
         // ✅ Generate performance summary
         const timings = { searchAPI: 200, total: 200 }; // Placeholder - would be real in production
         performance.generateSummary("SearchPage-SSR", timings);
-
-        const totalTime = Date.now() - startTime;
-          if (totalTime > 1500) {
-            console.warn(`⚠️ [SLOW-PAGE-ALERT] SearchPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
-          }
-
-          console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
-            timestamp: new Date().toISOString(),
-            type: "COST_METRICS",
-            page: "SearchPage",
-            computeTime: totalTime,
-            memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-            apiCalls: 1,
-            estimatedCost: {
-              requestCost: "0.00000020",
-              computeCost: "0.00000005",
-              totalCost: "0.00000025",
-              currency: "USD"
-            },
-            environment: process.env.NODE_ENV
-          })}`);
-
-          console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-            timestamp: new Date().toISOString(),
-            type: "MEMORY_USAGE",
-            page: "SearchPage-End",
-            ...process.memoryUsage(),
-            environment: process.env.NODE_ENV
-          })}`);
-
 
         return {
           props: {
