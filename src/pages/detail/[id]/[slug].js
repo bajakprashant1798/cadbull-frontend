@@ -24,6 +24,7 @@ import {
   getallprojects, // ✅ Add this here
 } from "@/service/api";
 import { requireAuth } from "@/utils/redirectHelpers";
+import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, trackPageEvent } from "@/utils/amplifyLogger";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllCategoriesData,
@@ -1012,7 +1013,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 // ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
 export async function getServerSideProps({ params }) {
+  const startTime = Date.now();
   const id = params.id;
+  
+  // 🔍 Amplify: Track page generation start
+  trackPageEvent('ProjectDetailPage', 'SSR_START', { 
+    projectId: id, 
+    slug: params.slug, 
+    timestamp: startTime 
+  });
   
   try {
     // Validate ID parameter - must be a valid number
@@ -1020,7 +1029,16 @@ export async function getServerSideProps({ params }) {
       return { notFound: true };
     }
 
+    // 🧠 Memory tracking
+    const initialMemory = process.memoryUsage();
+    logMemoryUsage('ProjectDetailPage-Start', initialMemory);
+
+    // 🌐 Track project API call
+    const projectAPIStart = Date.now();
     const projectRes = await getsingleallprojects("", id);
+    const projectAPITime = Date.now() - projectAPIStart;
+    
+    logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
     
     if (!projectRes || !projectRes.data) {
       return { notFound: true };
@@ -1041,7 +1059,48 @@ export async function getServerSideProps({ params }) {
       };
     }
 
+    // 🌐 Track similar projects API call
+    const similarAPIStart = Date.now();
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+    const similarAPITime = Date.now() - similarAPIStart;
+    
+    logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
+    
+    // 🧠 Memory tracking after APIs
+    const afterAPIMemory = process.memoryUsage();
+    logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
+    
+    const totalTime = Date.now() - startTime;
+    
+    // 💰 Amplify: Log cost metrics
+    logCostMetrics('ProjectDetailPage', {
+      projectId: id,
+      slug: params.slug,
+      computeTime: totalTime,
+      memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+      apiCalls: 2,
+      dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
+    });
+    
+    // 🚀 Amplify: Log performance summary
+    logPagePerformance('ProjectDetailPage', {
+      projectId: id,
+      slug: params.slug,
+      totalTime,
+      projectAPITime,
+      similarAPITime,
+      memoryPeak: afterAPIMemory.heapUsed,
+      dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
+      renderMode: 'SSR'
+    });
+    
+    console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
+    trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
+      projectId: id, 
+      slug: params.slug, 
+      duration: totalTime,
+      success: true 
+    });
     
     return {
       props: {
@@ -1051,7 +1110,26 @@ export async function getServerSideProps({ params }) {
       },
     };
   } catch (err) {
+    console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
     console.error('Error in detail page getServerSideProps:', err);
+    
+    // 💰 Amplify: Log error cost metrics
+    logCostMetrics('ProjectDetailPage-Error', {
+      projectId: id,
+      slug: params.slug,
+      computeTime: Date.now() - startTime,
+      memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+      apiCalls: 0,
+      dataSize: 0
+    });
+    
+    trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
+      projectId: id, 
+      slug: params.slug, 
+      error: err.message,
+      duration: Date.now() - startTime
+    });
+    
     return {
       notFound: true,
     };
