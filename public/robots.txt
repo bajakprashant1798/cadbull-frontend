@@ -13,6 +13,8 @@ Disallow: /author-profile/
 Disallow: /gold?
 Disallow: /1.CAD?
 
+Disallow: /categories/sub/
+
 # Block invalid detail URLs (those without proper slug format)
 Disallow: /detail/*/*?*
 
