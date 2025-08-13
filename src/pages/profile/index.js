@@ -1,6 +1,8 @@
 import MainLayout from "@/layouts/MainLayout";
 import Icons from "@/components/Icons";
-import flag from "@/assets/icons/flag.png";
+// import flag from "@/assets/icons/flag.png";
+import { assets } from "@/utils/assets";
+const flag = assets.icons("flag.png");
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PageHeading from "@/components/PageHeading";
@@ -275,7 +277,7 @@ const DesignerProfile = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            <img src={flag.src} width={24} alt="profile" />{" "}
+                            <img src={flag} width={24} alt="profile" />{" "}
                             <span> +91</span>
                           </button>
                           <ul className="dropdown-menu  border-0 shadow-lg pt-1 mt-2">
@@ -471,7 +473,7 @@ const DesignerProfile = () => {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            <img src={flag.src} width={24} alt="profile" />
+                            <img src={flag} width={24} alt="profile" />
                             <span className="ms-2">India</span>
                           </button>
                           <ul
@@ -486,7 +488,7 @@ const DesignerProfile = () => {
                                setValue("country","india",{shouldValidate:true})
                             }}>
                               <a className="dropdown-item">
-                                <img src={flag.src} width={24} alt="profile" />
+                                <img src={flag} width={24} alt="profile" />
                                 <span className="ms-2">India</span>
                               </a>
                             </li>

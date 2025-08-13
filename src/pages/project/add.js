@@ -1,6 +1,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import ProjectsLayout from "@/layouts/ProjectsLayout";
 // import drawing from "@/assets/icons/company-profile/servies.png";
+
 import SectionHeading from "@/components/SectionHeading";
 import Pagination from "@/components/Pagination";
 import { Fragment } from "react";
@@ -13,7 +14,7 @@ import Icons from "@/components/Icons";
 import { assets } from "@/utils/assets";
 const save = assets.icons("save.png");
 const heart = assets.icons("heart.png");
-
+const drawing = "https://beta-assets.cadbull.com/assets/company-profile/servies.png";
 
 
 const projects = [
