@@ -432,6 +432,7 @@ export async function getServerSideProps({ params, query }) {
             timestamp: new Date().toISOString(),
             type: "COST_METRICS",
             page: "SearchPage",
+            slug: params.slug, 
             computeTime: totalTime,
             memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
             apiCalls: 1,

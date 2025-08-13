@@ -2,16 +2,17 @@ import save from "@/assets/icons/save.png";
 import product from "@/assets/images/product.jpg"
 import Icons from "./Icons";
 import Link from "next/link";
-import { addFavouriteItem, callViewProfileAPI, viewProfile, removeFavouriteItem, getFavouriteItems } from "@/service/api";
+import { addFavouriteItem,  removeFavouriteItem } from "@/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { addedFavouriteItem, deleteFavouriteItem } from "../../redux/app/features/projectsSlice";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { handledownload } from "@/service/globalfunction";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 import { redirectToLogin } from "@/utils/redirectHelpers";
+import { preloadImage } from "@/utils/preloadImage";
 
 const ProjectCard = ({  
   view_count, 
@@ -26,6 +27,21 @@ const ProjectCard = ({
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const ref = useRef(null);
+  const heroUrl = getSafeImageUrl(photo_url); // same URL used on detail page
+
+  useEffect(() => {
+    if (!ref.current || !heroUrl) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        preloadImage(heroUrl);       // warm cache as soon as card is near viewport
+        io.disconnect();
+      }
+    }, { rootMargin: "200px" });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [heroUrl]);
 
   const dispatch = useDispatch();
 
@@ -94,7 +110,7 @@ const ProjectCard = ({
 
 
   return (
-    <div className='project-day-card h-100'>
+    <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)}>
       {/* <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}> */}
       <Link onClick={handleviewcount}  className="h-100" href={`/detail/${id}/${slugify(work_title)}`}>
         <div className='project-day-card-image mb-3 position-relative'>

@@ -489,7 +489,7 @@ export async function getStaticProps({ params }) {
         page: "CategoryDetailPage",
         event: "ISR_START",
         slug: params.slug,
-        pageNum: params.page,
+        // pageNum: params.page,
         environment: process.env.NODE_ENV
       })}`);
 
@@ -611,6 +611,7 @@ export async function getStaticProps({ params }) {
             timestamp: new Date().toISOString(),
             type: "COST_METRICS",
             page: "CategoryDetailPage",
+            slug: params.slug, 
             computeTime: totalTime,
             memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
             apiCalls: 2, // adjust based on calls

@@ -183,6 +183,42 @@ export const getDeviceType = () => {
 };
 
 /**
+ * Map a product image URL to its "small" variant for lightweight placeholders.
+ * Works with paths like:
+ *   .../project_img/original/filename.png  -> .../project_img/small/filename.png
+ *   .../project_img/medium/filename.jpg    -> .../project_img/small/filename.jpg
+ * If the path doesn't match, just return the original URL (safe fallback).
+ */
+export const getSmallVersion = (url) => {
+  if (!url || typeof url !== 'string') return product?.src || product;
+
+  try {
+    // Normalize
+    const safe = url.trim();
+
+    // Only rewrite known folders
+    if (safe.includes('/project_img/')) {
+      return safe
+        .replace('/project_img/original/', '/project_img/small/')
+        .replace('/project_img/medium/', '/project_img/small/');
+    }
+
+    // If you also store profile images with original/medium:
+    if (safe.includes('/profile_pic/')) {
+      return safe
+        .replace('/profile_pic/original/', '/profile_pic/small/')
+        .replace('/profile_pic/medium/', '/profile_pic/small/');
+    }
+
+    // Unknown pattern – leave as is
+    return safe;
+  } catch (e) {
+    return product?.src || product;
+  }
+};
+
+
+/**
  * Generate sizes attribute for responsive images
  * 
  * @param {Object} options - Size configuration options

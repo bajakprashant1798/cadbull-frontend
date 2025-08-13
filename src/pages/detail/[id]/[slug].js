@@ -95,7 +95,7 @@ import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
 import product from "@/assets/images/product.jpg"
-import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
+import { getSafeImageUrl, handleImageError, getSmallVersion } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
 import AdSense from "@/components/AdSense";
@@ -173,6 +173,21 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   // At the top, add a state to track whether favorites have been fetched
   const [favouritesFetched, setFavouritesFetched] = useState(false);
+
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  // reset loader each time the main image url changes
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [project?.photo_url]);
+
+  // Optional: reset immediately when route change starts (before fetch completes)
+  useEffect(() => {
+    const onStart = () => setImgLoaded(false);
+    router.events.on("routeChangeStart", onStart);
+    return () => router.events.off("routeChangeStart", onStart);
+  }, [router.events]);
+
   
   useEffect(() => {
     const handleRouteChange = () => {
@@ -490,7 +505,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
         <link rel="canonical" href={canonicalUrl} />
         <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
-        
+        <link rel="dns-prefetch" href="https://beta-assets.cadbull.com"></link>
+        {/* <link rel="preload" href="https://beta-assets.cadbull.com" as="image" />
+         */}
         {/* ✅ SPEED OPTIMIZATION: Preload LCP image for faster loading */}
         {project?.photo_url && (
           <link
@@ -661,7 +678,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   />
                 </div>
               </div> */}
-              <div
+              {/* <div
                 className="mt-4"
                 style={{ maxWidth: "100%", margin: "0 auto" }}
               >
@@ -687,7 +704,36 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
                   />
                 </div>
+              </div> */}
+
+              <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
+                <div className="bg-light p-3 rounded-2 shadow-sm" style={{ maxWidth: "100%" }}>
+                  {!imgLoaded && <div className="shimmer" />}
+                  <Image
+                    key={project?.id || project?.photo_url}
+                    src={getSafeImageUrl(project?.photo_url)}
+                    width={project?.image_width || 800}
+                    height={project?.image_height || 600}
+                    alt={project?.work_title || "CAD Drawing"}
+                    className="img-fluid"
+                    priority
+                    quality={90}
+                    unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "contain",
+                      display: imgLoaded ? "block" : "none"
+                    }}
+                    placeholder="blur"
+                    blurDataURL={getSmallVersion(project?.photo_url)}
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
+                    onLoadingComplete={() => setImgLoaded(true)}
+                  />
+
+                </div>
               </div>
+
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
                 <AdSense slot="4412795758" format="fluid" layout="in-article" />

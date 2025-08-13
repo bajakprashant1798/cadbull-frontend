@@ -72,40 +72,40 @@ const Footer = () => {
                 <div className="d-flex  gap-5 justify-content-lg-around flex-lg-column gap-lg-2 gap-xl-5 flex-xl-row">
                   <ul className="list-unstyled d-flex flex-column gap-3 justify-content-center mb-0">
                     <li>
-                      <Link href="/categories/sub/3d-Drawings"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span>3d Drawing</span></Link>
+                      <Link href="/3d-Drawings"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span>3d Drawing</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/Cad-Architecture">
+                      <Link href="/Cad-Architecture">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>CAD Architecture</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/Cad-Landscaping">
+                      <Link href="/Cad-Landscaping">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>CAD Landscape</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/Autocad-Machinery-Blocks-&-DWG-Models">
+                      <Link href="/Autocad-Machinery-Blocks-&-DWG-Models">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>CAD Machinery</span></Link>
                     </li>
                   </ul>
                   <ul className="list-unstyled flex-column d-flex gap-2 justify-content-center mb-0">
                     <li>
-                      <Link href="/categories/sub/Detail"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span> CAD Detail</span></Link>
+                      <Link href="/Detail"> <Image src={arrow.src} width={8} height={10} alt="icon" /> <span> CAD Detail</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/DWG-Blocks">
+                      <Link href="/DWG-Blocks">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>DWG Blocks</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/Electrical-Cad">
+                      <Link href="/Electrical-Cad">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>Electrical CAD</span></Link>
                     </li>
                     <li>
-                      <Link href="/categories/sub/Autocad-Furniture-Blocks--&-DWG-Models">
+                      <Link href="/Autocad-Furniture-Blocks--&-DWG-Models">
                         <Image src={arrow.src} width={8} height={10} alt="icon" />
                         <span>Furniture Blocks</span></Link>
                     </li>
