@@ -524,33 +524,35 @@ export async function getStaticProps({ params }) {
         const totalTime = Date.now() - startTime;
         const SLOW_MS = 1500;
         if (totalTime > SLOW_MS) {
-          console.warn(`⚠️ [SLOW-PAGE-ALERT] SearchPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
+          console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoriesPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
         }
 
-        console.log(`💰 AMPLIFY-COST: ${j({
+        // 💰 Normalized cost log (easy to parse in CloudWatch)
+        console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
           timestamp: new Date().toISOString(),
           type: "COST_METRICS",
-          page: "SearchPage",
-          slug: params.slug,
+          page: "CategoriesPage",
           computeTime: totalTime,
-          memoryUsed: safeMemory().heapUsed / 1024 / 1024,
-          apiCalls: 1,
+          memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+          apiCalls: 2,
           estimatedCost: {
             requestCost: "0.00000020",
             computeCost: "0.00000005",
             totalCost: "0.00000025",
             currency: "USD",
           },
-          environment: envName,
+          environment: process.env.NODE_ENV,
         })}`);
 
-        console.log(`🧠 AMPLIFY-MEMORY: ${j({
+        // 🧠 Normalized memory log
+        console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
           timestamp: new Date().toISOString(),
           type: "MEMORY_USAGE",
-          page: "SearchPage-End",
-          ...safeMemory(),
-          environment: envName,
+          page: "CategoriesPage-End",
+          ...process.memoryUsage(),
+          environment: process.env.NODE_ENV,
         })}`);
+
 
 
 

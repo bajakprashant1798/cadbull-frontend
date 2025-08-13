@@ -1062,6 +1062,15 @@ export async function getServerSideProps({ params }) {
   const startTime = Date.now();
   const id = params.id;
   
+  console.log(JSON.stringify({
+    type: "PAGE_EVENT",
+    page: "ProjectDetailPage",
+    event: "SSR_START",
+    projectId: id,
+    slug: params.slug,
+    timestamp: startTime
+  }));
+
   // 🔍 Amplify: Track page generation start
   trackPageEvent('ProjectDetailPage', 'SSR_START', { 
     projectId: id, 
@@ -1147,6 +1156,16 @@ export async function getServerSideProps({ params }) {
       duration: totalTime,
       success: true 
     });
+
+    console.log(JSON.stringify({
+      type: "PAGE_EVENT",
+      page: "ProjectDetailPage",
+      event: "SSR_COMPLETE",
+      projectId: id,
+      slug: params.slug,
+      duration: Date.now() - startTime
+    }));
+
     
     return {
       props: {
