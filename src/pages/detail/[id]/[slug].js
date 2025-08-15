@@ -1063,228 +1063,228 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 };
 
 
-// // ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
-// export async function getServerSideProps({ params }) {
-//   const startTime = Date.now();
-//   const id = params.id;
+// ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
+export async function getServerSideProps({ params }) {
+  const startTime = Date.now();
+  const id = params.id;
   
-//   console.log(JSON.stringify({
-//     type: "PAGE_EVENT",
-//     page: "ProjectDetailPage",
-//     event: "SSR_START",
-//     projectId: id,
-//     slug: params.slug,
-//     timestamp: startTime
-//   }));
+  console.log(JSON.stringify({
+    type: "PAGE_EVENT",
+    page: "ProjectDetailPage",
+    event: "SSR_START",
+    projectId: id,
+    slug: params.slug,
+    timestamp: startTime
+  }));
 
-//   // 🔍 Amplify: Track page generation start
-//   trackPageEvent('ProjectDetailPage', 'SSR_START', { 
-//     projectId: id, 
-//     slug: params.slug, 
-//     timestamp: startTime 
-//   });
+  // 🔍 Amplify: Track page generation start
+  trackPageEvent('ProjectDetailPage', 'SSR_START', { 
+    projectId: id, 
+    slug: params.slug, 
+    timestamp: startTime 
+  });
   
-//   try {
-//     // Validate ID parameter - must be a valid number
-//     if (!id || isNaN(parseInt(id))) {
-//       return { notFound: true };
-//     }
-
-//     // 🧠 Memory tracking
-//     const initialMemory = process.memoryUsage();
-//     logMemoryUsage('ProjectDetailPage-Start', initialMemory);
-
-//     // 🌐 Track project API call
-//     const projectAPIStart = Date.now();
-//     const projectRes = await getsingleallprojects("", id);
-//     const projectAPITime = Date.now() - projectAPIStart;
-    
-//     logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
-    
-//     if (!projectRes || !projectRes.data) {
-//       return { notFound: true };
-//     }
-    
-//     const project = projectRes.data;
-
-//     // Generate canonical slug from work_title
-//     const canonicalSlug = slugify(project.work_title);
-    
-//     // Redirect if param slug is wrong
-//     if (params.slug !== canonicalSlug) {
-//       return {
-//         redirect: {
-//           destination: `/detail/${id}/${canonicalSlug}`,
-//           permanent: true,
-//         },
-//       };
-//     }
-
-//     // 🌐 Track similar projects API call
-//     const similarAPIStart = Date.now();
-//     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-//     const similarAPITime = Date.now() - similarAPIStart;
-    
-//     logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
-    
-//     // 🧠 Memory tracking after APIs
-//     const afterAPIMemory = process.memoryUsage();
-//     logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
-    
-//     const totalTime = Date.now() - startTime;
-    
-//     // 💰 Amplify: Log cost metrics
-//     logCostMetrics('ProjectDetailPage', {
-//       projectId: id,
-//       slug: params.slug,
-//       computeTime: totalTime,
-//       memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
-//       apiCalls: 2,
-//       dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
-//     });
-    
-//     // 🚀 Amplify: Log performance summary
-//     logPagePerformance('ProjectDetailPage', {
-//       projectId: id,
-//       slug: params.slug,
-//       totalTime,
-//       projectAPITime,
-//       similarAPITime,
-//       memoryPeak: afterAPIMemory.heapUsed,
-//       dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
-//       renderMode: 'SSR'
-//     });
-    
-//     console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
-//     trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
-//       projectId: id, 
-//       slug: params.slug, 
-//       duration: totalTime,
-//       success: true 
-//     });
-
-//     console.log(JSON.stringify({
-//       type: "PAGE_EVENT",
-//       page: "ProjectDetailPage",
-//       event: "SSR_COMPLETE",
-//       projectId: id,
-//       slug: params.slug,
-//       duration: Date.now() - startTime
-//     }));
-
-    
-//     return {
-//       props: {
-//         initialProject: project,
-//         initialSimilar: similarRes.data.projects || [],
-//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
-//       },
-//     };
-//   } catch (err) {
-//     console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
-//     console.error('Error in detail page getServerSideProps:', err);
-    
-//     // 💰 Amplify: Log error cost metrics
-//     logCostMetrics('ProjectDetailPage-Error', {
-//       projectId: id,
-//       slug: params.slug,
-//       computeTime: Date.now() - startTime,
-//       memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-//       apiCalls: 0,
-//       dataSize: 0
-//     });
-    
-//     trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
-//       projectId: id, 
-//       slug: params.slug, 
-//       error: err.message,
-//       duration: Date.now() - startTime
-//     });
-    
-//     return {
-//       notFound: true,
-//     };
-//   }
-// }
-
-export async function getServerSideProps(ctx) {
-  const { params, req, res, resolvedUrl } = ctx;
-  const id = params?.id;
-
-  // Validate ID
-  if (!id || Number.isNaN(parseInt(id, 10))) {
-    return { notFound: true };
-  }
-
   try {
-    // 1) Fetch product
+    // Validate ID parameter - must be a valid number
+    if (!id || isNaN(parseInt(id))) {
+      return { notFound: true };
+    }
+
+    // 🧠 Memory tracking
+    const initialMemory = process.memoryUsage();
+    logMemoryUsage('ProjectDetailPage-Start', initialMemory);
+
+    // 🌐 Track project API call
+    const projectAPIStart = Date.now();
     const projectRes = await getsingleallprojects("", id);
-    const project = projectRes?.data;
-    if (!project) return { notFound: true };
+    const projectAPITime = Date.now() - projectAPIStart;
+    
+    logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
+    
+    if (!projectRes || !projectRes.data) {
+      return { notFound: true };
+    }
+    
+    const project = projectRes.data;
 
-    // 2) Pick the canonical slug:
-    //    Prefer a backend-provided slug if it exists (keeps old ranking URLs),
-    //    otherwise fall back to a derived, LOWERCASED slug.
-    const backendSlug =
-      project.slug ||
-      project.slug_url ||
-      project.slug_path ||
-      project.seo_slug ||
-      null;
-
-    const canonicalSlug = backendSlug
-      ? String(backendSlug).trim()
-      : slugify(project.work_title);
-
-    // 3) Redirect only when truly needed (case-insensitive compare,
-    //    but avoid redirecting to the *same* URL again).
-    const incoming = decodeURIComponent(params.slug || "");
-    const incomingLc = incoming.toLowerCase();
-    const canonicalLc = canonicalSlug.toLowerCase();
-
-    // Build the exact destination path we want
-    const desiredPath = `/detail/${id}/${canonicalSlug}`;
-    const currentPath = decodeURIComponent(resolvedUrl.split("?")[0]);
-
-    if (incomingLc !== canonicalLc && currentPath !== desiredPath) {
+    // Generate canonical slug from work_title
+    const canonicalSlug = slugify(project.work_title);
+    
+    // Redirect if param slug is wrong
+    if (params.slug !== canonicalSlug) {
       return {
         redirect: {
-          destination: desiredPath,
-          permanent: true, // keep it permanent for SEO
+          destination: `/detail/${id}/${canonicalSlug}`,
+          permanent: true,
         },
       };
     }
 
-    // 4) Fetch similar projects
-    const similarRes = await getsimilerllprojects(
-      1,
-      12,
-      project.product_sub_category_id
-    );
+    // 🌐 Track similar projects API call
+    const similarAPIStart = Date.now();
+    const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+    const similarAPITime = Date.now() - similarAPIStart;
+    
+    logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
+    
+    // 🧠 Memory tracking after APIs
+    const afterAPIMemory = process.memoryUsage();
+    logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
+    
+    const totalTime = Date.now() - startTime;
+    
+    // 💰 Amplify: Log cost metrics
+    logCostMetrics('ProjectDetailPage', {
+      projectId: id,
+      slug: params.slug,
+      computeTime: totalTime,
+      memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+      apiCalls: 2,
+      dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
+    });
+    
+    // 🚀 Amplify: Log performance summary
+    logPagePerformance('ProjectDetailPage', {
+      projectId: id,
+      slug: params.slug,
+      totalTime,
+      projectAPITime,
+      similarAPITime,
+      memoryPeak: afterAPIMemory.heapUsed,
+      dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
+      renderMode: 'SSR'
+    });
+    
+    console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
+    trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
+      projectId: id, 
+      slug: params.slug, 
+      duration: totalTime,
+      success: true 
+    });
 
-    // 5) Add short-term caching for HTML at the edge (CDN/proxy-friendly)
-    //    Won’t affect SEO, but helps SSR cost/speed. Tune as you like.
-    //    (Has effect only when a CDN like CloudFront is in front.)
-    try {
-      res.setHeader(
-        "Cache-Control",
-        // cache at CDN for 60s, allow 120s stale while revalidating
-        "public, s-maxage=60, stale-while-revalidate=120"
-      );
-    } catch {}
+    console.log(JSON.stringify({
+      type: "PAGE_EVENT",
+      page: "ProjectDetailPage",
+      event: "SSR_COMPLETE",
+      projectId: id,
+      slug: params.slug,
+      duration: Date.now() - startTime
+    }));
 
+    
     return {
       props: {
         initialProject: project,
-        initialSimilar: similarRes?.data?.projects || [],
+        initialSimilar: similarRes.data.projects || [],
         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
     };
   } catch (err) {
-    console.error("detail SSR error:", err);
-    return { notFound: true };
+    console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
+    console.error('Error in detail page getServerSideProps:', err);
+    
+    // 💰 Amplify: Log error cost metrics
+    logCostMetrics('ProjectDetailPage-Error', {
+      projectId: id,
+      slug: params.slug,
+      computeTime: Date.now() - startTime,
+      memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+      apiCalls: 0,
+      dataSize: 0
+    });
+    
+    trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
+      projectId: id, 
+      slug: params.slug, 
+      error: err.message,
+      duration: Date.now() - startTime
+    });
+    
+    return {
+      notFound: true,
+    };
   }
 }
+
+// export async function getServerSideProps(ctx) {
+//   const { params, req, res, resolvedUrl } = ctx;
+//   const id = params?.id;
+
+//   // Validate ID
+//   if (!id || Number.isNaN(parseInt(id, 10))) {
+//     return { notFound: true };
+//   }
+
+//   try {
+//     // 1) Fetch product
+//     const projectRes = await getsingleallprojects("", id);
+//     const project = projectRes?.data;
+//     if (!project) return { notFound: true };
+
+//     // 2) Pick the canonical slug:
+//     //    Prefer a backend-provided slug if it exists (keeps old ranking URLs),
+//     //    otherwise fall back to a derived, LOWERCASED slug.
+//     const backendSlug =
+//       project.slug ||
+//       project.slug_url ||
+//       project.slug_path ||
+//       project.seo_slug ||
+//       null;
+
+//     const canonicalSlug = backendSlug
+//       ? String(backendSlug).trim()
+//       : slugify(project.work_title);
+
+//     // 3) Redirect only when truly needed (case-insensitive compare,
+//     //    but avoid redirecting to the *same* URL again).
+//     const incoming = decodeURIComponent(params.slug || "");
+//     const incomingLc = incoming.toLowerCase();
+//     const canonicalLc = canonicalSlug.toLowerCase();
+
+//     // Build the exact destination path we want
+//     const desiredPath = `/detail/${id}/${canonicalSlug}`;
+//     const currentPath = decodeURIComponent(resolvedUrl.split("?")[0]);
+
+//     if (incomingLc !== canonicalLc && currentPath !== desiredPath) {
+//       return {
+//         redirect: {
+//           destination: desiredPath,
+//           permanent: true, // keep it permanent for SEO
+//         },
+//       };
+//     }
+
+//     // 4) Fetch similar projects
+//     const similarRes = await getsimilerllprojects(
+//       1,
+//       12,
+//       project.product_sub_category_id
+//     );
+
+//     // 5) Add short-term caching for HTML at the edge (CDN/proxy-friendly)
+//     //    Won’t affect SEO, but helps SSR cost/speed. Tune as you like.
+//     //    (Has effect only when a CDN like CloudFront is in front.)
+//     try {
+//       res.setHeader(
+//         "Cache-Control",
+//         // cache at CDN for 60s, allow 120s stale while revalidating
+//         "public, s-maxage=60, stale-while-revalidate=120"
+//       );
+//     } catch {}
+
+//     return {
+//       props: {
+//         initialProject: project,
+//         initialSimilar: similarRes?.data?.projects || [],
+//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
+//       },
+//     };
+//   } catch (err) {
+//     console.error("detail SSR error:", err);
+//     return { notFound: true };
+//   }
+// }
 
 // export async function getStaticPaths() {
 //   // We don't prebuild many; fallback will build on first request.
