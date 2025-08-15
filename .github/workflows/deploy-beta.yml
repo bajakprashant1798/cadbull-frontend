@@ -2,63 +2,67 @@ name: Deploy to Beta (EC2)
 
 on:
   push:
-    branches:
-      - beta
+    branches: [ beta ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      EC2_HOST: 34.237.58.157          # your Elastic IP
+      EC2_USER: ubuntu
+      APP_DIR: /var/www/cadbull-frontend
+      PM2_APP: cadbull-beta            # <-- matches your running PM2 process
 
     steps:
-      - name: Checkout (no need to fetch full history)
+      - name: Checkout (shallow)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Add EC2 host to known_hosts
+      - name: Add EC2 to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H 34.237.58.157 >> ~/.ssh/known_hosts
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
       - name: Start SSH agent and add private key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          log-public-key: true
 
       - name: Deploy on EC2
-        env:
-          APP_DIR: /var/www/cadbull-frontend
-          PM2_APP: cadbull-beta
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@34.237.58.157 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << 'EOF'
             set -euo pipefail
 
-            # Go to app dir
             cd /var/www/cadbull-frontend
 
-            # Make sure we are a proper git repo tracked to origin
+            # Ensure repo points to origin and pull beta
             git remote -v || true
-            # Fetch and hard reset to beta
             git fetch origin beta
             git reset --hard origin/beta
 
-            # Ensure env file exists (skip if you already have it)
+            # Ensure env exists
             if [ ! -f .env ]; then
               echo ".env missing! Aborting."; exit 1
             fi
 
-            # Install & build
+            # Node/PM2
             export NODE_ENV=production
-            npx pm2 -v || sudo npm i -g pm2
+            command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
+
+            # Install/build
             npm ci --legacy-peer-deps || npm i --legacy-peer-deps
             npm run build
 
-            # Start/reload with PM2
-            if pm2 describe cadbull-frontend >/dev/null; then
-              pm2 reload cadbull-frontend
+            # Start or reload
+            if pm2 describe cadbull-beta >/dev/null; then
+              pm2 reload cadbull-beta
             else
-              pm2 start npm --name "cadbull-frontend" -- start
+              pm2 start npm --name "cadbull-beta" -- start
             fi
 
-            # Save PM2 to boot (if not already)
             pm2 save
           EOF
 
