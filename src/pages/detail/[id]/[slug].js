@@ -248,7 +248,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
         // console.log("singleProjectData: ", singleProjectData);
-        
+        console.log(singleProjectData);
+
         // console.log("singleProjectData: ", singleProjectData);
         
         setSimilarProjectId(singleProjectData.product_sub_category_id);
@@ -1107,18 +1108,24 @@ export async function getServerSideProps({ params }) {
     
     const project = projectRes.data;
 
-    // Generate canonical slug from work_title
-    const canonicalSlug = slugify(project.work_title);
-    
-    // Redirect if param slug is wrong
-    if (params.slug !== canonicalSlug) {
-      return {
-        redirect: {
-          destination: `/detail/${id}/${canonicalSlug}`,
-          permanent: true,
-        },
-      };
-    }
+      // Use backend slug if available and not empty/null, else fallback to slugify
+      const backendSlug =
+        project.slug || null;
+
+      const canonicalSlug =
+        backendSlug ? String(backendSlug).trim()
+          : slugify(project.work_title);
+
+      // Redirect if param slug is wrong (case-insensitive)
+      const incomingSlug = decodeURIComponent(params.slug || "");
+      if (incomingSlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
+        return {
+          redirect: {
+            destination: `/detail/${id}/${canonicalSlug}`,
+            permanent: true,
+          },
+        };
+      }
 
     // 🌐 Track similar projects API call
     const similarAPIStart = Date.now();
