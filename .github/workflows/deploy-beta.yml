@@ -21,9 +21,7 @@ jobs:
           fetch-depth: 1
 
       - name: Add EC2 to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Start SSH agent and add private key
         uses: webfactory/ssh-agent@v0.9.0
@@ -38,31 +36,22 @@ jobs:
 
             cd /var/www/cadbull-frontend
 
-            # Ensure repo points to origin and pull beta
-            git remote -v || true
+            # sync repo to beta
             git fetch origin beta
             git reset --hard origin/beta
 
-            # Ensure env exists
-            if [ ! -f .env ]; then
-              echo ".env missing! Aborting."; exit 1
-            fi
-
-            # Node/PM2
+            # build
             export NODE_ENV=production
-            command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
-
-            # Install/build
+            npx pm2 -v || sudo npm i -g pm2
             npm ci --legacy-peer-deps || npm i --legacy-peer-deps
             npm run build
 
-            # Start or reload
-            if pm2 describe cadbull-beta >/dev/null; then
-              pm2 reload cadbull-beta
+            # reload existing app (or start once if it doesn't exist)
+            if pm2 describe ${PM2_APP} >/dev/null; then
+              pm2 reload ${PM2_APP} --update-env
             else
-              pm2 start npm --name "cadbull-beta" -- start
+              pm2 start npm --name "${PM2_APP}" -- start
             fi
 
             pm2 save
           EOF
-
