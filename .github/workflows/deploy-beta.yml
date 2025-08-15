@@ -9,10 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      EC2_HOST: 34.237.58.157          # your Elastic IP
+      EC2_HOST: 34.237.58.157
       EC2_USER: ubuntu
       APP_DIR: /var/www/cadbull-frontend
-      PM2_APP: cadbull-beta            # <-- matches your running PM2 process
+      PM2_APP: cadbull-beta
 
     steps:
       - name: Checkout (shallow)
@@ -20,38 +20,51 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Add EC2 to known_hosts
-        run: ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Make ~/.ssh and add EC2 host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Start SSH agent and add private key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-          log-public-key: true
 
       - name: Deploy on EC2
+        shell: bash
         run: |
           ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << 'EOF'
             set -euo pipefail
-
             cd /var/www/cadbull-frontend
 
-            # sync repo to beta
+            echo "== git status before =="
+            git rev-parse --abbrev-ref HEAD || true
+            git log -1 --oneline || true
+
+            # make sure remote exists and reset to beta
+            git remote -v || true
             git fetch origin beta
             git reset --hard origin/beta
 
-            # build
+            # env file must exist already on the server
+            test -f .env
+
             export NODE_ENV=production
-            npx pm2 -v || sudo npm i -g pm2
+            command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
             npm ci --legacy-peer-deps || npm i --legacy-peer-deps
             npm run build
 
-            # reload existing app (or start once if it doesn't exist)
-            if pm2 describe ${PM2_APP} >/dev/null; then
-              pm2 reload ${PM2_APP} --update-env
+            # keep ONE process name: cadbull-beta
+            if pm2 describe cadbull-beta >/dev/null; then
+              pm2 reload cadbull-beta
             else
-              pm2 start npm --name "${PM2_APP}" -- start
+              pm2 start npm --name "cadbull-beta" -- start
             fi
-
             pm2 save
+
+            echo "== git & pm2 after =="
+            git log -1 --oneline
+            pm2 ls
           EOF
