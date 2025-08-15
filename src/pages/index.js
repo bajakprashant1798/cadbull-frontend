@@ -428,7 +428,7 @@ export default function Home({
                 </p> */}
 
                 <h1 className="h2 mb-0 fw-light text-primary">
-                  World Largest 2d <br />
+                  World Largest 2d large<br />
                 </h1>
                 <h2 className="mb-2 h7 fw-bold fw-light text-primary">CAD Library.</h2>
 
