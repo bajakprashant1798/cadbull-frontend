@@ -1058,163 +1058,212 @@ export default function Home({
   );
 }
 
-// ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction + Better AdSense performance
-export async function getStaticProps({ params }) {
-  // ===== TEST LOGS FOR CLOUDWATCH DEBUGGING =====
-  console.log('🧪 [TEST-LOG] Homepage getStaticProps started');
-  console.log('🧪 [TEST-LOG] Environment:', process.env.NODE_ENV);
-  console.log('🧪 [TEST-LOG] Timestamp:', new Date().toISOString());
-  console.log('🧪 [TEST-LOG] AWS Request ID:', process.env.AWS_REQUEST_ID || 'local');
+// // ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction + Better AdSense performance
+// export async function getStaticProps({ params }) {
+//   // ===== TEST LOGS FOR CLOUDWATCH DEBUGGING =====
+//   console.log('🧪 [TEST-LOG] Homepage getStaticProps started');
+//   console.log('🧪 [TEST-LOG] Environment:', process.env.NODE_ENV);
+//   console.log('🧪 [TEST-LOG] Timestamp:', new Date().toISOString());
+//   console.log('🧪 [TEST-LOG] AWS Request ID:', process.env.AWS_REQUEST_ID || 'local');
   
-  const timings = {};
-  const startTime = Date.now();
+//   const timings = {};
+//   const startTime = Date.now();
   
-  return await performance.trackPagePerformance('Homepage', { 
-    pageType: 'ISR', 
-    isSSR: false, 
-    cacheStatus: 'generating' 
-  }, async () => {
-    try {
-      console.log('🧪 [TEST-LOG] Inside performance tracking function');
+//   return await performance.trackPagePerformance('Homepage', { 
+//     pageType: 'ISR', 
+//     isSSR: false, 
+//     cacheStatus: 'generating' 
+//   }, async () => {
+//     try {
+//       console.log('🧪 [TEST-LOG] Inside performance tracking function');
       
-      // Static generation with ISR = much cheaper than SSR but maintains fresh content
-      const page = 1; // Homepage always shows page 1 for ISR
-      const search = "";
-      const file_type = "";
+//       // Static generation with ISR = much cheaper than SSR but maintains fresh content
+//       const page = 1; // Homepage always shows page 1 for ISR
+//       const search = "";
+//       const file_type = "";
 
-      // 🧠 Memory tracking for both systems
-      performance.logMemoryUsage('Homepage-Start');
-      const initialMemory = process.memoryUsage();
-      logMemoryUsage('Homepage', initialMemory);
+//       // 🧠 Memory tracking for both systems
+//       performance.logMemoryUsage('Homepage-Start');
+//       const initialMemory = process.memoryUsage();
+//       logMemoryUsage('Homepage', initialMemory);
 
-      console.info('🧪 [AMPLIFY-LOG] About to call projects API');
+//       console.info('🧪 [AMPLIFY-LOG] About to call projects API');
       
-      // Track projects API call with both systems
-      const projectsStartTime = Date.now();
-      const projectRes = await performance.timeAPICall(
-        'GetAllProjects-Homepage',
-        () => getallprojects(page, 9, search, file_type),
-        `getallprojects?page=${page}&limit=9`
-      );
-      const projectsDuration = Date.now() - projectsStartTime;
-      timings.projectsAPI = projectsDuration;
+//       // Track projects API call with both systems
+//       const projectsStartTime = Date.now();
+//       const projectRes = await performance.timeAPICall(
+//         'GetAllProjects-Homepage',
+//         () => getallprojects(page, 9, search, file_type),
+//         `getallprojects?page=${page}&limit=9`
+//       );
+//       const projectsDuration = Date.now() - projectsStartTime;
+//       timings.projectsAPI = projectsDuration;
 
-      // 🌐 Amplify: Log API call performance
-      logAPICall('getallprojects', projectsDuration, 200, JSON.stringify(projectRes.data).length);
+//       // 🌐 Amplify: Log API call performance
+//       logAPICall('getallprojects', projectsDuration, 200, JSON.stringify(projectRes.data).length);
 
-      console.info('🧪 [AMPLIFY-LOG] Projects API completed, calling categories API');
+//       console.info('🧪 [AMPLIFY-LOG] Projects API completed, calling categories API');
 
-      // Track categories API call with both systems
-      const categoriesStartTime = Date.now();
-      const categoryRes = await performance.timeAPICall(
-        'GetAllCategories-Homepage',
-        () => getallCategories(),
-        'getallCategories'
-      );
-      const categoriesDuration = Date.now() - categoriesStartTime;
-      timings.categoriesAPI = categoriesDuration;
+//       // Track categories API call with both systems
+//       const categoriesStartTime = Date.now();
+//       const categoryRes = await performance.timeAPICall(
+//         'GetAllCategories-Homepage',
+//         () => getallCategories(),
+//         'getallCategories'
+//       );
+//       const categoriesDuration = Date.now() - categoriesStartTime;
+//       timings.categoriesAPI = categoriesDuration;
 
-      // 🌐 Amplify: Log API call performance
-      logAPICall('getallCategories', categoriesDuration, 200, JSON.stringify(categoryRes.data).length);
+//       // 🌐 Amplify: Log API call performance
+//       logAPICall('getallCategories', categoriesDuration, 200, JSON.stringify(categoryRes.data).length);
 
-      // 🧠 Memory tracking after APIs
-      performance.logMemoryUsage('Homepage-AfterAPIs');
-      const afterAPIMemory = process.memoryUsage();
-      logMemoryUsage('Homepage-AfterAPIs', afterAPIMemory);
+//       // 🧠 Memory tracking after APIs
+//       performance.logMemoryUsage('Homepage-AfterAPIs');
+//       const afterAPIMemory = process.memoryUsage();
+//       logMemoryUsage('Homepage-AfterAPIs', afterAPIMemory);
 
-      console.info('🧪 [AMPLIFY-LOG] Both APIs completed successfully');
+//       console.info('🧪 [AMPLIFY-LOG] Both APIs completed successfully');
 
-      // Log cost event for ISR generation (existing)
-      performance.logCostEvent('ISR-Generation', {
-        page: 'Homepage',
-        itemCount: projectRes.data.products?.length || 0,
-        categoryCount: categoryRes.data.categories?.length || 0,
-      });
+//       // Log cost event for ISR generation (existing)
+//       performance.logCostEvent('ISR-Generation', {
+//         page: 'Homepage',
+//         itemCount: projectRes.data.products?.length || 0,
+//         categoryCount: categoryRes.data.categories?.length || 0,
+//       });
 
-      const totalTime = Date.now() - startTime;
+//       const totalTime = Date.now() - startTime;
       
-      // 📊 Amplify: Log ISR performance
-      logISRPerformance('Homepage', {
-        generationTime: totalTime,
-        cacheHit: false, // This is always a miss for ISR generation
-        projectsCount: projectRes.data.products?.length || 0,
-        categoriesCount: categoryRes.data.categories?.length || 0,
-        memoryUsed: afterAPIMemory.heapUsed,
-        apiCallsCount: 2
-      });
+//       // 📊 Amplify: Log ISR performance
+//       logISRPerformance('Homepage', {
+//         generationTime: totalTime,
+//         cacheHit: false, // This is always a miss for ISR generation
+//         projectsCount: projectRes.data.products?.length || 0,
+//         categoriesCount: categoryRes.data.categories?.length || 0,
+//         memoryUsed: afterAPIMemory.heapUsed,
+//         apiCallsCount: 2
+//       });
 
-      // 💰 Amplify: Log cost metrics
-      logCostMetrics('Homepage', {
-        computeTime: totalTime,
-        memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
-        apiCalls: 2,
-        dataSize: (JSON.stringify(projectRes.data).length + JSON.stringify(categoryRes.data).length) / 1024 // KB
-      });
+//       // 💰 Amplify: Log cost metrics
+//       logCostMetrics('Homepage', {
+//         computeTime: totalTime,
+//         memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+//         apiCalls: 2,
+//         dataSize: (JSON.stringify(projectRes.data).length + JSON.stringify(categoryRes.data).length) / 1024 // KB
+//       });
 
-      const result = {
-        props: {
-          initialProjects: projectRes.data.products || [],
-          totalPages: projectRes.data.totalPages || 1,
-          totalProducts: projectRes.data.totalProducts || 0,
-          lastProductId: projectRes.data.lastProductId || 0,
-          housePlanFiles: projectRes.data.housePlanFiles || 0,
-          currentPage: page,
-          filters: { search, file_type },
-          initialCategories: categoryRes.data.categories || [],
-        },
-        // ✅ ISR: Regenerate every 30 minutes for fresh content + AdSense revenue
-        revalidate: 1800, // 30 minutes = fresh content without constant server load
-      };
+//       const result = {
+//         props: {
+//           initialProjects: projectRes.data.products || [],
+//           totalPages: projectRes.data.totalPages || 1,
+//           totalProducts: projectRes.data.totalProducts || 0,
+//           lastProductId: projectRes.data.lastProductId || 0,
+//           housePlanFiles: projectRes.data.housePlanFiles || 0,
+//           currentPage: page,
+//           filters: { search, file_type },
+//           initialCategories: categoryRes.data.categories || [],
+//         },
+//         // ✅ ISR: Regenerate every 30 minutes for fresh content + AdSense revenue
+//         revalidate: 1800, // 30 minutes = fresh content without constant server load
+//       };
 
-      timings.total = totalTime;
-      performance.generateSummary('Homepage-ISR', timings);
+//       timings.total = totalTime;
+//       performance.generateSummary('Homepage-ISR', timings);
       
-      // 🚀 Amplify: Log final performance summary
-      logPagePerformance('Homepage', {
-        totalTime,
-        projectsAPITime: projectsDuration,
-        categoriesAPITime: categoriesDuration,
-        memoryPeak: afterAPIMemory.heapUsed,
-        dataTransferred: (JSON.stringify(result.props).length / 1024).toFixed(2) + 'KB',
-        isrRevalidate: 1800
-      });
+//       // 🚀 Amplify: Log final performance summary
+//       logPagePerformance('Homepage', {
+//         totalTime,
+//         projectsAPITime: projectsDuration,
+//         categoriesAPITime: categoriesDuration,
+//         memoryPeak: afterAPIMemory.heapUsed,
+//         dataTransferred: (JSON.stringify(result.props).length / 1024).toFixed(2) + 'KB',
+//         isrRevalidate: 1800
+//       });
       
-      console.info('🧪 [AMPLIFY-LOG] Homepage getStaticProps completed successfully');
+//       console.info('🧪 [AMPLIFY-LOG] Homepage getStaticProps completed successfully');
       
-      return result;
-    } catch (error) {
-      console.error('🧪 [AMPLIFY-ERROR] ERROR in homepage getStaticProps:', error);
-      console.error('Error in homepage getStaticProps:', error);
+//       return result;
+//     } catch (error) {
+//       console.error('🧪 [AMPLIFY-ERROR] ERROR in homepage getStaticProps:', error);
+//       console.error('Error in homepage getStaticProps:', error);
       
-      // Log error with both systems
-      performance.logCostEvent('ISR-Error', {
-        page: 'Homepage',
-        error: error.message,
-      });
+//       // Log error with both systems
+//       performance.logCostEvent('ISR-Error', {
+//         page: 'Homepage',
+//         error: error.message,
+//       });
       
-      // 📊 Amplify: Log error details
-      logCostMetrics('Homepage-Error', {
-        computeTime: Date.now() - startTime,
-        memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-        apiCalls: 0,
-        dataSize: 0
-      });
+//       // 📊 Amplify: Log error details
+//       logCostMetrics('Homepage-Error', {
+//         computeTime: Date.now() - startTime,
+//         memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+//         apiCalls: 0,
+//         dataSize: 0
+//       });
       
-      return {
-        props: {
-          initialProjects: [],
-          totalProducts: 0,
-          lastProductId: 0,
-          housePlanFiles: 0,
-          currentPage: 1,
-          filters: { search: "", file_type: "" },
-          initialCategories: [],
-        },
-        revalidate: 1800, // Still revalidate on error
-      };
-    }
-  });
+//       return {
+//         props: {
+//           initialProjects: [],
+//           totalProducts: 0,
+//           lastProductId: 0,
+//           housePlanFiles: 0,
+//           currentPage: 1,
+//           filters: { search: "", file_type: "" },
+//           initialCategories: [],
+//         },
+//         revalidate: 1800, // Still revalidate on error
+//       };
+//     }
+//   });
+// }
+
+// pages/index.js
+export async function getServerSideProps({ req, res, query }) {
+  const page = Number(query.page || 1);
+  const search = (query.search || "").toString();
+  const file_type = (query.file_type || "").toString();
+
+  // ⚠️ Important: short CDN cache + generous stale window
+  // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=60, stale-while-revalidate=300"
+  );
+
+  try {
+    const [projectRes, categoryRes] = await Promise.all([
+      getallprojects(page, 9, search, file_type),
+      getallCategories()
+    ]);
+
+    return {
+      props: {
+        initialProjects: projectRes?.data?.products || [],
+        totalPages: projectRes?.data?.totalPages || 1,
+        totalProducts: projectRes?.data?.totalProducts || 0,
+        lastProductId: projectRes?.data?.lastProductId || 0,
+        housePlanFiles: projectRes?.data?.housePlanFiles || 0,
+        currentPage: page,
+        filters: { search, file_type },
+        initialCategories: categoryRes?.data?.categories || [],
+      },
+    };
+  } catch (e) {
+    // Graceful fallback
+    return {
+      props: {
+        initialProjects: [],
+        totalPages: 1,
+        totalProducts: 0,
+        lastProductId: 0,
+        housePlanFiles: 0,
+        currentPage: 1,
+        filters: { search: "", file_type: "" },
+        initialCategories: [],
+      },
+    };
+  }
 }
+
 
 Home.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

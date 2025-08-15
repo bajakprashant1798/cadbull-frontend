@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  poweredByHeader: false,                 // small security hardening
   compress: true,
+  output: 'standalone',                   // ✅ important for EC2 (smaller runtime image)
+  productionBrowserSourceMaps: false,     // reduce bundle size/telemetry
+  httpAgentOptions: { keepAlive: true },  // fewer TCP handshakes when SSR calls your API
   
   // AMP configuration
   amp: {
@@ -51,10 +55,11 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  
+
   async headers() {
     return [
       // Long cache for static assets (not HTML)
+      // immutable Next static chunks
       {
         source: '/_next/static/:path*',
         headers: [
@@ -62,6 +67,12 @@ const nextConfig = {
         ],
       },
       // Let Next/CloudFront control ISR HTML caching. No extra header here.
+
+      // optional: static public assets if you serve any from /public
+      {
+        source: '/assets/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
     ];
   },
 
@@ -108,18 +119,18 @@ const nextConfig = {
         permanent: true,
       },
       
-      // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
-      {
-        source: '/detail/:id/:slug*',
-        has: [
-          {
-            type: 'query',
-            key: 'redirect_old_format',
-          },
-        ],
-        destination: '/404',
-        permanent: false,
-      },
+      // // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
+      // {
+      //   source: '/detail/:id/:slug*',
+      //   has: [
+      //     {
+      //       type: 'query',
+      //       key: 'redirect_old_format',
+      //     },
+      //   ],
+      //   destination: '/404',
+      //   permanent: false,
+      // },
     ];
   },
   // Uncomment if you want to add rewrites (API proxy)

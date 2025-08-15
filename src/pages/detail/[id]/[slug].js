@@ -143,6 +143,7 @@ function slugify(title) {
     .replace(/\s+/g, '-')           // Replace spaces with -
     .replace(/\-+/g, '-')           // Collapse multiple dashes
     .replace(/^\-+|\-+$/g, '');     // Trim dashes from start and end
+    // .toLowerCase();
 }
 
 
@@ -1206,62 +1207,141 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 //   }
 // }
 
-export async function getStaticPaths() {
-  // We don't prebuild many; fallback will build on first request.
-  return { paths: [], fallback: 'blocking' };
-}
+export async function getServerSideProps(ctx) {
+  const { params, req, res, resolvedUrl } = ctx;
+  const id = params?.id;
 
-export async function getStaticProps({ params }) {
-  const startTime = Date.now();
-  const { id, slug } = params;
-
-  // Validate id
-  const numericId = parseInt(id, 10);
-  if (!numericId) {
-    return { notFound: true, revalidate: 60 };
+  // Validate ID
+  if (!id || Number.isNaN(parseInt(id, 10))) {
+    return { notFound: true };
   }
 
   try {
     // 1) Fetch product
-    const projectRes = await getsingleallprojects("", numericId);
+    const projectRes = await getsingleallprojects("", id);
     const project = projectRes?.data;
-    if (!project) {
-      return { notFound: true, revalidate: 60 };
-    }
+    if (!project) return { notFound: true };
 
-    // 2) Canonical slug enforcement (SEO)
-    const canonicalSlug = slugify(project.work_title);
-    if (slug !== canonicalSlug) {
+    // 2) Pick the canonical slug:
+    //    Prefer a backend-provided slug if it exists (keeps old ranking URLs),
+    //    otherwise fall back to a derived, LOWERCASED slug.
+    const backendSlug =
+      project.slug ||
+      project.slug_url ||
+      project.slug_path ||
+      project.seo_slug ||
+      null;
+
+    const canonicalSlug = backendSlug
+      ? String(backendSlug).trim()
+      : slugify(project.work_title);
+
+    // 3) Redirect only when truly needed (case-insensitive compare,
+    //    but avoid redirecting to the *same* URL again).
+    const incoming = decodeURIComponent(params.slug || "");
+    const incomingLc = incoming.toLowerCase();
+    const canonicalLc = canonicalSlug.toLowerCase();
+
+    // Build the exact destination path we want
+    const desiredPath = `/detail/${id}/${canonicalSlug}`;
+    const currentPath = decodeURIComponent(resolvedUrl.split("?")[0]);
+
+    if (incomingLc !== canonicalLc && currentPath !== desiredPath) {
       return {
         redirect: {
-          destination: `/detail/${numericId}/${canonicalSlug}`,
-          permanent: true,
+          destination: desiredPath,
+          permanent: true, // keep it permanent for SEO
         },
       };
     }
 
-    // 3) Fetch similar
-    const similarRes = await getsimilerllprojects(1, 12, project.product_sub_category_id);
-    const similar = similarRes?.data?.projects || [];
+    // 4) Fetch similar projects
+    const similarRes = await getsimilerllprojects(
+      1,
+      12,
+      project.product_sub_category_id
+    );
 
-    // 4) Return ISR props
+    // 5) Add short-term caching for HTML at the edge (CDN/proxy-friendly)
+    //    Won’t affect SEO, but helps SSR cost/speed. Tune as you like.
+    //    (Has effect only when a CDN like CloudFront is in front.)
+    try {
+      res.setHeader(
+        "Cache-Control",
+        // cache at CDN for 60s, allow 120s stale while revalidating
+        "public, s-maxage=60, stale-while-revalidate=120"
+      );
+    } catch {}
+
     return {
       props: {
         initialProject: project,
-        initialSimilar: similar,
-        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${numericId}/${canonicalSlug}`,
+        initialSimilar: similarRes?.data?.projects || [],
+        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
-      // Rebuild in background every 5 minutes (tune as you like)
-      revalidate: 300,
     };
   } catch (err) {
-    // Soft fail → try again soon
-    return { notFound: true, revalidate: 60 };
-  } finally {
-    // optional: you can keep your logging here if desired
-    // logCostMetrics / trackPageEvent etc.
+    console.error("detail SSR error:", err);
+    return { notFound: true };
   }
 }
+
+// export async function getStaticPaths() {
+//   // We don't prebuild many; fallback will build on first request.
+//   return { paths: [], fallback: 'blocking' };
+// }
+
+// export async function getStaticProps({ params }) {
+//   const startTime = Date.now();
+//   const { id, slug } = params;
+
+//   // Validate id
+//   const numericId = parseInt(id, 10);
+//   if (!numericId) {
+//     return { notFound: true, revalidate: 60 };
+//   }
+
+//   try {
+//     // 1) Fetch product
+//     const projectRes = await getsingleallprojects("", numericId);
+//     const project = projectRes?.data;
+//     if (!project) {
+//       return { notFound: true, revalidate: 60 };
+//     }
+
+//     // 2) Canonical slug enforcement (SEO)
+//     const canonicalSlug = slugify(project.work_title);
+//     if (!slug || slug !== canonicalSlug) {
+//       return {
+//         redirect: {
+//           destination: `/detail/${numericId}/${canonicalSlug}`,
+//           permanent: true,
+//         },
+//       };
+//     }
+
+//     // 3) Fetch similar
+//     const similarRes = await getsimilerllprojects(1, 12, project.product_sub_category_id);
+//     const similar = similarRes?.data?.projects || [];
+
+//     // 4) Return ISR props
+//     return {
+//       props: {
+//         initialProject: project,
+//         initialSimilar: similar,
+//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${numericId}/${canonicalSlug}`,
+//       },
+//       // Rebuild in background every 5 minutes (tune as you like)
+//       revalidate: 300,
+//     };
+//   } catch (err) {
+//     // Soft fail → try again soon
+//     return { notFound: true, revalidate: 60 };
+//   } finally {
+//     // optional: you can keep your logging here if desired
+//     // logCostMetrics / trackPageEvent etc.
+//   }
+// }
 
 ViewDrawing.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

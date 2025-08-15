@@ -108,6 +108,16 @@ const ProjectCard = ({
     .replace(/-+$/, '');            // Trim - from end of text
   }
 
+  // // components/ProjectCard.js
+  // function slugify(text) {
+  //   if (!text) return "";
+  //   return text
+  //     .replace(/\s+/g, "-")
+  //     .replace(/\-+/g, "-")
+  //     .replace(/^\-+|\-+$/g, "");
+  // }
+
+
 
   return (
     <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)}>
