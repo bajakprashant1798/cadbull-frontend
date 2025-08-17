@@ -907,9 +907,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
-                {/* <div className="d-none d-lg-block">
+                <div className="d-none d-lg-block">
                   <AdSense slot="2091281415" format="fluid" layout="in-article" />
-                </div> */}
+                </div>
                 <div>
                   <aside>
                     <h5 className="bg-secondary text-white px-3 py-2">
@@ -994,13 +994,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* </div> */}
                 {/* add component ended */}
                 
-                
-                <AdSense slot="2091281415" format="fluid" layout="in-article" />
-               
-
-                {/* <div className="d-block d-lg-none">
+                <div className="d-block d-lg-none">
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
-                </div> */}
+                </div>
 
               </div>
             </div>

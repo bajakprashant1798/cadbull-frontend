@@ -5,18 +5,27 @@ import logo from "@/assets/images/logo.png";
 // AMP config: Export this to make page AMP-only
 export const config = { amp: true };
 
-// ✅ ADD THIS HELPER FUNCTION HERE
+// // ✅ ADD THIS HELPER FUNCTION HERE
+// function slugify(text) {
+//   if (!text) return "";
+//   return text
+//     .toString()
+//     .toLowerCase()
+//     .replace(/\s+/g, '-')           // Replace spaces with -
+//     .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+//     .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+//     .replace(/^-+/, '')             // Trim - from start of text
+//     .replace(/-+$/, '');            // Trim - from end of text
+// }
+// --- Old site slug function (matches detail page) ---
 function slugify(text) {
-  if (!text) return "";
+  if (!text) return '';
   return text
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '');            // Trim - from end of text
+    .replace(/\s+/g, '-')      // spaces -> -
+    .replace(/\-+/g, '-')      // collapse --
+    .replace(/^\-+|\-+$/g, ''); // trim -
 }
+
 
 export async function getServerSideProps(context) {
   const { params, req } = context;
