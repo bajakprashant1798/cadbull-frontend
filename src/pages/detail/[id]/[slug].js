@@ -987,12 +987,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </aside>
                 </div>
                 {/* ads image */}
-
-                {/* add component started */}
-                {/* <div className="bg-white shadow-sm p-3 rounded-2"> */}
-                  {/* <AdSense slot="2091281415" format="fluid" layout="in-article" /> */}
-                {/* </div> */}
-                {/* add component ended */}
                 
                 <div className="d-block d-lg-none">
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
