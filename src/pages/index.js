@@ -755,7 +755,7 @@ export default function Home({
                     <div className="d-flex flex-column h-100">
                       <div className="mb-3">
                         <Image
-                          src={indvidual.src}
+                          src={indvidual}
                           alt="icon"
                           width={55}
                           height={55}
