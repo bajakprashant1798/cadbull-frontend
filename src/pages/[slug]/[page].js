@@ -448,7 +448,7 @@ export async function getStaticPaths() {
       }
     });
     
-    console.log(`[getStaticPaths] Generated ${paths.length} paths`);
+    // console.log(`[getStaticPaths] Generated ${paths.length} paths`);
     
     return { 
       paths, 
@@ -474,7 +474,7 @@ export async function getStaticProps({ params }) {
     const slug = params.slug;
     const page = parseInt(params.page, 10) || 1;
     
-    console.log(`[getStaticProps] Generating page for slug: ${slug}, page: ${page}`);
+    // console.log(`[getStaticProps] Generating page for slug: ${slug}, page: ${page}`);
     
     // If slug is purely numeric, return 404
     if (/^\d+$/.test(slug)) {
@@ -482,24 +482,24 @@ export async function getStaticProps({ params }) {
       return { notFound: true };
     }
 
-    const startTime = Date.now();
-      console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
-        timestamp: startTime,
-        type: "PAGE_EVENT",
-        page: "CategoryDetailPage",
-        event: "ISR_START",
-        slug: params.slug,
-        // pageNum: params.page,
-        environment: process.env.NODE_ENV
-      })}`);
+    // const startTime = Date.now();
+    //   console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
+    //     timestamp: startTime,
+    //     type: "PAGE_EVENT",
+    //     page: "CategoryDetailPage",
+    //     event: "ISR_START",
+    //     slug: params.slug,
+    //     // pageNum: params.page,
+    //     environment: process.env.NODE_ENV
+    //   })}`);
 
-      console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-        timestamp: new Date().toISOString(),
-        type: "MEMORY_USAGE",
-        page: "CategoryDetailPage-Start",
-        ...process.memoryUsage(),
-        environment: process.env.NODE_ENV
-      })}`);
+    //   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
+    //     timestamp: new Date().toISOString(),
+    //     type: "MEMORY_USAGE",
+    //     page: "CategoryDetailPage-Start",
+    //     ...process.memoryUsage(),
+    //     environment: process.env.NODE_ENV
+    //   })}`);
 
     
     // ✅ PERFORMANCE MONITORING: Track category detail page generation
@@ -547,7 +547,7 @@ export async function getStaticProps({ params }) {
           return { notFound: true };
         }
 
-        console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
+        // console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
 
         performance.logMemoryUsage("CategoryDetail-AfterMainAPI", { 
           slug, 
@@ -571,7 +571,7 @@ export async function getStaticProps({ params }) {
             metaDescription = cat.meta_description || null;
             description = cat.description || null;
             title = cat.name || makeTitle(slug);
-            console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
+            // console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
           } else {
             console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
           }
@@ -602,35 +602,35 @@ export async function getStaticProps({ params }) {
         performance.generateSummary("CategoryDetailPage-ISR", timings);
 
 
-        const totalTime = Date.now() - startTime;
-          if (totalTime > 2000) {
-            console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoryDetailPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
-          }
+        // const totalTime = Date.now() - startTime;
+        //   if (totalTime > 2000) {
+        //     console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoryDetailPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
+        //   }
 
-          console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
-            timestamp: new Date().toISOString(),
-            type: "COST_METRICS",
-            page: "CategoryDetailPage",
-            slug: params.slug, 
-            computeTime: totalTime,
-            memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-            apiCalls: 2, // adjust based on calls
-            estimatedCost: {
-              requestCost: "0.00000020",
-              computeCost: "0.00000005",
-              totalCost: "0.00000025",
-              currency: "USD"
-            },
-            environment: process.env.NODE_ENV
-          })}`);
+        //   console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
+        //     timestamp: new Date().toISOString(),
+        //     type: "COST_METRICS",
+        //     page: "CategoryDetailPage",
+        //     slug: params.slug, 
+        //     computeTime: totalTime,
+        //     memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+        //     apiCalls: 2, // adjust based on calls
+        //     estimatedCost: {
+        //       requestCost: "0.00000020",
+        //       computeCost: "0.00000005",
+        //       totalCost: "0.00000025",
+        //       currency: "USD"
+        //     },
+        //     environment: process.env.NODE_ENV
+        //   })}`);
 
-          console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-            timestamp: new Date().toISOString(),
-            type: "MEMORY_USAGE",
-            page: "CategoryDetailPage-End",
-            ...process.memoryUsage(),
-            environment: process.env.NODE_ENV
-          })}`);
+        //   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
+        //     timestamp: new Date().toISOString(),
+        //     type: "MEMORY_USAGE",
+        //     page: "CategoryDetailPage-End",
+        //     ...process.memoryUsage(),
+        //     environment: process.env.NODE_ENV
+        //   })}`);
 
 
         return {

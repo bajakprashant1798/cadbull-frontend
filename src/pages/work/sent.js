@@ -200,7 +200,7 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
                   <tbody>
                     {
                       tableData.map(res => {
-                        console.log(res);
+                        // console.log(res);
                         
                         return (
                           <tr key={res.id}>

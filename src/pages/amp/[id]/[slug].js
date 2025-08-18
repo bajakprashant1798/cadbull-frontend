@@ -46,8 +46,8 @@ export async function getServerSideProps(context) {
     productData = productRes.data;
 
     // ✅ LOG THE MAIN PRODUCT IMAGE FILENAME
-    console.log("--- AMP Page Debug ---");
-    console.log("✔️ Main Product Image Filename:", productData?.image);
+    // console.log("--- AMP Page Debug ---");
+    // console.log("✔️ Main Product Image Filename:", productData?.image);
   } catch (e) {
     // 404 from backend, product not found
     return { notFound: true }; // Next.js will show 404 page
@@ -55,17 +55,17 @@ export async function getServerSideProps(context) {
 
   try {
     // Fetch similar projects if product exists
-    console.log(productData, "productData");
+    // console.log(productData, "productData");
     
     const subcatId = productData?.product_sub_category_id;
-    console.log(subcatId, "subcatId");
+    // console.log(subcatId, "subcatId");
     
     if (subcatId) {
       const simRes = await axios(
         `${process.env.NEXT_PUBLIC_API_MAIN}/projects/sub/${subcatId}?page=1&pageSize=3&excludeIds=${id}`
       );
       similarProjects = simRes.data?.projects || [];
-      console.log(similarProjects, "similar projects");
+      // console.log(similarProjects, "similar projects");
       
     }
   } catch (e) {
@@ -84,7 +84,7 @@ export async function getServerSideProps(context) {
         `${process.env.NEXT_PUBLIC_API_MAIN}/profile/author/${productData.profile_id || productData.user_id}`
       );
       publisher = pubRes.data || null;
-      console.log("✔️ Publisher Data Fetched:", publisher);
+      // console.log("✔️ Publisher Data Fetched:", publisher);
     }
   } catch (e) {
     publisher = null;

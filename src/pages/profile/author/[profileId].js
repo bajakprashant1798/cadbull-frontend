@@ -177,7 +177,7 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
 
   // Handle date filter change (for future implementation)
   const handleDateChange = (fromDate, toDate) => {
-    console.log('Date filter:', { fromDate, toDate });
+    // console.log('Date filter:', { fromDate, toDate });
     // TODO: Implement date filtering
   };
 

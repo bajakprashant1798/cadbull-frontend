@@ -50,7 +50,7 @@ const CompletedProjects = ({ initialProjects, totalPages: initialTotalPages, }) 
   const handleEdit = (project) => {
     // For example, redirect to an edit page:
     // router.push(`/projects/edit/${project.id}`);
-    console.log("Edit project:", project);
+    // console.log("Edit project:", project);
   };
 
   const handlePageChange = (newPage) => {

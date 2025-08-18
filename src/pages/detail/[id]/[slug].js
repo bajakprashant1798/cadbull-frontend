@@ -248,7 +248,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         const singleProjectData = singleProjectResponse.data;
         setProject(singleProjectData);
         // console.log("singleProjectData: ", singleProjectData);
-        console.log(singleProjectData);
+        // console.log(singleProjectData);
 
         // console.log("singleProjectData: ", singleProjectData);
         
@@ -1063,14 +1063,14 @@ export async function getServerSideProps({ params }) {
   const startTime = Date.now();
   const id = params.id;
   
-  console.log(JSON.stringify({
-    type: "PAGE_EVENT",
-    page: "ProjectDetailPage",
-    event: "SSR_START",
-    projectId: id,
-    slug: params.slug,
-    timestamp: startTime
-  }));
+  // console.log(JSON.stringify({
+  //   type: "PAGE_EVENT",
+  //   page: "ProjectDetailPage",
+  //   event: "SSR_START",
+  //   projectId: id,
+  //   slug: params.slug,
+  //   timestamp: startTime
+  // }));
 
   // 🔍 Amplify: Track page generation start
   trackPageEvent('ProjectDetailPage', 'SSR_START', { 
@@ -1156,7 +1156,7 @@ export async function getServerSideProps({ params }) {
       renderMode: 'SSR'
     });
     
-    console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
+    // console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
     trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
       projectId: id, 
       slug: params.slug, 
@@ -1164,14 +1164,14 @@ export async function getServerSideProps({ params }) {
       success: true 
     });
 
-    console.log(JSON.stringify({
-      type: "PAGE_EVENT",
-      page: "ProjectDetailPage",
-      event: "SSR_COMPLETE",
-      projectId: id,
-      slug: params.slug,
-      duration: Date.now() - startTime
-    }));
+    // console.log(JSON.stringify({
+    //   type: "PAGE_EVENT",
+    //   page: "ProjectDetailPage",
+    //   event: "SSR_COMPLETE",
+    //   projectId: id,
+    //   slug: params.slug,
+    //   duration: Date.now() - startTime
+    // }));
 
     
     return {
@@ -1182,8 +1182,8 @@ export async function getServerSideProps({ params }) {
       },
     };
   } catch (err) {
-    console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
-    console.error('Error in detail page getServerSideProps:', err);
+    // console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
+    // console.error('Error in detail page getServerSideProps:', err);
     
     // 💰 Amplify: Log error cost metrics
     logCostMetrics('ProjectDetailPage-Error', {

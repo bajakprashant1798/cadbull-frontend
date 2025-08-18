@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function CanonicalTag({ baseUrl = "https://beta.cadbull.com" }) {
+export default function CanonicalTag({ baseUrl = "https://cadbull.com" }) {
   const router = useRouter();
   const [canonicalUrl, setCanonicalUrl] = useState("");
 

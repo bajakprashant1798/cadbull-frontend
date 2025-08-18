@@ -93,9 +93,9 @@ const Login = () => {
       return;
     }
     
-    console.log('📝 Form Login - Router Query:', router.query);
-    console.log('📝 Form Login - Redirect URL:', router.query.redirect);
-    console.log('📝 Form Login - Full URL:', window.location.href);
+    // console.log('📝 Form Login - Router Query:', router.query);
+    // console.log('📝 Form Login - Redirect URL:', router.query.redirect);
+    // console.log('📝 Form Login - Full URL:', window.location.href);
     
     // Handle form submission here
     startLoading()
@@ -168,16 +168,16 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       const redirectUrl = router.query.redirect;
-      console.log('🔗 Google Login - Router Ready:', router.isReady);
-      console.log('🔗 Google Login - Router Query:', router.query);
-      console.log('🔗 Google Login - Redirect URL:', redirectUrl);
-      console.log('🔗 Google Login - Full URL:', window.location.href);
+      // console.log('🔗 Google Login - Router Ready:', router.isReady);
+      // console.log('🔗 Google Login - Router Query:', router.query);
+      // console.log('🔗 Google Login - Redirect URL:', redirectUrl);
+      // console.log('🔗 Google Login - Full URL:', window.location.href);
       
       const googleAuthUrl = redirectUrl 
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
       
-      console.log('🔗 Google Auth URL:', googleAuthUrl);
+      // console.log('🔗 Google Auth URL:', googleAuthUrl);
       window.location.href = googleAuthUrl;
     } catch (error) {
       console.error("❌ Google Login Error:", error);
@@ -190,15 +190,15 @@ const Login = () => {
   const handleFacebookSignIn = async () => {
     try {
       const redirectUrl = router.query.redirect;
-      console.log('📘 Facebook Login - Router Query:', router.query);
-      console.log('📘 Facebook Login - Redirect URL:', redirectUrl);
-      console.log('📘 Facebook Login - Full URL:', window.location.href);
+      // console.log('📘 Facebook Login - Router Query:', router.query);
+      // console.log('📘 Facebook Login - Redirect URL:', redirectUrl);
+      // console.log('📘 Facebook Login - Full URL:', window.location.href);
       
       const facebookAuthUrl = redirectUrl 
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
       
-      console.log('📘 Facebook Auth URL:', facebookAuthUrl);
+      // console.log('📘 Facebook Auth URL:', facebookAuthUrl);
       
       // For Safari compatibility, use a popup approach instead of direct redirect
       const width = 600;
