@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
 const AdSense = ({
-  style = { display: "block", textAlign: "center", minHeight: 280 },
+  // style = { display: "block", textAlign: "center", minHeight: 280 },
+  style, // no default here
   slot,
   format = "auto",
   layout, // New prop for things like "in-article"
@@ -16,6 +17,14 @@ const AdSense = ({
 
   // ✅ Read once; Next will inline this at build time
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+
+  const baseStyle = { display: "block", textAlign: "center" };
+  const styleFinal = style
+    ? style
+    : (layout === "in-article" || format === "fluid")
+      ? baseStyle                      // no minHeight for fluid/in-article
+      : { ...baseStyle, minHeight: 280 }; // reserve space for standard display
+
 
   useEffect(() => {
     // Reset on route change
@@ -131,7 +140,8 @@ const AdSense = ({
       <ins
         key={`adsense-${slot}-${uniqueKey}-${router.asPath}`}
         className="adsbygoogle"
-        style={style}
+        // style={style}
+        style={styleFinal}
         data-ad-client={clientId}
         data-ad-slot={slot}
         // data-ad-format={format}

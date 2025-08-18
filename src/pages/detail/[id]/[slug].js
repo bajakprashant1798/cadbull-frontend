@@ -309,10 +309,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [similarProjectId, router.query.id]);
 
-  // Fetch similar projects when the subcategory ID changes
-  useEffect(() => {
-    fetchSimilarProjects();
-  }, [similarProjectId, router.query.id]);
+  // // Fetch similar projects when the subcategory ID changes
+  // useEffect(() => {
+  //   fetchSimilarProjects();
+  // }, [similarProjectId, router.query.id]);
 
   // Reset pagination when the component unmounts
   useEffect(() => {
@@ -491,7 +491,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
-        <meta property="og:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
+        {/* <meta property="og:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
+        <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
+
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
@@ -508,7 +510,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta name="twitter:creator" content="@cadbull" />
         <meta name="twitter:title" content={project?.meta_title || project?.work_title} />
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
-        <meta name="twitter:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
+        
+        {/* <meta name="twitter:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
+        <meta name="twitter:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
+
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta name="keywords" content={project?.tags || ""} />
 
@@ -909,7 +914,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div className="d-none d-lg-block">
-                  <AdSense slot="2091281415" sidebar />
+                  <AdSense slot="2091281415" sidebar style={{ display:'block', textAlign:'center', minHeight: 600 }} />
                 </div>
                 <div>
                   <aside>
