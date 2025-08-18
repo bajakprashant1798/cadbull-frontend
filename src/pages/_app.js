@@ -53,23 +53,23 @@ export default function App({ Component, pageProps }) {
       // Track page view with Meta Pixel
       trackPageView();
       
-      // ✅ ADDED: Force AdSense refresh on route change for SSG pages
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.adsbygoogle) {
-          try {
-            // Remove existing status attributes to force refresh
-            const allAds = document.querySelectorAll('.adsbygoogle');
-            allAds.forEach(ad => {
-              if (ad.hasAttribute('data-adsbygoogle-status')) {
-                ad.removeAttribute('data-adsbygoogle-status');
-              }
-            });
-            console.log('🔄 AdSense refresh triggered for SSG page');
-          } catch (error) {
-            console.warn('AdSense refresh failed:', error);
-          }
-        }
-      }, 1000);
+      //// ✅ ADDED: Force AdSense refresh on route change for SSG pages
+      // setTimeout(() => {
+      //   if (typeof window !== 'undefined' && window.adsbygoogle) {
+      //     try {
+      //       // Remove existing status attributes to force refresh
+      //       const allAds = document.querySelectorAll('.adsbygoogle');
+      //       allAds.forEach(ad => {
+      //         if (ad.hasAttribute('data-adsbygoogle-status')) {
+      //           ad.removeAttribute('data-adsbygoogle-status');
+      //         }
+      //       });
+      //       console.log('🔄 AdSense refresh triggered for SSG page');
+      //     } catch (error) {
+      //       console.warn('AdSense refresh failed:', error);
+      //     }
+      //   }
+      // }, 1000);
     };
     
     router.events.on('routeChangeComplete', handleRouteChange);
@@ -103,7 +103,7 @@ export default function App({ Component, pageProps }) {
         `}</style> */}
         {getLayout(<Component {...pageProps} />)}
       {/* ✅ Single AdSense Script - Only for AMP pages */}
-      <Script
+      {/* <Script
         id="adsense-script-amp"
         async
         strategy="lazyOnload"
@@ -111,9 +111,9 @@ export default function App({ Component, pageProps }) {
         data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
         crossOrigin="anonymous"
         onLoad={() => {
-          console.log('AdSense AMP script loaded');
+          // console.log('AdSense AMP script loaded');
         }}
-      />
+      /> */}
       </Fragment>
     );
   }
@@ -182,7 +182,7 @@ export default function App({ Component, pageProps }) {
         src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
         crossOrigin="anonymous"
         onLoad={() => {
-          console.log('✅ AdSense script loaded successfully');
+          // console.log('✅ AdSense script loaded successfully');
           window.adsbygoogle = window.adsbygoogle || [];
           window.adsbygoogle.loaded = true;
         }}
@@ -195,10 +195,11 @@ export default function App({ Component, pageProps }) {
       <Script
         id="adsense-funding-choices"
         async
-        strategy="lazyOnload"
-        src="https://fundingchoicesmessages.google.com/i/pub-2488270605722778?ers=1"
+        strategy="beforeInteractive"
+        // src="https://fundingchoicesmessages.google.com/i/pub-2488270605722778?ers=1"
+        src={`https://fundingchoicesmessages.google.com/i/${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
         onLoad={() => {
-          console.log('✅ AdSense Funding Choices loaded');
+          // console.log('✅ AdSense Funding Choices loaded');
         }}
       />
       {/* ✅ END: ADD GOOGLE ANALYTICS SCRIPTS */}

@@ -278,14 +278,12 @@
 
 
   .ad-container {
-    border-top: 0.3px solid #343434;    /* A light border color from your theme */
-    border-bottom: 0.3px solid #343434; /* A light border color from your theme */
-    padding: 0.5rem 0;                  /* Adds space inside the borders */
-    // margin: 1rem 0;                 /* Adds space outside the borders */
-    // min-height: 90px;                 /* Prevents layout shift while ad loads */
-    // display: flex;
-    // justify-content: center;
+    // border-top: 0.3px solid #343434;    
+    // border-bottom: 0.3px solid #343434; 
+    // padding: 0.5rem 0;
+    min-height: 280px;
   }
+  @media (max-width: 576px) { .ad-container { min-height: 250px; } }
 
   .truncate-description {
     display: -webkit-box;

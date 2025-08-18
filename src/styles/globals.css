@@ -855,10 +855,12 @@ select:-webkit-autofill:focus {
 }
 
   .ad-container {
-    border-top: 0.3px solid #343434;    /* A light border color from your theme */
-    border-bottom: 0.3px solid #343434; /* A light border color from your theme */
-    padding: 0.5rem 0;                  /* Adds space inside the borders */
+    /* border-top: 0.3px solid #343434;    
+    border-bottom: 0.3px solid #343434; 
+    padding: 0.5rem 0;*/
+    min-height: 280px;
   }
+  @media (max-width: 576px) { .ad-container { min-height: 250px; } }
 
 
 

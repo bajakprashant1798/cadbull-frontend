@@ -2,16 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 
 const AdSense = ({
-  style = { display: "block", textAlign: "center" },
+  style = { display: "block", textAlign: "center", minHeight: 280 },
   slot,
   format = "auto",
-  layout = "", // New prop for things like "in-article"
+  layout, // New prop for things like "in-article"
   responsive = "true",
+  sidebar = false 
 }) => {
   const router = useRouter();
   const adRef = useRef(null);
   const isAdLoaded = useRef(false);
   const [uniqueKey, setUniqueKey] = useState(0);
+
+  // ✅ Read once; Next will inline this at build time
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 
   useEffect(() => {
     // Reset on route change
@@ -23,6 +27,9 @@ const AdSense = ({
       return;
     }
 
+    // If clientId is missing, don't try to load/push ads
+    if (!clientId) return;
+
     // ✅ Enhanced ad loading with better error handling
     const loadAd = () => {
       try {
@@ -30,7 +37,7 @@ const AdSense = ({
         
         // Check if element exists and is empty
         if (!adElement) {
-          console.warn(`AdSense element not found for slot: ${slot}`);
+          // console.warn(`AdSense element not found for slot: ${slot}`);
           return;
         }
 
@@ -38,7 +45,7 @@ const AdSense = ({
         if (adElement.getAttribute('data-ad-status') === 'filled' || 
             adElement.children.length > 0 ||
             isAdLoaded.current) {
-          console.log(`AdSense slot ${slot} already loaded`);
+          // console.log(`AdSense slot ${slot} already loaded`);
           return;
         }
 
@@ -53,7 +60,7 @@ const AdSense = ({
             // Push the ad request
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             isAdLoaded.current = true;
-            console.log(`✅ AdSense ad loaded for slot: ${slot}`);
+            // console.log(`✅ AdSense ad loaded for slot: ${slot}`);
           } catch (pushError) {
             console.error("AdSense push error:", pushError);
             // Handle "already have ads" error gracefully
@@ -81,7 +88,7 @@ const AdSense = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [router.asPath, slot]); // Re-run effect when path or slot changes
+  }, [router.asPath, slot, clientId]); // Re-run effect when path or slot changes
 
   // In development, render a placeholder for layout purposes.
   if (process.env.NODE_ENV === "development") {
@@ -95,7 +102,7 @@ const AdSense = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: '90px',
+          // minHeight: '90px',
           border: '1px dashed #ccc',
           borderRadius: '4px'
         }}
@@ -105,18 +112,34 @@ const AdSense = ({
     );
   }
 
+  // ✅ Guardrail: if client ID is missing, avoid rendering a broken ad tag
+  if (!clientId) {
+    // In production, silently render nothing
+    // (You can log once here if you want)
+    if (typeof window !== "undefined") {
+      // console.warn("AdSense client ID is missing");
+    }
+    return null;
+  }
+
+  const dataProps = sidebar
+    ? { "data-ad-format": "auto" }     // standard responsive
+    : { "data-ad-format": format, ...(layout ? { "data-ad-layout": layout } : {}) };
+
   return (
     <div ref={adRef} className="ad-container">
       <ins
         key={`adsense-${slot}-${uniqueKey}-${router.asPath}`}
         className="adsbygoogle"
         style={style}
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+        data-ad-client={clientId}
         data-ad-slot={slot}
-        data-ad-format={format}
-        data-ad-layout={layout}
+        // data-ad-format={format}
+        // data-ad-layout={layout}
+        // data-full-width-responsive={responsive}
+        {...dataProps}
         data-full-width-responsive={responsive}
-      ></ins>
+      />
     </div>
   );
 };

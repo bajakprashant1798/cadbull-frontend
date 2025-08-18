@@ -163,7 +163,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   // ✅ ADD STATE FOR PROFILE IMAGE ERROR HANDLING
   const [profileImageError, setProfileImageError] = useState(false);
 
-
   // At component top:
   const shownSimilarIdsRef = useRef(new Set());
 
@@ -527,6 +526,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             fetchPriority="high"
           />
         )}
+
+        <link rel="amphtml" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/amp/${project?.id}/${encodeURIComponent(project?.slug || project?.work_title || '')}`} />
 
       </Head>
       <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
@@ -908,7 +909,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div className="d-none d-lg-block">
-                  <AdSense slot="2091281415" format="fluid" layout="in-article" />
+                  <AdSense slot="2091281415" sidebar />
                 </div>
                 <div>
                   <aside>
@@ -1073,11 +1074,11 @@ export async function getServerSideProps({ params }) {
   // }));
 
   // 🔍 Amplify: Track page generation start
-  trackPageEvent('ProjectDetailPage', 'SSR_START', { 
-    projectId: id, 
-    slug: params.slug, 
-    timestamp: startTime 
-  });
+  // trackPageEvent('ProjectDetailPage', 'SSR_START', { 
+  //   projectId: id, 
+  //   slug: params.slug, 
+  //   timestamp: startTime 
+  // });
   
   try {
     // Validate ID parameter - must be a valid number
@@ -1157,12 +1158,12 @@ export async function getServerSideProps({ params }) {
     });
     
     // console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
-    trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
-      projectId: id, 
-      slug: params.slug, 
-      duration: totalTime,
-      success: true 
-    });
+    // trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
+    //   projectId: id, 
+    //   slug: params.slug, 
+    //   duration: totalTime,
+    //   success: true 
+    // });
 
     // console.log(JSON.stringify({
     //   type: "PAGE_EVENT",
@@ -1183,24 +1184,24 @@ export async function getServerSideProps({ params }) {
     };
   } catch (err) {
     // console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
-    // console.error('Error in detail page getServerSideProps:', err);
+    console.error('Error in detail page getServerSideProps:', err);
     
     // 💰 Amplify: Log error cost metrics
-    logCostMetrics('ProjectDetailPage-Error', {
-      projectId: id,
-      slug: params.slug,
-      computeTime: Date.now() - startTime,
-      memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-      apiCalls: 0,
-      dataSize: 0
-    });
+    // logCostMetrics('ProjectDetailPage-Error', {
+    //   projectId: id,
+    //   slug: params.slug,
+    //   computeTime: Date.now() - startTime,
+    //   memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
+    //   apiCalls: 0,
+    //   dataSize: 0
+    // });
     
-    trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
-      projectId: id, 
-      slug: params.slug, 
-      error: err.message,
-      duration: Date.now() - startTime
-    });
+    // trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
+    //   projectId: id, 
+    //   slug: params.slug, 
+    //   error: err.message,
+    //   duration: Date.now() - startTime
+    // });
     
     return {
       notFound: true,
