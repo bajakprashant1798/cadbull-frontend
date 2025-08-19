@@ -386,7 +386,7 @@
 .heroFrame {
   position: relative;
   /* 800x600 => 4/3. If you have real dimensions on the object, compute it inlined. */
-  aspect-ratio: 4 / 3;
+  // aspect-ratio: 4 / 3;
   /* prevents “fluid” ads or fonts from nudging things */
   // min-height: 240px;
 }
