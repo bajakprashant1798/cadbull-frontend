@@ -404,7 +404,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
             </div>
 
             {/* AdSense */}
-            <AdSense slot="2694403875" format="fluid" layout="in-article" />
+            <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} />
 
             {/* Pagination Component */}
             <div className="row justify-content-center">

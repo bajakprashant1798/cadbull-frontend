@@ -98,7 +98,7 @@ export default function Document(props) {
         />
 
         {/* Meta Pixel Code - Only for non-AMP pages */}
-        {!isAmp && (
+        {/* {!isAmp && (
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -115,7 +115,7 @@ export default function Document(props) {
               `,
             }}
           />
-        )}
+        )} */}
       </Head>
       <body>
         {/* Google Tag Manager (noscript) Fallback - Only for non-AMP pages */}

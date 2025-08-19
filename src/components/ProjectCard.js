@@ -133,6 +133,7 @@ const ProjectCard = ({
             alt={work_title || "project"}
             className="w-100 img-fluid"
             loading="lazy"
+            sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
             style={{
               width: "100%",
               height: "100%",

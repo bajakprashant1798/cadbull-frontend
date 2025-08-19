@@ -486,7 +486,7 @@ export default function Home({
           </div>
         </div>
         {/* <div className="border-top border-bottom py-2"> */}
-          <AdSense slot="1744284284" format="fluid" layout="in-article" />
+          <AdSense slot="1744284284" format="fluid" layout="in-article" lazy={false} />
         {/* </div> */}
       </section>
 

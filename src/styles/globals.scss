@@ -56,6 +56,9 @@
 
 // ******** Utility Classes ********
 
+.ad-slot { display:block; min-height: 280px; }    /* in-article */
+.ad-slot--sidebar { min-height: 600px; }          /* sidebar */
+
 .text-danger {
   color: $danger !important;
 }
@@ -375,6 +378,27 @@
 
   }
 }
+
+
+
+
+/* add once in a global CSS file */
+.heroFrame {
+  position: relative;
+  /* 800x600 => 4/3. If you have real dimensions on the object, compute it inlined. */
+  aspect-ratio: 4 / 3;
+  /* prevents “fluid” ads or fonts from nudging things */
+  // min-height: 240px;
+}
+
+/* the shimmer stays absolutely positioned so it doesn’t push layout */
+.heroFrame .shimmer {
+  position: absolute;
+  inset: 0;
+}
+
+
+
 
 // ******** Category ********
 .category-wrapper {

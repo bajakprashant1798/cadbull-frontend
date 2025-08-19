@@ -65,7 +65,7 @@ const CategoriesLayout = ({
         </div>
       </section>
 
-      <AdSense slot="7946730558" format="fluid" layout="in-article" />
+      <AdSense slot="7946730558" format="fluid" layout="in-article" lazy={false} />
 
       {/* Categories  */}
       {/* <section className="py-lg-5 py-4">

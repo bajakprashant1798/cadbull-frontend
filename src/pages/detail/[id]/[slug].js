@@ -36,22 +36,6 @@ import {
   updatesubcatpage,
   updatesubcatslug,
 } from "../../../../redux/app/features/projectsSlice";
-// import {
-//   EmailIcon,
-//   EmailShareButton,
-//   FacebookIcon,
-//   FacebookMessengerIcon,
-//   FacebookMessengerShareButton,
-//   FacebookShareButton,
-//   LinkedinIcon,
-//   LinkedinShareButton,
-//   PinterestIcon,
-//   PinterestShareButton,
-//   TwitterIcon,
-//   TwitterShareButton,
-//   WhatsappIcon,
-//   WhatsappShareButton,
-// } from "react-share";
 
 // ✅ SPEED OPTIMIZATION: Lazy load social share components for better performance
 const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon), { 
@@ -576,9 +560,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           </div>
         </div>
 
-        
-        {/* <AdSense slot="4597678336" format="fluid" layout="in-article" /> */}
-       
+        {/* mobile/tablet only */}
+        <div className="d-block d-lg-none">
+          <AdSense slot="4597678336" format="fluid" layout="in-article" lazy={false} />
+        </div>
+
       </section>
 
       {/* Categories  */}
@@ -682,48 +668,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
 
-              {/* Project Image */}
-              {/* <div className="mt-4" style={{ maxWidth: "100%" }}>
-                <div className="bg-light p-3 rounded-2 shadow-sm">
-                  <Image
-                    src={project.photo_url || product.src}
-                    className="img-fluid"
-                    alt="drawing"
-                    onError={(e) => (e.target.src = product.src)} 
-                    loading="lazy" 
-                  />
-                </div>
-              </div> */}
-              {/* <div
-                className="mt-4"
-                style={{ maxWidth: "100%", margin: "0 auto" }}
-              >
-                <div
-                  className="bg-light p-3 rounded-2 shadow-sm"
-                  style={{ maxWidth: "100%" }}
-                >
-                  <Image
-                    src={getSafeImageUrl(project?.photo_url)}
-                    width={project?.image_width || 800}
-                    height={project?.image_height || 600}
-                    alt={project?.work_title || "CAD Drawing"}
-                    className="img-fluid"
-                    priority={true}
-                    quality={90}
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                      display: "block",
-                      margin: "0 auto"
-                    }}
-                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
-                  />
-                </div>
-              </div> */}
-
               <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
-                <div className="bg-light p-3 rounded-2 shadow-sm" style={{ maxWidth: "100%", position:'relative' }}>
+                <div className="bg-light p-3 rounded-2 shadow-sm heroFrame" >
                   {!imgLoaded && <div className="shimmer" />}
                   <Image
                     key={project?.id || project?.photo_url}
@@ -736,15 +682,16 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     fetchPriority="high"
                     quality={85}
                     // unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                      // display: imgLoaded ? "block" : "none"
-                    }}
+                    // style={{
+                    //   width: "100%",
+                    //   height: "auto",
+                    //   objectFit: "contain",
+                    //   // display: imgLoaded ? "block" : "none"
+                    // }}
+                    style={{ objectFit: "contain", width: "100%", height: "auto" }}
                     placeholder="blur"
                     blurDataURL={getSmallVersion(project?.photo_url)}
-                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 75vw"
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
                     onLoadingComplete={() => setImgLoaded(true)}
                   />
 
@@ -753,7 +700,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                <AdSense slot="4412795758" format="fluid" layout="in-article" />
+                <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               {/* </div> */}
           
               {/* Project Description */}
@@ -877,7 +824,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </div>
 
                   {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                    <AdSense slot="9473550740" format="fluid" layout="in-article" />
+                    <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
                   {/* </div> */}
 
                   <div className="row justify-content-center">
@@ -920,7 +867,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div className="d-none d-lg-block">
-                  <AdSense slot="2091281415" sidebar style={{ display:'block', textAlign:'center', minHeight: 600 }} />
+                  <AdSense slot="2091281415" sidebar className="ad-slot ad-slot--sidebar" lazy={false} />
                 </div>
                 <div>
                   <aside>
@@ -1059,10 +1006,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
           </div>
         </div>
-        
 
         {/* <div className="border-top border-bottom py-2"> */}
-          <AdSense slot="8612944968" format="fluid" layout="in-article" />
+          <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" />
         {/* </div> */}
       </section>
     </Fragment>
@@ -1075,22 +1021,6 @@ export async function getServerSideProps(ctx) {
   // const startTime = Date.now();
   const { params, res } = ctx;
   const id = params.id;
-  
-  // console.log(JSON.stringify({
-  //   type: "PAGE_EVENT",
-  //   page: "ProjectDetailPage",
-  //   event: "SSR_START",
-  //   projectId: id,
-  //   slug: params.slug,
-  //   timestamp: startTime
-  // }));
-
-  // 🔍 Amplify: Track page generation start
-  // trackPageEvent('ProjectDetailPage', 'SSR_START', { 
-  //   projectId: id, 
-  //   slug: params.slug, 
-  //   timestamp: startTime 
-  // });
   
   try {
     // Validate ID parameter - must be a valid number
@@ -1136,54 +1066,7 @@ export async function getServerSideProps(ctx) {
     // 🌐 Track similar projects API call
     // const similarAPIStart = Date.now();
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-    // const similarAPITime = Date.now() - similarAPIStart;
     
-    // logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
-    
-    // // 🧠 Memory tracking after APIs
-    // const afterAPIMemory = process.memoryUsage();
-    // logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
-    
-    // const totalTime = Date.now() - startTime;
-    
-    // // 💰 Amplify: Log cost metrics
-    // logCostMetrics('ProjectDetailPage', {
-    //   projectId: id,
-    //   slug: params.slug,
-    //   computeTime: totalTime,
-    //   memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
-    //   apiCalls: 2,
-    //   dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
-    // });
-    
-    // // 🚀 Amplify: Log performance summary
-    // logPagePerformance('ProjectDetailPage', {
-    //   projectId: id,
-    //   slug: params.slug,
-    //   totalTime,
-    //   projectAPITime,
-    //   similarAPITime,
-    //   memoryPeak: afterAPIMemory.heapUsed,
-    //   dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
-    //   renderMode: 'SSR'
-    // });
-    
-    // console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
-    // trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
-    //   projectId: id, 
-    //   slug: params.slug, 
-    //   duration: totalTime,
-    //   success: true 
-    // });
-
-    // console.log(JSON.stringify({
-    //   type: "PAGE_EVENT",
-    //   page: "ProjectDetailPage",
-    //   event: "SSR_COMPLETE",
-    //   projectId: id,
-    //   slug: params.slug,
-    //   duration: Date.now() - startTime
-    // }));
 
     // ✅ Cache the HTML at the CDN for a short time
     res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
@@ -1207,142 +1090,6 @@ export async function getServerSideProps(ctx) {
     };
   }
 }
-
-// export async function getServerSideProps(ctx) {
-//   const { params, req, res, resolvedUrl } = ctx;
-//   const id = params?.id;
-
-//   // Validate ID
-//   if (!id || Number.isNaN(parseInt(id, 10))) {
-//     return { notFound: true };
-//   }
-
-//   try {
-//     // 1) Fetch product
-//     const projectRes = await getsingleallprojects("", id);
-//     const project = projectRes?.data;
-//     if (!project) return { notFound: true };
-
-//     // 2) Pick the canonical slug:
-//     //    Prefer a backend-provided slug if it exists (keeps old ranking URLs),
-//     //    otherwise fall back to a derived, LOWERCASED slug.
-//     const backendSlug =
-//       project.slug ||
-//       project.slug_url ||
-//       project.slug_path ||
-//       project.seo_slug ||
-//       null;
-
-//     const canonicalSlug = backendSlug
-//       ? String(backendSlug).trim()
-//       : slugify(project.work_title);
-
-//     // 3) Redirect only when truly needed (case-insensitive compare,
-//     //    but avoid redirecting to the *same* URL again).
-//     const incoming = decodeURIComponent(params.slug || "");
-//     const incomingLc = incoming.toLowerCase();
-//     const canonicalLc = canonicalSlug.toLowerCase();
-
-//     // Build the exact destination path we want
-//     const desiredPath = `/detail/${id}/${canonicalSlug}`;
-//     const currentPath = decodeURIComponent(resolvedUrl.split("?")[0]);
-
-//     if (incomingLc !== canonicalLc && currentPath !== desiredPath) {
-//       return {
-//         redirect: {
-//           destination: desiredPath,
-//           permanent: true, // keep it permanent for SEO
-//         },
-//       };
-//     }
-
-//     // 4) Fetch similar projects
-//     const similarRes = await getsimilerllprojects(
-//       1,
-//       12,
-//       project.product_sub_category_id
-//     );
-
-//     // 5) Add short-term caching for HTML at the edge (CDN/proxy-friendly)
-//     //    Won’t affect SEO, but helps SSR cost/speed. Tune as you like.
-//     //    (Has effect only when a CDN like CloudFront is in front.)
-//     try {
-//       res.setHeader(
-//         "Cache-Control",
-//         // cache at CDN for 60s, allow 120s stale while revalidating
-//         "public, s-maxage=60, stale-while-revalidate=120"
-//       );
-//     } catch {}
-
-//     return {
-//       props: {
-//         initialProject: project,
-//         initialSimilar: similarRes?.data?.projects || [],
-//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
-//       },
-//     };
-//   } catch (err) {
-//     console.error("detail SSR error:", err);
-//     return { notFound: true };
-//   }
-// }
-
-// export async function getStaticPaths() {
-//   // We don't prebuild many; fallback will build on first request.
-//   return { paths: [], fallback: 'blocking' };
-// }
-
-// export async function getStaticProps({ params }) {
-//   const startTime = Date.now();
-//   const { id, slug } = params;
-
-//   // Validate id
-//   const numericId = parseInt(id, 10);
-//   if (!numericId) {
-//     return { notFound: true, revalidate: 60 };
-//   }
-
-//   try {
-//     // 1) Fetch product
-//     const projectRes = await getsingleallprojects("", numericId);
-//     const project = projectRes?.data;
-//     if (!project) {
-//       return { notFound: true, revalidate: 60 };
-//     }
-
-//     // 2) Canonical slug enforcement (SEO)
-//     const canonicalSlug = slugify(project.work_title);
-//     if (!slug || slug !== canonicalSlug) {
-//       return {
-//         redirect: {
-//           destination: `/detail/${numericId}/${canonicalSlug}`,
-//           permanent: true,
-//         },
-//       };
-//     }
-
-//     // 3) Fetch similar
-//     const similarRes = await getsimilerllprojects(1, 12, project.product_sub_category_id);
-//     const similar = similarRes?.data?.projects || [];
-
-//     // 4) Return ISR props
-//     return {
-//       props: {
-//         initialProject: project,
-//         initialSimilar: similar,
-//         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${numericId}/${canonicalSlug}`,
-//       },
-//       // Rebuild in background every 5 minutes (tune as you like)
-//       revalidate: 300,
-//     };
-//   } catch (err) {
-//     // Soft fail → try again soon
-//     return { notFound: true, revalidate: 60 };
-//   } finally {
-//     // optional: you can keep your logging here if desired
-//     // logCostMetrics / trackPageEvent etc.
-//   }
-// }
 
 ViewDrawing.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;

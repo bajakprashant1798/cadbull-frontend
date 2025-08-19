@@ -41,6 +41,8 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'localhost',
       },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: '*.googleusercontent.com' },
     ],
     // Add optimization settings to reduce bandwidth
     formats: ['image/webp', 'image/avif'],
