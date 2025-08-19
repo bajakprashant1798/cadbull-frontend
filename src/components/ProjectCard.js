@@ -142,7 +142,6 @@ const ProjectCard = ({
             onError={(e) => handleImageError(e)}
           />
 
-
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
             <button onClick={()=>handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
               {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}

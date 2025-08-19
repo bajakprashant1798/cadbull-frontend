@@ -45,7 +45,7 @@ export default function Document(props) {
             
             {/* ✅ PERFORMANCE: Preload critical resources */}
             <link rel="preload" href="/favicon.ico" as="image" />
-            <link rel="modulepreload" href="/_next/static/chunks/main.js" />
+            {/* <link rel="modulepreload" href="/_next/static/chunks/main.js" /> */}
             
             {/* ✅ SPEED OPTIMIZATION: Optimized font loading with display=swap and reduced weight variations */}
             <link

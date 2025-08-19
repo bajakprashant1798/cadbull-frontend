@@ -723,7 +723,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div> */}
 
               <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
-                <div className="bg-light p-3 rounded-2 shadow-sm" style={{ maxWidth: "100%" }}>
+                <div className="bg-light p-3 rounded-2 shadow-sm" style={{ maxWidth: "100%", position:'relative' }}>
                   {!imgLoaded && <div className="shimmer" />}
                   <Image
                     key={project?.id || project?.photo_url}
@@ -733,13 +733,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     alt={project?.work_title || "CAD Drawing"}
                     className="img-fluid"
                     priority
-                    quality={90}
-                    unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
+                    fetchPriority="high"
+                    quality={85}
+                    // unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
                     style={{
                       width: "100%",
                       height: "auto",
                       objectFit: "contain",
-                      display: imgLoaded ? "block" : "none"
+                      // display: imgLoaded ? "block" : "none"
                     }}
                     placeholder="blur"
                     blurDataURL={getSmallVersion(project?.photo_url)}
@@ -818,8 +819,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     height={80}
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
-                                    priority={false}
-                                    quality={75}
+                                    loading="lazy"
+                                    // priority={false}
+                                    decoding="async"
+                                    // quality={75}
+                                    sizes="80px"
                                     onError={() => setProfileImageError(true)}
                                   />
                                 ) : (
@@ -830,7 +834,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                     height={80}
                                     className="rounded-circle"
                                     style={{ objectFit: "cover" }}
-                                    priority={false}
+                                    // priority={false}
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 )}
                               </div>
@@ -1065,8 +1071,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
 // ✅ REVENUE OPTIMIZATION: Convert back to SSR for maximum ad revenue
-export async function getServerSideProps({ params }) {
-  const startTime = Date.now();
+export async function getServerSideProps(ctx) {
+  // const startTime = Date.now();
+  const { params, res } = ctx;
   const id = params.id;
   
   // console.log(JSON.stringify({
@@ -1088,33 +1095,32 @@ export async function getServerSideProps({ params }) {
   try {
     // Validate ID parameter - must be a valid number
     if (!id || isNaN(parseInt(id))) {
+      res.setHeader('Cache-Control', 'no-store');
       return { notFound: true };
     }
 
-    // 🧠 Memory tracking
-    const initialMemory = process.memoryUsage();
-    logMemoryUsage('ProjectDetailPage-Start', initialMemory);
+    // // 🧠 Memory tracking
+    // const initialMemory = process.memoryUsage();
+    // logMemoryUsage('ProjectDetailPage-Start', initialMemory);
 
     // 🌐 Track project API call
-    const projectAPIStart = Date.now();
+    // const projectAPIStart = Date.now();
     const projectRes = await getsingleallprojects("", id);
-    const projectAPITime = Date.now() - projectAPIStart;
+    // const projectAPITime = Date.now() - projectAPIStart;
     
-    logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
+    // logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
     
     if (!projectRes || !projectRes.data) {
+      res.setHeader('Cache-Control', 'no-store');
       return { notFound: true };
     }
     
     const project = projectRes.data;
 
       // Use backend slug if available and not empty/null, else fallback to slugify
-      const backendSlug =
-        project.slug || null;
+      const backendSlug = project.slug || null;
 
-      const canonicalSlug =
-        backendSlug ? String(backendSlug).trim()
-          : slugify(project.work_title);
+      const canonicalSlug = backendSlug ? String(backendSlug).trim() : slugify(project.work_title);
 
       // Redirect if param slug is wrong (case-insensitive)
       const incomingSlug = decodeURIComponent(params.slug || "");
@@ -1128,39 +1134,39 @@ export async function getServerSideProps({ params }) {
       }
 
     // 🌐 Track similar projects API call
-    const similarAPIStart = Date.now();
+    // const similarAPIStart = Date.now();
     const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
-    const similarAPITime = Date.now() - similarAPIStart;
+    // const similarAPITime = Date.now() - similarAPIStart;
     
-    logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
+    // logAPICall('getsimilerllprojects', similarAPITime, 200, JSON.stringify(similarRes?.data || {}).length);
     
-    // 🧠 Memory tracking after APIs
-    const afterAPIMemory = process.memoryUsage();
-    logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
+    // // 🧠 Memory tracking after APIs
+    // const afterAPIMemory = process.memoryUsage();
+    // logMemoryUsage('ProjectDetailPage-AfterAPIs', afterAPIMemory);
     
-    const totalTime = Date.now() - startTime;
+    // const totalTime = Date.now() - startTime;
     
-    // 💰 Amplify: Log cost metrics
-    logCostMetrics('ProjectDetailPage', {
-      projectId: id,
-      slug: params.slug,
-      computeTime: totalTime,
-      memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
-      apiCalls: 2,
-      dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
-    });
+    // // 💰 Amplify: Log cost metrics
+    // logCostMetrics('ProjectDetailPage', {
+    //   projectId: id,
+    //   slug: params.slug,
+    //   computeTime: totalTime,
+    //   memoryUsed: afterAPIMemory.heapUsed / 1024 / 1024, // Convert to MB
+    //   apiCalls: 2,
+    //   dataSize: (JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024 // KB
+    // });
     
-    // 🚀 Amplify: Log performance summary
-    logPagePerformance('ProjectDetailPage', {
-      projectId: id,
-      slug: params.slug,
-      totalTime,
-      projectAPITime,
-      similarAPITime,
-      memoryPeak: afterAPIMemory.heapUsed,
-      dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
-      renderMode: 'SSR'
-    });
+    // // 🚀 Amplify: Log performance summary
+    // logPagePerformance('ProjectDetailPage', {
+    //   projectId: id,
+    //   slug: params.slug,
+    //   totalTime,
+    //   projectAPITime,
+    //   similarAPITime,
+    //   memoryPeak: afterAPIMemory.heapUsed,
+    //   dataTransferred: ((JSON.stringify(projectRes?.data || {}).length + JSON.stringify(similarRes?.data || {}).length) / 1024).toFixed(2) + 'KB',
+    //   renderMode: 'SSR'
+    // });
     
     // console.info('🧪 [AMPLIFY-LOG] ProjectDetailPage SSR generation completed successfully');
     // trackPageEvent('ProjectDetailPage', 'SSR_COMPLETE', { 
@@ -1179,35 +1185,23 @@ export async function getServerSideProps({ params }) {
     //   duration: Date.now() - startTime
     // }));
 
-    
+    // ✅ Cache the HTML at the CDN for a short time
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    // optional: tidy up proxies
+    res.setHeader('Vary', 'Accept-Encoding');
+
     return {
       props: {
         initialProject: project,
-        initialSimilar: similarRes.data.projects || [],
+        initialSimilar: similarRes?.data?.projects || [],
         canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
       },
     };
   } catch (err) {
     // console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
     console.error('Error in detail page getServerSideProps:', err);
-    
-    // 💰 Amplify: Log error cost metrics
-    // logCostMetrics('ProjectDetailPage-Error', {
-    //   projectId: id,
-    //   slug: params.slug,
-    //   computeTime: Date.now() - startTime,
-    //   memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-    //   apiCalls: 0,
-    //   dataSize: 0
-    // });
-    
-    // trackPageEvent('ProjectDetailPage', 'SSR_ERROR', { 
-    //   projectId: id, 
-    //   slug: params.slug, 
-    //   error: err.message,
-    //   duration: Date.now() - startTime
-    // });
-    
+
+    res.setHeader('Cache-Control', 'no-store');
     return {
       notFound: true,
     };

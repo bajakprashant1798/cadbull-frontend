@@ -152,6 +152,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
           rel="shortcut icon"
           href="/favicon.ico"
         />
+        <link rel="preconnect" href="https://beta-assets.cadbull.com" crossorigin />
+
         <meta name="description" content={description} />
         <meta name="keywords" content={product?.tags || ""} />
         <meta property="og:title" content={title} />
