@@ -382,22 +382,44 @@
 
 
 
-/* add once in a global CSS file */
-.heroFrame {
-  position: relative;
-  /* 800x600 => 4/3. If you have real dimensions on the object, compute it inlined. */
-  // aspect-ratio: 4 / 3;
-  /* prevents “fluid” ads or fonts from nudging things */
-  // min-height: 240px;
+// /* add once in a global CSS file */
+// .heroFrame {
+//   position: relative;
+//   /* 800x600 => 4/3. If you have real dimensions on the object, compute it inlined. */
+//   // aspect-ratio: 4 / 3;
+//   /* prevents “fluid” ads or fonts from nudging things */
+//   // min-height: 240px;
+// }
+
+// /* the shimmer stays absolutely positioned so it doesn’t push layout */
+// .heroFrame .shimmer {
+//   position: absolute; inset: 0; z-index: 0;
+// }
+// .heroFrame img { position: relative; z-index: 1; }
+.heroFrame { position: relative; }
+
+.hero-fallback {
+  display:flex; align-items:center; justify-content:center;
+  min-height: 220px;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.5rem;
+  text-align: center;
+  padding: 16px;
 }
 
-/* the shimmer stays absolutely positioned so it doesn’t push layout */
-.heroFrame .shimmer {
-  position: absolute;
-  inset: 0;
+.hero-fallback__title {
+  margin: 0;
+  font-weight: 600;
+  color: #20325A;
+  font-size: clamp(16px, 2.5vw, 22px);
 }
 
-
+.hero-fallback__meta {
+  margin-top: 6px;
+  color: #666;
+  font-size: 14px;
+}
 
 
 // ******** Category ********
