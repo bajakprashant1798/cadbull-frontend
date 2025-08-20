@@ -147,6 +147,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   // ✅ ADD STATE FOR PROFILE IMAGE ERROR HANDLING
   const [profileImageError, setProfileImageError] = useState(false);
 
+  const [showRelated, setShowRelated] = useState(false);
+
+  useEffect(() => {
+    const run = () => setShowRelated(true);
+    if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
+    else setTimeout(run, 1200);
+  }, []);
+
   // At component top:
   const shownSimilarIdsRef = useRef(new Set());
 
@@ -967,42 +975,44 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
             </div>
-            <div className="row gy-4 mb-4 mb-md-5">
-              {/* {similarProjects.map((project) => {
-                return (
-                  <div
-                    className="col-md-6 col-lg-6 col-xxl-4"
-                    key={project.id}
-                  >
-                    <ProjectCard {...project} favorites={favouriteList} />
+            {showRelated && (
+              <div className="row gy-4 mb-4 mb-md-5">
+                {/* {similarProjects.map((project) => {
+                  return (
+                    <div
+                      className="col-md-6 col-lg-6 col-xxl-4"
+                      key={project.id}
+                    >
+                      <ProjectCard {...project} favorites={favouriteList} />
+                    </div>
+                  );
+                })} */}
+                {similarProjects.length > 0 ? (
+                  similarProjects.map((project) => (
+                    <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
+                      <ProjectCard {...project} favorites={favouriteList} />
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-12 text-center">
+                    <p>No more related files found.</p>
                   </div>
-                );
-              })} */}
-              {similarProjects.length > 0 ? (
-                similarProjects.map((project) => (
-                  <div className="col-md-6 col-lg-6 col-xxl-4" key={project.id}>
-                    <ProjectCard {...project} favorites={favouriteList} />
-                  </div>
-                ))
-              ) : (
-                <div className="col-12 text-center">
-                  <p>No more related files found.</p>
-                </div>
-              )}
+                )}
 
-              {/* ✅ ADD THIS NEW "LOAD MORE" BUTTON LOGIC */}
-              {hasMore && similarProjects.length > 0 && (
-                <div className="text-center mt-4">
-                  <button
-                    className="btn btn-primary px-5 py-3 rounded"
-                    onClick={handleLoadMore}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Loading..." : "Load More"}
-                  </button>
-                </div>
-              )}
-            </div>
+                {/* ✅ ADD THIS NEW "LOAD MORE" BUTTON LOGIC */}
+                {hasMore && similarProjects.length > 0 && (
+                  <div className="text-center mt-4">
+                    <button
+                      className="btn btn-primary px-5 py-3 rounded"
+                      onClick={handleLoadMore}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Loading..." : "Load More"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
         </div>
@@ -1069,7 +1079,7 @@ export async function getServerSideProps(ctx) {
     
 
     // ✅ Cache the HTML at the CDN for a short time
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     // optional: tidy up proxies
     res.setHeader('Vary', 'Accept-Encoding');
 
