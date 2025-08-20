@@ -517,14 +517,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         {/* <link rel="preload" href="https://beta-assets.cadbull.com" as="image" />
          */}
         {/* ✅ SPEED OPTIMIZATION: Preload LCP image for faster loading */}
-        {/* {project?.photo_url && (
+        {project?.photo_url && (
           <link
             rel="preload"
             as="image"
             href={getSafeImageUrl(project.photo_url)}
             fetchPriority="high"
           />
-        )} */}
+        )}
 
         <link rel="amphtml" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/amp/${project?.id}/${encodeURIComponent(project?.slug || project?.work_title || '')}`} />
 
