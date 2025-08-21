@@ -122,7 +122,12 @@ const ProjectCard = ({
   return (
     <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)}>
       {/* <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}> */}
-      <Link onClick={handleviewcount}  className="h-100" href={`/detail/${id}/${slugify(work_title)}`}>
+      <Link 
+        onClick={handleviewcount}  
+        className="h-100" 
+        href={`/detail/${id}/${slugify(work_title)}`}
+        onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
+      >
         <div className='project-day-card-image mb-3 position-relative'>
           
           {/* <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" /> */}

@@ -421,6 +421,10 @@
   font-size: 14px;
 }
 
+/* Only if you want a subtle blur behind the loader */
+.loader-container ~ * { filter: blur(2px); pointer-events:none; }
+
+
 
 // ******** Category ********
 .category-wrapper {

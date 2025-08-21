@@ -1,6 +1,7 @@
 
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
+import GlobalRouteLoader from "@/components/GlobalRouteLoader";
 import { Fragment } from "react";
 
 const MainLayout = ({children}) => {
@@ -11,7 +12,7 @@ const MainLayout = ({children}) => {
           
       <Header />
       <main>
-
+          <GlobalRouteLoader />
          {children}
       </main>
       <Footer />
