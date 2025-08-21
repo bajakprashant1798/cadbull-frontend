@@ -200,7 +200,7 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
                     key={project.id}
                     className="item gallery-image mbr-col-md-6 mbr-col-sm-12 mbr-col-lg-4"
                   >
-                    <a href={`https://beta.cadbull.com/amp/${project.id}/${linkProductName}`}>
+                    <a href={`https://cadbull.com/amp/${project.id}/${linkProductName}`}>
                       <div className="item-wrapper">
                         <amp-img
                           lightbox="item-wizard-gallery-1m"
@@ -248,7 +248,7 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
                     key={project.id}
                     className="item gallery-image mbr-col-md-6 mbr-col-sm-12 mbr-col-lg-4"
                   >
-                    <a href={`https://beta.cadbull.com/amp/${project.id}/${linkProductName}`}>
+                    <a href={`https://cadbull.com/amp/${project.id}/${linkProductName}`}>
                       <div className="item-wrapper">
                         <amp-img
                           lightbox="item-wizard-gallery-1m"
