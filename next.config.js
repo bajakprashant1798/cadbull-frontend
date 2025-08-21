@@ -122,6 +122,11 @@ const nextConfig = {
         destination: '/categories',
         permanent: true,
       },
+      { source: '/login',  destination: '/auth/login',  permanent: true },
+      { source: '/signup', destination: '/auth/register', permanent: true },
+      // Optional: handle trailing slashes explicitly
+      { source: '/login/',  destination: '/auth/login',  permanent: true },
+      { source: '/signup/', destination: '/auth/register', permanent: true },
       
       // // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
       // {
