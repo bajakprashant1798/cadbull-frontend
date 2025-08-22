@@ -47,35 +47,82 @@ export default function App({ Component, pageProps }) {
 
     // ✅ REMOVED: initializeAdSense() - using component-based loading instead
 
-    // Track route changes
-    const handleRouteChange = (url) => {
-      pageview(url);
-      // Track page view with Meta Pixel
-      trackPageView();
+    // // Track route changes
+    // const handleRouteChange = (url) => {
+    //   pageview(url);
+    //   // Track page view with Meta Pixel
+    //   trackPageView();
       
-      //// ✅ ADDED: Force AdSense refresh on route change for SSG pages
-      // setTimeout(() => {
-      //   if (typeof window !== 'undefined' && window.adsbygoogle) {
-      //     try {
-      //       // Remove existing status attributes to force refresh
-      //       const allAds = document.querySelectorAll('.adsbygoogle');
-      //       allAds.forEach(ad => {
-      //         if (ad.hasAttribute('data-adsbygoogle-status')) {
-      //           ad.removeAttribute('data-adsbygoogle-status');
-      //         }
-      //       });
-      //       console.log('🔄 AdSense refresh triggered for SSG page');
-      //     } catch (error) {
-      //       console.warn('AdSense refresh failed:', error);
-      //     }
-      //   }
-      // }, 1000);
+    //   //// ✅ ADDED: Force AdSense refresh on route change for SSG pages
+    //   // setTimeout(() => {
+    //   //   if (typeof window !== 'undefined' && window.adsbygoogle) {
+    //   //     try {
+    //   //       // Remove existing status attributes to force refresh
+    //   //       const allAds = document.querySelectorAll('.adsbygoogle');
+    //   //       allAds.forEach(ad => {
+    //   //         if (ad.hasAttribute('data-adsbygoogle-status')) {
+    //   //           ad.removeAttribute('data-adsbygoogle-status');
+    //   //         }
+    //   //       });
+    //   //       console.log('🔄 AdSense refresh triggered for SSG page');
+    //   //     } catch (error) {
+    //   //       console.warn('AdSense refresh failed:', error);
+    //   //     }
+    //   //   }
+    //   // }, 1000);
+    // };
+    
+    // router.events.on('routeChangeComplete', handleRouteChange);
+    
+    // return () => {
+    //   router.events.off('routeChangeComplete', handleRouteChange);
+    // };
+
+    const refreshAds = () => {
+      // Skip everything on AMP routes
+      if (router.pathname.startsWith('/amp')) return;
+      // Don’t run server-side
+      if (typeof window === "undefined") return;
+
+      try {
+        // Ensure the script global exists
+        window.adsbygoogle = window.adsbygoogle || [];
+
+        // Optional: clear stale statuses so Google can reuse <ins> nodes
+        document.querySelectorAll('ins.adsbygoogle').forEach((el) => {
+          el.removeAttribute('data-adsbygoogle-status');
+        });
+
+        // Re-push once to (1) trigger Auto Ads rescans and (2) allow new manual units
+        window.adsbygoogle.push({});
+      } catch {
+        /* swallow */
+      }
     };
-    
-    router.events.on('routeChangeComplete', handleRouteChange);
-    
+
+    // ① First page view after hydration
+    const t0 = setTimeout(refreshAds, 300);
+
+    // // ② Every SPA route change
+    // const handleRouteChangeComplete = () => {
+    //   // A tiny delay gives the new DOM a chance to mount
+    //   setTimeout(refreshAds, 300);
+    // };
+
+    const handleRouteChangeComplete = (url) => {
+      // send analytics for SPA navigations
+      try { pageview?.(url); } catch {}
+      try { trackPageView?.(); } catch {}
+      // then refresh ads
+      setTimeout(refreshAds, 300);
+      // optional second pass to catch late-lazy components
+      setTimeout(refreshAds, 2000);
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChangeComplete);
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
+      clearTimeout(t0);
+      router.events.off('routeChangeComplete', handleRouteChangeComplete);
     };
   }, [router.events]);
   
