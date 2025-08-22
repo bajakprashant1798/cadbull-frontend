@@ -243,6 +243,7 @@ export default function App({ Component, pageProps }) {
         id="adsense-funding-choices"
         async
         strategy="afterInteractive"
+        data-cfasync="false"
         // src="https://fundingchoicesmessages.google.com/i/pub-2488270605722778?ers=1"
         src={`https://fundingchoicesmessages.google.com/i/${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
         onLoad={() => {

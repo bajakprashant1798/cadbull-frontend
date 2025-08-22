@@ -183,7 +183,7 @@ const AdSense = ({
     ? style
     : (layout === "in-article" || format === "fluid")
       ? baseStyle                     // use CSS .ad-slot min-heights for fluid/in-article
-      : { ...baseStyle, minHeight: 280 };
+      : { ...baseStyle };
 
   // Start observing when lazy
   useEffect(() => {
@@ -194,7 +194,7 @@ const AdSense = ({
       setMounted(true);
       return;
     }
-    
+
     const el = containerRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
