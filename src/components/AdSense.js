@@ -189,12 +189,11 @@ const AdSense = ({
   useEffect(() => {
     // if (!lazy) return;
     if (!lazy) return;
-    // Safari legacy fallback: if IO doesn’t exist, mount immediately
-    if (typeof window !== 'undefined' && !('IntersectionObserver' in window)) {
-      setMounted(true);
-      return;
-    }
-
+    // // Safari legacy fallback: if IO doesn’t exist, mount immediately
+    // if (typeof window !== 'undefined' && !('IntersectionObserver' in window)) {
+    //   setMounted(true);
+    //   return;
+    // }
     const el = containerRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
