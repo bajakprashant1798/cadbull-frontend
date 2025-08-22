@@ -119,12 +119,12 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
   const description = product?.description || "";
   const imageUrl = product?.image
     ? `https://beta-assets.cadbull.com/product_img/original/${product.image}`
-    : "https://thumb.cadbull.com/img/product_img/large/default-amp.png";
+    : "https://cadbull.com/default-img.png";
   // This is the correct code
   const profilePic =
     publisher?.profile?.profile_pic
       ? publisher.profile.profile_pic // Use the full URL directly from the API
-      : "https://thumb.cadbull.com/img/profile_pic/small/default-amp.png"; // Fallback URL
+      : "https://beta-assets.cadbull.com/assets/icons/profile.png"; // Fallback URL
   // const canonical = `https://cadbull.com/detail/${product?.id}/${slugify(product?.work_title || "")}`;
 
   const canonicalSlug =
