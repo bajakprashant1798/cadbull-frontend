@@ -571,9 +571,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         {/* mobile/tablet only */}
-        <div className="d-block d-lg-none">
+        {/* <div className="d-block d-lg-none">
           <AdSense slot="4597678336" format="fluid" layout="in-article" lazy={false} />
-        </div>
+        </div> */}
 
       </section>
 

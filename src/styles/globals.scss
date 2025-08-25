@@ -380,7 +380,12 @@
 }
 
 
-
+// sortby filter margin
+.sort-by-wrapper {
+  @media screen and (max-width: 1193px) {
+    margin-bottom: 80px;
+  }
+}
 
 // /* add once in a global CSS file */
 // .heroFrame {
