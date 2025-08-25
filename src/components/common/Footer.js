@@ -7,7 +7,7 @@
 // import twitter from "@/assets/icons/twitter.png";
 // import youtube from "@/assets/icons/youtube.png";
 import { assets } from "@/utils/assets";
-const logo = assets.image("logo.png");
+const logo = assets.image("logo-footer.png");
 const map = assets.icons("map.png");
 const phone = assets.icons("phone.png");
 const email = assets.icons("email.png");
