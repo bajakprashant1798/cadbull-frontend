@@ -147,7 +147,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <Head>
         <meta charSet="UTF-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
+        {/* <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" /> */}
         <link
           rel="shortcut icon"
           href="/favicon.ico"
