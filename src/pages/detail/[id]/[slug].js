@@ -549,17 +549,17 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     {project?.product_category_title && (
                       <li className="breadcrumb-item">
                         {/* <Link  href={`/categories/sub/${project?.category_path}`}> */}
-                        {/* <Link  href={`/${project?.category_path}`}>
+                        <Link  href={`/${project?.category_path/1}`}>
                           {project?.product_category_title}
-                        </Link> */}
+                        </Link>
                       </li>
                     )}
                     {project?.product_subcategory_title && (
                       <li className="breadcrumb-item">
                         {/* <Link  href={`/categories/sub/${project?.subcategory_path}`}> */}
-                        {/* <Link href={`/${project?.category_path}`}>
+                        <Link href={`/${project?.category_path/1}`}>
                           {project?.product_subcategory_title}
-                        </Link> */}
+                        </Link>
                       </li>
                     )}
                     <li className="breadcrumb-item active" aria-current="page">
