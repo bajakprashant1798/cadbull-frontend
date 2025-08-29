@@ -49,7 +49,7 @@ import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 // import logo from "@/assets/images/logo.png";
 import Image from "next/image";
-import AdSense from "@/components/AdSense";
+// import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
 import { performance } from "@/utils/performance";
 import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, logISRPerformance, trackPageEvent } from "@/utils/amplifyLogger";
@@ -486,7 +486,7 @@ export default function Home({
           </div>
         </div>
         {/* <div className="border-top border-bottom py-2"> */}
-          <AdSense slot="1744284284" format="fluid" layout="in-article" lazy={false} />
+          {/* <AdSense slot="1744284284" format="fluid" layout="in-article" lazy={false} /> */}
         {/* </div> */}
       </section>
 
@@ -607,7 +607,7 @@ export default function Home({
       </section>
 
       {/* <div className="border-top border-bottom py-2"> */}
-        <AdSense slot="8339598320" format="fluid" layout="in-article" />
+        {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
       {/* </div> */}
 
       {/* Categories */}
@@ -657,7 +657,7 @@ export default function Home({
       </section>
 
       {/* <div className="border-top border-bottom py-2"> */}
-        <AdSense slot="8049838180" format="fluid" layout="in-article" />
+        {/* <AdSense slot="8049838180" format="fluid" layout="in-article" /> */}
       {/* </div> */}
 
       {/* Main PRINCIPLES  */}
