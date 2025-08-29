@@ -1102,21 +1102,39 @@ export async function getServerSideProps(ctx) {
     
     const project = projectRes.data;
 
-      // Use backend slug if available and not empty/null, else fallback to slugify
-      const backendSlug = project.slug || null;
+      // // Use backend slug if available and not empty/null, else fallback to slugify
+      // const backendSlug = project.slug || null;
 
-      const canonicalSlug = backendSlug ? String(backendSlug).trim() : slugify(project.work_title);
+      // const canonicalSlug = backendSlug ? String(backendSlug).trim() : slugify(project.work_title);
 
-      // Redirect if param slug is wrong (case-insensitive)
-      const incomingSlug = decodeURIComponent(params.slug || "");
-      if (incomingSlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
-        return {
-          redirect: {
-            destination: `/detail/${id}/${canonicalSlug}`,
-            permanent: true,
-          },
-        };
-      }
+      // // Redirect if param slug is wrong (case-insensitive)
+      // const incomingSlug = decodeURIComponent(params.slug || "");
+      // if (incomingSlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
+      //   return {
+      //     redirect: {
+      //       destination: `/detail/${id}/${canonicalSlug}`,
+      //       permanent: true,
+      //     },
+      //   };
+      // }
+
+    // 1) take DB slug exactly if it's a real string
+    let dbSlug = typeof project?.slug === 'string' ? project.slug.trim() : '';
+    // guard against literal "null"/"undefined" stored as text
+    if (['null', 'undefined'].includes(dbSlug.toLowerCase?.() || '')) dbSlug = '';
+    // 2) otherwise fallback to old-site slugify (no lowercase)
+    const canonicalSlug = dbSlug || slugify(project?.work_title || '');
+
+    // 3) case-SENSITIVE compare; only redirect when different
+    const incomingSlug = decodeURIComponent(params.slug || "");
+    if (incomingSlug !== canonicalSlug) {
+      return {
+        redirect: {
+        destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
+          permanent: true,
+        },
+      };
+    }
 
     // 🌐 Track similar projects API call
     // const similarAPIStart = Date.now();
