@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
-import TagsField from "@/components/TagsField";
+// import TagsField from "@/components/TagsField";
 import debounce from "lodash.debounce";
 
 
@@ -88,8 +88,10 @@ const AddProject = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]); // ✅ Ensure it starts as an empty array
   const [descriptionCount, setDescriptionCount] = useState(250);
-  const [tags, setTags] = useState([]);
-
+  // const [tags, setTags] = useState([]);
+  const [tagsCsv, setTagsCsv] = useState("");    // CSV tags as-is
+  const [submitting, setSubmitting] = useState(false); // lock while uploading
+  
   const [workTitle, setWorkTitle] = useState(""); // Controlled input for title
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -298,53 +300,71 @@ const AddProject = () => {
       return;
     }
     try {
-        const formData = new FormData();
+      setSubmitting(true);
+      const formData = new FormData();
 
-        data.tags = tags.join(",");
+      // data.tags = tags.join(",");
+      // tags as plain CSV
+      const tags = tagsCsv;
 
-        console.log("🚀 Form Data BEFORE Append:", data);
+      // console.log("🚀 Form Data BEFORE Append:", data);
+      console.log("🚀 Form BEFORE Append:", data);
 
-        // ✅ Explicitly append all form fields
-        formData.append("work_title", data.work_title || "");
-        formData.append("description", data.description || "");
-        formData.append("meta_title", data.meta_title || "");
-        formData.append("meta_description", data.meta_description || "");
-        // In formData append:
-        formData.append("slug", slug);
-        formData.append("tags", data.tags || "");
-        formData.append("file_type", data.file_type || "");
-        formData.append("category_id", data.category_id || "");
-        formData.append("subcategory_id", data.subcategory_id ? data.subcategory_id : null);
-        formData.append("type", data.type || "Free");
-        
-        // ✅ Add selected user_id
-        formData.append("user_id", selectedUserId);
+      // ✅ Explicitly append all form fields
+      formData.append("work_title", data.work_title || "");
+      formData.append("description", data.description || "");
+      formData.append("meta_title", data.meta_title || "");
+      formData.append("meta_description", data.meta_description || "");
+      // In formData append:
+      formData.append("slug", slug);
+      // formData.append("tags", data.tags || "");
+      formData.append("tags", tags || "");
+      formData.append("file_type", data.file_type || "");
+      // formData.append("category_id", data.category_id || "");
+      // formData.append("subcategory_id", data.subcategory_id ? data.subcategory_id : null);
+      
+      // coerce numeric-ish fields so backend never gets '' for INT columns
+      const categoryId = data.category_id ? Number(data.category_id) : null;
+      const subcategoryId = data.subcategory_id ? Number(data.subcategory_id) : null;
+      formData.append("category_id", categoryId);
+      if (subcategoryId !== null) formData.append("subcategory_id", subcategoryId);
+      // popular defaults to 0 (regular project) on create
+      formData.append("popular", 0);
+      formData.append("type", data.type || "Free");
+      
+      // ✅ Add selected user_id
+      // formData.append("user_id", selectedUserId);
+      formData.append("user_id", Number(selectedUserId));
 
-        // ✅ Ensure file & image exist before appending
-        if (data.file && data.file.length > 0) {
-            formData.append("file", data.file[0]);
-        } else {
-            toast.error("Please upload a ZIP file.");
-            return;
-        }
+      // ✅ Ensure file & image exist before appending
+      if (data.file && data.file.length > 0) {
+          formData.append("file", data.file[0]);
+      } else {
+          toast.error("Please upload a ZIP file.");
+          setSubmitting(false);
+          return;
+      }
 
-        if (data.image && data.image.length > 0) {
-            formData.append("image", data.image[0]);
-        } else {
-            toast.error("Please upload an Image.");
-            return;
-        }
+      if (data.image && data.image.length > 0) {
+          formData.append("image", data.image[0]);
+      } else {
+          toast.error("Please upload an Image.");
+          setSubmitting(false);
+          return;
+      }
 
-        console.log("✅ FormData AFTER Append:", [...formData.entries()]);
+      console.log("✅ FormData AFTER Append:", [...formData.entries()]);
 
-        await addProjectApi(formData);
-        toast.success("Project added successfully!");
-        reset();
-        setSelectedUserId(""); // Reset user selection
-        router.push("/admin/projects/view-projects");
+      await addProjectApi(formData);
+      toast.success("Project added successfully!");
+      reset();
+      setSelectedUserId(""); // Reset user selection
+      router.push("/admin/projects/view-projects");
     } catch (error) {
         console.error("❌ Error Adding Project:", error.response?.data || error.message);
         toast.error(error.response?.data?.error || "Error adding project");
+    } finally {
+       setSubmitting(false);
     }
   };
 
@@ -456,8 +476,23 @@ const AddProject = () => {
             <label className="form-label">Tags</label>
             <input className="form-control" {...register("tags")} />
           </div> */}
-          <TagsField value={tags} onChange={setTags} /> {/* ✅ Tags Input Field */}
-
+          {/* <TagsField value={tags} onChange={setTags} /> */}
+          {/* Tags (comma-separated, saved exactly as typed) */}
+          <div className="mb-3">
+            <label className="form-label">Tags *</label>
+            <textarea
+              className="form-control"
+              rows={2}
+              value={tagsCsv}
+              onChange={(e) => setTagsCsv(e.target.value)}
+              placeholder="PVC backrest,CAD drawing,Sittem 440 CAD design,PVC backrest AutoCAD,Sittem 440 premium technical drawing,seating part CAD file"
+              maxLength={500}            // your DB column is VARCHAR(500)
+              disabled={submitting}
+            />
+            <small className="form-text text-muted">
+              Paste all tags separated by commas. We’ll save exactly what you type.
+            </small>
+          </div>
 
           {/* File Type */}
           <div className="mb-3">
@@ -529,9 +564,22 @@ const AddProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId || !titleValidation.isValid}>
-            {/* Add Project */}
+          {/* <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId || !titleValidation.isValid}>
             Upload
+          </button> */}
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting || isDuplicate || checking || !selectedUserId || !titleValidation.isValid}
+          >
+            {submitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                Uploading...
+              </>
+            ) : (
+              "Upload"
+            )}
           </button>
 
         </form>

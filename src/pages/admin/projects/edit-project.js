@@ -6,8 +6,8 @@ import * as api from "@/service/api";
 import { toast } from "react-toastify";
 import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
-import TagsInput from "react-tagsinput";
-import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
+// import TagsInput from "react-tagsinput";
+// import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
 
 function standardSlugify(text) {
   if (!text) return '';
@@ -83,7 +83,14 @@ const EditProject = () => {
     (store) => store.logininfo.isAuthenticated
   );
   const dispatch = useDispatch();
-  const { register, handleSubmit, setValue, watch } = useForm();
+  // const { register, handleSubmit, setValue, watch } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      popular: "0",
+      status: "1",
+    },
+  });
+
   const router = useRouter();
   const { id } = router.query;
 
@@ -99,7 +106,10 @@ const EditProject = () => {
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [tags, setTags] = useState([]);
+  // const [tags, setTags] = useState([]);
+  const [tagsCsv, setTagsCsv] = useState("");   // comma-separated tags as-is
+  const [submitting, setSubmitting] = useState(false); // lock UI while saving
+
   const [projectDetails, setProjectDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -172,12 +182,27 @@ const EditProject = () => {
         }
 
         // Set Form Data from projectRes.data
+        // Object.keys(projectRes.data).forEach((key) => {
+        //   // ✅ ADD THIS CONDITION to skip setting the credit_days value
+        //   console.log(projectRes.data, "product data log");
+          
+        //   if (key !== 'credit_days') {
+        //     setValue(key, projectRes.data[key] || "");
+        //   }
+        // });
         Object.keys(projectRes.data).forEach((key) => {
-          // ✅ ADD THIS CONDITION to skip setting the credit_days value
-          if (key !== 'credit_days') {
-            setValue(key, projectRes.data[key] || "");
-          }
+          if (key === 'credit_days') return;          // keep your special handling
+          setValue(key, projectRes.data[key] ?? "");  // preserves 0
         });
+
+        // Ensure selects get proper string values
+        setValue("popular", String(projectRes.data.popular ?? 0)); // "0" or "1"
+        setValue("status",  String(projectRes.data.status  ?? 1)); // "1" or "2"
+        setValue("category_id", String(projectRes.data.category_id ?? ""));
+        setValue(
+          "subcategory_id",
+          projectRes.data.subcategory_id != null ? String(projectRes.data.subcategory_id) : ""
+        );
 
         // ✅ Set Categories
         setCategories(categoriesRes.data);
@@ -199,7 +224,9 @@ const EditProject = () => {
 
         //// ✅ Set Form Data
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
-        setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
+        // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
+        setTagsCsv(projectRes.data.tags || "");
+
 
         setProjectDetails(projectRes.data); // For comparing on duplicate check
         setWorkTitle(projectRes.data.work_title || ""); // Set controlled input
@@ -285,10 +312,14 @@ const EditProject = () => {
     }
 
     try {
+      setSubmitting(true);
       const updatedData = {
         ...data,
-        tags: tags.join(","), // Convert tags array to CSV
+        // tags: tags.join(","), // Convert tags array to CSV
+        tags: tagsCsv,
         subcategory_id: data.subcategory_id || null, // ✅ Handle null subcategory
+        status:         data.status !== undefined && data.status !== "" ? Number(data.status) : 1,
+        popular:        data.popular !== undefined && data.popular !== "" ? Number(data.popular) : 0,
       };
 
       // ✅ Append files if they exist
@@ -297,6 +328,10 @@ const EditProject = () => {
       }
       if (data.image && data.image.length > 0) {
         updatedData.image = data.image;
+      }
+      // If credit_days is blank, don’t send it (prevents "" → INT issues)
+      if (updatedData.credit_days === "" || updatedData.credit_days == null) {
+        delete updatedData.credit_days;
       }
 
       console.log("🚀 Sending Updated Project Data:", updatedData);
@@ -320,6 +355,8 @@ const EditProject = () => {
     } catch (error) {
       console.error("❌ Error updating project:", error.response?.data || error.message);
       toast.error(error.response?.data?.error || "Error updating project");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -420,9 +457,25 @@ const EditProject = () => {
 
 
           {/* Tags Input Field */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label className="form-label">Tags</label>
             <TagsInput value={tags} onChange={setTags} />
+          </div> */}
+          {/* Tags (comma-separated, saved as-is) */}
+          <div className="mb-3">
+            <label className="form-label">Tags *</label>
+            <textarea
+              className="form-control"
+              rows={2}
+              value={tagsCsv}
+              onChange={(e) => setTagsCsv(e.target.value)}
+              placeholder="PVC backrest,CAD drawing,Sittem 440 CAD design,PVC backrest AutoCAD,Sittem 440 premium technical drawing,seating part CAD file"
+              maxLength={500}                // your DB column is VARCHAR(500)
+              disabled={submitting}
+            />
+            <small className="form-text text-muted">
+              Paste all tags separated by commas. We’ll save exactly what you type.
+            </small>
           </div>
 
           {/* File Type */}
@@ -525,9 +578,24 @@ const EditProject = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !titleValidation.isValid}>
+          {/* <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !titleValidation.isValid}>
             Save Changes
+          </button> */}
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={submitting || isDuplicate || checking || !titleValidation.isValid}
+          >
+            {submitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </button>
+
         </form>
       </div>
     </AdminLayout>
