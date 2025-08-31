@@ -84,7 +84,7 @@ footer {
   .page-item .page-link {
     border: 0 !important;
 
-    font: normal normal 500 15px/20px 'Poppins', sans-serif;
+    font: normal normal 600 15px/20px 'Poppins', sans-serif;  // previous 500
     color: $black;
   }
 
@@ -92,6 +92,9 @@ footer {
   .page-item:last-child .page-link {
     background-color: $primary;
     border-color: $primary;
+  }
+  :focus {
+    box-shadow: none;
   }
 }
 

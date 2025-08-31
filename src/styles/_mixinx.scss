@@ -24,12 +24,12 @@
 }
 
 
-// Variable Button 
+// Variable Button // button radius
 @mixin variable-button($bgColor, $borderColor, $color) {
   background-color: $bgColor;
   border-color: $borderColor ;
   color: $color;
-  border-radius: 0;
+  // border-radius: 0;  // button radius
   position: relative;
 }
 
