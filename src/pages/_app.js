@@ -159,6 +159,24 @@ export default function App({ Component, pageProps }) {
         }}
       />
 
+      {/* ✅ Google Ads Conversion Tracking */}
+      <Script
+        strategy="lazyOnload"
+        src="https://www.googletagmanager.com/gtag/js?id=AW-16484980681"
+      />
+      <Script
+        id="google-ads-conversion"
+        strategy="lazyOnload"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-16484980681');
+          `,
+        }}
+      />
+
       {/* ✅ SINGLE GTM Script - Revenue Optimized */}
       <Script
         id="gtm-script"
