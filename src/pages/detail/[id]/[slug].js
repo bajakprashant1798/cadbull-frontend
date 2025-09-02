@@ -583,7 +583,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       <section className="py-lg-5 py-5">
         <div className="container">
           <div className="row">
-            <div className="col-lg-9">
+            <div className="col-lg-8">
               <div className=" d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-1 justify-content-center justify-content-md-start">
                   {social.map((res, index) => (
@@ -756,12 +756,16 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               {/* </div> */}
           
+            </div>
+
+        
+            <div className="col-lg-4">
               {/* Project Description */}
               <div className="py-3 py-md-4">
                 <div className="container">
-                  <div className="row">
+                  <div className="row mb-3">
                     <div className="col-md-12">
-                      <div className="mb-md-5 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
+                      <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
                         <div className="px-3">
                           <SectionHeading
                             mainHeading={""}
@@ -772,9 +776,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           
                         </div>
                       </div>
+
+                      {/* <div className="border-top border-bottom py-2 mt-4"> */}
+                        <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
+                      {/* </div> */}
                     </div>
                   </div>
-                  <div className="row gy-3 mb-md-5 mb-4">
+                  <div className="col gy-3 mb-md-5 mb-4">
                     <FileDescription
                       bgColor={"#20325A"}
                       image={autoCad}
@@ -806,7 +814,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                   <div className="row">
                     <div className="col-md-12">
-                      <div className="bg-white shadow-sm p-2 p-md-5">
+                      <div className="bg-white shadow-sm p-2 p-md-3">
                         <div className="row justify-content-between align-items-center">
                           <div className="col-md-7">
                             <div className="d-flex align-items-center gap-md-3 gap-2">
@@ -877,7 +885,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </div>
 
                   {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                    <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
+                    {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
                   {/* </div> */}
 
                   <div className="row justify-content-center">
@@ -914,14 +922,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                 </div>
               </div>
-            </div>
 
-        
-            <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
-                <div className="d-none d-lg-block">
+                {/* <div className="d-none d-lg-block">
                   <AdSense slot="2091281415" sidebar className="ad-slot ad-slot--sidebar" lazy={false} />
-                </div>
+                </div> */}
                 <div>
                   <aside>
                     <h5 className="bg-secondary text-white px-3 py-2">
