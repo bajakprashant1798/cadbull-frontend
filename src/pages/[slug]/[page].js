@@ -514,7 +514,7 @@ export async function getStaticProps({ params }) {
         page
       },
       async () => {
-        performance.logMemoryUsage("CategoryDetail-Start", { slug, page });
+        // performance.logMemoryUsage("CategoryDetail-Start", { slug, page });
 
         // Add retry logic for API calls
         let data = null;
@@ -600,38 +600,6 @@ export async function getStaticProps({ params }) {
         // ✅ Generate performance summary
         const timings = { subcategoriesAPI: 150, categoryMetaAPI: 50, total: 200 }; // Placeholder - would be real in production
         performance.generateSummary("CategoryDetailPage-ISR", timings);
-
-
-        // const totalTime = Date.now() - startTime;
-        //   if (totalTime > 2000) {
-        //     console.warn(`⚠️ [SLOW-PAGE-ALERT] CategoryDetailPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
-        //   }
-
-        //   console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
-        //     timestamp: new Date().toISOString(),
-        //     type: "COST_METRICS",
-        //     page: "CategoryDetailPage",
-        //     slug: params.slug, 
-        //     computeTime: totalTime,
-        //     memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-        //     apiCalls: 2, // adjust based on calls
-        //     estimatedCost: {
-        //       requestCost: "0.00000020",
-        //       computeCost: "0.00000005",
-        //       totalCost: "0.00000025",
-        //       currency: "USD"
-        //     },
-        //     environment: process.env.NODE_ENV
-        //   })}`);
-
-        //   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-        //     timestamp: new Date().toISOString(),
-        //     type: "MEMORY_USAGE",
-        //     page: "CategoryDetailPage-End",
-        //     ...process.memoryUsage(),
-        //     environment: process.env.NODE_ENV
-        //   })}`);
-
 
         return {
           props: {

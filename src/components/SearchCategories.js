@@ -24,6 +24,7 @@ const SearchCategories = ({ categories, type }) => {
   
   const [catalog, setCatalog] = useState([categories]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [previousCategories, setPreviousCategories] = useState([]); // ✅ Store previous categories for fallback
 
   // useEffect(() => {
   //   console.log("Full URL Path:", router.asPath);
@@ -50,9 +51,23 @@ const SearchCategories = ({ categories, type }) => {
     if (type === "Sub Categories" && slug) {
       try {
         const response = await getallsubCategories(searchTerm, slug);
+        const fetchedSubCategories = response.data.subCategories || [];
 
-        setCatalog(response.data.subCategories);
-        dispatch(addAllSubCategoriesData(response.data?.subCategories));
+        // ✅ Your brilliant idea: Use previous categories if current is empty
+        if (fetchedSubCategories.length > 0) {
+          // Store current categories as previous for future fallback
+          setPreviousCategories(fetchedSubCategories);
+          setCatalog(fetchedSubCategories);
+        } else if (previousCategories.length > 0) {
+          // Use previous categories if current fetch returned empty
+          console.log("Empty subcategories, using previous:", previousCategories.length);
+          setCatalog(previousCategories);
+        } else {
+          // No previous categories available, show empty
+          setCatalog([]);
+        }
+
+        dispatch(addAllSubCategoriesData(fetchedSubCategories));
         // console.log("subcategoriedta", response.data);
       } catch (error) {
         // console.error("Error fetching categories:", error);

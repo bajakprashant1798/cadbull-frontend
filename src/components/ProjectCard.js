@@ -171,8 +171,8 @@ const ProjectCard = ({
         <span style={{
           fontWeight: '500',
           fontSize: '14px', // Set the font size to the desired size
-          color: '#e59710',
-          backgroundColor: '#fcebce',
+          color: '#e59710', // e59710
+          backgroundColor: '#fcebce', // #fcebce
           padding: '8px 15px', // Adjust padding for consistency
           textTransform: 'uppercase',
           border: '0',
@@ -186,8 +186,8 @@ const ProjectCard = ({
           padding: '8px 15px', // Adjust padding for consistency
           textTransform: 'uppercase',
           fontWeight: '500',
-          color: '#10a308',
-          backgroundColor: '#cefcd0',
+          color: '#10a308', // #10a308
+          backgroundColor: '#cefcd0', // #cefcd0
         }}>
           Free
         </button>
