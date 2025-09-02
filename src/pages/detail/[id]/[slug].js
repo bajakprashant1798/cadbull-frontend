@@ -583,7 +583,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       <section className="py-lg-5 py-5">
         <div className="container">
           <div className="row">
-            <div className="col-lg-8">
+            <div className="col-lg-9">
               <div className=" d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-1 justify-content-center justify-content-md-start">
                   {social.map((res, index) => (
@@ -756,10 +756,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               {/* </div> */}
           
-            </div>
-
-        
-            <div className="col-lg-4">
               {/* Project Description */}
               <div className="py-3 py-md-4">
                 <div className="container">
@@ -778,7 +774,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="col gy-3 mb-md-5 mb-4">
+                  <div className="row gy-3 mb-md-5 mb-4">
                     <FileDescription
                       bgColor={"#20325A"}
                       image={autoCad}
@@ -918,7 +914,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                 </div>
               </div>
+            </div>
 
+        
+            <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
                 <div className="d-none d-lg-block">
                   <AdSense slot="2091281415" sidebar className="ad-slot ad-slot--sidebar" lazy={false} />
