@@ -807,7 +807,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     
                   </div>
-
                   <div className="row">
                     <div className="col-md-12">
                       <div className="bg-white shadow-sm p-2 p-md-5">

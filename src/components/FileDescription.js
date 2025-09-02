@@ -13,5 +13,4 @@ const FileDescription = ({ bgColor, image, type, title, className='text-white' }
     </div>
   )
 }
-
 export default FileDescription;
