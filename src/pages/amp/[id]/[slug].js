@@ -29,7 +29,7 @@ function slugify(text) {
 
 export async function getServerSideProps(context) {
   const { params, req } = context;
-  const { id } = params;
+  const { id, slug: incomingSlug = "" } = params;
   let productData = null;
   let similarProjects = [];
   let publisher = null;
@@ -101,6 +101,22 @@ export async function getServerSideProps(context) {
     user = null;
   }
 
+  // Build canonical slug: DB slug (exact) -> fallback to old slugify
+  const canonicalSlug = (typeof productData?.slug === "string" && productData.slug !== "" && productData.slug !== null)
+    ? productData.slug
+    : slugify(productData?.work_title || "");
+
+  // Exact, case-sensitive match required; if not, 301 to canonical
+  if (incomingSlug !== canonicalSlug) {
+    return {
+      redirect: {
+        destination: `/amp/${id}/${canonicalSlug}`,
+        permanent: true,
+      },
+    };
+  }
+
+
   return {
     props: {
       product: productData,
@@ -127,13 +143,21 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       : "https://beta-assets.cadbull.com/assets/icons/profile.png"; // Fallback URL
   // const canonical = `https://cadbull.com/detail/${product?.id}/${slugify(product?.work_title || "")}`;
 
-  const canonicalSlug =
-    (product?.slug || slugify(product?.work_title || ""));
+  // const canonicalSlug =
+  //   (product?.slug || slugify(product?.work_title || ""));
 
-  // const ogUrl = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
+  // // const ogUrl = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(product?.work_title || "")}`;
 
+  // const canonical = `https://cadbull.com/amp/${product?.id}/${canonicalSlug}`;
+  // const ogUrl = `https://cadbull.com/amp/${product?.id}/${canonicalSlug}`;
+
+  const canonicalSlug = (typeof product?.slug === "string" && product.slug !== "" && product.slug !== null)
+    ? product.slug
+    : slugify(product?.work_title || "");
+ 
   const canonical = `https://cadbull.com/amp/${product?.id}/${canonicalSlug}`;
   const ogUrl = `https://cadbull.com/amp/${product?.id}/${canonicalSlug}`;
+
 
   // Helper for SVG icons
   const FileIcon = () => (
@@ -536,12 +560,16 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
           <div className="container-fluid">
             <div className="title mbr-pb-4">
               <h3 className="title-h3 text-center">Related Files</h3>
-              <h4 className="title-h4 text-center">Look some related files.</h4>
+              <h4 className="title-h4 text-center">Look some related fiiles.</h4>
             </div>
             <div className="mbr-row">
               {similar.map((sim, idx) => {
-                // ✅ UPDATED: Use the slug from the API data for the link
-                const similarProjectSlug = sim.slug || slugify(sim.work_title);
+                //// ✅ UPDATED: Use the slug from the API data for the link
+                // const similarProjectSlug = sim.slug || slugify(sim.work_title);
+                const similarProjectSlug = (typeof sim.slug === "string" && sim.slug !== "" && sim.slug !== null)
+                  ? sim.slug
+                  : slugify(sim.work_title);
+
                 
                 // ✅ UPDATED: Construct the image URL with the new path
                 const similarImageUrl = sim.image
