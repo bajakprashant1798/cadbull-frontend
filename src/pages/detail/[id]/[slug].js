@@ -721,27 +721,27 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               </div>
 
-                <div className="container">
-                  <div className="row mb-3">
-                    <div className="col-md-12">
-                      <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
-                        <div className="px-3">
-                          <SectionHeading
-                            mainHeading={""}
-                            subHeading={" "}
-                            mainHeadingBold={"Description"}
-                          />
-                          <div>{parse(`${project.description}`)}</div>
-                          
-                        </div>
-                      </div>
 
-                      {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                        {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
-                      {/* </div> */}
+                <div className="row mb-3 mt-3">
+                  <div className="col-md-12">
+                    <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
+                      <div className="px-3">
+                        <SectionHeading
+                          mainHeading={""}
+                          subHeading={" "}
+                          mainHeadingBold={"Description"}
+                        />
+                        <div>{parse(`${project.description}`)}</div>
+                        
+                      </div>
                     </div>
+
+                    {/* <div className="border-top border-bottom py-2 mt-4"> */}
+                      {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
+                    {/* </div> */}
                   </div>
                 </div>
+
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
                 <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
