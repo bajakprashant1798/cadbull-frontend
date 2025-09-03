@@ -737,7 +737,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
 
                       {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                        <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
+                        {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
                       {/* </div> */}
                     </div>
                   </div>
@@ -754,8 +754,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               {/* Project Description */}
               <div className="py-3 py-md-4">
                 <div className="container">
+                  <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
                   
-                  <div className="col gy-3 mb-md-5 mb-4">
+                  <div className="col gy-3 mb-md-5 mb-4 mt-2">
                     <FileDescription
                       bgColor={"#20325A"}
                       image={autoCad}
