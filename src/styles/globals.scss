@@ -17,6 +17,11 @@
   top: 0;
 }
 
+.product-description-title {
+  font: normal normal 700 18px / 24px Poppins, sans-serif;
+  color: #20325A;
+}
+
 .main-content {
   margin-left: 320px; /* ✅ Ensure Content Doesn't Overlap Sidebar */
   width: calc(100% - 320px);
@@ -1103,5 +1108,6 @@ table {
 }
 
 // about page css
+
 
 
