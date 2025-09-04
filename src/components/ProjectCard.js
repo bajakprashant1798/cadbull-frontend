@@ -177,7 +177,7 @@ const ProjectCard = ({
                 textTransform: 'uppercase',
                 border: '0',
                 display: 'inline-block',
-                borderRadius: '10px 10px 0px 0px',
+                borderRadius: '5px 5px 0px 0px',
               }}>
                 Gold
               </span>
@@ -189,7 +189,7 @@ const ProjectCard = ({
                 fontWeight: '500',
                 color: '#ffffff', // #10a308
                 backgroundColor: '#008000', // #cefcd0
-                borderRadius: '10px 10px 0px 0px',
+                borderRadius: '5px 5px 0px 0px',
               }}>
                 Free
               </button>
@@ -203,4 +203,5 @@ const ProjectCard = ({
 }
 
 export default React.memo(ProjectCard);
+
 
