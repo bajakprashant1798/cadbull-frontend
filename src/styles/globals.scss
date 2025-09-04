@@ -21,6 +21,11 @@
   font: normal normal 700 18px / 24px Poppins, sans-serif;
   color: #20325A;
 }
+.description-container {
+  @media screen and (min-width: 768px) {
+    margin-top: 43px;
+  }
+}
 
 .main-content {
   margin-left: 320px; /* ✅ Ensure Content Doesn't Overlap Sidebar */

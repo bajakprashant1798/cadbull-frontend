@@ -753,7 +753,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
+              <div className="d-none d-lg-block">
                 <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+              </div>
               {/* </div> */}
           
               
@@ -764,7 +766,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               <div className="d-flex flex-column gap-3">
 
                 {/* Project Description */}
-                <div className="py-3 py-md-4" style={{marginTop: '43px'}}>
+                <div className="py-3 py-md-4 description-container">
                   <div className="container">
                     <div className="row">
                       <div className="col-md-12">
@@ -785,7 +787,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
 
                     {/* <div className="d-none d-lg-block"> */}
-                      <AdSense slot="4412795758" sidebar className="ad-slot" lazy={false} />
+                      <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
                     {/* </div> */}
                     
                     <div className="row gy-3 mb-md-3 mb-4">
@@ -824,7 +826,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       <div className="col-md-12">
                         <div className="bg-white shadow-sm p-2 p-md-4">
                           <div className="row justify-content-between align-items-center">
-                            <div className="col-md-7">
+                            <div className="col-md-5">
                               <div className="d-flex align-items-center gap-md-3 gap-2">
                                 <div className="flex-shrink-0">
                                   {(project?.profile_pic && !profileImageError) ? (
@@ -876,7 +878,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                 </div>
                               </div>
                             </div>
-                            <div className="d-none d-md-block col-md-3 text-start text-md-end">
+                            <div className="d-none d-md-block col-md-5 text-start text-md-end">
                               <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
                                 View Profile
                               </Link>
