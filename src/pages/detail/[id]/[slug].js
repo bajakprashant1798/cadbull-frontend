@@ -731,7 +731,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         
             <div className="col-lg-4">
               {/* Project Description */}
-              <div className="py-3 py-md-4">
+              <div className="py-3 mt-4 py-md-4">
                 <div className="container">
                   <div className="row mb-3 mt-3">
                     <div className="col-md-12">
@@ -751,7 +751,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                   </div>
                 
-                  <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
+                  {/*<AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />*/}
                   
                   <div className="col gy-3 mb-md-5 mb-4 mt-2">
                     <FileDescription
