@@ -764,7 +764,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               <div className="d-flex flex-column gap-3">
 
                 {/* Project Description */}
-                <div className="py-3 py-md-4">
+                <div className="py-3 py-md-4" style={{marginTop: '43px'}}>
                   <div className="container">
                     <div className="row">
                       <div className="col-md-12">
@@ -1009,9 +1009,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
                 {/* ads image */}
                 
-                <div className="d-block d-lg-none">
+                {/* <div className="d-block d-lg-none">
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
-                </div>
+                </div> */}
 
               </div>
             </div>
