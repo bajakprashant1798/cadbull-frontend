@@ -208,18 +208,7 @@ export const getallCategories = (searchTerm = "") => {
 
 // Add this at the bottom of api.js (or wherever you want)
 export const getCategoryBySlug = (slug) => {
-  console.log(`🔍 [API] Fetching category by slug: "${slug}"`);
-  return api.get(`/categories/slug/${slug}`)
-    .then(response => {
-      console.log(`✅ [API] Category response for slug "${slug}":`, response.data);
-      return response;
-    })
-    .catch(error => {
-      console.error(`❌ [API] Error fetching category for slug "${slug}":`, error);
-      console.error(`❌ [API] Error response:`, error.response?.data);
-      console.error(`❌ [API] Error status:`, error.response?.status);
-      throw error;
-    });
+  return api.get(`/categories/slug/${slug}`);
 };
 
 
@@ -524,21 +513,17 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
     const url = `/categories/sub/${slug}/projects`;
     const params = { page: currentPage, perPage: pageSize };
 
-    console.log(`🔍 [API] Fetching subcategories for slug: "${slug}" with params:`, { currentPage, pageSize, search, file_type, type });
+    console.log("Fetching subcategories with params:", { slug, currentPage, pageSize, search, file_type, type });
     
 
     if (search) params.search = search;
     if (type) params.type = type;
     if (file_type) params.file_type = file_type;
 
-    console.log(`🚀 [API] Making request to: ${url} with params:`, params);
     const response = await api.get(url, { params });
-    console.log(`✅ [API] Response received for slug "${slug}":`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`❌ [API] Error fetching subcategories for slug "${slug}":`, error);
-    console.error(`❌ [API] Error response:`, error.response?.data);
-    console.error(`❌ [API] Error status:`, error.response?.status);
+    console.error("❌ Error fetching subcategories:", error);
     throw error;
   }
 };
