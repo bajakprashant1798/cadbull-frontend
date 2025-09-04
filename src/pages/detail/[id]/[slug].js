@@ -735,7 +735,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <div className="container">
                   <div className="row mb-3 mt-3">
                     <div className="col-md-12">
-                      <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary" style={{ background: "#E9E9EB" }}>
+                      <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1" style={{ background: "#E9E9EB" }}>
                         <div className="px-3">
                           <SectionHeading
                             mainHeading={""}
