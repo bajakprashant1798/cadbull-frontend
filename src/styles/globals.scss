@@ -356,7 +356,10 @@
 
   .project-day-card-link {
     position: relative;
-
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    
     p {
       color: $black;
       font: normal normal 600 15px/20px 'Poppins', sans-serif;
@@ -371,7 +374,7 @@
       width: 100%;
       height: 1px;
       inset: 0;
-      margin: auto;
+      margin: auto auto 0 auto;
       background: $borderColor;
     }
 
@@ -1086,4 +1089,5 @@ table {
     margin-right: -50px;
   }
 }
+
 // about page css
