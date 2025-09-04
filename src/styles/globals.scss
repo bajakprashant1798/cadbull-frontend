@@ -167,7 +167,7 @@
   &::before {
     position: absolute;
     content: "";
-    background-image: url(https://beta-assets.cadbull.com/assets/images/heading-image.png);
+    background-image: url('https://beta-assets.cadbull.com/assets/images/heading-image.png');
     width: 68px;
     height: 60px;
     left: -30px;
@@ -1103,4 +1103,5 @@ table {
 }
 
 // about page css
+
 
