@@ -134,14 +134,21 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   };
 
   const loadProjects = (slug, page, type, file_type, search) => {
+    console.log(`🔍 [Frontend] Loading projects for slug: "${slug}", page: ${page}`);
+    console.log(`📊 [Frontend] Filters:`, { type, file_type, search });
+    
     startLoading();
     getSubCategories({ slug, currentPage: page, pageSize: 9, type, file_type, search })
       .then((response) => {
+        console.log(`✅ [Frontend] API response for slug "${slug}":`, response);
         dispatch(getSubCategory(response.projects));
         setTotalPages(response.totalPages);
         stopLoading();
       })
-      .catch(() => stopLoading());
+      .catch((error) => {
+        console.error(`❌ [Frontend] API error for slug "${slug}":`, error);
+        stopLoading();
+      });
   };
 
   useEffect(() => {
@@ -474,33 +481,13 @@ export async function getStaticProps({ params }) {
     const slug = params.slug;
     const page = parseInt(params.page, 10) || 1;
     
-    // console.log(`[getStaticProps] Generating page for slug: ${slug}, page: ${page}`);
+    console.log(`🔍 [getStaticProps] Generating page for slug: "${slug}", page: ${page}`);
     
     // If slug is purely numeric, return 404
     if (/^\d+$/.test(slug)) {
-      console.log(`[getStaticProps] Rejected numeric slug: ${slug}`);
+      console.log(`❌ [getStaticProps] Rejected numeric slug: "${slug}"`);
       return { notFound: true };
     }
-
-    // const startTime = Date.now();
-    //   console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
-    //     timestamp: startTime,
-    //     type: "PAGE_EVENT",
-    //     page: "CategoryDetailPage",
-    //     event: "ISR_START",
-    //     slug: params.slug,
-    //     // pageNum: params.page,
-    //     environment: process.env.NODE_ENV
-    //   })}`);
-
-    //   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-    //     timestamp: new Date().toISOString(),
-    //     type: "MEMORY_USAGE",
-    //     page: "CategoryDetailPage-Start",
-    //     ...process.memoryUsage(),
-    //     environment: process.env.NODE_ENV
-    //   })}`);
-
     
     // ✅ PERFORMANCE MONITORING: Track category detail page generation
     return await performance.trackPagePerformance(
@@ -524,17 +511,19 @@ export async function getStaticProps({ params }) {
         while (!data && retryCount < maxRetries) {
           try {
             // ✅ Track subcategory API call with performance monitoring
+            console.log(`🚀 [getStaticProps] API call attempt ${retryCount + 1} for slug: "${slug}"`);
             data = await performance.timeAPICall(
               "GetSubCategories", 
               () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
               `subcategories/${slug}?page=${page}&pageSize=9`
             );
             if (data && data.projects) {
+              console.log(`✅ [getStaticProps] API call successful for slug: "${slug}", found ${data.projects.length} projects`);
               break;
             }
           } catch (apiError) {
             retryCount++;
-            console.log(`[getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: ${slug}`, apiError.message);
+            console.log(`❌ [getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: "${slug}"`, apiError.message);
             if (retryCount < maxRetries) {
               // Wait before retry
               await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
@@ -543,11 +532,11 @@ export async function getStaticProps({ params }) {
         }
         
         if (!data || !data.projects) {
-          console.log(`[getStaticProps] No data found after ${retryCount} attempts for slug: ${slug}, page: ${page}`);
+          console.log(`❌ [getStaticProps] No data found after ${retryCount} attempts for slug: "${slug}", page: ${page}`);
           return { notFound: true };
         }
 
-        // console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
+        console.log(`✅ [getStaticProps] Found ${data.projects.length} projects for slug: "${slug}"`);
 
         performance.logMemoryUsage("CategoryDetail-AfterMainAPI", { 
           slug, 
@@ -559,6 +548,7 @@ export async function getStaticProps({ params }) {
         let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
         try {
           // ✅ Track category metadata API call
+          console.log(`🔍 [getStaticProps] Fetching category meta for slug: "${slug}"`);
           const catRes = await performance.timeAPICall(
             "GetCategoryMeta", 
             () => getCategoryBySlug(slug),
@@ -571,12 +561,12 @@ export async function getStaticProps({ params }) {
             metaDescription = cat.meta_description || null;
             description = cat.description || null;
             title = cat.name || makeTitle(slug);
-            // console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
+            console.log(`✅ [getStaticProps] Found category meta for slug: "${slug}", title: "${title}"`);
           } else {
-            console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
+            console.log(`⚠️ [getStaticProps] No category meta found for slug: "${slug}"`);
           }
         } catch (e) {
-          console.log(`[getStaticProps] Error fetching category meta for slug: ${slug}`, e.message);
+          console.log(`❌ [getStaticProps] Error fetching category meta for slug: "${slug}"`, e.message);
           // fallback: meta fields remain null
         }
 
