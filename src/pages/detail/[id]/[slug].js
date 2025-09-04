@@ -741,7 +741,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
                             <div>
                               <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
-                              <h5 style={{color:"#20325A"}}>Description</h5>
+                              <h5 className="product-description-title">Description</h5>
                             </div>
                           </div>
                           <div>{parse(`${project.description}`)}</div>
