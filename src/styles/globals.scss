@@ -163,6 +163,18 @@
   }
 }
 
+.main-heading-wrapper-product {
+  &::before {
+    position: absolute;
+    content: "";
+    background-image: url(https://beta-assets.cadbull.com/assets/images/heading-image.png);
+    width: 68px;
+    height: 60px;
+    left: -30px;
+    top: 5px;
+  }
+}
+
 .logo {
   max-width: 140px;
   @media all and (max-width:767px) {
@@ -1091,3 +1103,4 @@ table {
 }
 
 // about page css
+
