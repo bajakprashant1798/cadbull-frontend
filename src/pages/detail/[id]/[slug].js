@@ -722,9 +722,20 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
 
-                <div className="row mb-3 mt-3">
+              {/* <div className="border-top border-bottom py-2 mt-4"> */}
+                <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+              {/* </div> */}
+          
+            </div>
+
+        
+            <div className="col-lg-4">
+              {/* Project Description */}
+              <div className="py-3 py-md-4">
+                <div className="container">
+                  <div className="row mb-3 mt-3">
                   <div className="col-md-12">
-                    <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
+                    <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary" style="background: #E9E9EB;">
                       <div className="px-3">
                         <SectionHeading
                           mainHeading={""}
@@ -741,19 +752,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     {/* </div> */}
                   </div>
                 </div>
-
-
-              {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
-              {/* </div> */}
-          
-            </div>
-
-        
-            <div className="col-lg-4">
-              {/* Project Description */}
-              <div className="py-3 py-md-4">
-                <div className="container">
+                
                   <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
                   
                   <div className="col gy-3 mb-md-5 mb-4 mt-2">
