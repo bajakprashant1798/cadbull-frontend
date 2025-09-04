@@ -583,7 +583,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       <section className="py-lg-5 py-5">
         <div className="container">
           <div className="row">
-            <div className="col-lg-9">
+            <div className="col-lg-8">
               <div className=" d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-1 justify-content-center justify-content-md-start">
                   {social.map((res, index) => (
@@ -753,175 +753,184 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+                <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               {/* </div> */}
           
-              {/* Project Description */}
-              <div className="py-3 py-md-4">
-                <div className="container">
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="mb-md-5 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
-                        <div className="px-3">
-                          <SectionHeading
-                            mainHeading={""}
-                            subHeading={" "}
-                            mainHeadingBold={"Description"}
-                          />
-                          <div>{parse(`${project.description}`)}</div>
+              
+            </div>
+
+        
+            <div className="col-lg-4">
+              <div className="d-flex flex-column gap-3">
+
+                {/* Project Description */}
+                <div className="py-3 py-md-4">
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-md-12">
+                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
+                          <div className="" style={{paddingLeft: '25px'}}>
+                          
+                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
+                              <div>
+                                <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
+                                <h5 className="product-description-title">Description</h5>
+                              </div>
+                            </div>
+                            <div>{parse(`${project.description}`)}</div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* <div className="d-none d-lg-block"> */}
+                      <AdSense slot="4412795758" sidebar className="ad-slot" lazy={false} />
+                    {/* </div> */}
+                    
+                    <div className="row gy-3 mb-md-3 mb-4">
+                      <FileDescription
+                        bgColor={"#20325A"}
+                        image={autoCad}
+                        type={"File Type:"}
+                        title={project?.file_type}
+                      />
+                      <FileDescription
+                        bgColor={"#3D6098"}
+                        image={cad}
+                        type={"Category::"}
+                        title={project?.product_category_title}
+                      />
+                      <FileDescription
+                        bgColor={"#5B5B5B"}
+                        image={cad}
+                        type={"Sub Category::"}
+                        title={project?.product_subcategory_title}
+                      />
+                      <FileDescription
+                        bgColor={"#E9E9EB"}
+                        image={goldblocks}
+                        type={"type:"}
+                        title={project?.type}
+                        className={"text-primary"}
+                      />
+
+                      
+                    </div>
+
+                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+
+                    <div className="row mt-3">
+                      <div className="col-md-12">
+                        <div className="bg-white shadow-sm p-2 p-md-4">
+                          <div className="row justify-content-between align-items-center">
+                            <div className="col-md-7">
+                              <div className="d-flex align-items-center gap-md-3 gap-2">
+                                <div className="flex-shrink-0">
+                                  {(project?.profile_pic && !profileImageError) ? (
+                                    <Image
+                                      src={getSafeImageUrl(project.profile_pic)}
+                                      alt="Profile"
+                                      width={80}
+                                      height={80}
+                                      className="rounded-circle"
+                                      style={{ objectFit: "cover" }}
+                                      loading="lazy"
+                                      // priority={false}
+                                      decoding="async"
+                                      // quality={75}
+                                      sizes="80px"
+                                      onError={() => setProfileImageError(true)}
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={profile_dummy}
+                                      alt="Profile"
+                                      width={80}
+                                      height={80}
+                                      className="rounded-circle"
+                                      style={{ objectFit: "cover" }}
+                                      // priority={false}
+                                      loading="lazy"
+                                      decoding="async"
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
+                                    <span>{project?.firstname} </span>
+                                    
+                                  </h6>
+                                  <p>
+                                    {project?.lastname}
+                                  </p>
+                                  
+                                  <div className=" mt-1 d-md-none text-start text-md-end">
+                                    <Link
+                                      href={`/profile/author/${project?.user_id}`} 
+                                      className="btn btn-primary"
+                                    >
+                                      View Profile
+                                    </Link>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="d-none d-md-block col-md-3 text-start text-md-end">
+                              <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
+                                View Profile
+                              </Link>
+                            </div>
+                            {/* <p className="d-md-none mt-3">
+                              This architectural drawing is a 2D block of garden
+                              benches in AutoCAD drawing, CAD file, and dwg file.
+                              For more details and information download the
+                              drawing file.
+                            </p> */}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* <div className="border-top border-bottom py-2 mt-4"> */}
+                      {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
+                    {/* </div> */}
+
+                    <div className="row justify-content-center">
+                      <div className="col-md-12 col-12 text-center">
+                        <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
+                          <button
+                            onClick={() =>
+                              handledownload(project.id, isAuthenticated, router)
+                            }
+                            type="button"
+                            className="btn-success-split "
+                          >
+                            <span>
+                              <Icons.Download />
+                            </span>
+                            <span>Download</span>
+                          </button>
+
+                          {/* add to fevorite btn */}
+                          <button
+                            onClick={() => handleAddToLibrary()}
+                            type="button"
+                            className="btn-primary-split"
+                          >
+                            <span>
+                              <Icons.Add />
+                            </span>
+                            <span>Add to libary</span>
+                          </button>
                           
                         </div>
                       </div>
                     </div>
+
                   </div>
-                  <div className="row gy-3 mb-md-5 mb-4">
-                    <FileDescription
-                      bgColor={"#20325A"}
-                      image={autoCad}
-                      type={"File Type:"}
-                      title={project?.file_type}
-                    />
-                    <FileDescription
-                      bgColor={"#3D6098"}
-                      image={cad}
-                      type={"Category::"}
-                      title={project?.product_category_title}
-                    />
-                    <FileDescription
-                      bgColor={"#5B5B5B"}
-                      image={cad}
-                      type={"Sub Category::"}
-                      title={project?.product_subcategory_title}
-                    />
-                    <FileDescription
-                      bgColor={"#E9E9EB"}
-                      image={goldblocks}
-                      type={"type:"}
-                      title={project?.type}
-                      className={"text-primary"}
-                    />
-
-                    
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="bg-white shadow-sm p-2 p-md-5">
-                        <div className="row justify-content-between align-items-center">
-                          <div className="col-md-7">
-                            <div className="d-flex align-items-center gap-md-3 gap-2">
-                              <div className="flex-shrink-0">
-                                {(project?.profile_pic && !profileImageError) ? (
-                                  <Image
-                                    src={getSafeImageUrl(project.profile_pic)}
-                                    alt="Profile"
-                                    width={80}
-                                    height={80}
-                                    className="rounded-circle"
-                                    style={{ objectFit: "cover" }}
-                                    loading="lazy"
-                                    // priority={false}
-                                    decoding="async"
-                                    // quality={75}
-                                    sizes="80px"
-                                    onError={() => setProfileImageError(true)}
-                                  />
-                                ) : (
-                                  <Image
-                                    src={profile_dummy}
-                                    alt="Profile"
-                                    width={80}
-                                    height={80}
-                                    className="rounded-circle"
-                                    style={{ objectFit: "cover" }}
-                                    // priority={false}
-                                    loading="lazy"
-                                    decoding="async"
-                                  />
-                                )}
-                              </div>
-                              <div>
-                                <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                  <span>{project?.firstname} </span>
-                                  
-                                </h6>
-                                <p>
-                                  {project?.lastname}
-                                </p>
-                                
-                                <div className=" mt-1 d-md-none text-start text-md-end">
-                                  <Link
-                                    href={`/profile/author/${project?.user_id}`} 
-                                    className="btn btn-primary"
-                                  >
-                                    View Profile
-                                  </Link>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="d-none d-md-block col-md-3 text-start text-md-end">
-                            <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
-                              View Profile
-                            </Link>
-                          </div>
-                          {/* <p className="d-md-none mt-3">
-                            This architectural drawing is a 2D block of garden
-                            benches in AutoCAD drawing, CAD file, and dwg file.
-                            For more details and information download the
-                            drawing file.
-                          </p> */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                    <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
-                  {/* </div> */}
-
-                  <div className="row justify-content-center">
-                    <div className="col-md-12 col-12 text-center">
-                      <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
-                        <button
-                          onClick={() =>
-                            handledownload(project.id, isAuthenticated, router)
-                          }
-                          type="button"
-                          className="btn-success-split "
-                        >
-                          <span>
-                            <Icons.Download />
-                          </span>
-                          <span>Download</span>
-                        </button>
-
-                        {/* add to fevorite btn */}
-                        <button
-                          onClick={() => handleAddToLibrary()}
-                          type="button"
-                          className="btn-primary-split"
-                        >
-                          <span>
-                            <Icons.Add />
-                          </span>
-                          <span>Add to libary</span>
-                        </button>
-                        
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
-              </div>
-            </div>
 
-        
-            <div className="col-lg-3">
-              <div className="d-flex flex-column gap-3">
-                <div className="d-none d-lg-block">
-                  <AdSense slot="2091281415" sidebar className="ad-slot ad-slot--sidebar" lazy={false} />
-                </div>
                 <div>
                   <aside>
                     <h5 className="bg-secondary text-white px-3 py-2">
