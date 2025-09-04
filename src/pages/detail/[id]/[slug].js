@@ -737,11 +737,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     <div className="col-md-12">
                       <div className="mb-md-3 mb-4 shadow-sm px-5 py-3 rounded-1" style={{ background: "#E9E9EB" }}>
                         <div className="px-4">
-                          // <SectionHeading
-                          //   mainHeading={""}
-                          //   subHeading={" "}
-                          //   mainHeadingBold={"Description"}
-                          // />
+                         
                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
                             <div>
                               <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
