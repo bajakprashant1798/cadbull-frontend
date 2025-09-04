@@ -161,39 +161,43 @@ const ProjectCard = ({
             </div> */}
           </div>
         </div>
-        <div className='text-end mt-2'>
-        {type === "Gold" ? (
-        <span style={{
-          fontWeight: '500',
-          fontSize: '14px', // Set the font size to the desired size
-          color: '#e59710',
-          backgroundColor: '#fcebce',
-          padding: '8px 15px', // Adjust padding for consistency
-          textTransform: 'uppercase',
-          border: '0',
-          display: 'inline-block',
-        }}>
-          Gold
-        </span>
-      ) : (
-        <button style={{
-          border: '0',
-          padding: '8px 15px', // Adjust padding for consistency
-          textTransform: 'uppercase',
-          fontWeight: '500',
-          color: '#10a308',
-          backgroundColor: '#cefcd0',
-        }}>
-          Free
-        </button>
-      )}
-
-        </div>
+        
         <div className='project-day-card-link'>
+          
           <p className='pe-2'>MORE DETAILS</p>
+
+          <div className='text-end mt-3'>
+            {type === "Gold" ? (
+              <span style={{
+                fontWeight: '500',
+                fontSize: '14px', // Set the font size to the desired size
+                color: '#ffffff', // e59710
+                backgroundColor: '#AB8000', // #fcebce
+                padding: '6px 12px', // Adjust padding for consistency
+                textTransform: 'uppercase',
+                border: '0',
+                display: 'inline-block',
+              }}>
+                Gold
+              </span>
+            ) : (
+              <button style={{
+                border: '0',
+                padding: '6px 12px', // Adjust padding for consistency
+                textTransform: 'uppercase',
+                fontWeight: '500',
+                color: '#ffffff', // #10a308
+                backgroundColor: '#008000', // #cefcd0
+              }}>
+                Free
+              </button>
+            )}
+          </div>
+        
         </div>
       </Link>
     </div>
   );
 }
+
 export default React.memo(ProjectCard);
