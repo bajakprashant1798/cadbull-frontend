@@ -711,7 +711,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   />
 
                 </div> */}
-                <div className="bg-light p-3 rounded-2 shadow-sm heroFrame">
+                <div className="bg-light p-3 rounded-2 shadow-sm heroFrame mb-3">
                   {project?.photo_url && !imgError ? (
                     <Image
                       key={project?.id || project?.photo_url}
