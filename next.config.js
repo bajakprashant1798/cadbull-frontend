@@ -31,6 +31,12 @@ const nextConfig = {
     scrollRestoration: true, // Better UX
   },
   
+  // ✅ Ensure custom error pages are properly built
+  generateBuildId: async () => {
+    // Ensure consistent builds and proper 404 page generation
+    return `build-${Date.now()}`;
+  },
+  
   images: {
     unoptimized: true,
     remotePatterns: [

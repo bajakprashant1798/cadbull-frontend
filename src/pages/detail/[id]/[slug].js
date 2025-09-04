@@ -1097,9 +1097,29 @@ export async function getServerSideProps(ctx) {
     // const initialMemory = process.memoryUsage();
     // logMemoryUsage('ProjectDetailPage-Start', initialMemory);
 
-    // 🌐 Track project API call
-    // const projectAPIStart = Date.now();
-    const projectRes = await getsingleallprojects("", id);
+    // 🌐 Track project API call with retry logic
+    let projectRes;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        projectRes = await getsingleallprojects("", id);
+        break; // Success, exit retry loop
+      } catch (error) {
+        retryCount++;
+        console.log(`Retry ${retryCount}/${maxRetries} for project ${id}:`, error.status);
+        
+        if (error.response?.status === 429 && retryCount < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+          continue;
+        }
+        
+        // If final retry or non-429 error, throw
+        throw error;
+      }
+    }
     // const projectAPITime = Date.now() - projectAPIStart;
     
     // logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
@@ -1145,9 +1165,15 @@ export async function getServerSideProps(ctx) {
       };
     }
 
-    // 🌐 Track similar projects API call
-    // const similarAPIStart = Date.now();
-    const similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+    // 🌐 Track similar projects API call with error handling
+    let similarRes;
+    try {
+      similarRes = await getsimilerllprojects(1, 12, projectRes.data.product_sub_category_id);
+    } catch (error) {
+      console.log(`Similar projects API failed for project ${id}:`, error.status);
+      // Continue without similar projects if API fails
+      similarRes = { data: { projects: [] } };
+    }
     
 
     // ✅ Cache the HTML at the CDN for a short time
