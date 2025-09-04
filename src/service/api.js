@@ -523,7 +523,7 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
     const response = await api.get(url, { params });
     return response.data;
   } catch (error) {
-    console.error("❌ Error fetching subcategories:", error);
+    console.error("❌ Error fetching subcategories:", error, slug);
     throw error;
   }
 };
