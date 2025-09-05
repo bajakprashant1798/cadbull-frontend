@@ -616,8 +616,8 @@ export async function getServerSideProps({ params, query, req, res }) {
       performance.logMemoryUsage("Categories-SSR-Start", { page: currentPage });
 
       try {
-        // ✅ Track API calls with performance monitoring and parallel execution
-        const [categoriesRes, projectsRes] = await Promise.allSettled([
+        // ✅ Track API calls with performance monitoring and parallel execution with timeout protection
+        const apiCalls = [
           performance.timeAPICall("GetAllCategories-Categories-SSR", 
             () => getallCategories(""), 
             "getallCategories"
@@ -626,7 +626,19 @@ export async function getServerSideProps({ params, query, req, res }) {
             () => getallprojects(currentPage, 9, "", "", ""), 
             `getallprojects?page=${currentPage}&limit=9`
           ),
+        ];
+
+        // ✅ Set 6-second timeout for categories API calls to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('CATEGORIES_API_TIMEOUT')), 6000);
+        });
+        
+        const results = await Promise.race([
+          Promise.allSettled(apiCalls),
+          timeoutPromise
         ]);
+        
+        const [categoriesRes, projectsRes] = results;
 
         performance.logMemoryUsage("Categories-SSR-AfterAPIs", { page: currentPage });
 

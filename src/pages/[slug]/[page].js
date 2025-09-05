@@ -26,7 +26,7 @@ import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories }) => {
   const router = useRouter();
   const { slug: querySlug, page: queryPage } = router.query;
 
@@ -46,7 +46,8 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   const [searchText, setSearchText] = useState("");
   const [searchedText, setSearchedText] = useState("");
   const [totalPages, setTotalPages] = useState(initialTotalPages);
-  const [mainCategories, setMainCategories] = useState([]);
+  // ✅ Initialize main categories from SSR data or fetch client-side as fallback
+  const [mainCategories, setMainCategories] = useState(serverMainCategories || []);
   const [favouritesFetched, setFavouritesFetched] = useState(false);
   const [pageChanged, setPageChanged] = useState(false);
 
@@ -63,12 +64,17 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   // console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription, "description:", description, "title:", title);
   
 
-  // Fetch main categories on mount
+  // ✅ Optimized: Only fetch main categories if not provided via SSR
   useEffect(() => {
-    getallCategories("")
-      .then((res) => setMainCategories(res.data.categories || []))
-      .catch((err) => console.error("Error fetching main categories:", err));
-  }, []);
+    if (!serverMainCategories || serverMainCategories.length === 0) {
+      console.log("[CLIENT] 🔄 Fetching main categories client-side (SSR fallback)");
+      getallCategories("")
+        .then((res) => setMainCategories(res.data.categories || []))
+        .catch((err) => console.error("Error fetching main categories:", err));
+    } else {
+      console.log(`[CLIENT] ✅ Using ${serverMainCategories.length} SSR main categories`);
+    }
+  }, [serverMainCategories]);
 
   // Fetch favourites for authenticated users
   useEffect(() => {
@@ -493,7 +499,7 @@ export async function getServerSideProps({ params, req, res }) {
       async () => {
         console.log(`[SSR] ✅ Processing valid slug: ${slug}, page: ${page}`);
 
-        // ✅ Parallel API calls for better performance - reduce wait time
+        // ✅ Run API calls in parallel with timeout protection and include main categories
         const apiCalls = [
           performance.timeAPICall(
             "GetSubCategories", 
@@ -505,10 +511,26 @@ export async function getServerSideProps({ params, req, res }) {
             "GetCategoryMeta", 
             () => getCategoryBySlug(slug),
             `category/${slug}`
-          ).catch(error => ({ error, type: 'metadata' }))
+          ).catch(error => ({ error, type: 'metadata' })),
+
+          performance.timeAPICall(
+            "GetMainCategories", 
+            () => getallCategories(),
+            `allcategories`
+          ).catch(error => ({ error, type: 'categories' }))
         ];
         
-        const [subcategoriesResult, metadataResult] = await Promise.allSettled(apiCalls);
+        // ✅ Set 8-second timeout for all API calls to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('API_TIMEOUT')), 8000);
+        });
+        
+        const results = await Promise.race([
+          Promise.allSettled(apiCalls),
+          timeoutPromise
+        ]);
+        
+        const [subcategoriesResult, metadataResult, categoriesResult] = results;
         
         // Handle subcategories data
         let data = null;
@@ -549,6 +571,15 @@ export async function getServerSideProps({ params, req, res }) {
           title = makeTitle(slug); // Fallback title
         }
 
+        // ✅ Handle main categories to eliminate client-side API calls
+        let serverMainCategories = [];
+        if (categoriesResult.status === 'fulfilled' && !categoriesResult.value.error) {
+          serverMainCategories = categoriesResult.value?.data?.categories || [];
+          console.log(`[SSR] ✅ Found ${serverMainCategories.length} main categories`);
+        } else {
+          console.log(`[SSR] ⚠️ Error fetching main categories, component will fallback to client-side`);
+        }
+
         performance.logMemoryUsage("CategoryDetail-SSR-AfterAllAPIs", { 
           slug, 
           page, 
@@ -570,7 +601,8 @@ export async function getServerSideProps({ params, req, res }) {
         const totalTime = Date.now() - startTime;
         const timings = { 
           subcategoriesAPI: subcategoriesResult.status === 'fulfilled' ? 150 : 0, 
-          categoryMetaAPI: metadataResult.status === 'fulfilled' ? 50 : 0, 
+          categoryMetaAPI: metadataResult.status === 'fulfilled' ? 50 : 0,
+          mainCategoriesAPI: categoriesResult.status === 'fulfilled' ? 100 : 0,
           total: totalTime 
         };
         performance.generateSummary("CategoryDetailPage-SSR", timings);
@@ -587,7 +619,8 @@ export async function getServerSideProps({ params, req, res }) {
             metaKeywords: metaKeywords || '',
             metaDescription: metaDescription || 'World Largest 2d CAD Library.',
             description: description || '',
-            title: title || makeTitle(slug)
+            title: title || makeTitle(slug),
+            serverMainCategories: serverMainCategories || []
           }
         };
       }
