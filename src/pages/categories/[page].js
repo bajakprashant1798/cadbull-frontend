@@ -605,7 +605,7 @@ export async function getStaticProps({ params }) {
         currentPage,
       },
       // 5 min background revalidate keeps the grid fresh and cheap
-      revalidate: 300,
+      revalidate: 1800,
     };
   } catch (err) {
     console.error("❌ Categories getStaticProps error:", err);
@@ -616,7 +616,7 @@ export async function getStaticProps({ params }) {
         totalPages: 1,
         currentPage,
       },
-      revalidate: 300,
+      revalidate: 1800,
     };
   }
 }

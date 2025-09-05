@@ -593,7 +593,7 @@ export async function getStaticProps({ params }) {
             description,
             title
           },
-          revalidate: 300, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
+          revalidate: 1800, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
         };
       }
     );
