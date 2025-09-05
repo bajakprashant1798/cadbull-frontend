@@ -820,9 +820,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       
                     </div>
 
-                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
-
-                    <div className="row mt-3">
+                    <div className="row my-3">
                       <div className="col-md-12">
                         <div className="bg-white shadow-sm p-2 p-md-4">
                           <div className="row justify-content-between align-items-center">
@@ -897,6 +895,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     {/* <div className="border-top border-bottom py-2 mt-4"> */}
                       {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
                     {/* </div> */}
+
+                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
 
                     <div className="row justify-content-center">
                       <div className="col-md-12 col-12 text-center">
