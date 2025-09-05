@@ -48,7 +48,7 @@ const Footer = () => {
                   <li className="d-flex align-items-start gap-3 flex-column flex-xl-row">
                     <div className="d-flex align-items-center gap-2">
                       <Image src={phone} alt="icon" width={32} height={32} />
-                      <p className="text-white">+91 989 874 8697</p>
+                      <p className="text-white">+91 982 401 1921</p>
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <Image src={email} alt="icon" width={32} height={32} />

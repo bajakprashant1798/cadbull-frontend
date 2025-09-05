@@ -7,6 +7,27 @@ const nextConfig = {
   productionBrowserSourceMaps: false,     // reduce bundle size/telemetry
   httpAgentOptions: { keepAlive: true },  // fewer TCP handshakes when SSR calls your API
   
+  // ✅ CRITICAL: Production optimizations for 35-100 concurrent users
+  experimental: {
+    // ✅ HTTP optimizations for high concurrency
+    serverMinification: true,
+    serverSourceMaps: false,
+    optimizeCss: false, // Disabled due to dependency issues
+    esmExternals: true,
+    scrollRestoration: true,
+    // ✅ Memory optimization for concurrent requests
+    workerThreads: false,
+    cpus: 1, // Limit CPU usage in containers
+  },
+
+  // ✅ Performance monitoring and limits
+  onDemandEntries: {
+    // Period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 25 * 1000, // 25 seconds
+    // Number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 5, // Reduced from default to save memory
+  },
+  
   // AMP configuration
   amp: {
     canonicalBase: 'https://cadbull.com',
@@ -21,14 +42,6 @@ const nextConfig = {
     } : false,
     // ✅ SPEED OPTIMIZATION: Enable styled-jsx for better CSS optimization
     styledJsx: true,
-  },
-  
-  // ✅ SPEED OPTIMIZATION: Enable CSS optimization for better performance
-  experimental: {
-    // optimizeCss: true, // Disabled temporarily due to missing critters dependency
-    // Other experimental features  
-    esmExternals: true, // Better tree-shaking
-    scrollRestoration: true, // Better UX
   },
   
   // ✅ Ensure custom error pages are properly built

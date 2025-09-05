@@ -90,7 +90,7 @@ export default function App({ Component, pageProps }) {
       <Fragment>
         <Head>
           <link rel="icon" href="/favicon.ico" />
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          {/* <meta name="viewport" content="initial-scale=1.0, width=device-width" /> */}
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
           
