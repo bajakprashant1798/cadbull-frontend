@@ -3,4 +3,5 @@ IndexPage.getLayout = CadLandscaping.getLayout;
 export default function IndexPage(props) {
   return <CadLandscaping {...props} page={1} />;
 }
-export { getStaticPaths, getStaticProps } from "./[page]";
+// ✅ SSR: Export getServerSideProps instead of getStaticProps/getStaticPaths
+export { getServerSideProps } from "./[page]";

@@ -580,45 +580,111 @@ const Categories = ({
 //   );
 // }
 
-export async function getStaticPaths() {
-  // Prebuild first 10 pages to keep TTFB fast; others build on-demand.
-  const paths = Array.from({ length: 10 }).map((_, idx) => ({
-    params: { page: String(idx + 1) },
-  }));
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params, query, req, res }) {
+  const startTime = Date.now();
   const currentPage = parseInt(params?.page || "1", 10);
-
-  try {
-    const [categoriesRes, projectsRes] = await Promise.all([
-      getallCategories(""),
-      getallprojects(currentPage, 9, "", "", ""),
-    ]);
-
-    return {
-      props: {
-        initialCategories: categoriesRes?.data?.categories || [],
-        initialProjects: projectsRes?.data?.products || [],
-        totalPages: projectsRes?.data?.totalPages || 1,
-        currentPage,
-      },
-      // 5 min background revalidate keeps the grid fresh and cheap
-      revalidate: 1800,
-    };
-  } catch (err) {
-    console.error("❌ Categories getStaticProps error:", err);
-    return {
-      props: {
-        initialCategories: [],
-        initialProjects: [],
-        totalPages: 1,
-        currentPage,
-      },
-      revalidate: 1800,
-    };
+  
+  // ✅ Early validation to block invalid page numbers and reduce server load
+  if (isNaN(currentPage) || currentPage < 1 || currentPage > 10000) {
+    return { notFound: true };
   }
+
+  // ✅ Block invalid/admin paths early
+  const pageStr = params?.page?.toString().toLowerCase();
+  const invalidPages = ['admin', 'wp-admin', 'phpmyadmin', 'api', 'null', 'undefined', 'login'];
+  if (invalidPages.includes(pageStr) || /^\d{4,}$/.test(pageStr)) {
+    return { notFound: true };
+  }
+
+  // ✅ Performance tracking start
+  console.log(`🎯 SSR-START: Categories page ${currentPage} at ${new Date().toISOString()}`);
+  
+  // ✅ Browser caching headers for better performance
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=1800');
+
+  // ✅ PERFORMANCE MONITORING: Track categories page generation
+  return await performance.trackPagePerformance(
+    "CategoriesPage-SSR",
+    { 
+      pageType: "SSR", 
+      isSSR: true, 
+      cacheStatus: "fresh",
+      userAgent: req.headers['user-agent'] || "unknown",
+      page: currentPage
+    },
+    async () => {
+      performance.logMemoryUsage("Categories-SSR-Start", { page: currentPage });
+
+      try {
+        // ✅ Track API calls with performance monitoring and parallel execution
+        const [categoriesRes, projectsRes] = await Promise.allSettled([
+          performance.timeAPICall("GetAllCategories-Categories-SSR", 
+            () => getallCategories(""), 
+            "getallCategories"
+          ),
+          performance.timeAPICall("GetAllProjects-Categories-SSR", 
+            () => getallprojects(currentPage, 9, "", "", ""), 
+            `getallprojects?page=${currentPage}&limit=9`
+          ),
+        ]);
+
+        performance.logMemoryUsage("Categories-SSR-AfterAPIs", { page: currentPage });
+
+        // ✅ Handle potential API failures gracefully
+        const categoriesData = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data?.categories || [] : [];
+        const projectsData = projectsRes.status === 'fulfilled' ? projectsRes.value?.data || {} : {};
+        
+        const projects = projectsData.products || [];
+        const totalPages = Math.max(1, projectsData.totalPages || 1);
+
+        // ✅ Log cost-generating event for SSR
+        performance.logCostEvent("SSR-Generation", {
+          page: "CategoriesPage",
+          itemCount: projects.length,
+          categoryCount: categoriesData.length,
+          currentPage,
+        });
+
+        const endTime = Date.now();
+        const totalTime = endTime - startTime;
+        
+        // ✅ Performance logging
+        console.log(`🚀 SSR-COMPLETE: Categories page ${currentPage} generated in ${totalTime.toFixed(0)}ms`);
+        
+        if (totalTime > 1000) {
+          console.warn(`⚠️ [SLOW-SSR-ALERT] Categories page ${currentPage} took ${totalTime.toFixed(0)}ms - may need optimization`);
+        }
+
+        // ✅ Generate performance summary
+        performance.generateSummary("CategoriesPage-SSR", { 
+          categoriesAPI: categoriesRes.status === 'fulfilled' ? 50 : 0, 
+          projectsAPI: projectsRes.status === 'fulfilled' ? 100 : 0, 
+          total: totalTime 
+        });
+
+        return {
+          props: {
+            initialCategories: categoriesData,
+            initialProjects: projects,
+            totalPages,
+            currentPage,
+          },
+        };
+      } catch (err) {
+        console.error("❌ Error in Categories getServerSideProps:", err);
+        
+        // ✅ Graceful fallback for any unexpected errors
+        return {
+          props: {
+            initialCategories: [],
+            initialProjects: [],
+            totalPages: 1,
+            currentPage,
+          },
+        };
+      }
+    }
+  );
 }
 
 Categories.getLayout = function getLayout(page) {

@@ -426,141 +426,130 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   );
 };
 
-export async function getStaticPaths() {
-  try {
-    const catRes = await getallCategories("");
-    const categories = catRes?.data?.categories || [];
-    
-    const paths = [];
-    
-    // Always include the house plan category
-    paths.push({ params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "1" }});
-    paths.push({ params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "2" }});
-    
-    // Add other popular categories
-    categories.forEach(cat => {
-      if (cat.slug && cat.slug !== "Architecture-House-Plan-CAD-Drawings") {
-        paths.push({ params: { slug: cat.slug, page: "1" }});
-        // Only add page 2 for categories with high count
-        if (cat.pcount && parseInt(cat.pcount) > 100) {
-          paths.push({ params: { slug: cat.slug, page: "2" }});
-        }
-      }
-    });
-    
-    // console.log(`[getStaticPaths] Generated ${paths.length} paths`);
-    
-    return { 
-      paths, 
-      fallback: "blocking" // This ensures pages not pre-generated will be generated on demand
-    };
-  } catch (error) {
-    console.error('[getStaticPaths] Error connecting to API during build:', error.message);
-    // Return minimal paths as fallback when API is not available
-    return { 
-      paths: [
-        { params: { slug: "Architecture-House-Plan-CAD-Drawings", page: "1" }},
-        { params: { slug: "DWG-Blocks", page: "1" }},
-        { params: { slug: "Cad-Architecture", page: "1" }}
-      ], 
-      fallback: "blocking" 
-    };
-  }
-}
+// ✅ SSR: Remove getStaticPaths - not needed for SSR
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params, req, res }) {
+  const startTime = Date.now();
+  const slug = params.slug;
+  const page = parseInt(params.page, 10) || 1;
+  
+  // ✅ Add caching headers for better performance
+  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=1800');
+  
   try {
-    // Validate slug parameter - reject numeric slugs
-    const slug = params.slug;
-    const page = parseInt(params.page, 10) || 1;
+    console.log(`[SSR] 🚀 Generating page for slug: ${slug}, page: ${page}`);
     
-    // console.log(`[getStaticProps] Generating page for slug: ${slug}, page: ${page}`);
+    // ✅ Early validation - reject invalid slugs immediately
+    const invalidSlugs = [
+      'admin', 'wp-admin', 'wp-content', 'wp-includes', 
+      'phpmyadmin', 'pma', 'mysql', 'database',
+      'api', 'auth', 'login', 'register', 'logout',
+      'dashboard', 'profile', 'settings', 'config',
+      'null', 'undefined', 'favicon.ico', 'robots.txt',
+      'sitemap.xml', '.env', '.htaccess'
+    ];
     
-    // If slug is purely numeric, return 404
+    // Block purely numeric slugs
     if (/^\d+$/.test(slug)) {
-      console.log(`[getStaticProps] Rejected numeric slug: ${slug}`);
+      console.log(`[SSR] ❌ Blocked numeric slug: ${slug}`);
       return { notFound: true };
     }
     
-    // ✅ PERFORMANCE MONITORING: Track category detail page generation
+    // Block invalid/system slugs
+    if (invalidSlugs.includes(slug.toLowerCase())) {
+      console.log(`[SSR] ❌ Blocked invalid slug: ${slug}`);
+      return { notFound: true };
+    }
+    
+    // Block slugs with invalid characters
+    if (!/^[a-zA-Z0-9\-_&]+$/.test(slug)) {
+      console.log(`[SSR] ❌ Blocked invalid characters in slug: ${slug}`);
+      return { notFound: true };
+    }
+    
+    // Block extremely long slugs (likely attacks)
+    if (slug.length > 100) {
+      console.log(`[SSR] ❌ Blocked oversized slug: ${slug}`);
+      return { notFound: true };
+    }
+    
+    // Block invalid pages
+    if (page < 1 || page > 1000) {
+      console.log(`[SSR] ❌ Blocked invalid page: ${page}`);
+      return { notFound: true };
+    }
+    
+    // ✅ PERFORMANCE MONITORING: Track SSR page generation
     return await performance.trackPagePerformance(
-      "CategoryDetailPage-ISR",
+      "CategoryDetailPage-SSR",
       { 
-        pageType: "ISR", 
-        isSSR: false, 
+        pageType: "SSR", 
+        isSSR: true, 
         cacheStatus: "generating",
-        userAgent: "unknown",
+        userAgent: req.headers['user-agent'] || "unknown",
         slug,
         page
       },
       async () => {
-        // performance.logMemoryUsage("CategoryDetail-Start", { slug, page });
+        console.log(`[SSR] ✅ Processing valid slug: ${slug}, page: ${page}`);
 
-        // Add retry logic for API calls
-        let data = null;
-        let retryCount = 0;
-        const maxRetries = 3;
+        // ✅ Parallel API calls for better performance - reduce wait time
+        const apiCalls = [
+          performance.timeAPICall(
+            "GetSubCategories", 
+            () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
+            `subcategories/${slug}?page=${page}&pageSize=9`
+          ).catch(error => ({ error, type: 'subcategories' })),
+          
+          performance.timeAPICall(
+            "GetCategoryMeta", 
+            () => getCategoryBySlug(slug),
+            `category/${slug}`
+          ).catch(error => ({ error, type: 'metadata' }))
+        ];
         
-        while (!data && retryCount < maxRetries) {
-          try {
-            // ✅ Track subcategory API call with performance monitoring
-            data = await performance.timeAPICall(
-              "GetSubCategories", 
-              () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
-              `subcategories/${slug}?page=${page}&pageSize=9`
-            );
-            if (data && data.projects) {
-              break;
-            }
-          } catch (apiError) {
-            retryCount++;
-            console.log(`[getStaticProps] API call failed (attempt ${retryCount}/${maxRetries}) for slug: ${slug}`, apiError.message);
-            if (retryCount < maxRetries) {
-              // Wait before retry
-              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-            }
-          }
+        const [subcategoriesResult, metadataResult] = await Promise.allSettled(apiCalls);
+        
+        // Handle subcategories data
+        let data = null;
+        if (subcategoriesResult.status === 'fulfilled' && !subcategoriesResult.value.error) {
+          data = subcategoriesResult.value;
         }
         
         if (!data || !data.projects) {
-          console.log(`[getStaticProps] No data found after ${retryCount} attempts for slug: ${slug}, page: ${page}`);
+          console.log(`[SSR] ❌ No projects found for slug: ${slug}, page: ${page}`);
           return { notFound: true };
         }
 
-        // console.log(`[getStaticProps] Found ${data.projects.length} projects for slug: ${slug}`);
+        console.log(`[SSR] ✅ Found ${data.projects.length} projects for slug: ${slug}`);
 
-        performance.logMemoryUsage("CategoryDetail-AfterMainAPI", { 
+        performance.logMemoryUsage("CategoryDetail-SSR-AfterMainAPI", { 
           slug, 
           page, 
           projectCount: data.projects.length 
         });
 
-        // Fetch meta fields for any slug (parent or subcategory)
+        // Handle metadata
         let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
-        try {
-          // ✅ Track category metadata API call
-          const catRes = await performance.timeAPICall(
-            "GetCategoryMeta", 
-            () => getCategoryBySlug(slug),
-            `category/${slug}`
-          );
-          const cat = catRes?.data?.category;
+        if (metadataResult.status === 'fulfilled' && !metadataResult.value.error) {
+          const cat = metadataResult.value?.data?.category;
           if (cat) {
             metaTitle = cat.meta_title || null;
             metaKeywords = cat.meta_keywords || null;
             metaDescription = cat.meta_description || null;
             description = cat.description || null;
             title = cat.name || makeTitle(slug);
-            // console.log(`[getStaticProps] Found category meta for slug: ${slug}, title: ${title}`);
+            console.log(`[SSR] ✅ Found category meta for slug: ${slug}, title: ${title}`);
           } else {
-            console.log(`[getStaticProps] No category meta found for slug: ${slug}`);
+            console.log(`[SSR] ⚠️ No category meta found for slug: ${slug}`);
+            title = makeTitle(slug); // Fallback title
           }
-        } catch (e) {
-          console.log(`[getStaticProps] Error fetching category meta for slug: ${slug}`, e.message);
-          // fallback: meta fields remain null
+        } else {
+          console.log(`[SSR] ⚠️ Error fetching category meta for slug: ${slug}`);
+          title = makeTitle(slug); // Fallback title
         }
 
-        performance.logMemoryUsage("CategoryDetail-AfterAllAPIs", { 
+        performance.logMemoryUsage("CategoryDetail-SSR-AfterAllAPIs", { 
           slug, 
           page, 
           projectCount: data.projects.length 
@@ -568,8 +557,8 @@ export async function getStaticProps({ params }) {
 
         const projectCount = data.projects?.length || 0;
 
-        // ✅ Log cost-generating event for ISR
-        performance.logCostEvent("ISR-Generation", {
+        // ✅ Log cost-generating event for SSR
+        performance.logCostEvent("SSR-Generation", {
           page: "CategoryDetailPage",
           slug,
           projectCount,
@@ -578,8 +567,15 @@ export async function getStaticProps({ params }) {
         });
 
         // ✅ Generate performance summary
-        const timings = { subcategoriesAPI: 150, categoryMetaAPI: 50, total: 200 }; // Placeholder - would be real in production
-        performance.generateSummary("CategoryDetailPage-ISR", timings);
+        const totalTime = Date.now() - startTime;
+        const timings = { 
+          subcategoriesAPI: subcategoriesResult.status === 'fulfilled' ? 150 : 0, 
+          categoryMetaAPI: metadataResult.status === 'fulfilled' ? 50 : 0, 
+          total: totalTime 
+        };
+        performance.generateSummary("CategoryDetailPage-SSR", timings);
+
+        console.log(`[SSR] ✅ Generated ${slug}/page/${page} in ${totalTime}ms`);
 
         return {
           props: {
@@ -587,18 +583,18 @@ export async function getStaticProps({ params }) {
             initialTotalPages: data.totalPages || 1,
             initialSlug: slug,
             page,
-            metaTitle,
-            metaKeywords,
-            metaDescription,
-            description,
-            title
-          },
-          revalidate: 1800, // ✅ REVENUE OPTIMIZATION: 5 minutes for frequent ad refresh
+            metaTitle: metaTitle || `${title || makeTitle(slug)} | Page ${page}`,
+            metaKeywords: metaKeywords || '',
+            metaDescription: metaDescription || 'World Largest 2d CAD Library.',
+            description: description || '',
+            title: title || makeTitle(slug)
+          }
         };
       }
     );
   } catch (error) {
-    console.error(`[getStaticProps] Error for slug: ${params.slug}, page: ${params.page}`, error);
+    const totalTime = Date.now() - startTime;
+    console.error(`[SSR] ❌ Error for slug: ${slug}, page: ${page} (${totalTime}ms):`, error);
     return { notFound: true };
   }
 }

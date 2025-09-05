@@ -4,4 +4,4 @@ CategoriesIndex.getLayout = CategoriesPage.getLayout;
 export default function CategoriesIndex(props) {
   return <CategoriesPage {...props} page={1} />;
 }
-export { getStaticProps } from "./[page]";
+export { getServerSideProps } from "./[page]";
