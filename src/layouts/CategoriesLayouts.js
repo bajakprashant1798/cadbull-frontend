@@ -65,7 +65,7 @@ const CategoriesLayout = ({
         </div>
       </section>
 
-      <AdSense slot="7946730558" format="fluid" layout="in-article" lazy={false} />
+      <AdSense slot="7946730558" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
 
       {/* Categories  */}
       {/* <section className="py-lg-5 py-4">
@@ -117,7 +117,9 @@ const CategoriesLayout = ({
                   />
                 </div>
               )}
-              <AdSense slot="9615035443" format="fluid" layout="in-article" />
+              <div className="d-none d-md-none d-lg-block">
+                <AdSense slot="9615035443" format="fluid" layout="in-article" />
+              </div>
             </div>
             {/* Right Column */}
             <div className="col-xl-9">{children}</div>
