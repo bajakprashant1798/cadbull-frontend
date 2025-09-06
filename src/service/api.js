@@ -2,6 +2,7 @@
 import axios from "axios";
 import store from "../../redux/app/store"; // Adjust based on your file structure
 import { logout } from "../../redux/app/features/authSlice";
+import { APITimer } from "../utils/apiTiming";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
@@ -198,12 +199,21 @@ export const confirmAccountDeletion = async (token) => {
 // PROJECT API ENDPOINTS
 // ===================
 
-export const getallCategories = (searchTerm = "") => {
-  // console.log("Fetching all categories with search term:", searchTerm);
-  
-  const params = searchTerm ? { search: searchTerm } : {};
-  return api.get("/categories", { params });
-  
+export const getallCategories = async (searchTerm = "") => {
+  const timer = new APITimer('getallCategories');
+  try {
+    const params = searchTerm ? { search: searchTerm } : {};
+    timer.mark('request-params-prepared');
+    
+    const response = await api.get("/categories", { params });
+    timer.mark('response-received');
+    
+    timer.complete(true, { categoriesCount: response.data?.categories?.length || 0 });
+    return response;
+  } catch (error) {
+    timer.error(error);
+    throw error;
+  }
 };
 
 // Add this at the bottom of api.js (or wherever you want)
@@ -212,17 +222,49 @@ export const getCategoryBySlug = (slug) => {
 };
 
 
-export const getallsubCategories = (searchTerm = "", slug = "") => {
-  const params = searchTerm ? { search: searchTerm } : {};
-  return api.get(`/categories/sub/${slug}`, { params });
+export const getallsubCategories = async (searchTerm = "", slug = "") => {
+  const timer = new APITimer('getallsubCategories');
+  try {
+    const params = searchTerm ? { search: searchTerm } : {};
+    timer.mark('request-params-prepared');
+    
+    const response = await api.get(`/categories/sub/${slug}`, { params });
+    timer.mark('response-received');
+    
+    timer.complete(true, { subCategoriesCount: response.data?.subCategories?.length || 0, slug });
+    return response;
+  } catch (error) {
+    timer.error(error);
+    throw error;
+  }
 };
 
-export const getallprojects = (page, pageSize, searchTerm = "", sortTerm = "", type = "") => {
-  const params = { page, pageSize };
-  if (searchTerm && searchTerm.trim() !== "") params.search = searchTerm;
-  if (type && type.trim() !== "") params.type = type;
-  if (sortTerm && sortTerm.trim() !== "") params.file_type = sortTerm;
-  return api.get("/projects", { params });
+export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm = "", type = "") => {
+  const timer = new APITimer('getallprojects');
+  try {
+    const params = { page, pageSize };
+    if (searchTerm && searchTerm.trim() !== "") params.search = searchTerm;
+    if (type && type.trim() !== "") params.type = type;
+    if (sortTerm && sortTerm.trim() !== "") params.file_type = sortTerm;
+    
+    timer.mark('request-params-prepared');
+    
+    const response = await api.get("/projects", { params });
+    timer.mark('response-received');
+    
+    timer.complete(true, { 
+      projectsCount: response.data?.products?.length || 0, 
+      totalPages: response.data?.totalPages || 0,
+      page,
+      searchTerm,
+      type,
+      sortTerm
+    });
+    return response;
+  } catch (error) {
+    timer.error(error);
+    throw error;
+  }
 };
 
 export const getPaginatedProjects = (page, limit = 9) => {

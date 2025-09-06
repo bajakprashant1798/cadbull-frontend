@@ -23,6 +23,7 @@ import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
+import { useComponentTimer } from "@/utils/apiTiming";
 
 const Categories = ({
 //   initialCategories,
@@ -98,15 +99,32 @@ const Categories = ({
   // API data loader: always use args from query
   const loadRecords = useCallback(
     (page, searchText, fileType, type) => {
+      const { timer } = useComponentTimer("Categories-loadRecords");
+      
       startLoading();
+      timer.mark('loading-started');
+      
       getallprojects(page, 9, searchText, fileType, type)
         .then((response) => {
+          timer.mark('api-response-received');
           setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
+          timer.mark('state-updated');
           stopLoading();
+          
+          timer.complete(true, {
+            page,
+            projectsCount: response.data?.products?.length || 0,
+            totalPages: response.data.totalPages,
+            searchText,
+            fileType,
+            type
+          });
         })
         .catch((error) => {
+          timer.mark('api-error-occurred');
           stopLoading();
+          timer.error(error);
           console.error("Error fetching projects:", error);
         });
     },

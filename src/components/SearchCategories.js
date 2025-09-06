@@ -12,6 +12,7 @@ import {
 } from "../../redux/app/features/projectsSlice";
 import SubCategoriesDrawer from "./drawer/SubCategoriesDrawer";
 import { openDrawerHandler } from "../../redux/app/features/drawerSlice";
+import { useEffectTimer } from "@/utils/apiTiming";
 
 const SearchCategories = ({ categories, type }) => {
   const router = useRouter();
@@ -34,9 +35,14 @@ const SearchCategories = ({ categories, type }) => {
   
 
   async function fetchCategories() {
+    const timer = useEffectTimer("SearchCategories-fetchCategories", [type, slug, searchTerm]);
+    
     if (type === "Categories") {
       try {
+        timer.mark('categories-fetch-start');
         const response = await getallCategories(searchTerm);
+        timer.mark('categories-response-received');
+        
         response.data.categories.forEach((item) => {
           item.url = "categories/sub/";
         });
@@ -44,13 +50,19 @@ const SearchCategories = ({ categories, type }) => {
         
         setCatalog(response.data.categories);
         dispatch(addAllCategoriesData(response.data.categories));
+        
+        timer.complete(true, { categoriesCount: response.data.categories.length });
       } catch (error) {
+        timer.error(error);
         // console.error("Error fetching categories:", error);
       }
     }
     if (type === "Sub Categories" && slug) {
       try {
+        timer.mark('subcategories-fetch-start');
         const response = await getallsubCategories(searchTerm, slug);
+        timer.mark('subcategories-response-received');
+        
         const fetchedSubCategories = response.data.subCategories || [];
 
         // ✅ Your brilliant idea: Use previous categories if current is empty
@@ -68,16 +80,25 @@ const SearchCategories = ({ categories, type }) => {
         }
 
         dispatch(addAllSubCategoriesData(fetchedSubCategories));
+        timer.complete(true, { subCategoriesCount: fetchedSubCategories.length, slug });
         // console.log("subcategoriedta", response.data);
       } catch (error) {
+        timer.error(error);
         // console.error("Error fetching categories:", error);
       }
     }
   }
   let timers;
   useEffect(() => {
+    const effectTimer = useEffectTimer("SearchCategories-useEffect", [searchTerm]);
+    
     timers = setTimeout(() => {
-      fetchCategories();
+      effectTimer.mark('timeout-triggered');
+      fetchCategories().then(() => {
+        effectTimer.complete(true);
+      }).catch((error) => {
+        effectTimer.error(error);
+      });
     }, 500);
     return () => {
       clearTimeout(timers);
