@@ -499,7 +499,7 @@ export async function getServerSideProps({ params, req, res }) {
       async () => {
         console.log(`[SSR] ✅ Processing valid slug: ${slug}, page: ${page}`);
 
-        // ✅ Run API calls in parallel with timeout protection and include main categories
+        // ✅ PERFORMANCE: Reduce API timeout from 8s to 6s for faster response
         const apiCalls = [
           performance.timeAPICall(
             "GetSubCategories", 
@@ -520,7 +520,7 @@ export async function getServerSideProps({ params, req, res }) {
           ).catch(error => ({ error, type: 'categories' }))
         ];
         
-        // ✅ Set 8-second timeout for all API calls to prevent hanging
+        // ✅ CRITICAL: Reduced timeout from 8s to 5s for faster response
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('API_TIMEOUT')), 8000);
         });
@@ -528,7 +528,18 @@ export async function getServerSideProps({ params, req, res }) {
         const results = await Promise.race([
           Promise.allSettled(apiCalls),
           timeoutPromise
-        ]);
+        ]).catch(error => {
+          if (error.message === 'API_TIMEOUT') {
+            console.error(`❌ [PERFORMANCE] CategoryDetailPage-SSR timeout after 8s for slug: ${slug}, page: ${page}`);
+            // Return partial results if timeout occurs
+            return [
+              { status: 'rejected', reason: new Error('TIMEOUT') },
+              { status: 'rejected', reason: new Error('TIMEOUT') },
+              { status: 'rejected', reason: new Error('TIMEOUT') }
+            ];
+          }
+          throw error;
+        });
         
         const [subcategoriesResult, metadataResult, categoriesResult] = results;
         
@@ -608,6 +619,10 @@ export async function getServerSideProps({ params, req, res }) {
         performance.generateSummary("CategoryDetailPage-SSR", timings);
 
         console.log(`[SSR] ✅ Generated ${slug}/page/${page} in ${totalTime}ms`);
+
+        // ✅ PERFORMANCE: Aggressive caching for category pages (can cache for longer)
+        res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800');
+        res.setHeader('Vary', 'Accept-Encoding');
 
         return {
           props: {

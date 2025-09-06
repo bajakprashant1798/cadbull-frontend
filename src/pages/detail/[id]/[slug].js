@@ -1110,7 +1110,12 @@ export async function getServerSideProps(ctx) {
         break; // Success, exit retry loop
       } catch (error) {
         retryCount++;
-        console.log(`Retry ${retryCount}/${maxRetries} for project ${id}:`, error.status);
+        console.error(`❌ [DETAIL-PAGE-ERROR] Retry ${retryCount}/${maxRetries} for product ID: ${id}, slug: ${params.slug || 'unknown'}:`, {
+          status: error.response?.status || 'unknown',
+          message: error.message,
+          url: error.config?.url || 'unknown',
+          method: error.config?.method || 'GET'
+        });
         
         if (error.response?.status === 429 && retryCount < maxRetries) {
           // Wait before retrying (exponential backoff)
@@ -1191,8 +1196,16 @@ export async function getServerSideProps(ctx) {
       },
     };
   } catch (err) {
-    // console.error('🧪 [AMPLIFY-ERROR] Error in detail page getServerSideProps:', err);
-    console.error('Error in detail page getServerSideProps:', err);
+    console.error(`❌ [DETAIL-PAGE-ERROR] Error in detail page getServerSideProps for product ID: ${id}, slug: ${params.slug || 'unknown'}:`, {
+      errorMessage: err.message,
+      errorStatus: err.response?.status || 'unknown',
+      errorCode: err.code || 'unknown',
+      requestURL: err.config?.url || 'unknown',
+      projectId: id,
+      requestedSlug: params.slug,
+      userAgent: ctx.req.headers['user-agent'] || 'unknown',
+      ip: ctx.req.headers['x-forwarded-for'] || ctx.req.connection.remoteAddress || 'unknown'
+    });
 
     res.setHeader('Cache-Control', 'no-store');
     return {

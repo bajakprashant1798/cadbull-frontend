@@ -628,9 +628,9 @@ export async function getServerSideProps({ params, query, req, res }) {
           ),
         ];
 
-        // ✅ Set 6-second timeout for categories API calls to prevent hanging
+        // ✅ PRODUCTION: Set 3-second timeout for categories API calls (production servers are slower)
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('CATEGORIES_API_TIMEOUT')), 6000);
+          setTimeout(() => reject(new Error('CATEGORIES_API_TIMEOUT')), 3000);
         });
         
         const results = await Promise.race([
