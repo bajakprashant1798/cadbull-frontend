@@ -7,25 +7,25 @@ const nextConfig = {
   productionBrowserSourceMaps: false,     // reduce bundle size/telemetry
   httpAgentOptions: { keepAlive: true },  // fewer TCP handshakes when SSR calls your API
   
-  // ✅ CRITICAL: Production optimizations for 35-100 concurrent users
-  experimental: {
-    // ✅ HTTP optimizations for high concurrency
-    serverMinification: true,
-    serverSourceMaps: false,
-    optimizeCss: false, // Disabled due to dependency issues
-    esmExternals: true,
-    scrollRestoration: true,
-    // ✅ Memory optimization for concurrent requests
-    workerThreads: false,
-    cpus: 1, // Limit CPU usage in containers
+  // // ✅ CRITICAL: Production optimizations for 35-100 concurrent users
+  // experimental: {
+  //   // ✅ HTTP optimizations for high concurrency
+  //   serverMinification: true,
+  //   serverSourceMaps: false,
+  //   optimizeCss: false, // Disabled due to dependency issues
+  //   esmExternals: true,
+  //   scrollRestoration: true,
+  //   // ✅ Memory optimization for concurrent requests
+  //   workerThreads: false,
+  //   cpus: 1, // Limit CPU usage in containers
 
-    // ✅ Optimize for Chrome's resource loading
-    optimizeServerReact: true,
-    serverComponentsExternalPackages: ['@aws-sdk/client-s3'],
+  //   // ✅ Optimize for Chrome's resource loading
+  //   optimizeServerReact: true,
+  //   serverComponentsExternalPackages: ['@aws-sdk/client-s3'],
     
-    // ✅ Reduce Chrome's parse blocking
-    webVitalsAttribution: ['CLS', 'LCP', 'FCP'],
-  },
+  //   // ✅ Reduce Chrome's parse blocking
+  //   webVitalsAttribution: ['CLS', 'LCP', 'FCP'],
+  // },
 
   // ✅ Performance monitoring and limits
   onDemandEntries: {

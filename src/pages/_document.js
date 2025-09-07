@@ -50,7 +50,7 @@ export default function Document(props) {
             <link rel="dns-prefetch" href="https://www.google-analytics.com" />
             
             {/* ✅ CHROME: Preload critical API endpoints */}
-            <link rel="prefetch" href="/api/projects/latest?page=1&limit=6" />
+            {/* <link rel="prefetch" href="/api/projects/latest?page=1&limit=6" /> */}
             
             {/* ✅ PERFORMANCE: Preload critical resources */}
             <link rel="preload" href="/favicon.ico" as="image" />

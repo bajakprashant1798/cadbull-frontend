@@ -7,6 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
+import { ssrTimeout } from "@/utils/ssrTimeout";
 // import Architecture from "@/assets/images/Architecture.png";
 
 // ✅ BIM icons
@@ -1037,7 +1038,7 @@ export default function Home({
 
 
 // pages/index.js
-export async function getServerSideProps({ req, res, query }) {
+export async function getServerSideProps({  res, query }) {
   const page = Number(query.page || 1);
   const search = (query.search || "").toString();
   const file_type = (query.file_type || "").toString();
@@ -1050,21 +1051,36 @@ export async function getServerSideProps({ req, res, query }) {
   );
 
   try {
-    const [projectRes, categoryRes] = await Promise.all([
-      getallprojects(page, 9, search, file_type),
-      getallCategories()
+    // const [projectRes, categoryRes] = await Promise.all([
+    //   getallprojects(page, 9, search, file_type),
+    //   getallCategories()
+    // ]);
+
+    // Cap each call at 6s, don't let a single slow call block everything
+    const [projSet, catSet] = await Promise.allSettled([
+      Promise.race([ getallprojects(page, 9, search, file_type), ssrTimeout(6000, 'projects') ]),
+      Promise.race([ getallCategories(), ssrTimeout(6000, 'categories') ]),
     ]);
+
+    const projectRes   = projSet.status === 'fulfilled' ? projSet.value : null;
+    const categoryRes  = catSet.status === 'fulfilled' ? catSet.value : null;
 
     return {
       props: {
-        initialProjects: projectRes?.data?.products || [],
-        totalPages: projectRes?.data?.totalPages || 1,
-        totalProducts: projectRes?.data?.totalProducts || 0,
-        lastProductId: projectRes?.data?.lastProductId || 0,
-        housePlanFiles: projectRes?.data?.housePlanFiles || 0,
+        // initialProjects: projectRes?.data?.products || [],
+        // totalPages: projectRes?.data?.totalPages || 1,
+        // totalProducts: projectRes?.data?.totalProducts || 0,
+        // lastProductId: projectRes?.data?.lastProductId || 0,
+        // housePlanFiles: projectRes?.data?.housePlanFiles || 0,
+        initialProjects: projectRes?.data?.products ?? [],
+        totalPages: projectRes?.data?.totalPages ?? 1,
+        totalProducts: projectRes?.data?.totalProducts ?? 0,
+        lastProductId: projectRes?.data?.lastProductId ?? 0,
+        housePlanFiles: projectRes?.data?.housePlanFiles ?? 0,
         currentPage: page,
         filters: { search, file_type },
-        initialCategories: categoryRes?.data?.categories || [],
+        // initialCategories: categoryRes?.data?.categories || [],
+        initialCategories: categoryRes?.data?.categories ?? [],
       },
     };
   } catch (e) {
