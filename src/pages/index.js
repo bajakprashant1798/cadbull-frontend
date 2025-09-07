@@ -52,7 +52,6 @@ import Image from "next/image";
 // import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
 import { performance } from "@/utils/performance";
-import { logPerformance, logPageEvent, logChromePerformance, getNavigationTiming } from "@/utils/remoteLogger";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -115,14 +114,6 @@ export default function Home({
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
-  // 🔍 COMPONENT RENDER TIMING - Remote logging for live site
-  logPageEvent('homepage', 'COMPONENT_RENDER_START', {
-    projectsCount: initialProjects?.length || 0,
-    categoriesCount: initialCategories?.length || 0,
-    currentPage: initialCurrentPage,
-    hasFilters: Object.keys(filters).length > 0
-  });
-  
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
   
@@ -164,41 +155,6 @@ export default function Home({
 
   useEffect(() => {
     setCurrentPage(initialCurrentPage || 1);
-    
-    // 🔍 CLIENT-SIDE PERFORMANCE LOGGING - Remote logging for live site
-    if (typeof window !== 'undefined') {
-      logPageEvent('homepage', 'CLIENT_SIDE_USEEFFECT_START');
-      
-      // Get navigation timing and log to remote
-      const timingData = getNavigationTiming();
-      
-      if (timingData.error) {
-        logPageEvent('homepage', 'TIMING_API_ERROR', { error: timingData.error });
-      } else {
-        logChromePerformance({
-          navigationStart: timingData.navigationStart,
-          domContentLoaded: timingData.domContentLoaded,
-          loadEventEnd: timingData.loadEventEnd,
-          currentTime: timingData.currentTime,
-          isChrome: navigator.userAgent.includes('Chrome'),
-          chromeVersion: navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || 'unknown'
-        });
-      }
-      
-      // Add window.onload listener to track final load time
-      const originalOnload = window.onload;
-      window.onload = function(event) {
-        if (originalOnload) originalOnload(event);
-        
-        const finalTimingData = getNavigationTiming();
-        logPerformance('homepage', {
-          finalLoadTime: finalTimingData.currentTime,
-          loadEventEnd: finalTimingData.loadEventEnd,
-          isChrome: navigator.userAgent.includes('Chrome'),
-          pageUrl: window.location.href
-        });
-      };
-    }
   }, [initialCurrentPage]);
 
   
@@ -1082,14 +1038,9 @@ export default function Home({
 
 // pages/index.js
 export async function getServerSideProps({ req, res, query }) {
-  const startTime = Date.now();
-  console.log(`🚀 SSR Started at: ${new Date().toISOString()}`);
-  
   const page = Number(query.page || 1);
   const search = (query.search || "").toString();
   const file_type = (query.file_type || "").toString();
-
-  console.log(`📊 SSR Params - Page: ${page}, Search: "${search}", FileType: "${file_type}"`);
 
   // ⚠️ Important: short CDN cache + generous stale window
   // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
@@ -1099,22 +1050,10 @@ export async function getServerSideProps({ req, res, query }) {
   );
 
   try {
-    const apiStartTime = Date.now();
-    console.log(`🌐 API Calls Starting at: ${new Date().toISOString()}`);
-    
     const [projectRes, categoryRes] = await Promise.all([
       getallprojects(page, 9, search, file_type),
       getallCategories()
     ]);
-
-    const apiEndTime = Date.now();
-    const apiDuration = apiEndTime - apiStartTime;
-    console.log(`✅ API Calls Completed in: ${apiDuration}ms`);
-    console.log(`📦 Projects Response: ${projectRes?.data?.products?.length || 0} items`);
-    console.log(`📁 Categories Response: ${categoryRes?.data?.categories?.length || 0} items`);
-
-    const totalTime = Date.now() - startTime;
-    console.log(`🏁 SSR Completed in: ${totalTime}ms`);
 
     return {
       props: {
@@ -1129,9 +1068,6 @@ export async function getServerSideProps({ req, res, query }) {
       },
     };
   } catch (e) {
-    const errorTime = Date.now() - startTime;
-    console.error(`❌ SSR Error after ${errorTime}ms:`, e.message);
-    
     // Graceful fallback
     return {
       props: {

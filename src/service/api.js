@@ -3,7 +3,6 @@ import axios from "axios";
 import store from "../../redux/app/store"; // Adjust based on your file structure
 import { logout } from "../../redux/app/features/authSlice";
 import { APITimer } from "../utils/apiTiming";
-import { logAPICall, logError } from "../utils/remoteLogger";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
@@ -202,8 +201,6 @@ export const confirmAccountDeletion = async (token) => {
 
 export const getallCategories = async (searchTerm = "") => {
   const timer = new APITimer('getallCategories');
-  const apiStartTime = Date.now();
-  
   try {
     const params = searchTerm ? { search: searchTerm } : {};
     timer.mark('request-params-prepared');
@@ -211,19 +208,9 @@ export const getallCategories = async (searchTerm = "") => {
     const response = await api.get("/categories", { params });
     timer.mark('response-received');
     
-    const apiDuration = Date.now() - apiStartTime;
-    
-    // Log to remote logger for live site monitoring
-    logAPICall('/categories', apiDuration, response.status);
-    
     timer.complete(true, { categoriesCount: response.data?.categories?.length || 0 });
     return response;
   } catch (error) {
-    const apiDuration = Date.now() - apiStartTime;
-    
-    // Log error to remote logger
-    logAPICall('/categories', apiDuration, error.response?.status || 500, error);
-    
     timer.error(error);
     throw error;
   }
@@ -254,8 +241,6 @@ export const getallsubCategories = async (searchTerm = "", slug = "") => {
 
 export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm = "", type = "") => {
   const timer = new APITimer('getallprojects');
-  const apiStartTime = Date.now();
-  
   try {
     const params = { page, pageSize };
     if (searchTerm && searchTerm.trim() !== "") params.search = searchTerm;
@@ -267,11 +252,6 @@ export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm =
     const response = await api.get("/projects", { params });
     timer.mark('response-received');
     
-    const apiDuration = Date.now() - apiStartTime;
-    
-    // Log to remote logger for live site monitoring
-    logAPICall('/projects', apiDuration, response.status);
-    
     timer.complete(true, { 
       projectsCount: response.data?.products?.length || 0, 
       totalPages: response.data?.totalPages || 0,
@@ -282,8 +262,6 @@ export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm =
     });
     return response;
   } catch (error) {
-    const apiDuration = Date.now() - apiStartTime;
-    console.error(`❌ getallprojects failed after ${apiDuration}ms:`, error.message);
     timer.error(error);
     throw error;
   }
