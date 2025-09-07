@@ -33,15 +33,24 @@ export default function Document(props) {
         {/* Only load fonts for non-AMP pages to prevent duplicate amp-custom */}
         {!isAmp && (
           <>
-            {/* ✅ SPEED OPTIMIZATION: Critical preconnects for performance */}
+            {/* ✅ CHROME PERFORMANCE: Critical preconnects for faster loading */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
+            
+            {/* ✅ CHROME: AdSense preconnects to reduce initial blocking */}
             <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://tpc.googlesyndication.com" crossOrigin="anonymous" />
+            <link rel="preconnect" href="https://fundingchoicesmessages.google.com" crossOrigin="anonymous" />
+            
+            {/* ✅ CHROME: DNS prefetch for third-party resources */}
             <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
             <link rel="dns-prefetch" href="https://connect.facebook.net" />
+            <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+            
+            {/* ✅ CHROME: Preload critical API endpoints */}
+            <link rel="prefetch" href="/api/projects/latest?page=1&limit=6" />
             
             {/* ✅ PERFORMANCE: Preload critical resources */}
             <link rel="preload" href="/favicon.ico" as="image" />

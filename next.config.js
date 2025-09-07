@@ -18,6 +18,13 @@ const nextConfig = {
     // ✅ Memory optimization for concurrent requests
     workerThreads: false,
     cpus: 1, // Limit CPU usage in containers
+
+    // ✅ Optimize for Chrome's resource loading
+    optimizeServerReact: true,
+    serverComponentsExternalPackages: ['@aws-sdk/client-s3'],
+    
+    // ✅ Reduce Chrome's parse blocking
+    webVitalsAttribution: ['CLS', 'LCP', 'FCP'],
   },
 
   // ✅ Performance monitoring and limits
@@ -95,6 +102,36 @@ const nextConfig = {
       {
         source: '/assets/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      
+      // ✅ CHROME PERFORMANCE: Additional resource hints for homepage
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://pagead2.googlesyndication.com>; rel=preconnect; crossorigin, <https://fonts.googleapis.com>; rel=preconnect; crossorigin',
+          },
+          {
+            key: 'X-Chrome-Optimize',
+            value: 'resource-hints',
+          },
+        ],
+      },
+      
+      // ✅ CHROME: API performance hints
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=600',
+          },
+          {
+            key: 'X-Resource-Priority',
+            value: 'high',
+          },
+        ],
       },
     ];
   },
