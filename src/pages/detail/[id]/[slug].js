@@ -24,7 +24,6 @@ import {
   getallprojects, // ✅ Add this here
 } from "@/service/api";
 import { requireAuth } from "@/utils/redirectHelpers";
-import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, trackPageEvent } from "@/utils/amplifyLogger";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllCategoriesData,

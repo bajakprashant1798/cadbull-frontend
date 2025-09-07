@@ -3,6 +3,7 @@ import axios from "axios";
 import store from "../../redux/app/store"; // Adjust based on your file structure
 import { logout } from "../../redux/app/features/authSlice";
 import { APITimer } from "../utils/apiTiming";
+import { logAPICall, logError } from "../utils/remoteLogger";
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
@@ -202,24 +203,27 @@ export const confirmAccountDeletion = async (token) => {
 export const getallCategories = async (searchTerm = "") => {
   const timer = new APITimer('getallCategories');
   const apiStartTime = Date.now();
-  console.log(`🗂️  getallCategories API call started`);
   
   try {
     const params = searchTerm ? { search: searchTerm } : {};
     timer.mark('request-params-prepared');
-    console.log(`📤 Sending request to: ${process.env.NEXT_PUBLIC_API_MAIN}/categories`);
     
     const response = await api.get("/categories", { params });
     timer.mark('response-received');
     
     const apiDuration = Date.now() - apiStartTime;
-    console.log(`✅ getallCategories completed in ${apiDuration}ms - Got ${response.data?.categories?.length || 0} categories`);
+    
+    // Log to remote logger for live site monitoring
+    logAPICall('/categories', apiDuration, response.status);
     
     timer.complete(true, { categoriesCount: response.data?.categories?.length || 0 });
     return response;
   } catch (error) {
     const apiDuration = Date.now() - apiStartTime;
-    console.error(`❌ getallCategories failed after ${apiDuration}ms:`, error.message);
+    
+    // Log error to remote logger
+    logAPICall('/categories', apiDuration, error.response?.status || 500, error);
+    
     timer.error(error);
     throw error;
   }
@@ -251,7 +255,6 @@ export const getallsubCategories = async (searchTerm = "", slug = "") => {
 export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm = "", type = "") => {
   const timer = new APITimer('getallprojects');
   const apiStartTime = Date.now();
-  console.log(`🔥 getallprojects API call started - Page: ${page}, Search: "${searchTerm}", FileType: "${sortTerm}"`);
   
   try {
     const params = { page, pageSize };
@@ -260,13 +263,14 @@ export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm =
     if (sortTerm && sortTerm.trim() !== "") params.file_type = sortTerm;
     
     timer.mark('request-params-prepared');
-    console.log(`📤 Sending request to: ${process.env.NEXT_PUBLIC_API_MAIN}/projects with params:`, params);
     
     const response = await api.get("/projects", { params });
     timer.mark('response-received');
     
     const apiDuration = Date.now() - apiStartTime;
-    console.log(`✅ getallprojects completed in ${apiDuration}ms - Got ${response.data?.products?.length || 0} projects`);
+    
+    // Log to remote logger for live site monitoring
+    logAPICall('/projects', apiDuration, response.status);
     
     timer.complete(true, { 
       projectsCount: response.data?.products?.length || 0, 

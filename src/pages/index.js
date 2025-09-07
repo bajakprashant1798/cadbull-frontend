@@ -52,7 +52,7 @@ import Image from "next/image";
 // import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
 import { performance } from "@/utils/performance";
-import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, logISRPerformance, trackPageEvent } from "@/utils/amplifyLogger";
+import { logPerformance, logPageEvent, logChromePerformance, getNavigationTiming } from "@/utils/remoteLogger";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -115,9 +115,13 @@ export default function Home({
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
-  // 🔍 COMPONENT RENDER TIMING
-  console.log(`🎨 Home Component Render Started at: ${new Date().toISOString()}`);
-  console.log(`📊 Props received - Projects: ${initialProjects?.length || 0}, Categories: ${initialCategories?.length || 0}`);
+  // 🔍 COMPONENT RENDER TIMING - Remote logging for live site
+  logPageEvent('homepage', 'COMPONENT_RENDER_START', {
+    projectsCount: initialProjects?.length || 0,
+    categoriesCount: initialCategories?.length || 0,
+    currentPage: initialCurrentPage,
+    hasFilters: Object.keys(filters).length > 0
+  });
   
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
@@ -161,48 +165,24 @@ export default function Home({
   useEffect(() => {
     setCurrentPage(initialCurrentPage || 1);
     
-    // 🔍 CLIENT-SIDE PERFORMANCE LOGGING
+    // 🔍 CLIENT-SIDE PERFORMANCE LOGGING - Remote logging for live site
     if (typeof window !== 'undefined') {
-      console.log(`🖥️  Client-side useEffect started at: ${new Date().toISOString()}`);
+      logPageEvent('homepage', 'CLIENT_SIDE_USEEFFECT_START');
       
-      // Use modern performance API with fallback to legacy
-      let navigationStart, loadEventEnd, domContentLoaded;
+      // Get navigation timing and log to remote
+      const timingData = getNavigationTiming();
       
-      if (performance.getEntriesByType && performance.getEntriesByType('navigation').length > 0) {
-        // Modern API
-        const navigation = performance.getEntriesByType('navigation')[0];
-        navigationStart = navigation.fetchStart || navigation.startTime || 0;
-        loadEventEnd = navigation.loadEventEnd || 0;
-        domContentLoaded = navigation.domContentLoadedEventEnd || 0;
-        
-        console.log(`⏱️  Navigation Start: ${navigationStart}`);
-        console.log(`⏱️  DOM Content Loaded: ${domContentLoaded - navigationStart}ms`);
-        
-        if (loadEventEnd > 0) {
-          console.log(`⏱️  Page Load Complete: ${loadEventEnd - navigationStart}ms`);
-        }
-        
-        // Log current timestamp for comparison
-        console.log(`⏱️  Current Time Since Navigation: ${Date.now() - (navigationStart + performance.timeOrigin)}ms`);
-        
-      } else if (performance.timing) {
-        // Legacy API fallback
-        navigationStart = performance.timing.navigationStart;
-        loadEventEnd = performance.timing.loadEventEnd;
-        domContentLoaded = performance.timing.domContentLoadedEventEnd;
-        
-        console.log(`⏱️  Navigation Start: ${navigationStart}`);
-        console.log(`⏱️  DOM Content Loaded: ${domContentLoaded - navigationStart}ms`);
-        
-        if (loadEventEnd > 0) {
-          console.log(`⏱️  Page Load Complete: ${loadEventEnd - navigationStart}ms`);
-        }
-        
-        // Log current timestamp for comparison
-        console.log(`⏱️  Current Time Since Navigation: ${Date.now() - navigationStart}ms`);
+      if (timingData.error) {
+        logPageEvent('homepage', 'TIMING_API_ERROR', { error: timingData.error });
       } else {
-        console.log(`⏱️  Performance timing not available, using basic timestamp`);
-        console.log(`⏱️  Component loaded at: ${Date.now()}`);
+        logChromePerformance({
+          navigationStart: timingData.navigationStart,
+          domContentLoaded: timingData.domContentLoaded,
+          loadEventEnd: timingData.loadEventEnd,
+          currentTime: timingData.currentTime,
+          isChrome: navigator.userAgent.includes('Chrome'),
+          chromeVersion: navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || 'unknown'
+        });
       }
       
       // Add window.onload listener to track final load time
@@ -210,13 +190,13 @@ export default function Home({
       window.onload = function(event) {
         if (originalOnload) originalOnload(event);
         
-        if (navigationStart) {
-          const finalLoadTime = performance.getEntriesByType && performance.getEntriesByType('navigation').length > 0
-            ? Date.now() - (navigationStart + performance.timeOrigin)
-            : Date.now() - navigationStart;
-          console.log(`🏁 FINAL PAGE LOAD COMPLETE: ${finalLoadTime}ms`);
-        }
-        console.log(`🏁 Final Load Time: ${new Date().toISOString()}`);
+        const finalTimingData = getNavigationTiming();
+        logPerformance('homepage', {
+          finalLoadTime: finalTimingData.currentTime,
+          loadEventEnd: finalTimingData.loadEventEnd,
+          isChrome: navigator.userAgent.includes('Chrome'),
+          pageUrl: window.location.href
+        });
       };
     }
   }, [initialCurrentPage]);
