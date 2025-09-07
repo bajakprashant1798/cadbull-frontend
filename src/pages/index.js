@@ -115,6 +115,10 @@ export default function Home({
     currentPage: initialCurrentPage = 1, // default to 1 if not passed
     filters = {},
 }) {
+  // 🔍 COMPONENT RENDER TIMING
+  console.log(`🎨 Home Component Render Started at: ${new Date().toISOString()}`);
+  console.log(`📊 Props received - Projects: ${initialProjects?.length || 0}, Categories: ${initialCategories?.length || 0}`);
+  
   const [blogs, setBlogs] = useState([]);
   const [isLoading,startLoading,stopLoading]=useLoading();
   
@@ -156,6 +160,65 @@ export default function Home({
 
   useEffect(() => {
     setCurrentPage(initialCurrentPage || 1);
+    
+    // 🔍 CLIENT-SIDE PERFORMANCE LOGGING
+    if (typeof window !== 'undefined') {
+      console.log(`🖥️  Client-side useEffect started at: ${new Date().toISOString()}`);
+      
+      // Use modern performance API with fallback to legacy
+      let navigationStart, loadEventEnd, domContentLoaded;
+      
+      if (performance.getEntriesByType && performance.getEntriesByType('navigation').length > 0) {
+        // Modern API
+        const navigation = performance.getEntriesByType('navigation')[0];
+        navigationStart = navigation.fetchStart || navigation.startTime || 0;
+        loadEventEnd = navigation.loadEventEnd || 0;
+        domContentLoaded = navigation.domContentLoadedEventEnd || 0;
+        
+        console.log(`⏱️  Navigation Start: ${navigationStart}`);
+        console.log(`⏱️  DOM Content Loaded: ${domContentLoaded - navigationStart}ms`);
+        
+        if (loadEventEnd > 0) {
+          console.log(`⏱️  Page Load Complete: ${loadEventEnd - navigationStart}ms`);
+        }
+        
+        // Log current timestamp for comparison
+        console.log(`⏱️  Current Time Since Navigation: ${Date.now() - (navigationStart + performance.timeOrigin)}ms`);
+        
+      } else if (performance.timing) {
+        // Legacy API fallback
+        navigationStart = performance.timing.navigationStart;
+        loadEventEnd = performance.timing.loadEventEnd;
+        domContentLoaded = performance.timing.domContentLoadedEventEnd;
+        
+        console.log(`⏱️  Navigation Start: ${navigationStart}`);
+        console.log(`⏱️  DOM Content Loaded: ${domContentLoaded - navigationStart}ms`);
+        
+        if (loadEventEnd > 0) {
+          console.log(`⏱️  Page Load Complete: ${loadEventEnd - navigationStart}ms`);
+        }
+        
+        // Log current timestamp for comparison
+        console.log(`⏱️  Current Time Since Navigation: ${Date.now() - navigationStart}ms`);
+      } else {
+        console.log(`⏱️  Performance timing not available, using basic timestamp`);
+        console.log(`⏱️  Component loaded at: ${Date.now()}`);
+      }
+      
+      // Add window.onload listener to track final load time
+      const originalOnload = window.onload;
+      window.onload = function(event) {
+        if (originalOnload) originalOnload(event);
+        
+        if (navigationStart) {
+          const finalLoadTime = performance.getEntriesByType && performance.getEntriesByType('navigation').length > 0
+            ? Date.now() - (navigationStart + performance.timeOrigin)
+            : Date.now() - navigationStart;
+          console.log(`🏁 FINAL PAGE LOAD COMPLETE: ${finalLoadTime}ms`);
+        }
+        console.log(`🏁 Final Load Time: ${new Date().toISOString()}`);
+      };
+    }
   }, [initialCurrentPage]);
 
   
@@ -1039,9 +1102,14 @@ export default function Home({
 
 // pages/index.js
 export async function getServerSideProps({ req, res, query }) {
+  const startTime = Date.now();
+  console.log(`🚀 SSR Started at: ${new Date().toISOString()}`);
+  
   const page = Number(query.page || 1);
   const search = (query.search || "").toString();
   const file_type = (query.file_type || "").toString();
+
+  console.log(`📊 SSR Params - Page: ${page}, Search: "${search}", FileType: "${file_type}"`);
 
   // ⚠️ Important: short CDN cache + generous stale window
   // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
@@ -1051,10 +1119,22 @@ export async function getServerSideProps({ req, res, query }) {
   );
 
   try {
+    const apiStartTime = Date.now();
+    console.log(`🌐 API Calls Starting at: ${new Date().toISOString()}`);
+    
     const [projectRes, categoryRes] = await Promise.all([
       getallprojects(page, 9, search, file_type),
       getallCategories()
     ]);
+
+    const apiEndTime = Date.now();
+    const apiDuration = apiEndTime - apiStartTime;
+    console.log(`✅ API Calls Completed in: ${apiDuration}ms`);
+    console.log(`📦 Projects Response: ${projectRes?.data?.products?.length || 0} items`);
+    console.log(`📁 Categories Response: ${categoryRes?.data?.categories?.length || 0} items`);
+
+    const totalTime = Date.now() - startTime;
+    console.log(`🏁 SSR Completed in: ${totalTime}ms`);
 
     return {
       props: {
@@ -1069,6 +1149,9 @@ export async function getServerSideProps({ req, res, query }) {
       },
     };
   } catch (e) {
+    const errorTime = Date.now() - startTime;
+    console.error(`❌ SSR Error after ${errorTime}ms:`, e.message);
+    
     // Graceful fallback
     return {
       props: {
