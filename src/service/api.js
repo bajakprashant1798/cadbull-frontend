@@ -1,55 +1,16 @@
 // api.js
 import axios from "axios";
-import http from "http";
-import https from "https";
 import store from "../../redux/app/store"; // Adjust based on your file structure
 import { logout } from "../../redux/app/features/authSlice";
 import { APITimer } from "../utils/apiTiming";
 
-// ---------- SERVER vs BROWSER tuning ----------
-const isServer = typeof window === "undefined";
-
-// Prefer IPv4 first on Node to avoid slow AAAA lookups on some hosts
-if (isServer) {
-  try { require("dns").setDefaultResultOrder?.("ipv4first"); } catch {}
-}
-
-// Keep-alive agents so SSR doesn’t do a new TCP/TLS handshake for every call
-const httpAgent  = new http.Agent({ keepAlive: true, maxSockets: 128 });
-const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 128 });
-
-// Short, defensive timeouts:
-// - Server: be strict (caps TTFB). You can change with SSR_API_TIMEOUT_MS env.
-// - Browser: a bit more forgiving.
-const SERVER_TIMEOUT_MS  = Number(process.env.SSR_API_TIMEOUT_MS || 6000);
-const BROWSER_TIMEOUT_MS = 12000;
-
-// Use a private/internal URL for SSR if you have one (faster, cheaper),
-// otherwise fall back to the public NEXT_PUBLIC_API_MAIN.
-const baseURL = isServer
-  ? (process.env.API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_MAIN)
-  : process.env.NEXT_PUBLIC_API_MAIN;
 
 // ✅ Create Centralized Axios Instance
-// const api = axios.create({
-//   baseURL: process.env.NEXT_PUBLIC_API_MAIN,
-//   // baseURL: "/api",
-//   withCredentials: true, // Allows sending cookies if needed
-//   timeout: 20000, // 20 seconds
-// });
-
 const api = axios.create({
-  baseURL,
-  withCredentials: true,
-  timeout: isServer ? SERVER_TIMEOUT_MS : BROWSER_TIMEOUT_MS,
-  httpAgent,
-  httpsAgent,
-  // help proxies/CDNs choose best compression
-  headers: { "Accept-Encoding": "gzip, deflate, br" },
-  // never inherit system proxies by accident
-  proxy: false,
-  // clearer timeout errors in axios@1.x
-  transitional: { clarifyTimeoutError: true },
+  baseURL: process.env.NEXT_PUBLIC_API_MAIN,
+  // baseURL: "/api",
+  withCredentials: true, // Allows sending cookies if needed
+  timeout: 20000, // 20 seconds
 });
 
 // ✅ Request Interceptor: Attach Access Token
