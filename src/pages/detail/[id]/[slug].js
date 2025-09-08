@@ -148,6 +148,18 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const [showRelated, setShowRelated] = useState(false);
 
+
+  // --- debug helpers (local-only; remove later) ---
+const shortCat = (c) => ({
+  id: c?.id, title: c?.title, slug: c?.slug,
+  category_path: c?.category_path, path: c?.path
+});
+const shortSub = (s) => ({
+  id: s?.id, title: s?.title, slug: s?.slug,
+  subcategory_path: s?.subcategory_path, path: s?.path
+});
+
+
   useEffect(() => {
     const run = () => setShowRelated(true);
     if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
@@ -164,7 +176,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
-  const { categoryAndSubCategory,categoriesList } = useSelector((store) => store.projectinfo);
+  const { categoryAndSubCategory, categoriesList } = useSelector((store) => store.projectinfo);
   const { id } = router.query;
 
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
@@ -390,6 +402,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
   useEffect(() => {
+    console.log("categoryAndSubCategory", categoryAndSubCategory);
+    console.log("categoriesList", categoriesList);
+    
     if (categoryAndSubCategory.length === 0) {
       getCategoriesWithSubcategories()
         .then((res) => {
@@ -418,13 +433,24 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     // console.log("selectedCategory", selectedCategory);
     // console.log("selectedSubCategory", selectedSubCategory);
     
-    if (selectedCategory && selectedSubCategory) {
-      dispatch(updatesubcatslug(selectedSubCategory));
-      dispatch(updatesubcatpage(1));
-      // router.push(`/categories/sub/${selectedCategory}`);
-      router.push(`/${selectedCategory}`);
-    } else if (selectedCategory) {
-      // router.push(`/categories/sub/${selectedCategory}`);
+    // if (selectedCategory && selectedSubCategory) {
+    //   dispatch(updatesubcatslug(selectedSubCategory));
+    //   dispatch(updatesubcatpage(1));
+    //   // router.push(`/categories/sub/${selectedCategory}`);
+    //   router.push(`/${selectedCategory}`);
+    // } else if (selectedCategory) {
+    //   // router.push(`/categories/sub/${selectedCategory}`);
+    //   router.push(`/${selectedCategory}`);
+    // }
+    // Go directly to subcategory if chosen
+    if (selectedSubCategory) {
+      // If your route schema needs a page segment, use `/${selectedSubCategory}/1`
+      router.push(`/${selectedSubCategory}`);
+      return;
+    }
+
+    // Otherwise go to the main category (this already works for you)
+    if (selectedCategory) {
       router.push(`/${selectedCategory}`);
     }
   };
@@ -963,6 +989,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               if (selectedCategoryObj) {
                                 setSubCategories(selectedCategoryObj.project_sub_categories);
                               }
+                              setSelectedSubCategory(""); // clear previous sub selection
                             }}
                           >
                             <option value="all">All Category</option>
@@ -985,9 +1012,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             }}
                           >
                             <option value="">Select Sub Category</option>
-                            {subCategories.map(({ id, title }) => {
+                            {subCategories.map(({ id, title, slug }) => {
                               return (
-                                <option value={title} key={id}>
+                                <option value={slug} key={id}>
                                   • {title}
                                 </option>
                               );
