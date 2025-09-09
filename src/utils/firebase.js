@@ -1,5 +1,5 @@
 // src/utils/firebase.js
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, SDK_VERSION } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
 
 // Only initialize ONCE!
@@ -27,6 +27,12 @@ const firebaseConfig = {
 // const app = initializeApp(firebaseConfig);
 // Initialize once (avoids duplicate apps in Next.js)
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+
+// if (typeof window !== "undefined") {
+//   console.log("[FIREBASE] projectId:", app.options.projectId);
+//   console.log("[FIREBASE] apiKey:", app.options.apiKey);
+//   console.log("[FIREBASE] SDK_VERSION:", SDK_VERSION);
+// }
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
