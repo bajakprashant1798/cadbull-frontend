@@ -706,6 +706,27 @@ const RegisterPhone = () => {
   const [registrationSuccessMessage, setRegistrationSuccessMessage] = useState("");
   const [phone, setPhone] = useState("");
 
+  // at the top of RegisterPhone component
+  // at the top of RegisterPhone component
+  useEffect(() => {
+    // If the classic reCAPTCHA script was injected elsewhere, remove it.
+    const classic = document.querySelector(
+      'script[src^="https://www.google.com/recaptcha/api.js"]'
+    );
+    if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
+
+    // If grecaptcha exists but doesn't have .enterprise, remove/neutralize it
+    if (typeof window !== "undefined") {
+      const gre = window.grecaptcha;
+      if (gre && !gre.enterprise) {
+        try { delete window.grecaptcha; } catch (_e) { window.grecaptcha = undefined; }
+      }
+    }
+  }, []);
+
+
+
+
   // Always create a fresh reCAPTCHA (don’t reuse cleared instances)
   function makeFreshRecaptcha() {
     try { window.__cbRecaptcha?.clear?.(); } catch {}
@@ -778,14 +799,29 @@ const RegisterPhone = () => {
       setCountdown(RESEND_TIMER);
       resetOtp();
     } catch (err) {
-      let msg = "Failed to send OTP.";
-      if (err.code === "auth/invalid-phone-number") msg = "Invalid phone number.";
-      else if (err.code === "auth/too-many-requests") msg = "Too many requests, try again later.";
-      else if (err.code === "auth/quota-exceeded") msg = "SMS quota exceeded.";
-      else if (err.code === "auth/invalid-recaptcha-token") msg = "Security check failed. Refresh and try again.";
-      setError(msg);
+      // let msg = "Failed to send OTP.";
+      // if (err.code === "auth/invalid-phone-number") msg = "Invalid phone number.";
+      // else if (err.code === "auth/too-many-requests") msg = "Too many requests, try again later.";
+      // else if (err.code === "auth/quota-exceeded") msg = "SMS quota exceeded.";
+      // else if (err.code === "auth/invalid-recaptcha-token") msg = "Security check failed. Refresh and try again.";
+      // setError(msg);
 
-      // DO NOT render() a cleared verifier; just recreate a brand-new one
+      // // DO NOT render() a cleared verifier; just recreate a brand-new one
+      // try { window.__cbRecaptcha?.clear?.(); } catch {}
+      // await makeFreshRecaptcha();
+      console.error('OTP send error:', err);
+      const code = err?.code || '';
+      let msg = 'Failed to send OTP.';
+      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed')) {
+        msg = 'Security check failed. Please refresh the page and try again.';
+      } else if (code.includes('too-many-requests')) {
+        msg = 'Too many requests, try again later.';
+      } else if (code.includes('quota-exceeded')) {
+        msg = 'SMS quota exceeded.';
+      } else if (code.includes('invalid-phone-number')) {
+        msg = 'Invalid phone number.';
+      }
+      setError(msg);
       try { window.__cbRecaptcha?.clear?.(); } catch {}
       await makeFreshRecaptcha();
     } finally {
