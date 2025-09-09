@@ -709,19 +709,46 @@ const RegisterPhone = () => {
   // at the top of RegisterPhone component
   // at the top of RegisterPhone component
   // JS only (no TypeScript casts)
-  useEffect(() => {
-    // Remove classic v2 script if some widget injected it
-    const classic = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
-    if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
+  // useEffect(() => {
+  //   // Remove classic v2 script if some widget injected it
+  //   const classic = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
+  //   if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
 
-    // If classic grecaptcha leaked on the page, remove it so enterprise can load
-    if (typeof window !== "undefined") {
-      const gre = window.grecaptcha;
-      if (gre && !gre.enterprise) {
-        try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+  //   // If classic grecaptcha leaked on the page, remove it so enterprise can load
+  //   if (typeof window !== "undefined") {
+  //     const gre = window.grecaptcha;
+  //     if (gre && !gre.enterprise) {
+  //       try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+  //     }
+  //   }
+  // }, []);
+  // Blocks late-injected classic v2 reCAPTCHA so Firebase can load enterprise.
+  useEffect(() => {
+    const nukeClassic = () => {
+      // Remove any old v2 script tags that appear
+      document
+        .querySelectorAll('script[src^="https://www.google.com/recaptcha/api.js"]')
+        .forEach(s => s.parentElement && s.parentElement.removeChild(s));
+
+      // If a classic grecaptcha leaked into window, wipe it so enterprise can load
+      if (typeof window !== "undefined") {
+        const gre = window.grecaptcha;
+        if (gre && !gre.enterprise) {
+          try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+        }
       }
-    }
+    };
+
+    // run now…
+    nukeClassic();
+
+    // …and keep watching in case something injects it later
+    const obs = new MutationObserver(nukeClassic);
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+
+    return () => obs.disconnect();
   }, []);
+
 
   function makeFreshRecaptcha() {
     try { window.__cbRecaptcha?.clear?.(); } catch {}
