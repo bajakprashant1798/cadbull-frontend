@@ -678,6 +678,9 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
+// Import test utility for debugging
+import testRecaptchaConfig from "@/utils/testRecaptcha";
+
 const pageTitle = {
   title: "Register A New Account",
   description:
@@ -740,6 +743,9 @@ const RegisterPhone = () => {
     return () => obs.disconnect();
   }, []);
 
+  // Check if we're in production environment
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   // Properly clear any existing reCAPTCHA before creating new one
   const clearExistingRecaptcha = () => {
     try {
@@ -775,21 +781,43 @@ const RegisterPhone = () => {
         throw new Error("reCAPTCHA container not found");
       }
 
-      // Create new verifier
-      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: () => {
-          console.log("reCAPTCHA verified successfully");
+      console.log(`Creating reCAPTCHA verifier for ${isProduction ? 'production' : 'development'}`);
+
+      // Create new verifier with enhanced configuration for production
+      const verifierConfig = {
+        size: "normal", // Normal size for better visibility and reliability
+        callback: (response) => {
+          console.log("reCAPTCHA verified successfully:", response);
+          // reCAPTCHA solved, allow form submission
         },
         "expired-callback": () => {
+          console.log("reCAPTCHA expired");
           if (mountedRef.current) {
             setError("Security check expired, please try again.");
+            // Recreate reCAPTCHA after expiry
+            setTimeout(() => createFreshRecaptcha(), 1000);
+          }
+        },
+        "error-callback": (error) => {
+          console.error("reCAPTCHA error:", error);
+          if (mountedRef.current) {
+            setError("Security check failed. Please refresh the page and try again.");
           }
         }
-      });
+      };
+
+      // Add production-specific configuration if needed
+      if (isProduction) {
+        console.log("Applying production reCAPTCHA configuration");
+        // You can add production-specific settings here if needed
+      }
+
+      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", verifierConfig);
 
       // Render the verifier
       await verifier.render();
+      
+      console.log("reCAPTCHA verifier rendered successfully");
       
       if (mountedRef.current) {
         setRecaptchaVerifier(verifier);
@@ -800,7 +828,13 @@ const RegisterPhone = () => {
     } catch (error) {
       console.error("Error creating reCAPTCHA:", error);
       if (mountedRef.current) {
-        setError("Security check failed to initialize. Please refresh the page and try again.");
+        let errorMessage = "Security check failed to initialize. Please refresh the page and try again.";
+        
+        if (isProduction && error.message.includes('network')) {
+          errorMessage = "Network error loading security check. Please check your connection and refresh the page.";
+        }
+        
+        setError(errorMessage);
       }
       return null;
     }
@@ -864,8 +898,15 @@ const RegisterPhone = () => {
         }
       }
 
+      // For normal (visible) reCAPTCHA, we don't need to call verify() manually
+      // Firebase will handle the verification when signInWithPhoneNumber is called
+      console.log("Attempting to send OTP to:", phone);
+      console.log("Using verifier:", verifier);
+      
       // Send OTP using Firebase
       const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      
+      console.log("OTP sent successfully");
       
       if (mountedRef.current) {
         setConfirmationResult(confirmation);
@@ -882,22 +923,44 @@ const RegisterPhone = () => {
       const code = err?.code || '';
       let msg = 'Failed to send OTP.';
       
-      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed')) {
-        msg = 'Security check failed. Please refresh the page and try again.';
+      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed') || code.includes('invalid-recaptcha-token')) {
+        if (isProduction) {
+          msg = 'Security verification failed. This might be due to domain configuration. Please contact support or try refreshing the page.';
+          console.error('Production reCAPTCHA error - check domain configuration in Firebase Console and Google Cloud reCAPTCHA Enterprise');
+        } else {
+          msg = 'Security verification failed. Please complete the reCAPTCHA and try again.';
+        }
+        // Force recreate reCAPTCHA for token issues
+        clearExistingRecaptcha();
+        setTimeout(() => createFreshRecaptcha(), 1000);
       } else if (code.includes('too-many-requests')) {
-        msg = 'Too many requests, try again later.';
+        msg = 'Too many requests. Please wait a few minutes before trying again.';
       } else if (code.includes('quota-exceeded')) {
-        msg = 'SMS quota exceeded.';
+        msg = 'SMS quota exceeded. Please try again later.';
       } else if (code.includes('invalid-phone-number')) {
-        msg = 'Invalid phone number.';
+        msg = 'Invalid phone number format. Please check and try again.';
       } else if (err?.message?.includes('already been rendered')) {
         msg = 'Security check error. Please refresh the page and try again.';
-        // Force recreate reCAPTCHA on next attempt
         clearExistingRecaptcha();
         setTimeout(() => createFreshRecaptcha(), 500);
+      } else if (code.includes('network-request-failed')) {
+        msg = 'Network error. Please check your connection and try again.';
+      } else if (code.includes('auth/unauthorized-domain')) {
+        msg = 'Domain not authorized. Please contact support.';
+        console.error('Domain not authorized in Firebase Console - add domain to authorized domains');
       }
       
       setError(msg);
+      
+      // Log additional debug information for production
+      if (isProduction) {
+        console.error('Production Debug Info:', {
+          domain: window.location.hostname,
+          protocol: window.location.protocol,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString()
+        });
+      }
     } finally {
       if (mountedRef.current) {
         setLoading(false);
@@ -1133,6 +1196,34 @@ const RegisterPhone = () => {
             {error && (
               <div className="alert alert-danger" role="alert">
                 {error}
+                {isProduction && error.includes('Security verification failed') && (
+                  <div className="mt-2">
+                    <small className="d-block">
+                      <strong>Troubleshooting:</strong>
+                    </small>
+                    <small className="d-block">• Try refreshing the page</small>
+                    <small className="d-block">• Ensure you're on the correct domain</small>
+                    <small className="d-block">• Clear browser cache if needed</small>
+                    <small className="d-block">• Contact support if issue persists</small>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Debug tools for development */}
+            {!isProduction && typeof window !== 'undefined' && (
+              <div className="alert alert-info mb-3">
+                <small>
+                  <strong>Debug Tools:</strong>{" "}
+                  <button 
+                    type="button" 
+                    className="btn btn-sm btn-outline-info"
+                    onClick={() => testRecaptchaConfig()}
+                  >
+                    Test reCAPTCHA Config
+                  </button>
+                  {" "}Check browser console for results.
+                </small>
               </div>
             )}
 
