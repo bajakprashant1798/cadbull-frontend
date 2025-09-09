@@ -708,33 +708,27 @@ const RegisterPhone = () => {
 
   // at the top of RegisterPhone component
   // at the top of RegisterPhone component
+  // JS only (no TypeScript casts)
   useEffect(() => {
-    // If the classic reCAPTCHA script was injected elsewhere, remove it.
-    const classic = document.querySelector(
-      'script[src^="https://www.google.com/recaptcha/api.js"]'
-    );
+    // Remove classic v2 script if some widget injected it
+    const classic = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
     if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
 
-    // If grecaptcha exists but doesn't have .enterprise, remove/neutralize it
+    // If classic grecaptcha leaked on the page, remove it so enterprise can load
     if (typeof window !== "undefined") {
       const gre = window.grecaptcha;
       if (gre && !gre.enterprise) {
-        try { delete window.grecaptcha; } catch (_e) { window.grecaptcha = undefined; }
+        try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
       }
     }
   }, []);
 
-
-
-
-  // Always create a fresh reCAPTCHA (don’t reuse cleared instances)
   function makeFreshRecaptcha() {
     try { window.__cbRecaptcha?.clear?.(); } catch {}
     window.__cbRecaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "normal", // or "invisible" if you prefer
+      size: "invisible",                 // 👈 important
       callback: () => {},
-      "expired-callback": () =>
-        setError("Security check expired, please try again."),
+      "expired-callback": () => setError("Security check expired, please try again."),
     });
     setRecaptchaVerifier(window.__cbRecaptcha);
     return window.__cbRecaptcha.render();
@@ -780,48 +774,30 @@ const RegisterPhone = () => {
     try {
       if (!window.__cbRecaptcha) await makeFreshRecaptcha();
 
-      const formattedPhone = phone;
-      if (!formattedPhone || formattedPhone.length < 8) {
-        setError("Please enter a valid phone number.");
-        setLoading(false);
-        return;
-      }
+      // 👇 always create/refresh a token before sending
+      await window.__cbRecaptcha.verify();
 
       const confirmation = await signInWithPhoneNumber(
         auth,
-        formattedPhone,
+        phone,                 // must be E.164 like "+9198…"
         window.__cbRecaptcha
       );
-
       setConfirmationResult(confirmation);
       setShowOTPSection(true);
       setDisableResend(true);
       setCountdown(RESEND_TIMER);
       resetOtp();
     } catch (err) {
-      // let msg = "Failed to send OTP.";
-      // if (err.code === "auth/invalid-phone-number") msg = "Invalid phone number.";
-      // else if (err.code === "auth/too-many-requests") msg = "Too many requests, try again later.";
-      // else if (err.code === "auth/quota-exceeded") msg = "SMS quota exceeded.";
-      // else if (err.code === "auth/invalid-recaptcha-token") msg = "Security check failed. Refresh and try again.";
-      // setError(msg);
-
-      // // DO NOT render() a cleared verifier; just recreate a brand-new one
-      // try { window.__cbRecaptcha?.clear?.(); } catch {}
-      // await makeFreshRecaptcha();
-      console.error('OTP send error:', err);
-      const code = err?.code || '';
-      let msg = 'Failed to send OTP.';
-      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed')) {
-        msg = 'Security check failed. Please refresh the page and try again.';
-      } else if (code.includes('too-many-requests')) {
-        msg = 'Too many requests, try again later.';
-      } else if (code.includes('quota-exceeded')) {
-        msg = 'SMS quota exceeded.';
-      } else if (code.includes('invalid-phone-number')) {
-        msg = 'Invalid phone number.';
-      }
+      console.error("OTP send error:", err);
+      const code = err?.code || "";
+      let msg = "Failed to send OTP.";
+      if (code.includes("invalid-recaptcha") || code.includes("captcha-check-failed"))
+        msg = "Security check failed. Please refresh the page and try again.";
+      else if (code.includes("too-many-requests")) msg = "Too many requests, try again later.";
+      else if (code.includes("quota-exceeded")) msg = "SMS quota exceeded.";
+      else if (code.includes("invalid-phone-number")) msg = "Invalid phone number.";
       setError(msg);
+
       try { window.__cbRecaptcha?.clear?.(); } catch {}
       await makeFreshRecaptcha();
     } finally {
