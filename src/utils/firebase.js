@@ -24,7 +24,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// const app = initializeApp(firebaseConfig);
+// Initialize once (avoids duplicate apps in Next.js)
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);

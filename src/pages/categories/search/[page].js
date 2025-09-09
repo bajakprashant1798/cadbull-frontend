@@ -346,142 +346,53 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
 };
 
 export async function getServerSideProps({ params, query, res }) {
+  const startTime = Date.now();
   const page = params?.page ? parseInt(params.page, 10) : 1;
   const search = query.search || '';
   const fileType = query.fileType || '';
   const type = query.type || '';
 
+  // ⚡ Aggressive caching for search results
+  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
 
-  const startTime = Date.now();
-    // console.log(`🎯 AMPLIFY-EVENT-SSR_START: ${JSON.stringify({
-    //   timestamp: startTime,
-    //   type: "PAGE_EVENT",
-    //   page: "SearchPage",
-    //   event: "SSR_START",
-    //   pageNum: params?.page,
-    //   searchTerm: query.search || '',
-    //   fileType: query.fileType || '',
-    //   projectType: query.type || '',
-    //   environment: process.env.NODE_ENV
-    // })}`);
+  try {
+    // ⚡ Direct API call without performance monitoring overhead
+    const response = await getSearchResults(search, page, 12, fileType, type);
 
-    // console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-    //   timestamp: new Date().toISOString(),
-    //   type: "MEMORY_USAGE",
-    //   page: "SearchPage-Start",
-    //   ...process.memoryUsage(),
-    //   environment: process.env.NODE_ENV
-    // })}`);
-
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-
-  // ✅ PERFORMANCE MONITORING: Track search page generation
-  return await performance.trackPagePerformance(
-    "SearchPage-SSR",
-    { 
-      pageType: "SSR", 
-      isSSR: true, 
-      userAgent: "unknown",
-      page,
-      searchTerm: search,
-      fileType,
-      type
-    },
-    async () => {
-      performance.logMemoryUsage("Search-Start", { 
-        page, 
-        searchTerm: search, 
-        fileType, 
-        type 
-      });
-
-      try {
-        // ✅ Track search API call with performance monitoring
-        const response = await performance.timeAPICall(
-          "GetSearchResults", 
-          () => getSearchResults(search, page, 12, fileType, type),
-          `search?q=${search}&page=${page}&fileType=${fileType}&type=${type}`
-        );
-
-        performance.logMemoryUsage("Search-AfterAPI", { 
-          page, 
-          resultsCount: response.data?.projects?.length || 0
-        });
-
-        const resultsCount = response.data?.projects?.length || 0;
-        const totalResults = response.data?.totalResults || 0;
-
-        // ✅ Log cost-generating event for SSR
-        performance.logCostEvent("SSR-Generation", {
-          page: "SearchPage",
-          searchTerm: search,
-          resultsCount,
-          totalResults,
-          currentPage: page,
-        });
-
-        // ✅ Generate performance summary
-        const timings = { searchAPI: 200, total: 200 }; // Placeholder - would be real in production
-        performance.generateSummary("SearchPage-SSR", timings);
-
-        // const totalTime = Date.now() - startTime;
-        //   if (totalTime > 1500) {
-        //     console.warn(`⚠️ [SLOW-PAGE-ALERT] SearchPage took ${totalTime}ms - OPTIMIZATION NEEDED`);
-        //   }
-
-        //   console.log(`💰 AMPLIFY-COST: ${JSON.stringify({
-        //     timestamp: new Date().toISOString(),
-        //     type: "COST_METRICS",
-        //     page: "SearchPage",
-        //     slug: params.slug, 
-        //     computeTime: totalTime,
-        //     memoryUsed: process.memoryUsage().heapUsed / 1024 / 1024,
-        //     apiCalls: 1,
-        //     estimatedCost: {
-        //       requestCost: "0.00000020",
-        //       computeCost: "0.00000005",
-        //       totalCost: "0.00000025",
-        //       currency: "USD"
-        //     },
-        //     environment: process.env.NODE_ENV
-        //   })}`);
-
-        //   console.log(`🧠 AMPLIFY-MEMORY: ${JSON.stringify({
-        //     timestamp: new Date().toISOString(),
-        //     type: "MEMORY_USAGE",
-        //     page: "SearchPage-End",
-        //     ...process.memoryUsage(),
-        //     environment: process.env.NODE_ENV
-        //   })}`);
-
-
-        return {
-          props: {
-            initialProjects: response.data.projects,
-            initialTotalResults: response.data.totalResults,
-            initialTotalPages: response.data.totalPages,
-            initialPage: page,
-            initialSearch: search,
-            initialFileType: fileType,
-            initialType: type,
-          }
-        };
-      } catch (error) {
-        console.error("❌ Error in SearchPage getServerSideProps:", error);
-        return {
-          props: {
-            initialProjects: [],
-            initialTotalResults: 0,
-            initialTotalPages: 1,
-            initialPage: page,
-            initialSearch: search,
-            initialFileType: fileType,
-            initialType: type,
-          }
-        };
-      }
+    const totalTime = Date.now() - startTime;
+    if (totalTime > 2000) {
+      console.warn(`⚠️ [SLOW-SEARCH-ALERT] SearchPage-SSR took ${totalTime}ms - query: "${search}", page: ${page}`);
+    } else {
+      console.log(`⚡ SearchPage-SSR completed: ${totalTime}ms - query: "${search}", results: ${response.data?.projects?.length || 0}`);
     }
-  );
+
+    return {
+      props: {
+        initialProjects: response.data?.projects || [],
+        initialTotalResults: response.data?.totalResults || 0,
+        initialTotalPages: response.data?.totalPages || 1,
+        initialPage: page,
+        initialSearch: search,
+        initialFileType: fileType,
+        initialType: type,
+      }
+    };
+  } catch (error) {
+    const totalTime = Date.now() - startTime;
+    console.error(`❌ SearchPage-SSR error (${totalTime}ms):`, error.message);
+    
+    return {
+      props: {
+        initialProjects: [],
+        initialTotalResults: 0,
+        initialTotalPages: 1,
+        initialPage: page,
+        initialSearch: search,
+        initialFileType: fileType,
+        initialType: type,
+      }
+    };
+  }
 }
 
 
