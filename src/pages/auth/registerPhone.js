@@ -707,23 +707,16 @@ const RegisterPhone = () => {
   const [phone, setPhone] = useState("");
 
   
-  // at the top of RegisterPhone component
-  // at the top of RegisterPhone component
-  // JS only (no TypeScript casts)
-  // useEffect(() => {
-  //   // Remove classic v2 script if some widget injected it
-  //   const classic = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
-  //   if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
+  // Track if component is mounted to prevent state updates after unmount
+  const mountedRef = useRef(true);
+  
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
-  //   // If classic grecaptcha leaked on the page, remove it so enterprise can load
-  //   if (typeof window !== "undefined") {
-  //     const gre = window.grecaptcha;
-  //     if (gre && !gre.enterprise) {
-  //       try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
-  //     }
-  //   }
-  // }, []);
-  // Blocks late-injected classic v2 reCAPTCHA so Firebase can load enterprise.
+  // Clean up any existing reCAPTCHA and prevent conflicts
   useEffect(() => {
     const nukeClassic = () => {
       // Remove any old v2 script tags that appear
@@ -740,37 +733,90 @@ const RegisterPhone = () => {
       }
     };
 
-    // run now…
     nukeClassic();
-
-    // …and keep watching in case something injects it later
     const obs = new MutationObserver(nukeClassic);
     obs.observe(document.documentElement, { childList: true, subtree: true });
 
     return () => obs.disconnect();
   }, []);
 
+  // Properly clear any existing reCAPTCHA before creating new one
+  const clearExistingRecaptcha = () => {
+    try {
+      if (window.__cbRecaptcha) {
+        window.__cbRecaptcha.clear();
+        window.__cbRecaptcha = null;
+      }
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear();
+        setRecaptchaVerifier(null);
+      }
+      // Clear the DOM element content
+      const container = document.getElementById("recaptcha-container");
+      if (container) {
+        container.innerHTML = '';
+      }
+    } catch (error) {
+      console.log("Error clearing reCAPTCHA:", error);
+    }
+  };
 
-  function makeFreshRecaptcha() {
-    try { window.__cbRecaptcha?.clear?.(); } catch {}
-    window.__cbRecaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "invisible",                 // 👈 important
-      callback: () => {},
-      "expired-callback": () => setError("Security check expired, please try again."),
-    });
-    setRecaptchaVerifier(window.__cbRecaptcha);
-    return window.__cbRecaptcha.render();
-  }
+  const createFreshRecaptcha = async () => {
+    try {
+      // First clear any existing reCAPTCHA
+      clearExistingRecaptcha();
+      
+      // Wait a bit to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Check if container exists
+      const container = document.getElementById("recaptcha-container");
+      if (!container) {
+        throw new Error("reCAPTCHA container not found");
+      }
 
-  // Create verifier ONLY on phone step (the container exists only there)
+      // Create new verifier
+      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {
+          console.log("reCAPTCHA verified successfully");
+        },
+        "expired-callback": () => {
+          if (mountedRef.current) {
+            setError("Security check expired, please try again.");
+          }
+        }
+      });
+
+      // Render the verifier
+      await verifier.render();
+      
+      if (mountedRef.current) {
+        setRecaptchaVerifier(verifier);
+        window.__cbRecaptcha = verifier;
+      }
+      
+      return verifier;
+    } catch (error) {
+      console.error("Error creating reCAPTCHA:", error);
+      if (mountedRef.current) {
+        setError("Security check failed to initialize. Please refresh the page and try again.");
+      }
+      return null;
+    }
+  };
+
+  // Initialize reCAPTCHA only when on phone form
   useEffect(() => {
     if (!showOTPSection && !showEmailInput && typeof window !== "undefined") {
-      makeFreshRecaptcha().catch(() =>
-        setError("Security check failed to initialize. Refresh and try again.")
-      );
+      const initRecaptcha = async () => {
+        await createFreshRecaptcha();
+      };
+      initRecaptcha();
     }
+    
     return () => {
-      try { window.__cbRecaptcha?.clear?.(); } catch {}
+      clearExistingRecaptcha();
     };
   }, [showOTPSection, showEmailInput]);
 
@@ -799,26 +845,43 @@ const RegisterPhone = () => {
   const onSendOtp = async () => {
     setError("");
     setLoading(true);
+    
     try {
-      if (!window.__cbRecaptcha) await makeFreshRecaptcha();
+      // Validate phone number first
+      if (!phone || phone.length < 8) {
+        setError("Please enter a valid phone number.");
+        setLoading(false);
+        return;
+      }
 
-      // 👇 always create/refresh a token before sending
-      await window.__cbRecaptcha.verify();
+      // Ensure we have a fresh reCAPTCHA verifier
+      let verifier = recaptchaVerifier;
+      if (!verifier) {
+        verifier = await createFreshRecaptcha();
+        if (!verifier) {
+          setLoading(false);
+          return;
+        }
+      }
 
-      const confirmation = await signInWithPhoneNumber(
-        auth,
-        phone,                 // must be E.164 like "+9198…"
-        window.__cbRecaptcha
-      );
-      setConfirmationResult(confirmation);
-      setShowOTPSection(true);
-      setDisableResend(true);
-      setCountdown(RESEND_TIMER);
-      resetOtp();
+      // Send OTP using Firebase
+      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      
+      if (mountedRef.current) {
+        setConfirmationResult(confirmation);
+        setShowOTPSection(true);
+        setDisableResend(true);
+        setCountdown(RESEND_TIMER);
+        resetOtp();
+      }
     } catch (err) {
-      console.error('OTP send error:', err?.code, err?.message, err); // <- keep this
+      console.error('OTP send error:', err?.code, err?.message, err);
+      
+      if (!mountedRef.current) return;
+      
       const code = err?.code || '';
       let msg = 'Failed to send OTP.';
+      
       if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed')) {
         msg = 'Security check failed. Please refresh the page and try again.';
       } else if (code.includes('too-many-requests')) {
@@ -827,33 +890,50 @@ const RegisterPhone = () => {
         msg = 'SMS quota exceeded.';
       } else if (code.includes('invalid-phone-number')) {
         msg = 'Invalid phone number.';
+      } else if (err?.message?.includes('already been rendered')) {
+        msg = 'Security check error. Please refresh the page and try again.';
+        // Force recreate reCAPTCHA on next attempt
+        clearExistingRecaptcha();
+        setTimeout(() => createFreshRecaptcha(), 500);
       }
+      
       setError(msg);
-      try { window.__cbRecaptcha?.clear?.(); } catch {}
-      await makeFreshRecaptcha();
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
   const handleResendCode = async () => {
     setError("");
     setLoading(true);
+    
     try {
-      await makeFreshRecaptcha();
-      const confirmation = await signInWithPhoneNumber(
-        auth,
-        phone,
-        window.__cbRecaptcha
-      );
-      setConfirmationResult(confirmation);
-      setDisableResend(true);
-      setCountdown(RESEND_TIMER);
-      resetOtp({ otp: "" });
-    } catch {
-      setError("Failed to resend OTP.");
+      // Create fresh reCAPTCHA for resend
+      const verifier = await createFreshRecaptcha();
+      if (!verifier) {
+        setLoading(false);
+        return;
+      }
+
+      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      
+      if (mountedRef.current) {
+        setConfirmationResult(confirmation);
+        setDisableResend(true);
+        setCountdown(RESEND_TIMER);
+        resetOtp({ otp: "" });
+      }
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      if (mountedRef.current) {
+        setError("Failed to resend OTP. Please try again.");
+      }
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -1029,6 +1109,8 @@ const RegisterPhone = () => {
     setPhone("");
     resetPhone();
     resetOtp();
+    // Clear existing reCAPTCHA and prepare for new one
+    clearExistingRecaptcha();
   };
 
   return (
@@ -1088,10 +1170,15 @@ const RegisterPhone = () => {
                     <button
                       type="submit"
                       className="btn btn-lg btn-secondary w-100"
-                      disabled={loading || !recaptchaVerifier}
+                      disabled={loading || !recaptchaVerifier || !phone}
                     >
                       {loading ? "Sending..." : "Send OTP"}
                     </button>
+                    {!recaptchaVerifier && !loading && (
+                      <small className="text-muted d-block mt-1 text-center">
+                        Loading security check...
+                      </small>
+                    )}
                   </div>
                 </div>
               </form>
