@@ -678,15 +678,47 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
-// Import test utility for debugging
-import testRecaptchaConfig from "@/utils/testRecaptcha";
-
 const pageTitle = {
   title: "Register A New Account",
   description:
     "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
 };
 const RESEND_TIMER = 30;
+
+// ----- reCAPTCHA singleton (no duplicate renders) -----
+let rv = null;               // RecaptchaVerifier instance
+let rvRenderPromise = null;  // Promise from rv.render()
+
+function ensureRecaptcha(auth, onExpired) {
+  // already created & rendered
+  if (rv && rvRenderPromise) return rvRenderPromise;
+
+  // create a hidden holder once (lives under <body>)
+  let holder = document.getElementById('cb-recaptcha-holder');
+  if (!holder) {
+    holder = document.createElement('div');
+    holder.id = 'cb-recaptcha-holder';
+    holder.style.display = 'none';
+    document.body.appendChild(holder);
+  }
+
+  rv = new RecaptchaVerifier(auth, holder, {
+    size: 'invisible',
+    callback: () => {},
+    'expired-callback': onExpired,
+  });
+
+  rvRenderPromise = rv.render();      // render exactly once
+  window.__cbRecaptcha = rv;          // optional: keep for debugging
+  return rvRenderPromise;
+}
+
+function resetRecaptcha() {
+  try { rv?.clear?.(); } catch {}
+  rv = null;
+  rvRenderPromise = null;
+}
+
 
 const RegisterPhone = () => {
   const { handleSubmit: handlePhoneSubmit, reset: resetPhone } = useForm();
@@ -710,16 +742,23 @@ const RegisterPhone = () => {
   const [phone, setPhone] = useState("");
 
   
-  // Track if component is mounted to prevent state updates after unmount
-  const mountedRef = useRef(true);
-  
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+  // at the top of RegisterPhone component
+  // at the top of RegisterPhone component
+  // JS only (no TypeScript casts)
+  // useEffect(() => {
+  //   // Remove classic v2 script if some widget injected it
+  //   const classic = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
+  //   if (classic && classic.parentElement) classic.parentElement.removeChild(classic);
 
-  // Clean up any existing reCAPTCHA and prevent conflicts
+  //   // If classic grecaptcha leaked on the page, remove it so enterprise can load
+  //   if (typeof window !== "undefined") {
+  //     const gre = window.grecaptcha;
+  //     if (gre && !gre.enterprise) {
+  //       try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+  //     }
+  //   }
+  // }, []);
+  // Blocks late-injected classic v2 reCAPTCHA so Firebase can load enterprise.
   useEffect(() => {
     const nukeClassic = () => {
       // Remove any old v2 script tags that appear
@@ -736,123 +775,46 @@ const RegisterPhone = () => {
       }
     };
 
+    // run now…
     nukeClassic();
+
+    // …and keep watching in case something injects it later
     const obs = new MutationObserver(nukeClassic);
     obs.observe(document.documentElement, { childList: true, subtree: true });
 
     return () => obs.disconnect();
   }, []);
 
-  // Check if we're in production environment
-  const isProduction = process.env.NODE_ENV === 'production';
-  
-  // Properly clear any existing reCAPTCHA before creating new one
-  const clearExistingRecaptcha = () => {
-    try {
-      if (window.__cbRecaptcha) {
-        window.__cbRecaptcha.clear();
-        window.__cbRecaptcha = null;
-      }
-      if (recaptchaVerifier) {
-        recaptchaVerifier.clear();
-        setRecaptchaVerifier(null);
-      }
-      // Clear the DOM element content
-      const container = document.getElementById("recaptcha-container");
-      if (container) {
-        container.innerHTML = '';
-      }
-    } catch (error) {
-      console.log("Error clearing reCAPTCHA:", error);
-    }
-  };
 
-  const createFreshRecaptcha = async () => {
-    try {
-      // First clear any existing reCAPTCHA
-      clearExistingRecaptcha();
-      
-      // Wait a bit to ensure cleanup is complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Check if container exists
-      const container = document.getElementById("recaptcha-container");
-      if (!container) {
-        throw new Error("reCAPTCHA container not found");
-      }
+  function makeFreshRecaptcha() {
+    try { window.__cbRecaptcha?.clear?.(); } catch {}
+    window.__cbRecaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: "invisible",                 // 👈 important
+      callback: () => {},
+      "expired-callback": () => setError("Security check expired, please try again."),
+    });
+    setRecaptchaVerifier(window.__cbRecaptcha);
+    return window.__cbRecaptcha.render();
+  }
 
-      console.log(`Creating reCAPTCHA verifier for ${isProduction ? 'production' : 'development'}`);
+  // Create verifier ONLY on phone step (the container exists only there)
+  // useEffect(() => {
+  //   if (!showOTPSection && !showEmailInput && typeof window !== "undefined") {
+  //     makeFreshRecaptcha().catch(() =>
+  //       setError("Security check failed to initialize. Refresh and try again.")
+  //     );
+  //   }
+  //   return () => {
+  //     try { window.__cbRecaptcha?.clear?.(); } catch {}
+  //   };
+  // }, [showOTPSection, showEmailInput]);
 
-      // Create new verifier with enhanced configuration for production
-      const verifierConfig = {
-        size: "normal", // Normal size for better visibility and reliability
-        callback: (response) => {
-          console.log("reCAPTCHA verified successfully:", response);
-          // reCAPTCHA solved, allow form submission
-        },
-        "expired-callback": () => {
-          console.log("reCAPTCHA expired");
-          if (mountedRef.current) {
-            setError("Security check expired, please try again.");
-            // Recreate reCAPTCHA after expiry
-            setTimeout(() => createFreshRecaptcha(), 1000);
-          }
-        },
-        "error-callback": (error) => {
-          console.error("reCAPTCHA error:", error);
-          if (mountedRef.current) {
-            setError("Security check failed. Please refresh the page and try again.");
-          }
-        }
-      };
-
-      // Add production-specific configuration if needed
-      if (isProduction) {
-        console.log("Applying production reCAPTCHA configuration");
-        // You can add production-specific settings here if needed
-      }
-
-      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", verifierConfig);
-
-      // Render the verifier
-      await verifier.render();
-      
-      console.log("reCAPTCHA verifier rendered successfully");
-      
-      if (mountedRef.current) {
-        setRecaptchaVerifier(verifier);
-        window.__cbRecaptcha = verifier;
-      }
-      
-      return verifier;
-    } catch (error) {
-      console.error("Error creating reCAPTCHA:", error);
-      if (mountedRef.current) {
-        let errorMessage = "Security check failed to initialize. Please refresh the page and try again.";
-        
-        if (isProduction && error.message.includes('network')) {
-          errorMessage = "Network error loading security check. Please check your connection and refresh the page.";
-        }
-        
-        setError(errorMessage);
-      }
-      return null;
-    }
-  };
-
-  // Initialize reCAPTCHA only when on phone form
   useEffect(() => {
-    if (!showOTPSection && !showEmailInput && typeof window !== "undefined") {
-      const initRecaptcha = async () => {
-        await createFreshRecaptcha();
-      };
-      initRecaptcha();
-    }
-    
-    return () => {
-      clearExistingRecaptcha();
-    };
-  }, [showOTPSection, showEmailInput]);
+    if (typeof window === "undefined") return; // SSR guard
+    ensureRecaptcha(auth, () => setError("Security check expired, please try again."));
+    return () => resetRecaptcha();
+  }, []); // create once when page mounts
+
 
   // Resend OTP countdown
   useEffect(() => {
@@ -876,129 +838,59 @@ const RegisterPhone = () => {
     }
   }, [dispatch]);
 
+  // SEND OTP
   const onSendOtp = async () => {
-    setError("");
-    setLoading(true);
-    
+    setError(""); setLoading(true);
     try {
-      // Validate phone number first
-      if (!phone || phone.length < 8) {
-        setError("Please enter a valid phone number.");
-        setLoading(false);
-        return;
-      }
+      await ensureRecaptcha(auth, () => setError("Security check expired, please try again."));
+      await rv.verify(); // always get a fresh token
 
-      // Ensure we have a fresh reCAPTCHA verifier
-      let verifier = recaptchaVerifier;
-      if (!verifier) {
-        verifier = await createFreshRecaptcha();
-        if (!verifier) {
-          setLoading(false);
-          return;
-        }
-      }
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        phone, // must be E.164, e.g. "+91xxxxxxxxxx"
+        rv
+      );
 
-      // For normal (visible) reCAPTCHA, we don't need to call verify() manually
-      // Firebase will handle the verification when signInWithPhoneNumber is called
-      console.log("Attempting to send OTP to:", phone);
-      console.log("Using verifier:", verifier);
-      
-      // Send OTP using Firebase
-      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
-      
-      console.log("OTP sent successfully");
-      
-      if (mountedRef.current) {
-        setConfirmationResult(confirmation);
-        setShowOTPSection(true);
-        setDisableResend(true);
-        setCountdown(RESEND_TIMER);
-        resetOtp();
-      }
+      setConfirmationResult(confirmation);
+      setShowOTPSection(true);
+      setDisableResend(true);
+      setCountdown(RESEND_TIMER);
+      resetOtp();
     } catch (err) {
-      console.error('OTP send error:', err?.code, err?.message, err);
-      
-      if (!mountedRef.current) return;
-      
-      const code = err?.code || '';
-      let msg = 'Failed to send OTP.';
-      
-      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed') || code.includes('invalid-recaptcha-token')) {
-        if (isProduction) {
-          msg = 'Security verification failed. This might be due to domain configuration. Please contact support or try refreshing the page.';
-          console.error('Production reCAPTCHA error - check domain configuration in Firebase Console and Google Cloud reCAPTCHA Enterprise');
-        } else {
-          msg = 'Security verification failed. Please complete the reCAPTCHA and try again.';
-        }
-        // Force recreate reCAPTCHA for token issues
-        clearExistingRecaptcha();
-        setTimeout(() => createFreshRecaptcha(), 1000);
-      } else if (code.includes('too-many-requests')) {
-        msg = 'Too many requests. Please wait a few minutes before trying again.';
-      } else if (code.includes('quota-exceeded')) {
-        msg = 'SMS quota exceeded. Please try again later.';
-      } else if (code.includes('invalid-phone-number')) {
-        msg = 'Invalid phone number format. Please check and try again.';
-      } else if (err?.message?.includes('already been rendered')) {
-        msg = 'Security check error. Please refresh the page and try again.';
-        clearExistingRecaptcha();
-        setTimeout(() => createFreshRecaptcha(), 500);
-      } else if (code.includes('network-request-failed')) {
-        msg = 'Network error. Please check your connection and try again.';
-      } else if (code.includes('auth/unauthorized-domain')) {
-        msg = 'Domain not authorized. Please contact support.';
-        console.error('Domain not authorized in Firebase Console - add domain to authorized domains');
-      }
-      
-      setError(msg);
-      
-      // Log additional debug information for production
-      if (isProduction) {
-        console.error('Production Debug Info:', {
-          domain: window.location.hostname,
-          protocol: window.location.protocol,
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString()
-        });
-      }
+      console.error("OTP send error:", err?.code, err?.message, err);
+      const code = err?.code || "";
+      setError(
+        /invalid-recaptcha|captcha-check-failed/.test(code) ? "Security check failed. Please refresh the page and try again."
+        : /too-many-requests/.test(code) ? "Too many requests, try again later."
+        : /quota-exceeded/.test(code) ? "SMS quota exceeded."
+        : /invalid-phone-number/.test(code) ? "Invalid phone number."
+        : "Failed to send OTP."
+      );
+      resetRecaptcha();                                         // nuke bad instance
+      await ensureRecaptcha(auth, () => setError("Security check expired, please try again.")); // re-create cleanly
     } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
+  // RESEND
   const handleResendCode = async () => {
-    setError("");
-    setLoading(true);
-    
+    setError(""); setLoading(true);
     try {
-      // Create fresh reCAPTCHA for resend
-      const verifier = await createFreshRecaptcha();
-      if (!verifier) {
-        setLoading(false);
-        return;
-      }
-
-      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
-      
-      if (mountedRef.current) {
-        setConfirmationResult(confirmation);
-        setDisableResend(true);
-        setCountdown(RESEND_TIMER);
-        resetOtp({ otp: "" });
-      }
-    } catch (error) {
-      console.error("Resend OTP error:", error);
-      if (mountedRef.current) {
-        setError("Failed to resend OTP. Please try again.");
-      }
+      await ensureRecaptcha(auth, () => setError("Security check expired, please try again."));
+      await rv.verify();
+      const confirmation = await signInWithPhoneNumber(auth, phone, rv);
+      setConfirmationResult(confirmation);
+      setDisableResend(true);
+      setCountdown(RESEND_TIMER);
+      resetOtp({ otp: "" });
+    } catch {
+      setError("Failed to resend OTP.");
     } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
+
 
   const onSubmitOTP = async (data) => {
     setLoading(true);
@@ -1172,8 +1064,6 @@ const RegisterPhone = () => {
     setPhone("");
     resetPhone();
     resetOtp();
-    // Clear existing reCAPTCHA and prepare for new one
-    clearExistingRecaptcha();
   };
 
   return (
@@ -1196,34 +1086,6 @@ const RegisterPhone = () => {
             {error && (
               <div className="alert alert-danger" role="alert">
                 {error}
-                {isProduction && error.includes('Security verification failed') && (
-                  <div className="mt-2">
-                    <small className="d-block">
-                      <strong>Troubleshooting:</strong>
-                    </small>
-                    <small className="d-block">• Try refreshing the page</small>
-                    <small className="d-block">• Ensure you're on the correct domain</small>
-                    <small className="d-block">• Clear browser cache if needed</small>
-                    <small className="d-block">• Contact support if issue persists</small>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Debug tools for development */}
-            {!isProduction && typeof window !== 'undefined' && (
-              <div className="alert alert-info mb-3">
-                <small>
-                  <strong>Debug Tools:</strong>{" "}
-                  <button 
-                    type="button" 
-                    className="btn btn-sm btn-outline-info"
-                    onClick={() => testRecaptchaConfig()}
-                  >
-                    Test reCAPTCHA Config
-                  </button>
-                  {" "}Check browser console for results.
-                </small>
               </div>
             )}
 
@@ -1252,24 +1114,19 @@ const RegisterPhone = () => {
                 </div>
 
                 {/* IMPORTANT: the ONLY recaptcha container */}
-                <div className="col-lg-12">
+                {/* <div className="col-lg-12">
                   <div id="recaptcha-container" style={{ marginTop: "10px" }} />
-                </div>
+                </div> */}
 
                 <div className="col-lg-12">
                   <div className="mt-2 mt-md-3">
                     <button
                       type="submit"
                       className="btn btn-lg btn-secondary w-100"
-                      disabled={loading || !recaptchaVerifier || !phone}
+                      disabled={loading || !phone || phone.length < 8}
                     >
                       {loading ? "Sending..." : "Send OTP"}
                     </button>
-                    {!recaptchaVerifier && !loading && (
-                      <small className="text-muted d-block mt-1 text-center">
-                        Loading security check...
-                      </small>
-                    )}
                   </div>
                 </div>
               </form>
