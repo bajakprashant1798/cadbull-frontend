@@ -292,6 +292,23 @@ const Register = () => {
   //   }
   // }, [router, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      // On unmount: remove classic v2 script and global so it can't collide later
+      const scripts = Array.from(document.scripts)
+        .filter(s => s.src && s.src.startsWith("https://www.google.com/recaptcha/api.js"));
+      scripts.forEach(s => s.parentElement && s.parentElement.removeChild(s));
+
+      // If grecaptcha is classic (no enterprise), delete it
+      if (typeof window !== "undefined") {
+        const gre = window.grecaptcha;
+        if (gre && !gre.enterprise) {
+          try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+        }
+      }
+    };
+  }, []);
+  
   return (
     <Fragment>
       <Head>
