@@ -706,6 +706,7 @@ const RegisterPhone = () => {
   const [registrationSuccessMessage, setRegistrationSuccessMessage] = useState("");
   const [phone, setPhone] = useState("");
 
+  
   // at the top of RegisterPhone component
   // at the top of RegisterPhone component
   // JS only (no TypeScript casts)
@@ -815,16 +816,19 @@ const RegisterPhone = () => {
       setCountdown(RESEND_TIMER);
       resetOtp();
     } catch (err) {
-      console.error("OTP send error:", err);
-      const code = err?.code || "";
-      let msg = "Failed to send OTP.";
-      if (code.includes("invalid-recaptcha") || code.includes("captcha-check-failed"))
-        msg = "Security check failed. Please refresh the page and try again.";
-      else if (code.includes("too-many-requests")) msg = "Too many requests, try again later.";
-      else if (code.includes("quota-exceeded")) msg = "SMS quota exceeded.";
-      else if (code.includes("invalid-phone-number")) msg = "Invalid phone number.";
+      console.error('OTP send error:', err?.code, err?.message, err); // <- keep this
+      const code = err?.code || '';
+      let msg = 'Failed to send OTP.';
+      if (code.includes('invalid-recaptcha') || code.includes('captcha-check-failed')) {
+        msg = 'Security check failed. Please refresh the page and try again.';
+      } else if (code.includes('too-many-requests')) {
+        msg = 'Too many requests, try again later.';
+      } else if (code.includes('quota-exceeded')) {
+        msg = 'SMS quota exceeded.';
+      } else if (code.includes('invalid-phone-number')) {
+        msg = 'Invalid phone number.';
+      }
       setError(msg);
-
       try { window.__cbRecaptcha?.clear?.(); } catch {}
       await makeFreshRecaptcha();
     } finally {
