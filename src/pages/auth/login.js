@@ -403,7 +403,7 @@ const Login = () => {
             <span>Login in with Facebook</span>
           </button>
          
-            <Link href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
+            <Link reloadDocument href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
             
             >

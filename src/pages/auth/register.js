@@ -521,6 +521,7 @@ const Register = () => {
           <Link
             href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             type="button"
+            reloadDocument
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
           >
             <Icons.Phone />
