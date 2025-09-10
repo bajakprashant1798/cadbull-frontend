@@ -193,10 +193,13 @@ const RegisterPhone = () => {
   const onSendOtp = async () => {
     setError(""); setLoading(true);
     try {
-      const verifier = await getRvReady(() => setError("Security check expired, please try again."));
-      await verifier.verify(); // get fresh token
+      // const verifier = await getRvReady(() => setError("Security check expired, please try again."));
+      // await verifier.verify(); // get fresh token
+
       // Always verify (gets a fresh token internally)
-      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      // const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      const verifier = await getRvReady(() => setError("Security check expired, please try again."));
+      const confirmation = await signInWithPhoneNumber(auth, phone, verifier); // ✅ let SDK verify
 
       setConfirmationResult(confirmation);
       setShowOTPSection(true);
@@ -226,9 +229,11 @@ const RegisterPhone = () => {
   const handleResendCode = async () => {
     setError(""); setLoading(true);
     try {
+      // const verifier = await getRvReady(() => setError("Security check expired, please try again."));
+      // await verifier.verify();
+      // const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
       const verifier = await getRvReady(() => setError("Security check expired, please try again."));
-      await verifier.verify();
-      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+      const confirmation = await signInWithPhoneNumber(auth, phone, verifier); // ✅ let SDK verify
       setConfirmationResult(confirmation);
       setDisableResend(true);
       setCountdown(RESEND_TIMER);
