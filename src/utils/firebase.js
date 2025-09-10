@@ -1,5 +1,5 @@
 // src/utils/firebase.js
-import { initializeApp, getApps, SDK_VERSION } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
 
 // Only initialize ONCE!

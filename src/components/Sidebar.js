@@ -64,7 +64,7 @@ const Sidebar = () => {
             </li> */}
 
             {/* Category Management */}
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <button 
                 className="nav-link text-white d-flex justify-content-between align-items-center w-100"
                 onClick={() => setCategoryMenuOpen(!categoryMenuOpen)}
@@ -98,7 +98,7 @@ const Sidebar = () => {
                   </li>
                 </ul>
               )}
-            </li>
+            </li> */}
 
             {/* Project Management */}
             <li className="nav-item">
