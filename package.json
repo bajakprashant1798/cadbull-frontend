@@ -29,7 +29,7 @@
     "cookie": "^1.0.2",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",
-    "firebase": "^11.10.0",
+    "firebase": "^12.2.1",
     "html-react-parser": "^4.2.2",
     "http-proxy-middleware": "^3.0.3",
     "lodash": "^4.17.21",
