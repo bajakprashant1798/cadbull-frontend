@@ -37,9 +37,65 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   
   const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+
+  // useEffect(() => {
+  //   // If we just came from the phone page, drop enterprise so classic can load
+  //   if (typeof window !== "undefined") {
+  //     const gre = window.grecaptcha;
+  //     if (gre?.enterprise && !gre.render) {
+  //       try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+  //     }
+  //   }
+  //   // Force the <ReCAPTCHA> to remount so it re-checks and (re)injects classic
+  //   setCaptchaKey(k => k + 1);
+  // }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 1) Remove Enterprise scripts and object (coming back from phone page)
+    document
+      .querySelectorAll('script[src*="recaptcha/enterprise"]')
+      .forEach(s => s.remove());
+
+    if (window.grecaptcha?.enterprise) {
+      try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+    }
+
+    // 2) Make sure the Classic script exists; if not, add it
+    const hasClassic = !!document.querySelector(
+      'script[src^="https://www.google.com/recaptcha/api.js"]'
+    );
+
+    if (!hasClassic) {
+      const s = document.createElement("script");
+      s.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+      s.async = true;
+      s.defer = true;
+      s.onload = () => setCaptchaKey(k => k + 1); // remount widget after script loads
+      document.head.appendChild(s);
+      return; // we’ll update key in onload
+    }
+
+    // 3) If the script is already there, wait until Classic is ready, then remount
+    const t0 = Date.now();
+    const iv = setInterval(() => {
+      if (window.grecaptcha && !window.grecaptcha.enterprise) {
+        clearInterval(iv);
+        setCaptchaKey(k => k + 1);
+      } else if (Date.now() - t0 > 3000) {
+        // fail-safe after 3s
+        clearInterval(iv);
+        setCaptchaKey(k => k + 1);
+      }
+    }, 50);
+
+    return () => clearInterval(iv);
+  }, []);
+
 
   const handleCaptchaChange = (value) => {
     setCaptchaValue(value);
@@ -464,6 +520,7 @@ const Register = () => {
 
           <div className="col-lg-12">
             <ReCAPTCHA
+              key={captchaKey}
               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
               onChange={handleCaptchaChange}
               theme="light" // or "dark"

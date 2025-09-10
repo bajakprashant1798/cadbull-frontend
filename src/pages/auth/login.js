@@ -40,12 +40,103 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const [captchaReady, setCaptchaReady] = useState(false);
+  const [captchaHint, setCaptchaHint] = useState(false);
+
+  const ensureClassicRecaptcha = () => {
+    if (typeof window === "undefined") return;
+  
+    // Drop Enterprise if it leaked in
+    document.querySelectorAll('script[src*="recaptcha/enterprise"]').forEach(s => s.remove());
+    if (window.grecaptcha?.enterprise) {
+      try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+    }
+  
+    const SEL = 'script[src^="https://www.google.com/recaptcha/api.js"]';
+    let script = document.querySelector(SEL);
+  
+    const onLoaded = () => {
+      // Classic is in; show the widget (force a remount just in case)
+      setCaptchaReady(true);
+      setCaptchaKey(k => k + 1);
+    };
+  
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.addEventListener("load", onLoaded, { once: true });
+      document.head.appendChild(script);
+    } else {
+      // Script tag exists: either already loaded or about to load
+      if (window.grecaptcha && !window.grecaptcha.enterprise) {
+        onLoaded();
+      } else {
+        script.addEventListener("load", onLoaded, { once: true });
+      }
+    }
+  
+    // Optional UX hint if iframe doesn't appear soon
+    setCaptchaHint(false);
+    setTimeout(() => {
+      const hasIframe = !!document.querySelector('iframe[src*="recaptcha"]');
+      if (!hasIframe) setCaptchaHint(true);
+    }, 1500);
+  };
+
+  useEffect(() => {
+    ensureClassicRecaptcha();   // load Classic and flip captchaReady when it’s truly ready
+  }, []);
+
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
+
+  //   // 1) Remove Enterprise scripts and object (coming back from phone page)
+  //   document
+  //     .querySelectorAll('script[src*="recaptcha/enterprise"]')
+  //     .forEach(s => s.remove());
+
+  //   if (window.grecaptcha?.enterprise) {
+  //     try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+  //   }
+
+  //   // 2) Make sure the Classic script exists; if not, add it
+  //   const hasClassic = !!document.querySelector(
+  //     'script[src^="https://www.google.com/recaptcha/api.js"]'
+  //   );
+
+  //   if (!hasClassic) {
+  //     const s = document.createElement("script");
+  //     s.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+  //     s.async = true;
+  //     s.defer = true;
+  //     s.onload = () => setCaptchaKey(k => k + 1); // remount widget after script loads
+  //     document.head.appendChild(s);
+  //     return; // we’ll update key in onload
+  //   }
+
+  //   // 3) If the script is already there, wait until Classic is ready, then remount
+  //   const t0 = Date.now();
+  //   const iv = setInterval(() => {
+  //     if (window.grecaptcha && !window.grecaptcha.enterprise) {
+  //       clearInterval(iv);
+  //       setCaptchaKey(k => k + 1);
+  //     } else if (Date.now() - t0 > 3000) {
+  //       // fail-safe after 3s
+  //       clearInterval(iv);
+  //       setCaptchaKey(k => k + 1);
+  //     }
+  //   }, 50);
+
+  //   return () => clearInterval(iv);
+  // }, []);
+
 
   const handleCaptchaChange = (value) => {
     setCaptchaValue(value);
   };
-
-
 
   // Immediately redirect if localStorage already has user data
   useEffect(() => {
@@ -346,12 +437,39 @@ const Login = () => {
             </a>
           </div>
 
-          <div className="col-lg-12">
+          {/* <div className="col-lg-12">
             <ReCAPTCHA
+              key={captchaKey}
               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
               onChange={handleCaptchaChange}
               theme="light" // or "dark"
             />
+          </div> */}
+          <div className="col-lg-12">
+            {captchaReady ? (
+              <ReCAPTCHA
+                key={captchaKey}
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                onChange={handleCaptchaChange}
+                theme="light"
+              />
+            ) : (
+              <div className="small text-muted">
+                Loading security check…
+                {captchaHint && (
+                  <>
+                    {" "}If it doesn’t appear, please{" "}
+                    <button
+                      type="button"
+                      className="btn btn-link p-0 align-baseline"
+                      onClick={ensureClassicRecaptcha}
+                    >
+                      reload reCAPTCHA
+                    </button>.
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="col-lg-12">
