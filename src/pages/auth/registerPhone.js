@@ -636,76 +636,56 @@ const RegisterPhone = () => {
 
         {/* Phone form */}
         {!showOTPSection && !showEmailInput && (
-          <form onSubmit={handlePhoneSubmit(onSendOtp)} className="row g-3 mb-3 mb-md-4">
-            
-            {/* 🍯 Advanced Honeypot Fields - Multiple traps for different bot types */}
-            <div style={{ 
-              position: 'absolute', 
-              left: '-9999px', 
-              width: '1px', 
-              height: '1px', 
-              overflow: 'hidden',
-              opacity: 0,
-              pointerEvents: 'none',
-              tabIndex: -1
-            }}>
-              {/* Trap 1: Common form field name that bots auto-fill */}
-              <label htmlFor="website">Website:</label>
-              <input
-                type="text"
-                id="website"
-                name="website"
-                value={honeypotValue}
-                onChange={(e) => setHoneypotValue(e.target.value)}
-                autoComplete="off"
-                tabIndex="-1"
-                placeholder="Leave this field empty"
-              />
+          <div className="row g-3 mb-3 mb-md-4">
+            <form onSubmit={handlePhoneSubmit(onSendOtp)} className="w-100">
               
-              {/* Trap 2: Another common bot target */}
-              <input
-                type="email"
-                name="email_confirm"
-                autoComplete="off"
-                tabIndex="-1"
-                style={{ display: 'none' }}
-              />
-              
-              {/* Trap 3: Hidden URL field */}
-              <input
-                type="url"
-                name="homepage"
-                autoComplete="off"
-                tabIndex="-1"
-                style={{ display: 'none' }}
-              />
-            </div>
-            
-            <div className="col-lg-12">
-              <div className="d-flex gap-2 align-items-center mb-1">
-                <label>Mobile Number</label>
+              {/* 🍯 Advanced Honeypot Fields - Multiple traps for different bot types */}
+              <div style={{ 
+                position: 'absolute', 
+                left: '-9999px', 
+                width: '1px', 
+                height: '1px', 
+                overflow: 'hidden',
+                opacity: 0,
+                pointerEvents: 'none',
+                tabIndex: -1
+              }}>
+                {/* Trap 1: Common form field name that bots auto-fill */}
+                <label htmlFor="website">Website:</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  value={honeypotValue}
+                  onChange={(e) => setHoneypotValue(e.target.value)}
+                  autoComplete="off"
+                  tabIndex="-1"
+                  placeholder="Leave this field empty"
+                />
+                
+                {/* Trap 2: Another common bot target */}
+                <input
+                  type="email"
+                  name="email_confirm"
+                  autoComplete="off"
+                  tabIndex="-1"
+                  style={{ display: 'none' }}
+                />
+                
+                {/* Trap 3: Hidden URL field */}
+                <input
+                  type="url"
+                  name="homepage"
+                  autoComplete="off"
+                  tabIndex="-1"
+                  style={{ display: 'none' }}
+                />
               </div>
-              {/* <Controller
-                name="mobile"
-                control={controlPhone}
-                rules={{
-                  required: "Mobile number is required",
-                  pattern: {
-                    value: /^(\+\d{1,3}[- ]?)?\d{10}$/,
-                    message: "Please enter a valid mobile number"
-                  }
-                }}
-                render={({ field }) => (
-                  <input {...field}
-                    type="tel"
-                    className={`form-control ${errorsPhone.mobile ? "is-invalid" : ""}`}
-                    placeholder="Enter Your Mobile Number (+91XXXXXXXXXX)"
-                  />
-                )}
-              />
-
-              {errorsPhone.mobile && <div className="invalid-feedback">{errorsPhone.mobile.message}</div>} */}
-              <div className="col-lg-12">
+              
+              <div className="col-lg-12 mb-3">
+                <div className="d-flex gap-2 align-items-center mb-1">
+                  <label>Mobile Number</label>
+                </div>
                 <PhoneInput
                   country={'in'} // Default to India or use geo-detect for user's country
                   value={phone}
@@ -721,145 +701,150 @@ const RegisterPhone = () => {
                   // Optional: onlyCountries={['us', 'in', 'ae', ...]}
                 />
               </div>
-
-            </div>
-            
-            {/* 🛡️ Simple CAPTCHA Layer */}
-            <div className="col-lg-12">
-              <SimpleCaptcha
-                onSuccess={() => setSimpleCaptchaPassed(true)}
-                onError={(msg) => {
-                  setSimpleCaptchaPassed(false);
-                  setError(msg);
-                }}
-              />
-            </div>
-            
-            <div className="col-lg-12">
-              <div id="recaptcha-container" style={{ marginTop: '10px' }}></div>
-              {/* 🛡️ Security Status Indicator */}
-              {recaptchaLoaded.current && (
-                <div className="mt-2">
-                  <small className={`text-${botProtectionPassed ? 'success' : 'muted'}`}>
-                    {botProtectionPassed ? (
+              
+              {/* 🛡️ Simple CAPTCHA Layer */}
+              <div className="col-lg-12 mb-3">
+                <SimpleCaptcha
+                  onVerify={(isVerified) => {
+                    setSimpleCaptchaPassed(isVerified);
+                    if (!isVerified) {
+                      setError("Please solve the math problem correctly.");
+                    } else {
+                      setError(""); // Clear any previous errors
+                    }
+                  }}
+                />
+              </div>
+              
+              <div className="col-lg-12 mb-3">
+                <div id="recaptcha-container" style={{ marginTop: '10px' }}></div>
+                {/* 🛡️ Security Status Indicator */}
+                {recaptchaLoaded.current && (
+                  <div className="mt-2">
+                    <small className={`text-${botProtectionPassed ? 'success' : 'muted'}`}>
+                      {botProtectionPassed ? (
+                        <>
+                          <i className="fas fa-shield-alt me-1"></i>
+                          Security verification completed
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-shield-alt me-1"></i>
+                          Please complete security verification above
+                        </>
+                      )}
+                    </small>
+                  </div>
+                )}
+              </div>
+              
+              <div className="col-lg-12">
+                <div className="mt-2 mt-md-3">
+                  <button
+                    type="submit"
+                    className="btn btn-lg btn-secondary w-100"
+                    disabled={loading || !recaptchaVerifier || !botProtectionPassed || !simpleCaptchaPassed || honeypotValue !== ''}
+                  >
+                    {loading ? (
                       <>
-                        <i className="fas fa-shield-alt me-1"></i>
-                        Security verification completed
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Sending...
                       </>
                     ) : (
-                      <>
-                        <i className="fas fa-shield-alt me-1"></i>
-                        Please complete security verification above
-                      </>
+                      "Send OTP"
                     )}
-                  </small>
-                </div>
-              )}
-            </div>
-            <div className="col-lg-12">
-              <div className="mt-2 mt-md-3">
-                <button
-                  type="submit"
-                  className="btn btn-lg btn-secondary w-100"
-                  disabled={loading || !recaptchaVerifier || !botProtectionPassed || !simpleCaptchaPassed || honeypotValue !== ''}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Sending...
-                    </>
-                  ) : (
-                    "Send OTP"
-                  )}
-                </button>
-                
-                {/* 🛡️ Security Requirements Status */}
-                <div className="mt-2">
-                  <small className="text-muted d-block">
-                    Security Requirements:
-                  </small>
-                  <div className="small">
-                    <div className={`text-${honeypotValue === '' ? 'success' : 'danger'}`}>
-                      {honeypotValue === '' ? '✓' : '⚠'} Bot detection
-                    </div>
-                    <div className={`text-${simpleCaptchaPassed ? 'success' : 'muted'}`}>
-                      {simpleCaptchaPassed ? '✓' : '○'} Image verification
-                    </div>
-                    <div className={`text-${botProtectionPassed ? 'success' : 'muted'}`}>
-                      {botProtectionPassed ? '✓' : '○'} reCAPTCHA verification
+                  </button>
+                  
+                  {/* 🛡️ Security Requirements Status */}
+                  <div className="mt-2">
+                    <small className="text-muted d-block">
+                      Security Requirements:
+                    </small>
+                    <div className="small">
+                      <div className={`text-${honeypotValue === '' ? 'success' : 'danger'}`}>
+                        {honeypotValue === '' ? '✓' : '⚠'} Bot detection
+                      </div>
+                      <div className={`text-${simpleCaptchaPassed ? 'success' : 'muted'}`}>
+                        {simpleCaptchaPassed ? '✓' : '○'} Math verification
+                      </div>
+                      <div className={`text-${botProtectionPassed ? 'success' : 'muted'}`}>
+                        {botProtectionPassed ? '✓' : '○'} reCAPTCHA verification
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
 
         {/* OTP form */}
         {showOTPSection && !showEmailInput && (
-          <form onSubmit={handleOtpSubmit(onSubmitOTP)} className="row g-3 mb-3 mb-md-4">
-            <div className="col-lg-12">
-              <div className="mt-2 text-center">
-                <p>
-                  Please enter the OTP sent to <span className="fw-bold">{phone}</span>
-                  <br />
-                  <button type="button" className="btn btn-link p-0" onClick={handleChangeNumber}>
-                    Change Number
-                  </button>
-                </p>
-              </div>
-              <Controller
-                name="otp"
-                control={controlOtp}
-                rules={{
-                  required: "OTP is required",
-                  minLength: { value: 6, message: "OTP must be 6 digits" },
-                  maxLength: { value: 6, message: "OTP must be 6 digits" }
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    className={`form-control ${errorsOtp.otp ? "is-invalid" : ""}`}
-                    placeholder="Enter 6-digit OTP"
-                    maxLength="6"
-                    pattern="[0-9]{6}"
-                    autoFocus
-                  />
-                )}
-              />
-              {errorsOtp.otp && <div className="invalid-feedback">{errorsOtp.otp.message}</div>}
-            </div>
-            <div className="col-lg-12">
-              <div id="recaptcha-container" style={{ marginTop: '10px' }} />
-            </div>
-            <div className="col-lg-12">
-              <div className="mt-2 mt-md-3">
-                <button type="submit" className="btn btn-lg btn-secondary w-100" disabled={loading}>
-                  {loading ? "Verifying..." : "Verify OTP"}
-                </button>
-              </div>
-              <div className="mt-2 text-center">
-                <p>
-                  {disableResend ? (
-                    <span>Not received your code? 00:{countdown < 10 ? `0${countdown}` : countdown}</span>
-                  ) : (
-                    <>
-                      <span>Not received your code? </span>
-                      <button
-                        type="button"
-                        className="btn btn-link p-0"
-                        onClick={handleResendCode}
-                        disabled={disableResend || loading}
-                      >
-                        Resend code
-                      </button>
-                    </>
+          <div className="row g-3 mb-3 mb-md-4">
+            <form onSubmit={handleOtpSubmit(onSubmitOTP)} className="w-100">
+              <div className="col-lg-12 mb-3">
+                <div className="mt-2 text-center">
+                  <p>
+                    Please enter the OTP sent to <span className="fw-bold">{phone}</span>
+                    <br />
+                    <button type="button" className="btn btn-link p-0" onClick={handleChangeNumber}>
+                      Change Number
+                    </button>
+                  </p>
+                </div>
+                <Controller
+                  name="otp"
+                  control={controlOtp}
+                  rules={{
+                    required: "OTP is required",
+                    minLength: { value: 6, message: "OTP must be 6 digits" },
+                    maxLength: { value: 6, message: "OTP must be 6 digits" }
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      className={`form-control ${errorsOtp.otp ? "is-invalid" : ""}`}
+                      placeholder="Enter 6-digit OTP"
+                      maxLength="6"
+                      pattern="[0-9]{6}"
+                      autoFocus
+                    />
                   )}
-                </p>
+                />
+                {errorsOtp.otp && <div className="invalid-feedback">{errorsOtp.otp.message}</div>}
               </div>
-            </div>
-          </form>
+              <div className="col-lg-12 mb-3">
+                <div id="recaptcha-container" style={{ marginTop: '10px' }} />
+              </div>
+              <div className="col-lg-12">
+                <div className="mt-2 mt-md-3">
+                  <button type="submit" className="btn btn-lg btn-secondary w-100" disabled={loading}>
+                    {loading ? "Verifying..." : "Verify OTP"}
+                  </button>
+                </div>
+                <div className="mt-2 text-center">
+                  <p>
+                    {disableResend ? (
+                      <span>Not received your code? 00:{countdown < 10 ? `0${countdown}` : countdown}</span>
+                    ) : (
+                      <>
+                        <span>Not received your code? </span>
+                        <button
+                          type="button"
+                          className="btn btn-link p-0"
+                          onClick={handleResendCode}
+                          disabled={disableResend || loading}
+                        >
+                          Resend code
+                        </button>
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </form>
+          </div>
         )}
 
         {/* Email Input Step (only shown when backend says "Email required") */}
@@ -868,32 +853,34 @@ const RegisterPhone = () => {
           {infoMessage && (
             <div className="alert alert-info mb-2">{infoMessage}</div>
           )}
-          <form onSubmit={handleEmailSubmit(onSubmitEmail)} className="row g-3 mb-3">
-            <div className="col-lg-12">
-              <label>Email Address</label>
-              <input
-                {...registerEmail("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
-                    message: "Please enter a valid email"
-                  }
-                })}
-                type="email"
-                className={`form-control ${emailErrors.email ? "is-invalid" : ""}`}
-                placeholder="Enter your email"
-                autoFocus
-              />
-              {emailErrors.email && (
-                <div className="invalid-feedback">{emailErrors.email.message}</div>
-              )}
-            </div>
-            <div className="col-lg-12">
-              <button type="submit" className="btn btn-lg btn-secondary w-100" disabled={loading}>
-                {loading ? "Linking..." : "Submit Email"}
-              </button>
-            </div>
-          </form>
+          <div className="row g-3 mb-3">
+            <form onSubmit={handleEmailSubmit(onSubmitEmail)} className="w-100">
+              <div className="col-lg-12 mb-3">
+                <label>Email Address</label>
+                <input
+                  {...registerEmail("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                      message: "Please enter a valid email"
+                    }
+                  })}
+                  type="email"
+                  className={`form-control ${emailErrors.email ? "is-invalid" : ""}`}
+                  placeholder="Enter your email"
+                  autoFocus
+                />
+                {emailErrors.email && (
+                  <div className="invalid-feedback">{emailErrors.email.message}</div>
+                )}
+              </div>
+              <div className="col-lg-12">
+                <button type="submit" className="btn btn-lg btn-secondary w-100" disabled={loading}>
+                  {loading ? "Linking..." : "Submit Email"}
+                </button>
+              </div>
+            </form>
+          </div>
           </>
         )}
 

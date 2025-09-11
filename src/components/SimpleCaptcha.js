@@ -51,8 +51,7 @@ const SimpleCaptcha = ({ onVerify, disabled = false }) => {
     generateQuestion();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (userAnswer.trim() === answer) {
       setIsVerified(true);
       setError('');
@@ -61,6 +60,13 @@ const SimpleCaptcha = ({ onVerify, disabled = false }) => {
       setError('Incorrect answer. Please try again.');
       generateQuestion(); // Generate new question on wrong answer
       onVerify(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -84,7 +90,7 @@ const SimpleCaptcha = ({ onVerify, disabled = false }) => {
         </button>
       </div>
       
-      <form onSubmit={handleSubmit} className="d-flex align-items-center gap-2">
+      <div className="d-flex align-items-center gap-2">
         <span className="fw-bold text-primary">{question} = ?</span>
         <input
           type="number"
@@ -92,18 +98,19 @@ const SimpleCaptcha = ({ onVerify, disabled = false }) => {
           style={{ width: '80px' }}
           value={userAnswer}
           onChange={(e) => setUserAnswer(e.target.value)}
+          onKeyPress={handleKeyPress}
           disabled={disabled || isVerified}
           placeholder="Answer"
-          required
         />
         <button 
-          type="submit" 
+          type="button" 
           className="btn btn-primary btn-sm"
+          onClick={handleSubmit}
           disabled={disabled || isVerified || !userAnswer.trim()}
         >
           {isVerified ? '✓' : 'Verify'}
         </button>
-      </form>
+      </div>
       
       {error && <div className="text-danger small mt-1">{error}</div>}
       {isVerified && <div className="text-success small mt-1">✓ Security check passed</div>}
