@@ -181,6 +181,15 @@ export const linkPhoneApiHandler = async ({ idToken, email, phone_number }) => {
   });
 };
 
+// OTP Preflight APIs for bot protection
+export const checkOtpEligibilityApiHandler = async (phone_number) => {
+  return api.post("/otp-preflight/check-eligibility", { phone_number });
+};
+
+export const verifyNonceApiHandler = async (nonce, phone_number) => {
+  return api.post("/otp-preflight/verify-nonce", { nonce, phone_number });
+};
+
 // export const deleteAccount = async () => {
 //   return api.delete("/profile");
 // };
