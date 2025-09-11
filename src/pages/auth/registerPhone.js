@@ -195,18 +195,36 @@ const RegisterPhone = () => {
     
     // Debug current reCAPTCHA state
     console.log('🔧 Debug Info:');
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Current Domain:', window.location.hostname);
+    console.log('Current Origin:', window.location.origin);
     console.log('Firebase Project ID:', auth.app.options.projectId);
     console.log('Auth Domain:', auth.app.options.authDomain);
+    console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.slice(0, 20) + '...');
     
     // Check which reCAPTCHA keys are present
     const allKeys = [...document.querySelectorAll('iframe[src*="recaptcha/enterprise/anchor"], iframe[src*="recaptcha/api2/anchor"]')]
       .map(f => new URL(f.src).searchParams.get('k'));
     console.log('🔑 reCAPTCHA keys found:', allKeys);
     
+    // Check if Enterprise scripts are loaded
+    const enterpriseScripts = [...document.querySelectorAll('script[src*="recaptcha/enterprise"]')];
+    console.log('🏢 Enterprise scripts loaded:', enterpriseScripts.length);
+    
+    // Check grecaptcha state
+    console.log('🔧 grecaptcha state:', {
+      exists: !!window.grecaptcha,
+      hasEnterprise: !!(window.grecaptcha?.enterprise),
+      hasRender: !!(window.grecaptcha?.render)
+    });
+    
     try {
+      console.log('🚀 Getting verifier...');
       const verifier = await getRvReady(() => setError("Security check expired, please try again."));
+      console.log('✅ Verifier created successfully');
 
       // Force-mint token so we see it:
+      console.log('🔑 Generating token...');
       const token = await verifier.verify(); 
       console.log('[rv token]', token?.slice(0, 16), token ? 'len=' + token.length : 'no token');
 
@@ -216,6 +234,7 @@ const RegisterPhone = () => {
         recaptchaResponse: verifier.recaptchaResponse?.slice(0, 20) + '...'
       });
 
+      console.log('📱 Sending OTP via Firebase...');
       const confirmation = await signInWithPhoneNumber(auth, phone, verifier); // ✅ let SDK verify
 
       setConfirmationResult(confirmation);
