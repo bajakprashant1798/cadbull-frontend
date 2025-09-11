@@ -192,13 +192,30 @@ const RegisterPhone = () => {
   // SEND OTP
   const onSendOtp = async () => {
     setError(""); setLoading(true);
+    
+    // Debug current reCAPTCHA state
+    console.log('🔧 Debug Info:');
+    console.log('Firebase Project ID:', auth.app.options.projectId);
+    console.log('Auth Domain:', auth.app.options.authDomain);
+    
+    // Check which reCAPTCHA keys are present
+    const allKeys = [...document.querySelectorAll('iframe[src*="recaptcha/enterprise/anchor"], iframe[src*="recaptcha/api2/anchor"]')]
+      .map(f => new URL(f.src).searchParams.get('k'));
+    console.log('🔑 reCAPTCHA keys found:', allKeys);
+    
     try {
-      // const verifier = await getRvReady(() => setError("Security check expired, please try again."));
-      // await verifier.verify(); // get fresh token
-
-      // Always verify (gets a fresh token internally)
-      // const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
       const verifier = await getRvReady(() => setError("Security check expired, please try again."));
+
+      // Force-mint token so we see it:
+      const token = await verifier.verify(); 
+      console.log('[rv token]', token?.slice(0, 16), token ? 'len=' + token.length : 'no token');
+
+      // Additional debugging
+      console.log('🔧 Verifier details:', {
+        type: verifier.type,
+        recaptchaResponse: verifier.recaptchaResponse?.slice(0, 20) + '...'
+      });
+
       const confirmation = await signInWithPhoneNumber(auth, phone, verifier); // ✅ let SDK verify
 
       setConfirmationResult(confirmation);
