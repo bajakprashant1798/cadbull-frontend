@@ -44,6 +44,22 @@ const Login = () => {
   const [captchaReady, setCaptchaReady] = useState(false);
   const [captchaHint, setCaptchaHint] = useState(false);
 
+  useEffect(() => {
+    // Remove Enterprise if it leaked in from another page
+    document.querySelectorAll('script[src*="recaptcha/enterprise"]').forEach(s => s.remove());
+    if (window.grecaptcha?.enterprise) {
+      try { delete window.grecaptcha; } catch { window.grecaptcha = undefined; }
+    }
+    // Ensure classic script is present
+    if (!document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) {
+      const s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+      s.async = true; s.defer = true;
+      document.head.appendChild(s);
+    }
+  }, []);
+
+
   const ensureClassicRecaptcha = () => {
     if (typeof window === "undefined") return;
   
