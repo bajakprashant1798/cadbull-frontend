@@ -762,7 +762,12 @@ export const deleteSubscriberApi = async (id) => {
 // ----------------- Admin Project ----------------- //
 // ✅ Add Project (With File Upload)
 export const addProjectApi = async (formData) => {
-  return api.post("/admin/projects", formData);
+  return api.post("/admin/projects", formData, {
+    timeout: 600000, // 10 minutes for large file uploads
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 };
 
 // ✅ Fetch Projects with Pagination
@@ -779,7 +784,12 @@ export const getProjectByIdApi = (id) => {
 
 // ✅ Update Project (With File Upload)
 export const updateProjectApi = async (id, formData) => {
-  return api.put(`/admin/projects/${id}`, formData); // ✅ Let Axios detect content type
+  return api.put(`/admin/projects/${id}`, formData, {
+    timeout: 600000, // 10 minutes for large file uploads
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }); // ✅ Let Axios detect content type
 };
 
 

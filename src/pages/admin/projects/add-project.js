@@ -2,11 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 // import TagsField from "@/components/TagsField";
 import debounce from "lodash.debounce";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 
 
 function standardSlugify(text) {
@@ -77,6 +84,53 @@ function validateWorkTitle(title) {
   return { isValid: true, message: "" };
 }
 
+// ✅ SEO Length Validation Functions
+function validateSEOTitle(title) {
+  const length = title ? title.length : 0;
+  if (length < 60) {
+    return { isValid: false, message: `Title too short for SEO (${length}/60-70 chars). Add more descriptive words.` };
+  }
+  if (length > 70) {
+    return { isValid: false, message: `Title too long for SEO (${length}/60-70 chars). Reduce length for better search results.` };
+  }
+  return { isValid: true, message: `Perfect SEO length (${length}/60-70 chars)` };
+}
+
+function validateSEODescription(description) {
+  // Strip HTML tags to get plain text length
+  const plainText = description ? description.replace(/<[^>]*>/g, '').trim() : '';
+  const length = plainText.length;
+  if (length < 150) {
+    return { isValid: false, message: `Description too short for SEO (${length}/150-160 chars). Add more details.` };
+  }
+  if (length > 160) {
+    return { isValid: false, message: `Description too long for SEO (${length}/150-160 chars). Reduce content for better search results.` };
+  }
+  return { isValid: true, message: `Perfect SEO length (${length}/150-160 chars)` };
+}
+
+function validateSEOMetaTitle(metaTitle) {
+  const length = metaTitle ? metaTitle.length : 0;
+  if (length < 50) {
+    return { isValid: false, message: `Meta title too short for SEO (${length}/50-60 chars). Add more descriptive words.` };
+  }
+  if (length > 60) {
+    return { isValid: false, message: `Meta title too long for SEO (${length}/50-60 chars). Reduce length for better search results.` };
+  }
+  return { isValid: true, message: `Perfect SEO length (${length}/50-60 chars)` };
+}
+
+function validateSEOMetaDescription(metaDescription) {
+  const length = metaDescription ? metaDescription.length : 0;
+  if (length < 150) {
+    return { isValid: false, message: `Meta description too short for SEO (${length}/150-160 chars). Add more details.` };
+  }
+  if (length > 160) {
+    return { isValid: false, message: `Meta description too long for SEO (${length}/150-160 chars). Reduce content for better search results.` };
+  }
+  return { isValid: true, message: `Perfect SEO length (${length}/150-160 chars)` };
+}
+
 
 const AddProject = () => {
   // const { token } = useSelector((store) => store.logininfo);
@@ -97,6 +151,19 @@ const AddProject = () => {
   const [checking, setChecking] = useState(false);
   const [titleValidation, setTitleValidation] = useState({ isValid: true, message: "" });
   const typingTimeout = useRef(null);
+
+  // ✅ SEO Validation States
+  const [seoTitleValidation, setSeoTitleValidation] = useState({ isValid: true, message: "" });
+  const [seoDescriptionValidation, setSeoDescriptionValidation] = useState({ isValid: true, message: "" });
+  const [seoMetaTitleValidation, setSeoMetaTitleValidation] = useState({ isValid: true, message: "" });
+  const [seoMetaDescriptionValidation, setSeoMetaDescriptionValidation] = useState({ isValid: true, message: "" });
+
+  // Watch form fields for SEO validation
+  const watchMetaTitle = watch("meta_title", "");
+  const watchMetaDescription = watch("meta_description", "");
+
+  // Rich text editor state
+  const [description, setDescription] = useState("");
 
   const [slug, setSlug] = useState("");         // Slug input
   const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
@@ -148,6 +215,35 @@ const AddProject = () => {
     { id: 1418824, name: 'Rachna Jilka' }
   ];
 
+  // React Quill configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link'],
+      ['blockquote', 'code-block'],
+      ['clean']
+    ],
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false,
+    }
+  };
+
+  const quillFormats = [
+    'header', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'code-block',
+    'align', 'color', 'background',
+    'script'
+  ];
 
   // ✅ Fetch Categories on Component Mount
   useEffect(() => {
@@ -162,6 +258,18 @@ const AddProject = () => {
       setSlugMode("standard");
     }
   }, []);
+
+  // ✅ Watch meta title changes for SEO validation
+  useEffect(() => {
+    const seoValidation = validateSEOMetaTitle(watchMetaTitle);
+    setSeoMetaTitleValidation(seoValidation);
+  }, [watchMetaTitle]);
+
+  // ✅ Watch meta description changes for SEO validation
+  useEffect(() => {
+    const seoValidation = validateSEOMetaDescription(watchMetaDescription);
+    setSeoMetaDescriptionValidation(seoValidation);
+  }, [watchMetaDescription]);
 
   // ✅ Fetch Categories Using New Admin API
   const fetchCategories = async () => {
@@ -189,10 +297,20 @@ const AddProject = () => {
   };
   
 
-  // ✅ Handle Description Character Count
+  // ✅ Handle Description Character Count (for legacy textarea)
   const handleDescriptionChange = (e) => {
     const text = e.target.value;
     setDescriptionCount(250 - text.length);
+  };
+
+  // Handle description changes from React Quill
+  const handleQuillDescriptionChange = (content) => {
+    setDescription(content);
+    setValue("description", content); // Sync with react-hook-form
+    
+    // ✅ SEO Length validation for description
+    const seoValidation = validateSEODescription(content);
+    setSeoDescriptionValidation(seoValidation);
   };
 
   const checkDuplicateTitle = debounce(async (value) => {
@@ -223,6 +341,10 @@ const AddProject = () => {
     // ✅ Validate work title for URL safety
     const validation = validateWorkTitle(value);
     setTitleValidation(validation);
+
+    // ✅ SEO Length validation for title
+    const seoValidation = validateSEOTitle(value);
+    setSeoTitleValidation(seoValidation);
 
     // ✅ Auto-generate slug only if title is valid
     if (validation.isValid && (slugMode === "standard" || slug.trim() === "")) {
@@ -299,6 +421,24 @@ const AddProject = () => {
       toast.error("Please select a username.");
       return;
     }
+
+    // ✅ Check all SEO validations before submitting
+    if (!seoTitleValidation.isValid) {
+      toast.error("Title length does not meet SEO requirements (60-70 characters).");
+      return;
+    }
+    if (!seoDescriptionValidation.isValid) {
+      toast.error("Description length does not meet SEO requirements (150-160 characters).");
+      return;
+    }
+    if (!seoMetaTitleValidation.isValid) {
+      toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
+      return;
+    }
+    if (!seoMetaDescriptionValidation.isValid) {
+      toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
+      return;
+    }
     try {
       setSubmitting(true);
       const formData = new FormData();
@@ -312,7 +452,7 @@ const AddProject = () => {
 
       // ✅ Explicitly append all form fields
       formData.append("work_title", data.work_title || "");
-      formData.append("description", data.description || "");
+      formData.append("description", description || ""); // Use rich text description
       formData.append("meta_title", data.meta_title || "");
       formData.append("meta_description", data.meta_description || "");
       // In formData append:
@@ -338,7 +478,16 @@ const AddProject = () => {
 
       // ✅ Ensure file & image exist before appending
       if (data.file && data.file.length > 0) {
-          formData.append("file", data.file[0]);
+          const file = data.file[0];
+          
+          // Check file size (1GB limit)
+          if (file.size > 1024 * 1024 * 1024) {
+            toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
+            setSubmitting(false);
+            return;
+          }
+          
+          formData.append("file", file);
       } else {
           toast.error("Please upload a ZIP file.");
           setSubmitting(false);
@@ -346,7 +495,16 @@ const AddProject = () => {
       }
 
       if (data.image && data.image.length > 0) {
-          formData.append("image", data.image[0]);
+          const image = data.image[0];
+          
+          // Check image size (10MB limit)
+          if (image.size > 10 * 1024 * 1024) {
+            toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
+            setSubmitting(false);
+            return;
+          }
+          
+          formData.append("image", image);
       } else {
           toast.error("Please upload an Image.");
           setSubmitting(false);
@@ -362,7 +520,17 @@ const AddProject = () => {
       router.push("/admin/projects/view-projects");
     } catch (error) {
         console.error("❌ Error Adding Project:", error.response?.data || error.message);
-        toast.error(error.response?.data?.error || "Error adding project");
+        
+        // Handle specific error types
+        if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+          toast.error("Upload timeout - File too large or connection slow. Try with a smaller file or check your internet connection.");
+        } else if (error.response?.status === 413) {
+          toast.error("File too large - Please reduce file size and try again.");
+        } else if (error.response?.data?.error) {
+          toast.error(error.response.data.error);
+        } else {
+          toast.error("Error adding project. Please try again.");
+        }
     } finally {
        setSubmitting(false);
     }
@@ -414,37 +582,103 @@ const AddProject = () => {
               <strong>Bad example:</strong> "House/Villa Design 50% Off"
             </small>
             {checking && (
-              <span style={{ color: "#888", fontSize: "13px" }}>Checking availability...</span>
+              <div style={{ color: "#888", fontSize: "13px" }}>Checking availability...</div>
             )}
             {!titleValidation.isValid && (
-              <span style={{ color: "red", fontSize: "14px" }}>
+              <div style={{ color: "red", fontSize: "14px" }}>
                 {titleValidation.message}
-              </span>
+              </div>
             )}
             {isDuplicate && titleValidation.isValid && (
-              <span style={{ color: "red", fontSize: "14px" }}>
+              <div style={{ color: "red", fontSize: "14px" }}>
                 This project title already exists. Please choose another.
-              </span>
+              </div>
             )}
+            {/* ✅ SEO Length Validation */}
+            <div style={{ 
+              color: seoTitleValidation.isValid ? "green" : "red", 
+              fontSize: "13px",
+              fontWeight: "500",
+              marginTop: "4px"
+            }}>
+              📊 SEO Title Length: {seoTitleValidation.message}
+            </div>
           </div>
 
-          {/* Description */}
+          {/* Description with Rich Text Editor */}
           <div className="mb-3">
-            <label className="form-label">Description</label>
-            <textarea className="form-control" {...register("description", { required: true })} onChange={handleDescriptionChange}></textarea>
-            <small>{descriptionCount} characters left</small>
+            <label className="form-label">Description *</label>
+            <div style={{ backgroundColor: '#fff' }}>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={handleQuillDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
+                style={{ 
+                  minHeight: '200px',
+                  backgroundColor: '#fff'
+                }}
+                placeholder="Enter project description with rich text formatting..."
+              />
+            </div>
+            <small className="form-text text-muted mt-2 d-block">
+              🎨 <strong>Formatting options available:</strong><br/>
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
+              • Headers (H1, H2, H3)<br/>
+              • Bullet points and numbered lists<br/>
+              • Links to external websites<br/>
+              • Text colors and highlighting<br/>
+              • Code blocks and quotes
+            </small>
+            {/* ✅ SEO Length Validation for Description */}
+            <div style={{ 
+              color: seoDescriptionValidation.isValid ? "green" : "red", 
+              fontSize: "13px",
+              fontWeight: "500",
+              marginTop: "4px"
+            }}>
+              📊 SEO Description Length: {seoDescriptionValidation.message}
+            </div>
           </div>
 
           {/* Meta Title */}
           <div className="mb-3">
             <label className="form-label">Meta Title</label>
-            <input className="form-control" {...register("meta_title")} />
+            <input 
+              className="form-control" 
+              {...register("meta_title")} 
+              placeholder="Enter SEO meta title (50-60 characters)"
+            />
+            {/* ✅ SEO Length Validation for Meta Title */}
+            <div style={{ 
+              color: seoMetaTitleValidation.isValid ? "green" : "red", 
+              fontSize: "13px",
+              fontWeight: "500",
+              marginTop: "4px"
+            }}>
+              📊 SEO Meta Title Length: {seoMetaTitleValidation.message}
+            </div>
           </div>
 
           {/* Meta Description */}
           <div className="mb-3">
             <label className="form-label">Meta Description</label>
-            <input className="form-control" {...register("meta_description")} />
+            <textarea 
+              className="form-control" 
+              {...register("meta_description")}
+              rows="3"
+              placeholder="Enter SEO meta description (150-160 characters)"
+            />
+            {/* ✅ SEO Length Validation for Meta Description */}
+            <div style={{ 
+              color: seoMetaDescriptionValidation.isValid ? "green" : "red", 
+              fontSize: "13px",
+              fontWeight: "500",
+              marginTop: "4px"
+            }}>
+              📊 SEO Meta Description Length: {seoMetaDescriptionValidation.message}
+            </div>
           </div>
 
           {/* Slug */}
@@ -553,14 +787,30 @@ const AddProject = () => {
 
           {/* Upload Zip File */}
           <div className="mb-3">
-            <label className="form-label">Upload Zip File</label>
-            <input type="file" className="form-control" {...register("file", { required: true })} />
+            <label className="form-label">Upload Zip File *</label>
+            <input 
+              type="file" 
+              className="form-control" 
+              {...register("file", { required: true })} 
+              accept=".zip,.rar,.tar,.gz"
+            />
+            <small className="form-text text-muted">
+              📁 Maximum file size: 1GB. Supported formats: ZIP, RAR, TAR, GZ
+            </small>
           </div>
 
           {/* Upload Image */}
           <div className="mb-3">
-            <label className="form-label">Upload Image</label>
-            <input type="file" className="form-control" {...register("image", { required: true })} />
+            <label className="form-label">Upload Image *</label>
+            <input 
+              type="file" 
+              className="form-control" 
+              {...register("image", { required: true })} 
+              accept="image/*"
+            />
+            <small className="form-text text-muted">
+              🖼️ Maximum file size: 10MB. Supported formats: JPG, PNG, GIF, WEBP
+            </small>
           </div>
 
           {/* Submit Button */}
@@ -570,7 +820,17 @@ const AddProject = () => {
           <button
             type="submit"
             className="btn btn-primary"
-            disabled={submitting || isDuplicate || checking || !selectedUserId || !titleValidation.isValid}
+            disabled={
+              submitting || 
+              isDuplicate || 
+              checking || 
+              !selectedUserId || 
+              !titleValidation.isValid ||
+              !seoTitleValidation.isValid ||
+              !seoDescriptionValidation.isValid ||
+              !seoMetaTitleValidation.isValid ||
+              !seoMetaDescriptionValidation.isValid
+            }
           >
             {submitting ? (
               <>
@@ -581,6 +841,22 @@ const AddProject = () => {
               "Upload"
             )}
           </button>
+
+          {/* ✅ SEO Requirements Summary */}
+          {(!seoTitleValidation.isValid || !seoDescriptionValidation.isValid || !seoMetaTitleValidation.isValid || !seoMetaDescriptionValidation.isValid) && (
+            <div className="mt-3 p-3" style={{ backgroundColor: "#fff3cd", border: "1px solid #ffeaa7", borderRadius: "4px" }}>
+              <h6 style={{ color: "#856404", marginBottom: "8px" }}>⚠️ SEO Requirements Not Met</h6>
+              <small style={{ color: "#856404" }}>
+                Please ensure all fields meet SEO length requirements before uploading:
+                <ul style={{ marginTop: "8px", marginBottom: "0" }}>
+                  <li>Title: 60-70 characters</li>
+                  <li>Description: 150-160 characters (visible text only)</li>
+                  <li>Meta Title: 50-60 characters</li>
+                  <li>Meta Description: 150-160 characters</li>
+                </ul>
+              </small>
+            </div>
+          )}
 
         </form>
       </div>
