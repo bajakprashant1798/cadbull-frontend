@@ -24,7 +24,6 @@ import {
   getallprojects, // ✅ Add this here
 } from "@/service/api";
 import { requireAuth } from "@/utils/redirectHelpers";
-import { logPagePerformance, logCostMetrics, logAPICall, logMemoryUsage, trackPageEvent } from "@/utils/amplifyLogger";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addAllCategoriesData,
@@ -583,7 +582,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       <section className="py-lg-5 py-5">
         <div className="container">
           <div className="row">
-            <div className="col-lg-8">
+            <div className="col-lg-9">
               <div className=" d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center gap-1 justify-content-center justify-content-md-start">
                   {social.map((res, index) => (
@@ -681,6 +680,36 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
               <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
+                {/* <div className="bg-light p-3 rounded-2 shadow-sm heroFrame" >
+                  {!imgLoaded && <div className="shimmer" />}
+                  <Image
+                    key={project?.id || project?.photo_url}
+                    // src={getSafeImageUrl(project?.photo_url)}
+                    src={imgError ? '/default-img.png' : getSafeImageUrl(project?.photo_url)}
+                    width={project?.image_width || 800}
+                    height={project?.image_height || 600}
+                    alt={project?.work_title || "CAD Drawing"}
+                    className="img-fluid"
+                    priority
+                    fetchPriority="high"
+                    quality={85}
+                    // unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      objectFit: "contain",
+                      // display: imgLoaded ? "block" : "none"
+                    }}
+                    // style={{ objectFit: "contain", width: "100%", height: "auto" }}
+                    placeholder="empty"
+                    blurDataURL={getSmallVersion(project?.photo_url)}
+                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                    onLoad={() => setImgLoaded(true)}            // NEW: works across browsers
+                    onError={() => { setImgError(true); setImgLoaded(true); }} // NEW fallback
+                    onLoadingComplete={() => setImgLoaded(true)}
+                  />
+
+                </div> */}
                 <div className="bg-light p-3 rounded-2 shadow-sm heroFrame">
                   {project?.photo_url && !imgError ? (
                     <Image
@@ -726,34 +755,25 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <AdSense slot="4412795758" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               {/* </div> */}
           
-            </div>
-
-        
-            <div className="col-lg-4">
               {/* Project Description */}
-              <div className="py-3 mt-4 py-md-4">
+              <div className="py-3 py-md-4">
                 <div className="container">
-                  <div className="row mb-3 mt-3">
+                  <div className="row">
                     <div className="col-md-12">
-                      <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
-                        <div className="" style={{paddingLeft: '25px'}}>
-                         
-                           <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
-                            <div>
-                              <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
-                              <h5 className="product-description-title">Description</h5>
-                            </div>
-                          </div>
+                      <div className="mb-md-5 mb-4 shadow-sm px-5 py-3 rounded-1 border-start border-5 border-start-primary">
+                        <div className="px-3">
+                          <SectionHeading
+                            mainHeading={""}
+                            subHeading={" "}
+                            mainHeadingBold={"Description"}
+                          />
                           <div>{parse(`${project.description}`)}</div>
                           
                         </div>
                       </div>
                     </div>
                   </div>
-                
-                  {/*<AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />*/}
-                  
-                  <div className="col gy-3 mb-md-5 mb-4 mt-2">
+                  <div className="row gy-3 mb-md-5 mb-4">
                     <FileDescription
                       bgColor={"#20325A"}
                       image={autoCad}
@@ -785,7 +805,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                   <div className="row">
                     <div className="col-md-12">
-                      <div className="bg-white shadow-sm p-2 p-md-3">
+                      <div className="bg-white shadow-sm p-2 p-md-5">
                         <div className="row justify-content-between align-items-center">
                           <div className="col-md-7">
                             <div className="d-flex align-items-center gap-md-3 gap-2">
@@ -856,7 +876,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   </div>
 
                   {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                    {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
+                    <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" />
                   {/* </div> */}
 
                   <div className="row justify-content-center">
@@ -893,11 +913,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                 </div>
               </div>
+            </div>
 
+        
+            <div className="col-lg-3">
               <div className="d-flex flex-column gap-3">
-                {/* <div className="d-none d-lg-block">
+                <div className="d-none d-lg-block">
                   <AdSense slot="2091281415" sidebar className="ad-slot ad-slot--sidebar" lazy={false} />
-                </div> */}
+                </div>
                 <div>
                   <aside>
                     <h5 className="bg-secondary text-white px-3 py-2">
