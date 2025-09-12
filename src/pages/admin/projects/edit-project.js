@@ -2,10 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import * as api from "@/service/api";
 import { toast } from "react-toastify";
 import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 // import TagsInput from "react-tagsinput";
 // import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
 
@@ -115,6 +122,39 @@ const EditProject = () => {
 
   const [slug, setSlug] = useState("");         // Slug input
   const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
+  
+  // Rich text editor state
+  const [description, setDescription] = useState("");
+
+  // React Quill configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link'],
+      ['blockquote', 'code-block'],
+      ['clean']
+    ],
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false,
+    }
+  };
+
+  const quillFormats = [
+    'header', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'code-block',
+    'align', 'color', 'background',
+    'script'
+  ];
 
   // const [storedToken, setStoredToken] = useState(null);
 
@@ -226,7 +266,9 @@ const EditProject = () => {
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
         setTagsCsv(projectRes.data.tags || "");
-
+        
+        // Set description for React Quill
+        setDescription(projectRes.data.description || "");
 
         setProjectDetails(projectRes.data); // For comparing on duplicate check
         setWorkTitle(projectRes.data.work_title || ""); // Set controlled input
@@ -300,6 +342,12 @@ const EditProject = () => {
     setSubcategories(selectedCategory?.project_sub_categories || []);
   };
 
+  // Handle description changes from React Quill
+  const handleDescriptionChange = (content) => {
+    setDescription(content);
+    setValue("description", content); // Sync with react-hook-form
+  };
+
   // ✅ Submit Form with Updated Data
   const onSubmit = async (data) => {
     if (isDuplicate) {
@@ -315,7 +363,7 @@ const EditProject = () => {
       setSubmitting(true);
       const updatedData = {
         ...data,
-        // tags: tags.join(","), // Convert tags array to CSV
+        description: description, // Use description from React Quill state
         tags: tagsCsv,
         subcategory_id: data.subcategory_id || null, // ✅ Handle null subcategory
         status:         data.status !== undefined && data.status !== "" ? Number(data.status) : 1,
@@ -409,10 +457,32 @@ const EditProject = () => {
             )}
           </div>
 
-          {/* Description */}
+          {/* Description with Rich Text Editor */}
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <textarea className="form-control" {...register("description")} />
+            <div style={{ backgroundColor: '#fff' }}>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={handleDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
+                style={{ 
+                  minHeight: '200px',
+                  backgroundColor: '#fff'
+                }}
+                placeholder="Enter project description with rich text formatting..."
+              />
+            </div>
+            <small className="form-text text-muted mt-2 d-block">
+              🎨 <strong>Formatting options available:</strong><br/>
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
+              • Headers (H1, H2, H3)<br/>
+              • Bullet points and numbered lists<br/>
+              • Links to external websites<br/>
+              • Text colors and highlighting<br/>
+              • Code blocks and quotes
+            </small>
           </div>
 
           {/* Meta Title */}

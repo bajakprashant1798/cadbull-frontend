@@ -1,6 +1,7 @@
 
 import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap styles
 import "@/styles/globals.scss";
+import "@/styles/react-quill.css"; // React Quill styles
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";

@@ -159,6 +159,7 @@ const shortSub = (s) => ({
   subcategory_path: s?.subcategory_path, path: s?.path
 });
 
+// console.log("Initial Project:", { project });
 
   useEffect(() => {
     const run = () => setShowRelated(true);
@@ -805,6 +806,10 @@ const shortSub = (s) => ({
                               </div>
                             </div>
                             <div>{parse(`${project.description}`)}</div>
+                            {/* <DescriptionRenderer 
+                              description={project?.description} 
+                              className="mt-2"
+                            /> */}
                             
                           </div>
                         </div>
@@ -816,31 +821,39 @@ const shortSub = (s) => ({
                     {/* </div> */}
                     
                     <div className="row gy-3 mb-md-3 mb-4">
-                      <FileDescription
-                        bgColor={"#20325A"}
-                        image={autoCad}
-                        type={"File Type:"}
-                        title={project?.file_type}
-                      />
-                      <FileDescription
-                        bgColor={"#3D6098"}
-                        image={cad}
-                        type={"Category::"}
-                        title={project?.product_category_title}
-                      />
-                      <FileDescription
-                        bgColor={"#5B5B5B"}
-                        image={cad}
-                        type={"Sub Category::"}
-                        title={project?.product_subcategory_title}
-                      />
-                      <FileDescription
-                        bgColor={"#E9E9EB"}
-                        image={goldblocks}
-                        type={"type:"}
-                        title={project?.type}
-                        className={"text-primary"}
-                      />
+                      <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#20325A"}
+                          image={autoCad}
+                          type={"File Type:"}
+                          title={project?.file_type}
+                        />
+                      </Link>
+                      <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#3D6098"}
+                          image={cad}
+                          type={"Category::"}
+                          title={project?.product_category_title}
+                        />
+                      </Link>
+                      <Link href={`/${project?.subcategory_path}/1`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#5B5B5B"}
+                          image={cad}
+                          type={"Sub Category::"}
+                          title={project?.product_subcategory_title}
+                        />
+                      </Link>
+                      <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#E9E9EB"}
+                          image={goldblocks}
+                          type={"type:"}
+                          title={project?.type}
+                          className={"text-primary"}
+                        />
+                      </Link>
 
                       
                     </div>
