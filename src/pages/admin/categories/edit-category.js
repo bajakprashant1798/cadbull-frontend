@@ -6,6 +6,13 @@ import { editCategoryApi, getCategoryByIdApi, getCategoriesApi } from "@/service
 import AdminLayout from "@/layouts/AdminLayout";
 import { checkCategoryNameApi } from "@/service/api";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 
 const EditCategory = () => {
   const router = useRouter();
@@ -19,6 +26,38 @@ const EditCategory = () => {
   const [showParentDropdown, setShowParentDropdown] = useState(false); // Control dropdown visibility
   const typingTimeout = useRef(null);
   const dropdownRef = useRef(null); // Reference for click outside detection
+
+  // Rich text editor state
+  const [description, setDescription] = useState("");
+
+  // React Quill configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link'],
+      ['blockquote', 'code-block'],
+      ['clean']
+    ],
+    clipboard: {
+      matchVisual: false,
+    }
+  };
+
+  const quillFormats = [
+    'header', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'code-block',
+    'align', 'color', 'background',
+    'script'
+  ];
 
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector(
@@ -36,6 +75,8 @@ const EditCategory = () => {
           setCategoryName(categoryData.name || "");
           // Set the current parent_id, defaulting to "0" if null/undefined
           setCurrentParentId(categoryData.parent_id?.toString() || "0");
+          // Set description for React Quill
+          setDescription(categoryData.description || "");
         })
         .catch(() => toast.error("Error fetching category details"));
 
@@ -61,6 +102,11 @@ const EditCategory = () => {
     };
   }, []);
 
+  // Handle description changes from React Quill
+  const handleDescriptionChange = (content) => {
+    setDescription(content);
+    setValue("description", content); // Sync with react-hook-form
+  };
 
   const onSubmit = async (data) => {
     if (isDuplicate) {
@@ -68,7 +114,12 @@ const EditCategory = () => {
       return;
     }
     try {
-      await editCategoryApi(id, data);
+      // Include rich text description in submission
+      const categoryData = {
+        ...data,
+        description: description
+      };
+      await editCategoryApi(id, categoryData);
       toast.success("Category updated successfully!");
       router.push("/admin/categories/all-categories");
     } catch (error) {
@@ -248,7 +299,29 @@ const EditCategory = () => {
 
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <textarea className="form-control" {...register("description")} required />
+            <div style={{ backgroundColor: '#fff' }}>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={handleDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
+                style={{ 
+                  minHeight: '200px',
+                  backgroundColor: '#fff'
+                }}
+                placeholder="Enter category description with rich text formatting..."
+              />
+            </div>
+            <small className="form-text text-muted mt-2 d-block">
+              🎨 <strong>Formatting options available:</strong><br/>
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
+              • Headers (H1, H2, H3)<br/>
+              • Bullet points and numbered lists<br/>
+              • Links to external websites<br/>
+              • Text colors and highlighting<br/>
+              • Code blocks and quotes
+            </small>
           </div>
 
           <div className="mb-3">

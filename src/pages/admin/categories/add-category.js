@@ -6,6 +6,13 @@ import { addCategoryApi, getCategoriesApi } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import { checkCategoryNameApi } from "@/service/api";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false,
+  loading: () => <p>Loading editor...</p>
+});
 
 const AddCategory = () => {
   const router = useRouter();
@@ -21,6 +28,38 @@ const AddCategory = () => {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [checking, setChecking] = useState(false);
   const typingTimeout = useRef(null);
+
+  // Rich text editor state
+  const [description, setDescription] = useState("");
+
+  // React Quill configuration
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link'],
+      ['blockquote', 'code-block'],
+      ['clean']
+    ],
+    clipboard: {
+      matchVisual: false,
+    }
+  };
+
+  const quillFormats = [
+    'header', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'code-block',
+    'align', 'color', 'background',
+    'script'
+  ];
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -57,13 +96,24 @@ const AddCategory = () => {
     }, 350);
   };
 
+  // Handle description changes from React Quill
+  const handleDescriptionChange = (content) => {
+    setDescription(content);
+    setValue("description", content); // Sync with react-hook-form
+  };
+
   const onSubmit = async (data) => {
     if (isDuplicate) {
       toast.error("Cannot save: Duplicate category name.");
       return;
     }
     try {
-      await addCategoryApi(data);
+      // Include rich text description in submission
+      const categoryData = {
+        ...data,
+        description: description
+      };
+      await addCategoryApi(categoryData);
       toast.success("Category added successfully!");
       router.push("/admin/categories/all-categories");
     } catch (error) {
@@ -110,7 +160,29 @@ const AddCategory = () => {
 
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <textarea className="form-control" {...register("description")} required />
+            <div style={{ backgroundColor: '#fff' }}>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={handleDescriptionChange}
+                modules={quillModules}
+                formats={quillFormats}
+                style={{ 
+                  minHeight: '200px',
+                  backgroundColor: '#fff'
+                }}
+                placeholder="Enter category description with rich text formatting..."
+              />
+            </div>
+            <small className="form-text text-muted mt-2 d-block">
+              🎨 <strong>Formatting options available:</strong><br/>
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
+              • Headers (H1, H2, H3)<br/>
+              • Bullet points and numbered lists<br/>
+              • Links to external websites<br/>
+              • Text colors and highlighting<br/>
+              • Code blocks and quotes
+            </small>
           </div>
 
           <div className="mb-3">

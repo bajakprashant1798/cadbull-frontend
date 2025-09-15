@@ -36,7 +36,11 @@ const CategoriesLayout = ({
                   {makeTitle(title)}
                   {/* {title ? makeTitle(title) : pageName  } */}
                 </h1>
-                <p>{description}</p>
+                <div 
+                  dangerouslySetInnerHTML={{ 
+                    __html: description || "" 
+                  }} 
+                />
               </div>
               {/* Breadcrum  */}
               <div className="mt-4">
