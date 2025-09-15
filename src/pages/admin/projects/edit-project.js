@@ -96,17 +96,13 @@ function validateSEOTitle(title) {
   return { isValid: true, message: `Perfect SEO length (${length}/60-70 chars)` };
 }
 
+// ✅ Removed fixed length validation for description - now allows any length
 function validateSEODescription(description) {
-  // Strip HTML tags to get plain text length
+  // Strip HTML tags to get plain text length for display only
   const plainText = description ? description.replace(/<[^>]*>/g, '').trim() : '';
   const length = plainText.length;
-  if (length < 150) {
-    return { isValid: false, message: `Description too short for SEO (${length}/150-160 chars). Add more details.` };
-  }
-  if (length > 160) {
-    return { isValid: false, message: `Description too long for SEO (${length}/150-160 chars). Reduce content for better search results.` };
-  }
-  return { isValid: true, message: `Perfect SEO length (${length}/150-160 chars)` };
+  // Always return valid - no length restrictions for description
+  return { isValid: true, message: `Description length: ${length} characters` };
 }
 
 function validateSEOMetaTitle(metaTitle) {
@@ -156,7 +152,7 @@ const EditProject = () => {
 
   // ✅ SEO Validation States
   const [seoTitleValidation, setSeoTitleValidation] = useState({ isValid: true, message: "" });
-  const [seoDescriptionValidation, setSeoDescriptionValidation] = useState({ isValid: true, message: "" });
+  const [seoDescriptionValidation, setSeoDescriptionValidation] = useState({ isValid: true, message: "" }); // Always valid now - no length restrictions
   const [seoMetaTitleValidation, setSeoMetaTitleValidation] = useState({ isValid: true, message: "" });
   const [seoMetaDescriptionValidation, setSeoMetaDescriptionValidation] = useState({ isValid: true, message: "" });
 
@@ -442,15 +438,12 @@ const EditProject = () => {
       return;
     }
 
-    // ✅ Check all SEO validations before submitting
+    // ✅ Check all SEO validations before submitting (excluding description which now has no restrictions)
     if (!seoTitleValidation.isValid) {
       toast.error("Title length does not meet SEO requirements (60-70 characters).");
       return;
     }
-    if (!seoDescriptionValidation.isValid) {
-      toast.error("Description length does not meet SEO requirements (150-160 characters).");
-      return;
-    }
+    // Description validation removed - no length restrictions
     if (!seoMetaTitleValidation.isValid) {
       toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
       return;
@@ -463,12 +456,19 @@ const EditProject = () => {
     try {
       setSubmitting(true);
       const updatedData = {
-        ...data,
+        work_title: data.work_title,
         description: description, // Use description from React Quill state
+        meta_title: data.meta_title,
+        meta_description: data.meta_description,
         tags: tagsCsv,
+        file_type: data.file_type,
+        category_id: data.category_id,
         subcategory_id: data.subcategory_id || null, // ✅ Handle null subcategory
-        status:         data.status !== undefined && data.status !== "" ? Number(data.status) : 1,
-        popular:        data.popular !== undefined && data.popular !== "" ? Number(data.popular) : 0,
+        type: data.type,
+        status: data.status !== undefined && data.status !== "" ? Number(data.status) : 1,
+        popular: data.popular !== undefined && data.popular !== "" ? Number(data.popular) : 0,
+        credit_days: data.credit_days,
+        slug: slug, // Use slug from state
       };
 
       // ✅ Append files if they exist
@@ -621,14 +621,14 @@ const EditProject = () => {
               • Text colors and highlighting<br/>
               • Code blocks and quotes
             </small>
-            {/* ✅ SEO Length Validation for Description */}
+            {/* ✅ Description Character Count (No length restrictions) */}
             <div style={{ 
-              color: seoDescriptionValidation.isValid ? "green" : "red", 
+              color: "green", 
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
             }}>
-              📊 SEO Description Length: {seoDescriptionValidation.message}
+              📊 {seoDescriptionValidation.message}
             </div>
           </div>
 
@@ -845,7 +845,7 @@ const EditProject = () => {
               checking || 
               !titleValidation.isValid ||
               !seoTitleValidation.isValid ||
-              !seoDescriptionValidation.isValid ||
+              // !seoDescriptionValidation.isValid || // Removed - description has no length restrictions
               !seoMetaTitleValidation.isValid ||
               !seoMetaDescriptionValidation.isValid
             }
@@ -860,15 +860,15 @@ const EditProject = () => {
             )}
           </button>
 
-          {/* ✅ SEO Requirements Summary */}
-          {(!seoTitleValidation.isValid || !seoDescriptionValidation.isValid || !seoMetaTitleValidation.isValid || !seoMetaDescriptionValidation.isValid) && (
+          {/* ✅ SEO Requirements Summary (excluding description) */}
+          {(!seoTitleValidation.isValid || !seoMetaTitleValidation.isValid || !seoMetaDescriptionValidation.isValid) && (
             <div className="mt-3 p-3" style={{ backgroundColor: "#fff3cd", border: "1px solid #ffeaa7", borderRadius: "4px" }}>
               <h6 style={{ color: "#856404", marginBottom: "8px" }}>⚠️ SEO Requirements Not Met</h6>
               <small style={{ color: "#856404" }}>
                 Please ensure all fields meet SEO length requirements before saving:
                 <ul style={{ marginTop: "8px", marginBottom: "0" }}>
                   <li>Title: 60-70 characters</li>
-                  <li>Description: 150-160 characters (visible text only)</li>
+                  <li>Description: No length restrictions (write as much as needed)</li>
                   <li>Meta Title: 50-60 characters</li>
                   <li>Meta Description: 150-160 characters</li>
                 </ul>
