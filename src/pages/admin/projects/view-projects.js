@@ -19,7 +19,7 @@ const ImageExistsChecker = ({ imagePath, projectId }) => {
 
         const checkImageExists = async () => {
             // ✅ Construct possible image URLs
-            const baseUrl = process.env.NEXT_PUBLIC_S3_PUBLIC_URL;
+            const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
             
             let possibleUrls = [];
             
