@@ -481,14 +481,19 @@ export const updateUserProfileInfo = async (userData) => {
 };
 
 export const updateProfilePicture = ( file) => {
-  const formData = new FormData();
-  formData.append("profile_photo", file);
-  return api.put("/profile/photo", formData, {
-    headers: {
-      // Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
+  const fd = new FormData();
+  fd.append('file', file); // <-- must be "file" to match upload.single('file')
+  return api.put('/profile/picture', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
+  // const formData = new FormData();
+  // formData.append("profile_photo", file);
+  // return api.put("/profile/photo", formData, {
+  //   headers: {
+  //     // Authorization: `Bearer ${token}`,
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
 };
 
 export const updateProfileWithoutPicture = (user, token) => {
