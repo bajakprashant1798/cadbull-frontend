@@ -76,7 +76,7 @@ const EditProfile = () => {
   user.profile_pic?.startsWith("http") // already a full S3 URL
     ? user.profile_pic
     : user.profile_pic
-    ? `${process.env.NEXT_PUBLIC_S3_PUBLIC_URL}/profile_pic/medium/${user.profile_pic}`
+    ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/profile_pic/medium/${user.profile_pic}`
     : null;
 
   // console.log(profile_pic, "profile_pic edit page");
