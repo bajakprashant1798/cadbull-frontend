@@ -440,7 +440,7 @@ export async function getServerSideProps({ params, req, res }) {
   const page = parseInt(params.page, 10) || 1;
   
   // ✅ Add caching headers for better performance
-  // res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=1800');
+  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=1800');
   
   try {
     console.log(`[SSR] 🚀 Generating page for slug: ${slug}, page: ${page}`);
@@ -484,11 +484,7 @@ export async function getServerSideProps({ params, req, res }) {
       console.log(`[SSR] ❌ Blocked invalid page: ${page}`);
       return { notFound: true };
     }
-
-    //added after plesk migration to avoid caching issue
-    res.setHeader('Cache-Control','no-store');
-    return { notFound: true };
-    //added after plesk migration to avoid caching issue
+    
     
     // ✅ PERFORMANCE MONITORING: Track SSR page generation
     return await performance.trackPagePerformance(
@@ -626,8 +622,8 @@ export async function getServerSideProps({ params, req, res }) {
         console.log(`[SSR] ✅ Generated ${slug}/page/${page} in ${totalTime}ms`);
 
         // ✅ PERFORMANCE: Aggressive caching for category pages (can cache for longer)
-        // res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800');
-        // res.setHeader('Vary', 'Accept-Encoding');
+        res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800');
+        res.setHeader('Vary', 'Accept-Encoding');
 
         return {
           props: {
