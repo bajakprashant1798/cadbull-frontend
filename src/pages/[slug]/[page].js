@@ -485,7 +485,6 @@ export async function getServerSideProps({ params, req, res }) {
       return { notFound: true };
     }
     
-    
     // ✅ PERFORMANCE MONITORING: Track SSR page generation
     return await performance.trackPagePerformance(
       "CategoryDetailPage-SSR",

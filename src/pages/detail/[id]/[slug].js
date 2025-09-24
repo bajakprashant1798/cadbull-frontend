@@ -1223,9 +1223,9 @@ export async function getServerSideProps(ctx) {
     
 
     // ✅ Cache the HTML at the CDN for a short time
-    // res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     // optional: tidy up proxies
-    // res.setHeader('Vary', 'Accept-Encoding');
+    res.setHeader('Vary', 'Accept-Encoding');
 
     return {
       props: {
