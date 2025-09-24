@@ -222,6 +222,14 @@ export default function Home({
             );
             setProjects(response.data.products);
             setTotalPages(response.data.totalPages);
+
+            // <-- add this so the hero count updates even if SSR was 0
+            setLastId(
+              response.data.lastProductId ??
+              response.data.totalProducts ??
+              (response.data.products?.[0]?.id || 0)
+            );
+            // --> added after plesk migration to avoid caching issue
         } catch (error) {
             console.error("Failed to fetch projects:", error);
         } finally {
@@ -1043,12 +1051,14 @@ export async function getServerSideProps({  res, query }) {
   const search = (query.search || "").toString();
   const file_type = (query.file_type || "").toString();
 
+  //after plesk migration to avoid caching issue
   // ⚠️ Important: short CDN cache + generous stale window
   // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=60, stale-while-revalidate=300"
-  );
+  // res.setHeader(
+  //   "Cache-Control",
+  //   "public, s-maxage=60, stale-while-revalidate=300"
+  // );
+  
 
   try {
     // const [projectRes, categoryRes] = await Promise.all([
@@ -1061,6 +1071,20 @@ export async function getServerSideProps({  res, query }) {
       Promise.race([ getallprojects(page, 9, search, file_type), ssrTimeout(6000, 'projects') ]),
       Promise.race([ getallCategories(), ssrTimeout(6000, 'categories') ]),
     ]);
+
+    //added after plesk
+    const isPartial =
+      projSet.status !== 'fulfilled' || !projSet.value?.data ||
+      catSet.status  !== 'fulfilled' || !catSet.value?.data;
+
+    if (isPartial) {
+      // Don’t let Cloudflare cache the “empty” page
+      res.setHeader('Cache-Control', 'no-store');
+    } else {
+      // Only cache when we had real data
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    }
+    //
 
     const projectRes   = projSet.status === 'fulfilled' ? projSet.value : null;
     const categoryRes  = catSet.status === 'fulfilled' ? catSet.value : null;
