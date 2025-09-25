@@ -512,7 +512,7 @@ const AddProject = () => {
       setSelectedUserId(""); // Reset user selection
       router.push("/admin/projects/view-projects");
     } catch (error) {
-        console.error("❌ Error Adding Project:", error.response?.data || error.message);
+        console.error("❌ Error Adding Project:", error.response?.data || error.message, error);
         
         // Handle specific error types
         if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {

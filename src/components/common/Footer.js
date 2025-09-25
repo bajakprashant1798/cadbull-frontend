@@ -134,7 +134,7 @@ const Footer = () => {
             <p className="text-white">&copy; {currentYear} <span className="text-danger">CADBULL</span> | All Rights Reserved.</p>
             <ul className="list-unstyled d-flex align-items-center gap-3 gap-md-4 mb-0 justify-content-center ">
               <li>
-                <Link href="/terms-condition">Term & Conditions</Link>
+                <Link href="/terms-conditions">Term & Conditions</Link>
               </li>
               <li className="text-white">|</li>
               <li>

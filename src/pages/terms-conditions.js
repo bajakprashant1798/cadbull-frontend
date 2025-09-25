@@ -11,12 +11,12 @@ const TermsPrivacyFaq = ({termsData}) => {
         <Head>
             <title>Cadbull Terms & Conditions | DWG File Usage & User Policies</title>
             <meta name="description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
-            <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-condition`} />
+            <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-conditions`} />
 
             <meta property="og:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
             <meta property="og:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
             <meta property="og:type" content="website" />
-            <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-condition`} />
+            <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-conditions`} />
             <meta property="og:image" content={logo} />
             <meta name="twitter:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
             <meta name="twitter:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />

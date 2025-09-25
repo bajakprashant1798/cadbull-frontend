@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_FRONT_URL;
-    const pages = ['/about-us', '/contact-us', '/faqs', '/terms-condition', '/privacy-policy', '/pricing'];
+    const pages = ['/about-us', '/contact-us', '/faqs', '/terms-conditions', '/privacy-policy', '/pricing'];
 
     // Set the XML content type header
     res.setHeader('Content-Type', 'text/xml');
