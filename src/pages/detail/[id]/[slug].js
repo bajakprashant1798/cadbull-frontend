@@ -129,7 +129,18 @@ function slugify(title) {
     // .toLowerCase();
 }
 
-
+// new added calculate file size function
+// Human-readable byte formatter (e.g., 12.3 MB)
+const formatBytes = (bytes) => {
+  if (bytes == null) return null;
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const units = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const val = bytes / Math.pow(k, i);
+  const rounded = i < 2 ? Math.round(val) : Math.round(val * 10) / 10; // 0 dec for KB, 1 dec from MB+
+  return `${rounded} ${units[i]}`;
+};
 
 const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const dispatch = useDispatch();
@@ -854,7 +865,17 @@ const shortSub = (s) => ({
                           className={"text-primary"}
                         />
                       </Link>
-
+                      
+                      {/* NEW: File Size card */}
+                      <div className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#F4F4F6"}
+                          image={goldblocks}
+                          type={"File Size:"}
+                          title={formatBytes(project?.size) || "—"}
+                          className={"text-dark"}
+                        />
+                      </div>
                       
                     </div>
 
