@@ -794,6 +794,78 @@ const shortSub = (s) => ({
                 <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
               </div>
               {/* </div> */}
+
+              <div className="row my-3">
+                <div className="col-md-12">
+                  <div className="bg-white shadow-sm p-2 p-md-4">
+                    <div className="row justify-content-between align-items-center">
+                      <div className="col-md-5">
+                        <div className="d-flex align-items-center gap-md-3 gap-2">
+                          <div className="flex-shrink-0">
+                            {(project?.profile_pic && !profileImageError) ? (
+                              <Image
+                                src={getSafeImageUrl(project.profile_pic)}
+                                alt="Profile"
+                                width={80}
+                                height={80}
+                                className="rounded-circle"
+                                style={{ objectFit: "cover" }}
+                                loading="lazy"
+                                // priority={false}
+                                decoding="async"
+                                // quality={75}
+                                sizes="80px"
+                                onError={() => setProfileImageError(true)}
+                              />
+                            ) : (
+                              <Image
+                                src={profile_dummy}
+                                alt="Profile"
+                                width={80}
+                                height={80}
+                                className="rounded-circle"
+                                style={{ objectFit: "cover" }}
+                                // priority={false}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
+                              <span>{project?.firstname} </span>
+                              
+                            </h6>
+                            <p>
+                              {project?.lastname}
+                            </p>
+                            
+                            <div className=" mt-1 d-md-none text-start text-md-end">
+                              <Link
+                                href={`/profile/author/${project?.user_id}`} 
+                                className="btn btn-primary"
+                              >
+                                View Profile
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="d-none d-md-block col-md-5 text-start text-md-end">
+                        <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
+                          View Profile
+                        </Link>
+                      </div>
+                      {/* <p className="d-md-none mt-3">
+                        This architectural drawing is a 2D block of garden
+                        benches in AutoCAD drawing, CAD file, and dwg file.
+                        For more details and information download the
+                        drawing file.
+                      </p> */}
+                    </div>
+                  </div>
+                </div>
+              </div>
           
               
             </div>
@@ -844,7 +916,7 @@ const shortSub = (s) => ({
                       {/* NEW: File Size card */}
                       <div className="text-decoration-none">
                         <FileDescription
-                          bgColor={"#4C6A9E"}
+                          bgColor={"#21447f"}
                           image={autoCad}
                           type={"File Size:"}
                           title={formatBytes(project?.size) || "—"}
@@ -880,77 +952,7 @@ const shortSub = (s) => ({
                       
                     </div>
 
-                    <div className="row my-3">
-                      <div className="col-md-12">
-                        <div className="bg-white shadow-sm p-2 p-md-4">
-                          <div className="row justify-content-between align-items-center">
-                            <div className="col-md-5">
-                              <div className="d-flex align-items-center gap-md-3 gap-2">
-                                <div className="flex-shrink-0">
-                                  {(project?.profile_pic && !profileImageError) ? (
-                                    <Image
-                                      src={getSafeImageUrl(project.profile_pic)}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      loading="lazy"
-                                      // priority={false}
-                                      decoding="async"
-                                      // quality={75}
-                                      sizes="80px"
-                                      onError={() => setProfileImageError(true)}
-                                    />
-                                  ) : (
-                                    <Image
-                                      src={profile_dummy}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      // priority={false}
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                  )}
-                                </div>
-                                <div>
-                                  <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                    <span>{project?.firstname} </span>
-                                    
-                                  </h6>
-                                  <p>
-                                    {project?.lastname}
-                                  </p>
-                                  
-                                  <div className=" mt-1 d-md-none text-start text-md-end">
-                                    <Link
-                                      href={`/profile/author/${project?.user_id}`} 
-                                      className="btn btn-primary"
-                                    >
-                                      View Profile
-                                    </Link>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="d-none d-md-block col-md-5 text-start text-md-end">
-                              <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
-                                View Profile
-                              </Link>
-                            </div>
-                            {/* <p className="d-md-none mt-3">
-                              This architectural drawing is a 2D block of garden
-                              benches in AutoCAD drawing, CAD file, and dwg file.
-                              For more details and information download the
-                              drawing file.
-                            </p> */}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    
 
                     {/* <div className="border-top border-bottom py-2 mt-4"> */}
                       {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
