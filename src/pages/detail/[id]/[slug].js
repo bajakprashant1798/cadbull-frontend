@@ -788,16 +788,9 @@ const shortSub = (s) => ({
 
               </div>
 
-
-              {/* <div className="border-top border-bottom py-2 mt-4"> */}
-              <div className="d-none d-lg-block">
-                <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
-              </div>
-              {/* </div> */}
-
-              <div className="row my-3">
+              <div className="row my-3 d-lg-block d-none">
                 <div className="col-md-12">
-                  <div className="bg-white shadow-sm p-2 p-md-4">
+                  <div className="bg-white profile_shadow p-2 p-md-4">
                     <div className="row justify-content-between align-items-center">
                       <div className="col-md-5">
                         <div className="d-flex align-items-center gap-md-3 gap-2">
@@ -832,6 +825,7 @@ const shortSub = (s) => ({
                             )}
                           </div>
                           <div>
+                            <p className='fst-italic fs-12'>Uploaded by:</p>
                             <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
                               <span>{project?.firstname} </span>
                               
@@ -866,6 +860,13 @@ const shortSub = (s) => ({
                   </div>
                 </div>
               </div>
+
+
+              {/* <div className="border-top border-bottom py-2 mt-4"> */}
+              <div className="d-none d-lg-block">
+                <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+              </div>
+              {/* </div> */}
           
               
             </div>
@@ -952,6 +953,78 @@ const shortSub = (s) => ({
                       
                     </div>
 
+                    <div className="row my-3 d-block d-lg-none">
+                      <div className="col-12">
+                        <div className="bg-white profile_shadow p-2 p-md-4">
+                          <div className="row justify-content-between align-items-center">
+                            <div className="col-7">
+                              <div className="d-flex align-items-center gap-md-3 gap-2">
+                                <div className="flex-shrink-0">
+                                  {(project?.profile_pic && !profileImageError) ? (
+                                    <Image
+                                      src={getSafeImageUrl(project.profile_pic)}
+                                      alt="Profile"
+                                      width={80}
+                                      height={80}
+                                      className="rounded-circle"
+                                      style={{ objectFit: "cover" }}
+                                      loading="lazy"
+                                      // priority={false}
+                                      decoding="async"
+                                      // quality={75}
+                                      sizes="80px"
+                                      onError={() => setProfileImageError(true)}
+                                    />
+                                  ) : (
+                                    <Image
+                                      src={profile_dummy}
+                                      alt="Profile"
+                                      width={80}
+                                      height={80}
+                                      className="rounded-circle"
+                                      style={{ objectFit: "cover" }}
+                                      // priority={false}
+                                      loading="lazy"
+                                      decoding="async"
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className='fst-italic fs-12'>Uploaded by:</p>
+                                  <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
+                                    <span>{project?.firstname} </span>
+                                    
+                                  </h6>
+                                  <p>
+                                    {project?.lastname}
+                                  </p>
+                                  
+                                  {/* <div className=" mt-1 d-md-none text-start text-md-end">
+                                    <Link
+                                      href={`/profile/author/${project?.user_id}`} 
+                                      className="btn btn-primary"
+                                    >
+                                      View Profile
+                                    </Link>
+                                  </div> */}
+                                </div>
+                              </div>
+                            </div>
+                            <div className=" col-5 text-start text-md-end">
+                              <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
+                                View Profile
+                              </Link>
+                            </div>
+                            {/* <p className="d-md-none mt-3">
+                              This architectural drawing is a 2D block of garden
+                              benches in AutoCAD drawing, CAD file, and dwg file.
+                              For more details and information download the
+                              drawing file.
+                            </p> */}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     
 
                     {/* <div className="border-top border-bottom py-2 mt-4"> */}
