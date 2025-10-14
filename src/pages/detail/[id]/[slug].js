@@ -840,6 +840,18 @@ const shortSub = (s) => ({
                           title={project?.file_type}
                         />
                       </Link>
+
+                      {/* NEW: File Size card */}
+                      <div className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#4C6A9E"}
+                          image={autoCad}
+                          type={"File Size:"}
+                          title={formatBytes(project?.size) || "—"}
+                          // className={"text-dark"}
+                        />
+                      </div>
+
                       <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
                         <FileDescription
                           bgColor={"#3D6098"}
@@ -865,17 +877,6 @@ const shortSub = (s) => ({
                           className={"text-primary"}
                         />
                       </Link>
-                      
-                      {/* NEW: File Size card */}
-                      <div className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#F4F4F6"}
-                          image={goldblocks}
-                          type={"File Size:"}
-                          title={formatBytes(project?.size) || "—"}
-                          className={"text-dark"}
-                        />
-                      </div>
                       
                     </div>
 

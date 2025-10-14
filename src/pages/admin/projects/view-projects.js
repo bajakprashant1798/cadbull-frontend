@@ -5,6 +5,86 @@ import PaginationAdmin from "@/components/PaginationAdmin";
 import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
+import { useMemo } from "react";
+
+/** Returns { ok: boolean, issues: string[] } */
+const useSeoCheck = (project) => {
+  return useMemo(() => {
+    const issues = [];
+    const trim = (s) => (s || "").toString().trim();
+
+    const wtLen = trim(project.work_title).length;
+    // Work Title target: 60–70 chars (ideal ≈68)
+    if (wtLen < 60 || wtLen > 70) issues.push(`Work Title length = ${wtLen}`);
+
+    const mtLen = trim(project.meta_title).length;
+    // Meta Title target: 50–60 chars
+    if (mtLen < 50 || mtLen > 60) issues.push(`Meta Title length = ${mtLen}`);
+
+    const mdLen = trim(project.meta_description).length;
+    // Meta Description target: 150–160 chars
+    if (mdLen < 150 || mdLen > 160) issues.push(`Meta Description length = ${mdLen}`);
+
+    const hasTags = !!trim(project.tags);
+    if (!hasTags) issues.push(`Tags missing`);
+
+    return { ok: issues.length === 0, issues };
+    // Only recompute if any of these actually change
+  }, [
+    project.id,
+    project.work_title,
+    project.meta_title,
+    project.meta_description,
+    project.tags,
+  ]);
+};
+
+/** Small cell component that shows a green check or red alert with a tooltip */
+const SeoHealthCell = ({ project }) => {
+  const { ok, issues } = useSeoCheck(project);
+
+  const titleText = ok
+    ? "All good"
+    : `Fix:\n• ${issues.join("\n• ")}`;
+
+  return (
+    <div style={{ textAlign: "center" }} title={titleText} aria-label={titleText}>
+      {ok ? (
+        <span
+          style={{
+            display: "inline-block",
+            width: 22,
+            height: 22,
+            lineHeight: "22px",
+            borderRadius: "50%",
+            background: "#28a745",
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 700,
+          }}
+        >
+          ✓
+        </span>
+      ) : (
+        <span
+          style={{
+            display: "inline-block",
+            width: 22,
+            height: 22,
+            lineHeight: "22px",
+            borderRadius: "50%",
+            background: "#dc3545",
+            color: "#fff",
+            fontSize: 14,
+            fontWeight: 700,
+          }}
+        >
+          !
+        </span>
+      )}
+    </div>
+  );
+};
 
 // ✅ Image Exists Checker Component
 const ImageExistsChecker = ({ imagePath, projectId }) => {
@@ -257,6 +337,7 @@ const ViewProjects = () => {
                     <table className="table table-striped">
                         <thead>
                             <tr>
+                                <th>SEO</th>
                                 <th>ID</th>
                                 <th>Username</th>
                                 <th style={{ maxWidth: "200px", wordWrap: "break-word", whiteSpace: "normal" }}>Title</th>
@@ -270,6 +351,9 @@ const ViewProjects = () => {
                             {projects.length > 0 ? (
                                 projects.map((project) => (
                                     <tr key={project.id}>
+                                        <td style={{ textAlign: "center", minWidth: "70px" }}>
+                                            <SeoHealthCell project={project} />
+                                        </td>
                                         <td>{project.id}</td>
                                         <td>{project.username || "N/A"}</td>
                                         <td style={{ maxWidth: "200px", wordWrap: "break-word", whiteSpace: "normal" }}>
@@ -299,6 +383,7 @@ const ViewProjects = () => {
                                                 projectId={project.id}
                                             />
                                         </td>
+                                        
                                     </tr>
                                 ))
                             ) : (
