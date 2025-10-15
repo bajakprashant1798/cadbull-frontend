@@ -12,6 +12,7 @@ export default function Document(props) {
         <meta name="google-adsense-account" content="ca-pub-2488270605722778" />
 
         {/* ✅ CRITICAL CSS: Inline critical styles for LCP optimization */}
+        {!isAmp && (
         <style dangerouslySetInnerHTML={{
           __html: `
             body{font-family:'Poppins',system-ui,arial,sans-serif!important;margin:0;padding:0}
@@ -29,6 +30,8 @@ export default function Document(props) {
             .fw-bold{font-weight:700!important}
           `
         }} />
+        )}
+
         
         {/* Only load fonts for non-AMP pages to prevent duplicate amp-custom */}
         {!isAmp && (
