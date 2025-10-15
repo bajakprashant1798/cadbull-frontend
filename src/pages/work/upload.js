@@ -106,7 +106,8 @@ const UploadWork = () => {
 
 
   const handleUploadfile = (file) => {
-    setFormData({ ...formData, file: file[0] });
+    // setFormData({ ...formData, file: file[0] });
+    setFormData({ file: file[0] });
     toast.success("Zip file uploaded!");
   };
 
@@ -195,9 +196,9 @@ const UploadWork = () => {
             <div className="col-md-12 col-lg-9 col-xl-7">
               <form onSubmit={handleSubmit}>
                 
-                <div className="row mb-4 mb-md-5 g-3">
+                {/* <div className="row mb-4 mb-md-5 g-3"> */}
                   {/* Work Title */}
-                  <div className="col-lg-12">
+                  {/* <div className="col-lg-12">
                     <div>
                       <label htmlFor="workTitle">Work Title</label>
                     </div>
@@ -214,9 +215,9 @@ const UploadWork = () => {
                         })
                       }
                     />
-                  </div>
+                  </div> */}
                   {/* Description */}
-                  <div className="col-lg-12">
+                  {/* <div className="col-lg-12">
                     <div>
                       <label htmlFor="description">Description</label>
                     </div>
@@ -225,9 +226,9 @@ const UploadWork = () => {
                       placeholder="The clearer and shorter the better"
                       onChange={(content)=>setFormData({...formData, description: content})}
                     />
-                  </div>
+                  </div> */}
                   {/* File Type */}
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <div>
                       <label htmlFor="fileType">File Type</label>
                     </div>
@@ -247,9 +248,9 @@ const UploadWork = () => {
                       return  <option key={index} value={value}>{type}</option>
                      })}
                     </select>
-                  </div>
+                  </div> */}
                   {/* Category */}
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <div>
                       <label htmlFor="category">Category</label>
                     </div>
@@ -267,9 +268,9 @@ const UploadWork = () => {
                       }
                     </select>
 
-                  </div>
+                  </div> */}
                   {/* Subcategory */}
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <div>
                       <label htmlFor="subcategory">Subcategory</label>
                     </div>
@@ -291,24 +292,13 @@ const UploadWork = () => {
                         ))
                       }
                     </select>
-                  </div>
+                  </div> */}
                   {/* Keyword */}
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <div>
                       <label htmlFor="keyword">5 Keywords</label>
                     </div>
-                    {/* <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Your Keyword"
-                      value={formData.keyword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          keyword: e.target.value,
-                        })
-                      }
-                    /> */}
+                    
                     <TagsInput
                       className="form-control tags-input"
                       value={tags}                // local state for tags
@@ -328,8 +318,8 @@ const UploadWork = () => {
                       onlyUnique
                       inputProps={{ placeholder: "Add tag" }}
                     />
-                  </div>
-                </div>
+                  </div> */}
+                {/* </div> */}
                 {/* <div className="mb-4 mb-md-5">
                   <div>
                     <label className="mb-2">Upload Image</label>

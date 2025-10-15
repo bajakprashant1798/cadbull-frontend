@@ -18,8 +18,14 @@ import { trackCompleteRegistration } from "@/lib/fbpixel";
 
 const pageTitle = {
   title: "Register A New Account",
-  description:
-    "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
+  description: (
+    <>
+      Cadbull is the world’s largest CAD library. Here, you can download over{" "}
+      <span className="text-danger fw-bold">271,030+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
+    </>
+  ),
+  // description:
+  //   "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
 };
 
 const Register = () => {
