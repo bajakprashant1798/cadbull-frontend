@@ -545,7 +545,7 @@ const Register = () => {
         </form>
 
         {/* Social Button  */}
-        <div className="mt-4 d-flex flex-column flex-xl-row gap-3 gap-xl-2 mb-3 mb-md-4">
+        <div className="mt-4 d-flex flex-column justify-content-center flex-xl-row gap-3 gap-xl-2 mb-3 mb-md-4">
           <button
             onClick={() => handleGoogleSignIn()}
             type="button"
@@ -564,14 +564,14 @@ const Register = () => {
             <Icons.Facebook />
             <span>Login in with Facebook</span>
           </button>
-          <Link
+          {/* <Link
             href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             type="button"
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
           >
             <Icons.Phone />
             <span>SignUp with Mobile </span>
-          </Link>
+          </Link> */}
         </div>
         <div className="text-center">
           <p>

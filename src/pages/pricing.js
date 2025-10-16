@@ -249,7 +249,7 @@ const Pricing = () => {
                     <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
                     {/* <li><Icons.ListBullet /><span className="ms-1">Upto 250 files/day</span></li> */}
-                    <li><Icons.ListBullet /><span className="ms-1">Upto 12 Gold files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 20 Gold files/day</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Upto 15 Free files/day</span></li>
                   </ul>
                 </div>
@@ -307,7 +307,7 @@ const Pricing = () => {
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
                     {/* <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 300 files/day</span></li> */}
-                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 15 Gold files/day</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 30 Gold files/day</span></li>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 25 Free files/day</span></li>
                   </ul>
                 </div>
@@ -360,8 +360,8 @@ const Pricing = () => {
                     <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
                     {/* <li><Icons.ListBullet /><span className="ms-1">Upto 400 files/day</span></li> */}
-                    <li><Icons.ListBullet /><span className="ms-1">Upto 20 Gold files/day</span></li>
-                    <li><Icons.ListBullet /><span className="ms-1">Upto 30 Free files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 40 Gold files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 50 Free files/day</span></li>
                   </ul>
                 </div>
                 <div>

@@ -369,7 +369,7 @@ const Login = () => {
           </div>
         </form>
         {/* Social Button  */}
-        <div className="mt-4 d-flex flex-column flex-xl-row gap-3 gap-xl-2 mb-3 mb-md-4">
+        <div className="mt-4 d-flex flex-column justify-content-center flex-xl-row gap-3 gap-xl-2 mb-3 mb-md-4">
           <button
             onClick={() => {
               handleGoogleSignIn();
@@ -393,13 +393,13 @@ const Login = () => {
             <span>Login in with Facebook</span>
           </button>
          
-            <Link href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
+          {/* <Link href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
             
-            >
+          >
             <Icons.Phone />
             <span>Login in with Mobile</span>
-            </Link>
+          </Link> */}
           
         </div>
         <div className="text-center">
