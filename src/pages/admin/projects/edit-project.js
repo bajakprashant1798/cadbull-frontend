@@ -140,6 +140,7 @@ const EditProject = () => {
       status: "1",
     },
   });
+  
 
   const router = useRouter();
   const { id } = router.query;
@@ -159,6 +160,9 @@ const EditProject = () => {
   // Watch form fields for SEO validation
   const watchMetaTitle = watch("meta_title", "");
   const watchMetaDescription = watch("meta_description", "");
+  // Watch status to know if we should skip SEO/slug checks
+  const statusWatch = watch("status", "1"); // "1"=Approved, "2"=Rejected
+  const isRejected = String(statusWatch) === "2";
 
   const user = useSelector((store) => store.logininfo.user);
   const userRole = user?.role;
@@ -429,29 +433,55 @@ const EditProject = () => {
 
   // ✅ Submit Form with Updated Data
   const onSubmit = async (data) => {
-    if (isDuplicate) {
-      toast.error("Cannot save: Duplicate project title.");
-      return;
+    // Recompute in the handler just in case
+    const isRejected = String(data.status ?? "1") === "2";
+    // Skip duplicate-title + SEO + slug checks if Rejected
+    if (!isRejected) {
+      if (isDuplicate) {
+        toast.error("Cannot save: Duplicate project title.");
+        return;
+      }
+      if (!slug || !slug.trim()) {
+        toast.error("Slug cannot be empty.");
+        return;
+      }
+      if (!seoTitleValidation.isValid) {
+        toast.error("Title length does not meet SEO requirements (60-70 characters).");
+        return;
+      }
+      if (!seoMetaTitleValidation.isValid) {
+        toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
+        return;
+      }
+      if (!seoMetaDescriptionValidation.isValid) {
+        toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
+        return;
+      }
     }
-    if (!slug || !slug.trim()) {
-      toast.error("Slug cannot be empty.");
-      return;
-    }
+    
+    // if (isDuplicate) {
+    //   toast.error("Cannot save: Duplicate project title.");
+    //   return;
+    // }
+    // if (!slug || !slug.trim()) {
+    //   toast.error("Slug cannot be empty.");
+    //   return;
+    // }
 
-    // ✅ Check all SEO validations before submitting (excluding description which now has no restrictions)
-    if (!seoTitleValidation.isValid) {
-      toast.error("Title length does not meet SEO requirements (60-70 characters).");
-      return;
-    }
-    // Description validation removed - no length restrictions
-    if (!seoMetaTitleValidation.isValid) {
-      toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
-      return;
-    }
-    if (!seoMetaDescriptionValidation.isValid) {
-      toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
-      return;
-    }
+    // // ✅ Check all SEO validations before submitting (excluding description which now has no restrictions)
+    // if (!seoTitleValidation.isValid) {
+    //   toast.error("Title length does not meet SEO requirements (60-70 characters).");
+    //   return;
+    // }
+    // // Description validation removed - no length restrictions
+    // if (!seoMetaTitleValidation.isValid) {
+    //   toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
+    //   return;
+    // }
+    // if (!seoMetaDescriptionValidation.isValid) {
+    //   toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
+    //   return;
+    // }
 
     try {
       setSubmitting(true);
@@ -841,13 +871,18 @@ const EditProject = () => {
             className="btn btn-primary"
             disabled={
               submitting || 
-              isDuplicate || 
+              isDuplicate && !isRejected ||
               checking || 
               !titleValidation.isValid ||
-              !seoTitleValidation.isValid ||
-              // !seoDescriptionValidation.isValid || // Removed - description has no length restrictions
-              !seoMetaTitleValidation.isValid ||
-              !seoMetaDescriptionValidation.isValid
+              // !seoTitleValidation.isValid ||
+              // // !seoDescriptionValidation.isValid || // Removed - description has no length restrictions
+              // !seoMetaTitleValidation.isValid ||
+              // !seoMetaDescriptionValidation.isValid
+              (!isRejected && ( // only block on SEO when NOT rejected
+                !seoTitleValidation.isValid ||
+                !seoMetaTitleValidation.isValid ||
+                !seoMetaDescriptionValidation.isValid
+              ))
             }
           >
             {submitting ? (
@@ -861,7 +896,7 @@ const EditProject = () => {
           </button>
 
           {/* ✅ SEO Requirements Summary (excluding description) */}
-          {(!seoTitleValidation.isValid || !seoMetaTitleValidation.isValid || !seoMetaDescriptionValidation.isValid) && (
+          {!isRejected && (!seoTitleValidation.isValid || !seoMetaTitleValidation.isValid || !seoMetaDescriptionValidation.isValid) && (
             <div className="mt-3 p-3" style={{ backgroundColor: "#fff3cd", border: "1px solid #ffeaa7", borderRadius: "4px" }}>
               <h6 style={{ color: "#856404", marginBottom: "8px" }}>⚠️ SEO Requirements Not Met</h6>
               <small style={{ color: "#856404" }}>
