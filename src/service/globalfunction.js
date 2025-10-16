@@ -73,11 +73,28 @@ export const handledownload = async (id, isAuthenticated, router, projectName = 
       return router.push(res.data.redirectUrl);
     }
 
-    // Download limit reached
+    // New: Structured limit error from backend
+    if (res?.status === 403 && res?.data?.code === "LIMIT_REACHED") {
+      const planLabel = res.data.kind === "gold" ? "Gold" : "Free";
+      const limit = res.data.limit ?? "?";
+      toast.error(`You've reached your daily ${planLabel} limit (${limit}). Please try again tomorrow or upgrade your plan.`);
+      return;
+    }
+
+    //// Download limit reached
+    // if (
+    //   res?.data?.message &&
+    //   res?.status === 403 &&
+    //   res.data.message.toLowerCase().includes("download limit")
+    // ) {
+    //   toast.error("Your daily limit of downloads is over. Please try again tomorrow or upgrade your plan.");
+    //   return;
+    // }
+    // Legacy textual message fallback (if backend not updated everywhere)
     if (
-      res?.data?.message &&
       res?.status === 403 &&
-      res.data.message.toLowerCase().includes("download limit")
+      typeof res?.data?.message === "string" &&
+      res.data.message.toLowerCase().includes("limit")
     ) {
       toast.error("Your daily limit of downloads is over. Please try again tomorrow or upgrade your plan.");
       return;
@@ -100,6 +117,17 @@ export const handledownload = async (id, isAuthenticated, router, projectName = 
     console.error("Unexpected download response format:", res.data);
   } catch (err) {
     console.log("❌ Download error:", err);
+
+    // Prefer structured limit error first
+    const status = err?.response?.status;
+    const data = err?.response?.data;
+
+    if (status === 403 && data?.code === "LIMIT_REACHED") {
+      const planLabel = data?.kind === "gold" ? "Gold" : "Free";
+      const limit = data?.limit ?? "?";
+      toast.error(`You've reached your daily ${planLabel} limit (${limit}). Please try again tomorrow or upgrade your plan.`);
+      return;
+    }
     
     // Axios error: check if response is available
     if (err?.response?.status === 404) {
