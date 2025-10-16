@@ -358,20 +358,39 @@ const EditProject = () => {
 
   // ✅ Watch meta title changes for SEO validation
   useEffect(() => {
-    const seoValidation = validateSEOMetaTitle(watchMetaTitle);
-    setSeoMetaTitleValidation(seoValidation);
-  }, [watchMetaTitle]);
+    // const seoValidation = validateSEOMetaTitle(watchMetaTitle);
+    // setSeoMetaTitleValidation(seoValidation);
+    if (isRejected) {
+      setSeoMetaTitleValidation({ isValid: true, message: "Skipped (Rejected)" });
+    } else {
+      setSeoMetaTitleValidation(validateSEOMetaTitle(watchMetaTitle));
+    }
+  }, [watchMetaTitle, isRejected]);
 
   // ✅ Watch meta description changes for SEO validation
   useEffect(() => {
-    const seoValidation = validateSEOMetaDescription(watchMetaDescription);
-    setSeoMetaDescriptionValidation(seoValidation);
-  }, [watchMetaDescription]);
+    // const seoValidation = validateSEOMetaDescription(watchMetaDescription);
+    // setSeoMetaDescriptionValidation(seoValidation);
+    if (isRejected) {
+      setSeoMetaDescriptionValidation({ isValid: true, message: "Skipped (Rejected)" });
+    } else {
+      setSeoMetaDescriptionValidation(validateSEOMetaDescription(watchMetaDescription));
+    }
+  }, [watchMetaDescription, isRejected]);
 
   const handleWorkTitleChange = (e) => {
     const value = e.target.value;
     setWorkTitle(value);
     setValue("work_title", value); // Sync with react-hook-form
+
+    // If rejected, skip all validation/duplicate checks UI-wise
+    if (isRejected) {
+      setIsDuplicate(false);
+      setChecking(false);
+      setTitleValidation({ isValid: true, message: "" });
+      setSeoTitleValidation({ isValid: true, message: "Skipped (Rejected)" });
+      return;
+    }
 
     // ✅ Reset states
     setIsDuplicate(false);
@@ -588,7 +607,8 @@ const EditProject = () => {
             <label className="form-label">Work Title *</label>
             <input
               className="form-control"
-              {...register("work_title", { required: true })}
+              // {...register("work_title", { required: true })}
+              {...register("work_title", { required: !isRejected })}
               value={workTitle}
               onChange={handleWorkTitleChange}
               autoComplete="off"
@@ -871,9 +891,12 @@ const EditProject = () => {
             className="btn btn-primary"
             disabled={
               submitting || 
-              isDuplicate && !isRejected ||
-              checking || 
-              !titleValidation.isValid ||
+              // isDuplicate && !isRejected ||
+              // checking || 
+              // !titleValidation.isValid ||
+              (!isRejected && isDuplicate) ||
+              (!isRejected && checking) ||
+              (!isRejected && !titleValidation.isValid) ||
               // !seoTitleValidation.isValid ||
               // // !seoDescriptionValidation.isValid || // Removed - description has no length restrictions
               // !seoMetaTitleValidation.isValid ||
