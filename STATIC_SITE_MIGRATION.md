@@ -78,7 +78,7 @@ module.exports = nextConfig;
 // src/utils/customImageLoader.js
 export default function customImageLoader({ src, width, quality }) {
   // Use your existing backend image optimization
-  if (src.includes('beta-assets.cadbull.com')) {
+  if (src.includes('assets.cadbull.com')) {
     return src; // Already optimized
   }
   

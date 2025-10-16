@@ -62,7 +62,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'beta-assets.cadbull.com',
+        hostname: 'assets.cadbull.com',
       },
       {
         protocol: 'http',

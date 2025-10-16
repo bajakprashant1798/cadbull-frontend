@@ -39,7 +39,7 @@ export default function Document(props) {
             {/* ✅ CHROME PERFORMANCE: Critical preconnects for faster loading */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-            <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
+            <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
             
             {/* ✅ CHROME: AdSense preconnects to reduce initial blocking */}
             <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />

@@ -1,5 +1,5 @@
 // src/utils/assets.js
-const CDN_PREFIX = "https://beta-assets.cadbull.com/assets";
+const CDN_PREFIX = "https://assets.cadbull.com/assets";
 
 // Small helpers
 const stripSlashes = (s) => String(s).replace(/^\/+|\/+$/g, "");

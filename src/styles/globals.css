@@ -794,7 +794,7 @@ select:-webkit-autofill:focus {
 .main-heading-wrapper::before {
   position: absolute;
   content: "";
-  background-image: url("https://beta-assets.cadbull.com/assets/images/heading-image.png");
+  background-image: url("https://assets.cadbull.com/assets/images/heading-image.png");
   width: 68px;
   height: 60px;
   left: -45px;
@@ -983,7 +983,7 @@ select:-webkit-autofill:focus {
   content: attr(data-attr);
   bottom: -60px;
   right: -20px;
-  background-image: url("https://beta-assets.cadbull.com/assets/icons/bubble.svg");
+  background-image: url("https://assets.cadbull.com/assets/icons/bubble.svg");
   width: 66px;
   height: 48px;
   display: flex;
@@ -1377,7 +1377,7 @@ table tbody td > * {
 .form-check-input[type=radio] {
   width: 16px !important;
   height: 16px !important;
-  background: url("https://beta-assets.cadbull.com/assets/icons/unchecked.png") !important;
+  background: url("https://assets.cadbull.com/assets/icons/unchecked.png") !important;
   background-repeat: no-repeat !important;
   border: 0 !important;
   background-size: contain;
@@ -1386,7 +1386,7 @@ table tbody td > * {
 .form-check-input:checked[type=radio] {
   width: 16px !important;
   height: 16px !important;
-  background: url("https://beta-assets.cadbull.com/assets/icons/checked.png") !important;
+  background: url("https://assets.cadbull.com/assets/icons/checked.png") !important;
   background-repeat: no-repeat !important;
   background-size: contain;
   border: 0 !important;

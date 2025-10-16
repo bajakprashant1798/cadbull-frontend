@@ -549,9 +549,9 @@ const shortSub = (s) => ({
         <meta name="keywords" content={project?.tags || ""} />
 
         <link rel="canonical" href={canonicalUrl} />
-        <link rel="preconnect" href="https://beta-assets.cadbull.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://beta-assets.cadbull.com"></link>
-        {/* <link rel="preload" href="https://beta-assets.cadbull.com" as="image" />
+        <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://assets.cadbull.com"></link>
+        {/* <link rel="preload" href="https://assets.cadbull.com" as="image" />
          */}
         {/* ✅ SPEED OPTIMIZATION: Preload LCP image for faster loading */}
         {project?.photo_url && (

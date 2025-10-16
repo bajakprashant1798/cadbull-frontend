@@ -540,7 +540,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                 
                 // ✅ UPDATED: Construct the image URL with the new path
                 const similarImageUrl = sim.image
-                  ? `https://beta-assets.cadbull.com/product_img/original/${sim.image}`
+                  ? `https://assets.cadbull.com/product_img/original/${sim.image}`
                   : "https://cadbull.com/default-img.png";
 
                 return (

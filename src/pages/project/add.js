@@ -14,7 +14,7 @@ import Icons from "@/components/Icons";
 import { assets } from "@/utils/assets";
 const save = assets.icons("save.png");
 const heart = assets.icons("heart.png");
-const drawing = "https://beta-assets.cadbull.com/assets/company-profile/servies.png";
+const drawing = "https://assets.cadbull.com/assets/company-profile/servies.png";
 
 
 const projects = [
