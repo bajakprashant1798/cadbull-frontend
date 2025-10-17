@@ -16,6 +16,32 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 // import TagsInput from "react-tagsinput";
 // import "react-tagsinput/react-tagsinput.css"; // ✅ Import default styles
 
+// function mysqlUtcToDatetimeLocalIST(mysqlUtc) {
+//   if (!mysqlUtc) return "";
+//   const utc = new Date(mysqlUtc.replace(" ", "T") + "Z");
+//   const ist = new Date(utc.getTime() + 330 * 60 * 1000); // UTC+05:30
+//   const pad = (n) => String(n).padStart(2, "0");
+//   const yyyy = ist.getFullYear();
+//   const mm = pad(ist.getMonth() + 1);
+//   const dd = pad(ist.getDate());
+//   const HH = pad(ist.getHours());
+//   const MM = pad(ist.getMinutes());
+//   return `${yyyy}-${mm}-${dd}T${HH}:${MM}`;
+// }
+function mysqlUtcToDatetimeLocalIST(mysqlUtc) {
+  if (!mysqlUtc) return "";
+  try {
+    const isoish = String(mysqlUtc).replace(" ", "T");
+    const utc = new Date(isoish.endsWith("Z") ? isoish : isoish + "Z");
+    if (isNaN(utc.getTime())) return "";
+    const ist = new Date(utc.getTime() + 330 * 60 * 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${ist.getFullYear()}-${pad(ist.getMonth()+1)}-${pad(ist.getDate())}T${pad(ist.getHours())}:${pad(ist.getMinutes())}:${pad(ist.getSeconds())}`;
+  } catch {
+    return "";
+  }
+}
+
 function standardSlugify(text) {
   if (!text) return '';
   return text
@@ -150,6 +176,7 @@ const EditProject = () => {
   const [checking, setChecking] = useState(false);
   const [titleValidation, setTitleValidation] = useState({ isValid: true, message: "" });
   const typingTimeout = useRef(null); // You need to import useRef!
+  const [publishAtIst, setPublishAtIst] = useState(""); // "YYYY-MM-DDTHH:MM"
 
   // ✅ SEO Validation States
   const [seoTitleValidation, setSeoTitleValidation] = useState({ isValid: true, message: "" });
@@ -318,6 +345,8 @@ const EditProject = () => {
         setSlug(initialSlug);
         setSlugMode(initialSlugMode);
 
+        // setPublishAtIst(mysqlUtcToDatetimeLocalIST(projectRes.data.publish_at));
+        setPublishAtIst(projectRes.data.publish_at_ist || "");
 
         //// ✅ Set Form Data
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
@@ -563,6 +592,14 @@ const EditProject = () => {
           formData.append(key, updatedData[key]);
         }
       }
+
+      // if (publishAtIst) {
+      //   formData.append("publish_at_ist", publishAtIst);
+      // } else {
+      //   // If you want clearing the input to remove the schedule in DB:
+      //   // formData.append("publish_at_ist", "");
+      // }
+      formData.append("publish_at_ist", publishAtIst || "");
 
       await updateProjectApi(id, formData);
 
@@ -857,6 +894,19 @@ const EditProject = () => {
               <option value="1">Approved</option>
               <option value="2">Rejected</option>
             </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Schedule Publish (IST)</label>
+            <input
+              type="datetime-local"
+              className="form-control"
+              value={publishAtIst}
+              onChange={(e) => setPublishAtIst(e.target.value)}
+            />
+            <small className="form-text text-muted">
+              Leave empty to publish immediately. This is interpreted as IST (UTC+05:30).
+            </small>
           </div>
 
           {/* ✅ ADD THIS NEW FIELD */}

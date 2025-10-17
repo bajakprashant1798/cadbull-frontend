@@ -175,7 +175,14 @@ const WorkSent = ({ initialProjects = [], initialTotalPages = 1 }) => {
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              <PageHeading title={"Work Sent"} description={"Choose from 254195+ Free & Premium CAD Files with new additions published every second month."} />
+              <PageHeading 
+                title={"Work Sent"} 
+                description={
+                  <>
+                  Choose from <span className="text-danger">254195+</span> Free & Premium CAD Files with new additions published every second month.
+                  </>
+                } 
+              />
             </div>
           </div>
           {/* Table  */}

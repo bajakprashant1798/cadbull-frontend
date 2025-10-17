@@ -148,6 +148,8 @@ const AddProject = () => {
   const [titleValidation, setTitleValidation] = useState({ isValid: true, message: "" });
   const typingTimeout = useRef(null);
 
+  const [publishAtIst, setPublishAtIst] = useState(""); // "YYYY-MM-DDTHH:MM" in IST
+
   // ✅ SEO Validation States
   const [seoTitleValidation, setSeoTitleValidation] = useState({ isValid: true, message: "" });
   const [seoDescriptionValidation, setSeoDescriptionValidation] = useState({ isValid: true, message: "" }); // Always valid now - no length restrictions
@@ -504,6 +506,16 @@ const AddProject = () => {
           return;
       }
 
+      // ⬇️ ADD THIS
+      // if (publishAtIst) {
+      //   formData.append("publish_at_ist", publishAtIst);
+      //   // If you ever want the empty value to CLEAR the schedule, you can else-append an empty string:
+      //   // } else {
+      //   //   formData.append("publish_at_ist", "");
+      //   // }
+      // }
+      formData.append("publish_at_ist", publishAtIst || "");
+
       console.log("✅ FormData AFTER Append:", [...formData.entries()]);
 
       await addProjectApi(formData);
@@ -803,6 +815,20 @@ const AddProject = () => {
             />
             <small className="form-text text-muted">
               🖼️ Maximum file size: 10MB. Supported formats: JPG, PNG, GIF, WEBP
+            </small>
+          </div>
+
+          {/* Schedule Publish (IST, optional) */}
+          <div className="mb-3">
+            <label className="form-label">Schedule Publish (IST)</label>
+            <input
+              type="datetime-local"
+              className="form-control"
+              value={publishAtIst}
+              onChange={(e) => setPublishAtIst(e.target.value)}
+            />
+            <small className="form-text text-muted">
+              Leave empty to publish immediately. This value is interpreted as IST (UTC+05:30).
             </small>
           </div>
 
