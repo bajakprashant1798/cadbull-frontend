@@ -5,7 +5,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 // import profile_dummy from "@/assets/icons/profile.png";
 import SectionHeading from "@/components/SectionHeading";
-import FileDescription from "@/components/FileDescription";
+import FileDescriptionOld from "@/components/FileDescriptionOld";
 // import autoCad from "@/assets/images/filetype/file_white.png";
 // import cad from "@/assets/images/filetype/cad.png";
 // import goldblocks from "@/assets/images/filetype/file.png";
@@ -789,11 +789,146 @@ const shortSub = (s) => ({
               </div>
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
-              <div className="d-none d-lg-block">
+              {/* <div className="d-none d-lg-block"> */}
                 <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
-              </div>
               {/* </div> */}
+              {/* </div> */}
+
           
+              <div className="row mt-3">
+                <div className="col-md-12">
+                    <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
+                        <div className="" style={{paddingLeft: '25px'}}>
+                        
+                        <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
+                            <div>
+                            <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
+                            <h5 className="product-description-title mb-2">Description</h5>
+                            </div>
+                        </div>
+                        <div>{parse(`${project.description}`)}</div>
+                        {/* <DescriptionRenderer 
+                            description={project?.description} 
+                            className="mt-2"
+                        /> */}
+                        
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div className="row gy-3 mb-md-3 mb-4">
+                    {/* <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none"> */}
+                    <FileDescriptionOld
+                        bgColor={"#20325A"}
+                        image={autoCad}
+                        type={"File Type:"}
+                        title={project?.file_type}
+                    />
+                    {/* </Link> */}
+
+                    {/* <Link href={`/${project?.category_path}/1`} className="text-decoration-none"> */}
+                    <FileDescriptionOld
+                        bgColor={"#3D6098"}
+                        image={cad}
+                        type={"Category::"}
+                        title={project?.product_category_title}
+                    />
+                    {/* </Link> */}
+                    {/* <Link href={`/${project?.subcategory_path}/1`} className="text-decoration-none"> */}
+                    <FileDescriptionOld
+                        bgColor={"#5B5B5B"}
+                        image={cad}
+                        type={"Sub Category::"}
+                        title={project?.product_subcategory_title}
+                    />
+                    {/* </Link> */}
+                    {/* <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none"> */}
+                    <FileDescriptionOld
+                        bgColor={"#E9E9EB"}
+                        image={goldblocks}
+                        type={"type:"}
+                        title={project?.type}
+                        className={"text-primary"}
+                    />
+                    {/* </Link> */}
+                    
+                </div>
+
+
+
+                <div className="row my-3 d-lg-block d-none">
+                    <div className="col-md-12">
+                    <div className="bg-white profile_shadow p-2 p-md-4">
+                        <div className="row justify-content-between align-items-center">
+                        <div className="col-md-5">
+                            <div className="d-flex align-items-center gap-md-3 gap-2">
+                            <div className="flex-shrink-0">
+                                {(project?.profile_pic && !profileImageError) ? (
+                                <Image
+                                    src={getSafeImageUrl(project.profile_pic)}
+                                    alt="Profile"
+                                    width={80}
+                                    height={80}
+                                    className="rounded-circle"
+                                    style={{ objectFit: "cover" }}
+                                    loading="lazy"
+                                    // priority={false}
+                                    decoding="async"
+                                    // quality={75}
+                                    sizes="80px"
+                                    onError={() => setProfileImageError(true)}
+                                />
+                                ) : (
+                                <Image
+                                    src={profile_dummy}
+                                    alt="Profile"
+                                    width={80}
+                                    height={80}
+                                    className="rounded-circle"
+                                    style={{ objectFit: "cover" }}
+                                    // priority={false}
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                                )}
+                            </div>
+                            <div>
+                                <p className='fst-italic fs-12'>Uploaded by:</p>
+                                <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
+                                <span>{project?.firstname} </span>
+                                
+                                </h6>
+                                <p>
+                                {project?.lastname}
+                                </p>
+                                
+                                <div className=" mt-1 d-md-none text-start text-md-end">
+                                <Link
+                                    href={`/profile/author/${project?.user_id}`} 
+                                    className="btn btn-primary"
+                                >
+                                    View Profile
+                                </Link>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div className="d-none d-md-block col-md-5 text-start text-md-end">
+                            <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
+                            View Profile
+                            </Link>
+                        </div>
+                        {/* <p className="d-md-none mt-3">
+                            This architectural drawing is a 2D block of garden
+                            benches in AutoCAD drawing, CAD file, and dwg file.
+                            For more details and information download the
+                            drawing file.
+                        </p> */}
+                        </div>
+                    </div>
+                    </div>
+                </div>
               
             </div>
 
@@ -804,80 +939,91 @@ const shortSub = (s) => ({
                 {/* Project Description */}
                 <div className="py-3 py-md-4 description-container">
                   <div className="container">
-                    <div className="row">
-                      <div className="col-md-12">
-                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
-                          <div className="" style={{paddingLeft: '25px'}}>
-                          
-                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
-                              <div>
-                                <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
-                                <h5 className="product-description-title mb-2">Description</h5>
-                              </div>
-                            </div>
-                            <div>{parse(`${project.description}`)}</div>
-                            {/* <DescriptionRenderer 
-                              description={project?.description} 
-                              className="mt-2"
-                            /> */}
-                            
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* <div className="d-none d-lg-block"> */}
-                      <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
-                    {/* </div> */}
                     
-                    <div className="row gy-3 mb-md-3 mb-4">
-                      <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#20325A"}
-                          image={autoCad}
-                          type={"File Type:"}
-                          title={project?.file_type}
-                        />
-                      </Link>
 
-                      {/* NEW: File Size card */}
-                      {/* <div className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#21447f"}
-                          image={autoCad}
-                          type={"File Size:"}
-                          title={formatBytes(project?.size) || "—"}
-                          // className={"text-dark"}
-                        />
-                      </div> */}
-
-                      <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#3D6098"}
-                          image={cad}
-                          type={"Category::"}
-                          title={project?.product_category_title}
-                        />
-                      </Link>
-                      <Link href={`/${project?.subcategory_path}/1`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#5B5B5B"}
-                          image={cad}
-                          type={"Sub Category::"}
-                          title={project?.product_subcategory_title}
-                        />
-                      </Link>
-                      <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#E9E9EB"}
-                          image={goldblocks}
-                          type={"type:"}
-                          title={project?.type}
-                          className={"text-primary"}
-                        />
-                      </Link>
-                      
+                    <div className="d-none d-lg-block">
+                      <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
                     </div>
+
+                    <div className='mb-3'>
+                        <aside>
+                            <h5 className="bg-secondary text-white px-3 py-2">
+                            Search
+                            </h5>
+                            <div className="p-3">
+                            <form className="d-flex gap-3 flex-column">
+                                Category
+                                <div>
+                                
+                                <select
+                                    defaultValue=""
+                                    className="form-select"
+                                    aria-label="Category"
+                                    onChange={(e) => {
+                                    const selectedCategoryId = e.target.value;
+                                    // Find the category in categoriesList that matches the selected id
+                                    const matchingCategory = categoriesList.find(
+                                        (cat) => cat.id == selectedCategoryId
+                                    );
+                                    // If found, update selectedCategory state with the slug
+                                    if (matchingCategory) {
+                                        setSelectedCategory(matchingCategory.slug);
+                                    }
+                                    // Also, find the selected category in categoryAndSubCategory to get its subcategories
+                                    const selectedCategoryObj = categoryAndSubCategory.find(
+                                        (item) => item.id == selectedCategoryId
+                                    );
+                                    if (selectedCategoryObj) {
+                                        setSubCategories(selectedCategoryObj.project_sub_categories);
+                                    }
+                                    setSelectedSubCategory(""); // clear previous sub selection
+                                    }}
+                                >
+                                    <option value="all">All Category</option>
+                                    {categoryAndSubCategory.map(({ id, title }) => (
+                                    <option value={id} key={id}>
+                                        • {title}
+                                    </option>
+                                    ))}
+                                </select>
+
+                                </div>
+                                Select Sub Category
+                                <div>
+                                <select
+                                    defaultValue=""
+                                    className="form-select"
+                                    aria-label="Sub Category"
+                                    onChange={(e) => {
+                                    setSelectedSubCategory(e.target.value);
+                                    }}
+                                >
+                                    <option value="">Select Sub Category</option>
+                                    {subCategories.map(({ id, title, slug }) => {
+                                    return (
+                                        <option value={slug} key={id}>
+                                        • {title}
+                                        </option>
+                                    );
+                                    })}
+                                </select>
+                                </div>
+                                
+                                <div className="mt-2obbs">
+                                <button
+                                    onClick={onSearchSubmitHandler}
+                                    className="btn btn-secondary w-100"
+                                >
+                                    Search
+                                </button>
+                                </div>
+                            </form>
+                            <div></div>
+                            </div>
+                        </aside>
+                    </div>
+                    
+                    
 
                     <div className="row my-3 d-block d-lg-none">
                       <div className="col-12">
@@ -957,80 +1103,9 @@ const shortSub = (s) => ({
                       {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
                     {/* </div> */}
 
-                    <div className="row my-3 d-lg-block d-none">
-                      <div className="col-md-12">
-                        <div className="bg-white shadow-sm p-2 p-md-4">
-                          <div className="row justify-content-between align-items-center">
-                            <div className="col-md-5">
-                              <div className="d-flex align-items-center gap-md-3 gap-2">
-                                <div className="flex-shrink-0">
-                                  {(project?.profile_pic && !profileImageError) ? (
-                                    <Image
-                                      src={getSafeImageUrl(project.profile_pic)}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      loading="lazy"
-                                      // priority={false}
-                                      decoding="async"
-                                      // quality={75}
-                                      sizes="80px"
-                                      onError={() => setProfileImageError(true)}
-                                    />
-                                  ) : (
-                                    <Image
-                                      src={profile_dummy}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      // priority={false}
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                  )}
-                                </div>
-                                <div>
-                                  {/* <p className='fst-italic fs-12'>Uploaded by:</p> */}
-                                  <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                    <span>{project?.firstname} </span>
-                                    
-                                  </h6>
-                                  <p>
-                                    {project?.lastname}
-                                  </p>
-                                  
-                                  <div className=" mt-1 d-md-none text-start text-md-end">
-                                    <Link
-                                      href={`/profile/author/${project?.user_id}`} 
-                                      className="btn btn-primary"
-                                    >
-                                      View Profile
-                                    </Link>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="d-none d-md-block col-md-5 text-start text-md-end">
-                              <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
-                                View Profile
-                              </Link>
-                            </div>
-                            {/* <p className="d-md-none mt-3">
-                              This architectural drawing is a 2D block of garden
-                              benches in AutoCAD drawing, CAD file, and dwg file.
-                              For more details and information download the
-                              drawing file.
-                            </p> */}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="d-block d-lg-none">
+                        <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
                     </div>
-
-                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
 
                     <div className="row justify-content-center">
                       <div className="col-md-12 col-12 text-center">
@@ -1067,83 +1142,7 @@ const shortSub = (s) => ({
                   </div>
                 </div>
 
-                <div>
-                  <aside>
-                    <h5 className="bg-secondary text-white px-3 py-2">
-                      Search
-                    </h5>
-                    <div className="p-3">
-                      <form className="d-flex gap-3 flex-column">
-                        Category
-                        <div>
-                          
-                          <select
-                            defaultValue=""
-                            className="form-select"
-                            aria-label="Category"
-                            onChange={(e) => {
-                              const selectedCategoryId = e.target.value;
-                              // Find the category in categoriesList that matches the selected id
-                              const matchingCategory = categoriesList.find(
-                                (cat) => cat.id == selectedCategoryId
-                              );
-                              // If found, update selectedCategory state with the slug
-                              if (matchingCategory) {
-                                setSelectedCategory(matchingCategory.slug);
-                              }
-                              // Also, find the selected category in categoryAndSubCategory to get its subcategories
-                              const selectedCategoryObj = categoryAndSubCategory.find(
-                                (item) => item.id == selectedCategoryId
-                              );
-                              if (selectedCategoryObj) {
-                                setSubCategories(selectedCategoryObj.project_sub_categories);
-                              }
-                              setSelectedSubCategory(""); // clear previous sub selection
-                            }}
-                          >
-                            <option value="all">All Category</option>
-                            {categoryAndSubCategory.map(({ id, title }) => (
-                              <option value={id} key={id}>
-                                • {title}
-                              </option>
-                            ))}
-                          </select>
-
-                        </div>
-                        Select Sub Category
-                        <div>
-                          <select
-                            defaultValue=""
-                            className="form-select"
-                            aria-label="Sub Category"
-                            onChange={(e) => {
-                              setSelectedSubCategory(e.target.value);
-                            }}
-                          >
-                            <option value="">Select Sub Category</option>
-                            {subCategories.map(({ id, title, slug }) => {
-                              return (
-                                <option value={slug} key={id}>
-                                  • {title}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </div>
-                        
-                        <div className="mt-2obbs">
-                          <button
-                            onClick={onSearchSubmitHandler}
-                            className="btn btn-secondary w-100"
-                          >
-                            Search
-                          </button>
-                        </div>
-                      </form>
-                      <div></div>
-                    </div>
-                  </aside>
-                </div>
+                
                 {/* ads image */}
                 
                 {/* <div className="d-block d-lg-none">
