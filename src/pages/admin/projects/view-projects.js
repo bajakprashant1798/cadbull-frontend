@@ -345,6 +345,7 @@ const ViewProjects = () => {
                                 <th>Status</th>
                                 <th>Actions</th>
                                 <th>Image Exists</th>
+                                <th>Publish Date (IST)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -382,6 +383,35 @@ const ViewProjects = () => {
                                                 imagePath={project.image} 
                                                 projectId={project.id}
                                             />
+                                        </td>
+
+                                        <td>
+                                            {project.publish_at_ist ? (() => {
+                                                const publishTime = new Date(project.publish_at_ist.replace(" ", "T"));
+                                                const now = new Date();
+                                                const isFuture = publishTime > now;
+                                                return (
+                                                <span className={isFuture ? "text-warning fw-bold" : ""}>
+                                                    {publishTime.toLocaleString("en-IN", {
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "2-digit",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                    hour12: true,
+                                                    })}
+                                                    {isFuture && " (Scheduled)"}
+                                                </span>
+                                                );
+                                            })() : (
+                                                <span className="text-muted fst-italic">
+                                                {project.status === "0"
+                                                    ? "Not scheduled"
+                                                    : project.status === "1"
+                                                    ? "Published (no date)"
+                                                    : "N/A"}
+                                                </span>
+                                            )}
                                         </td>
                                         
                                     </tr>
