@@ -6,6 +6,11 @@ export default function Document(props) {
                __NEXT_DATA__?.page?.startsWith('/amp') ||
                __NEXT_DATA__?.query?.amp !== undefined;
 
+  const host =
+    typeof window !== "undefined" ? window.location.hostname : "";
+
+  const isBeta = host.includes("beta.");
+
   return (
     <Html lang="en">
       <Head>
@@ -32,6 +37,13 @@ export default function Document(props) {
         }} />
         )}
 
+        {isBeta && (
+          <>
+            <meta name="robots" content="noindex, nofollow" />
+            <meta name="googlebot" content="noindex, nofollow" />
+            <meta name="bingbot" content="noindex, nofollow" />
+          </>
+        )}
         
         {/* Only load fonts for non-AMP pages to prevent duplicate amp-custom */}
         {!isAmp && (
