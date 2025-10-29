@@ -7,7 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
-import { ssrTimeout } from "@/utils/ssrTimeout";
+// import { ssrTimeout } from "@/utils/ssrTimeout";
 // import Architecture from "@/assets/images/Architecture.png";
 
 // ✅ BIM icons
@@ -52,7 +52,7 @@ import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import Image from "next/image";
 // import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
-import { performance } from "@/utils/performance";
+// import { performance } from "@/utils/performance";
 
 export const drawings = [
   { img: BIM1, type: "DWG", description: "DWG", value: "DWG" },
@@ -210,7 +210,7 @@ export default function Home({
     }
   }, [ favouritesFetched, dispatch]);
 
-    const loadProjects = async (page, pageSize = 9) => {
+    const loadProjects = async (page, pageSize = 12) => {
         startLoading(true);
         try {
             const response = await getallprojects(
@@ -239,8 +239,11 @@ export default function Home({
 
   // Initial load and page change effect
   useEffect(() => {
+    // Skip fetching if we’re already on the SSG state (page 1, no filters)
+    const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
+    if (isInitial && projects?.length) return;
     // Load projects whenever currentPage, searchTerm, or sortTerm change
-    loadProjects(currentPage, 9);
+    loadProjects(currentPage, 12);
   }, [currentPage, searchTerm, sortTerm]);
 
 
@@ -579,7 +582,7 @@ export default function Home({
             })}
           </div> */}
           <div className="row g-4">
-            {projects.slice(0, 9).map((project) => (
+            {projects.slice(0, 12).map((project) => (
               <div className="col-md-6 col-lg-4" key={project.id}>
                 <ProjectCard {...project} favorites={favouriteList} />
               </div>
@@ -1046,53 +1049,95 @@ export default function Home({
 
 
 // pages/index.js
-export async function getServerSideProps({  res, query }) {
-  const page = Number(query.page || 1);
-  const search = (query.search || "").toString();
-  const file_type = (query.file_type || "").toString();
+// export async function getServerSideProps({ res, query }) {
+//   const page = Number(query.page || 1);
+//   const search = (query.search || "").toString();
+//   const file_type = (query.file_type || "").toString();
 
-  // ⚠️ Important: short CDN cache + generous stale window
-  // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=60, stale-while-revalidate=300"
-  );
+//   // ⚠️ Important: short CDN cache + generous stale window
+//   // CloudFront/Proxy will cache HTML for 60s and can serve stale for 5 min while revalidating
+//   res.setHeader(
+//     "Cache-Control",
+//     "public, s-maxage=60, stale-while-revalidate=300"
+//   );
+
+//   try {
+//     // const [projectRes, categoryRes] = await Promise.all([
+//     //   getallprojects(page, 12, search, file_type),
+//     //   getallCategories()
+//     // ]);
+
+//     // Cap each call at 6s, don't let a single slow call block everything
+//     const [projSet, catSet] = await Promise.allSettled([
+//       Promise.race([ getallprojects(page, 12, search, file_type), ssrTimeout(6000, 'projects') ]),
+//       Promise.race([ getallCategories(), ssrTimeout(6000, 'categories') ]),
+//     ]);
+
+//     const projectRes   = projSet.status === 'fulfilled' ? projSet.value : null;
+//     const categoryRes  = catSet.status === 'fulfilled' ? catSet.value : null;
+
+//     return {
+//       props: {
+//         // initialProjects: projectRes?.data?.products || [],
+//         // totalPages: projectRes?.data?.totalPages || 1,
+//         // totalProducts: projectRes?.data?.totalProducts || 0,
+//         // lastProductId: projectRes?.data?.lastProductId || 0,
+//         // housePlanFiles: projectRes?.data?.housePlanFiles || 0,
+//         initialProjects: projectRes?.data?.products ?? [],
+//         totalPages: projectRes?.data?.totalPages ?? 1,
+//         totalProducts: projectRes?.data?.totalProducts ?? 0,
+//         lastProductId: projectRes?.data?.lastProductId ?? 0,
+//         housePlanFiles: projectRes?.data?.housePlanFiles ?? 0,
+//         currentPage: page,
+//         filters: { search, file_type },
+//         // initialCategories: categoryRes?.data?.categories || [],
+//         initialCategories: categoryRes?.data?.categories ?? [],
+//       },
+//     };
+//   } catch (e) {
+//     // Graceful fallback
+//     return {
+//       props: {
+//         initialProjects: [],
+//         totalPages: 1,
+//         totalProducts: 0,
+//         lastProductId: 0,
+//         housePlanFiles: 0,
+//         currentPage: 1,
+//         filters: { search: "", file_type: "" },
+//         initialCategories: [],
+//       },
+//     };
+//   }
+// }
+
+// pages/index.js
+export async function getStaticProps() {
+  const page = 1;
+  const search = "";
+  const file_type = "";
 
   try {
-    // const [projectRes, categoryRes] = await Promise.all([
-    //   getallprojects(page, 9, search, file_type),
-    //   getallCategories()
-    // ]);
-
-    // Cap each call at 6s, don't let a single slow call block everything
-    const [projSet, catSet] = await Promise.allSettled([
-      Promise.race([ getallprojects(page, 9, search, file_type), ssrTimeout(6000, 'projects') ]),
-      Promise.race([ getallCategories(), ssrTimeout(6000, 'categories') ]),
+    const [projectRes, categoryRes] = await Promise.all([
+      getallprojects(page, 12, search, file_type),
+      getallCategories(),
     ]);
-
-    const projectRes   = projSet.status === 'fulfilled' ? projSet.value : null;
-    const categoryRes  = catSet.status === 'fulfilled' ? catSet.value : null;
 
     return {
       props: {
-        // initialProjects: projectRes?.data?.products || [],
-        // totalPages: projectRes?.data?.totalPages || 1,
-        // totalProducts: projectRes?.data?.totalProducts || 0,
-        // lastProductId: projectRes?.data?.lastProductId || 0,
-        // housePlanFiles: projectRes?.data?.housePlanFiles || 0,
         initialProjects: projectRes?.data?.products ?? [],
         totalPages: projectRes?.data?.totalPages ?? 1,
         totalProducts: projectRes?.data?.totalProducts ?? 0,
         lastProductId: projectRes?.data?.lastProductId ?? 0,
         housePlanFiles: projectRes?.data?.housePlanFiles ?? 0,
-        currentPage: page,
-        filters: { search, file_type },
-        // initialCategories: categoryRes?.data?.categories || [],
+        currentPage: 1,
+        filters: { search: "", file_type: "" },
         initialCategories: categoryRes?.data?.categories ?? [],
       },
+      // Rebuild in background every 5 minutes
+      revalidate: 300,
     };
-  } catch (e) {
-    // Graceful fallback
+  } catch {
     return {
       props: {
         initialProjects: [],
@@ -1104,9 +1149,11 @@ export async function getServerSideProps({  res, query }) {
         filters: { search: "", file_type: "" },
         initialCategories: [],
       },
+      revalidate: 300,
     };
   }
 }
+
 
 
 Home.getLayout = function getLayout(page) {

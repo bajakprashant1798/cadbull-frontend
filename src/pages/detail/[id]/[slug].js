@@ -87,11 +87,12 @@ import Image from 'next/image';
 
 // CDN asset URLs (no local imports)
 const autoCad       = assets.images.filetype("file_white.png");
-const cad        = assets.images.filetype("cad.png");
+const cad        = assets.images.filetype("file_white_double.png");
+const cad_category = assets.images.filetype("file_white.png");
 const goldblocks       = assets.images.filetype("file.png");
 const profile_dummy   = assets.images.icons("profile.png");
 const link       = assets.images.social("link.png"); // if you ever need the image file
-
+const file_size = assets.images.filetype("filesize.png");
 
 function transform(node, index) {
   if (node.type === "tag") {
@@ -918,7 +919,7 @@ const shortSub = (s) => ({
                       <div className="text-decoration-none">
                         <FileDescription
                           bgColor={"#21447f"}
-                          image={autoCad}
+                          image={file_size}
                           type={"File Size:"}
                           title={formatBytes(project?.size) || "—"}
                           // className={"text-dark"}
@@ -928,7 +929,7 @@ const shortSub = (s) => ({
                       <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
                         <FileDescription
                           bgColor={"#3D6098"}
-                          image={cad}
+                          image={cad_category}
                           type={"Category::"}
                           title={project?.product_category_title}
                         />
