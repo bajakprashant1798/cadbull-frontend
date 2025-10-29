@@ -240,9 +240,11 @@ export default function Home({
   // Initial load and page change effect
   useEffect(() => {
     // Skip fetching if we’re already on the SSG state (page 1, no filters)
-    const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
-    if (isInitial && projects?.length) return;
+    // const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
+    // if (isInitial && projects?.length) return;
+    
     // Load projects whenever currentPage, searchTerm, or sortTerm change
+    if (!router.isReady) return;
     loadProjects(currentPage, 12);
   }, [currentPage, searchTerm, sortTerm]);
 
