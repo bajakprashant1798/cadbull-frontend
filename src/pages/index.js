@@ -407,7 +407,7 @@ export default function Home({
       </Head>
 
       {/* Hero section  */}
-      <section className="hero py-3 py-md-5">
+      <section className="hero py-3 ">
       {isLoading && <Loader/>}
         <div className="container py-3 py-md-5">
           <div className="row">
@@ -504,7 +504,7 @@ export default function Home({
       </section>
 
       {/* Project of the Day  */}
-      <section className="py-md-5 py-3" ref={projectOfDayRef}>
+      <section className="py-3" ref={projectOfDayRef}>
        
         <div className="container">
           <div className="row mb-4 mb-md-5">

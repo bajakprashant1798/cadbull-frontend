@@ -24,7 +24,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { getUserData, logoutApiHandler } from "@/service/api";
-import { persistor } from "../../../redux/app/store";
 import { resetProjectState } from "../../../redux/app/features/projectsSlice";
 import Image from "next/image";
 
