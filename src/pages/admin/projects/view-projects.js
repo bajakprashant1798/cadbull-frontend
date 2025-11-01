@@ -391,14 +391,14 @@ const ViewProjects = () => {
                                                 const now = new Date();
                                                 const isFuture = publishTime > now;
                                                 return (
-                                                <span className={isFuture ? "text-[#20325A] fw-bold " : ""}>
+                                                <span className={isFuture ? "text-[#20325A] fw-bold scheduled-product-date" : ""}>
                                                     {publishTime.toLocaleString("en-IN", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "2-digit",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                    hour12: true,
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "2-digit",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                        hour12: true,
                                                     })}
                                                     {isFuture && " (Scheduled)"}
                                                 </span>
