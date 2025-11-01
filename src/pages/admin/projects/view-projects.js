@@ -391,7 +391,7 @@ const ViewProjects = () => {
                                                 const now = new Date();
                                                 const isFuture = publishTime > now;
                                                 return (
-                                                <span className={isFuture ? "text-warning fw-bold" : ""}>
+                                                <span className={isFuture ? "text-[#20325A] fw-bold " : ""}>
                                                     {publishTime.toLocaleString("en-IN", {
                                                     year: "numeric",
                                                     month: "short",

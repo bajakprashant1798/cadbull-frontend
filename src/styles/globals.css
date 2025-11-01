@@ -1172,6 +1172,7 @@ table tbody td {
 table tbody td > * {
   color: #5B5B5B;
 }
+
 @media all and (max-width: 767px) {
   table tbody td {
     padding: 15px 20px !important;
