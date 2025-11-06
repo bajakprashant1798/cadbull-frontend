@@ -109,14 +109,14 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
     }
   };
 
-  // after your other effects
-  useEffect(() => {
-    if (!initialProfile && userIdFromRoute) {
-      // Try to recover client-side if ISR delivered empty props
-      fetchProfile();
-      fetchProducts(1, "");
-    }
-  }, [initialProfile, userIdFromRoute]);
+  // // after your other effects
+  // useEffect(() => {
+  //   if (!initialProfile && userIdFromRoute) {
+  //     // Try to recover client-side if ISR delivered empty props
+  //     fetchProfile();
+  //     fetchProducts(1, "");
+  //   }
+  // }, [initialProfile, userIdFromRoute]);
 
 
   // Only re-fetch if user ID changes or if we need to update client-side
