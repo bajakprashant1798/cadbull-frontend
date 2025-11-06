@@ -779,7 +779,8 @@ const shortSub = (s) => ({
                     >
                       <div className="hero-fallback__inner">
                         <h2 className="hero-fallback__title">
-                          {project?.work_title || "Preview not available"}
+                          {/* {project?.work_title || "Preview not available"} */}
+                          {project?.work_title}
                         </h2>
                         {project?.file_type && <p className="hero-fallback__meta">{project.file_type} file</p>}
                       </div>
