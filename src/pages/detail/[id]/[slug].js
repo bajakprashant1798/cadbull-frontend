@@ -1348,8 +1348,13 @@ export async function getServerSideProps(ctx) {
 
     res.setHeader('Cache-Control', 'no-store');
     return {
-      notFound: true,
-    };
+     props: {
+       initialProject: null,
+       initialSimilar: [],
+       canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`,
+       softError: true,
+     },
+   };
   }
 }
 
