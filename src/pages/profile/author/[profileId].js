@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import axios from "axios";
 
 const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, seoData }) => {
   // Get profileId from router query
@@ -499,9 +500,8 @@ export async function getStaticProps({ params }) {
     process.env.NEXT_PUBLIC_API_MAIN;
 
   try {
-    const profRes = await fetch(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
-    // const profJson = await profRes.json();
-    const profile = profRes?.profile || null;
+    const profRes = await axios.get(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
+    const profile = profRes?.data?.profile || null;
 
     if (!profile) {
       const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
@@ -525,11 +525,11 @@ export async function getStaticProps({ params }) {
       `${API_BASE}/profile/author/${profileId}/products?page=1&pageSize=12`,
       { cache: 'no-store' }
     );
-    // const prodJson = await prodRes.json();
+    const prodJson = await prodRes.json();
 
-    const products = prodRes?.products || [];
-    const totalProducts = prodRes?.totalProducts || 0;
-    const totalPages = prodRes?.totalPages || 1;
+    const products = prodJson?.products || [];
+    const totalProducts = prodJson?.totalProducts || 0;
+    const totalPages = prodJson?.totalPages || 1;
 
     const name = [profile.firstname, profile.lastname].filter(Boolean).join(' ') || 'User';
     const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
