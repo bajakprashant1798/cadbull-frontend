@@ -501,7 +501,8 @@ export async function getStaticProps({ params }) {
 
   try {
     const profRes = await axios.get(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
-    const profile = profRes?.data?.profile || null;
+    const profJson = await profRes.json();
+    const profile = profJson?.profile || null;
 
     if (!profile) {
       const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
