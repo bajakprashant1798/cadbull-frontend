@@ -4,7 +4,7 @@ import store from "../../redux/app/store"; // Adjust based on your file structur
 import { logout } from "../../redux/app/features/authSlice";
 import { APITimer } from "../utils/apiTiming";
 
-const isServer = typeof window === "undefined";
+// const isServer = typeof window === "undefined";
 const API_BASE_URL = process.env.API_BASE_URL ||
   process.env.NEXT_PUBLIC_API_MAIN ||
   'https://api.cadbull.com/api';

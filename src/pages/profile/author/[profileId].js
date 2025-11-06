@@ -109,16 +109,6 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
     }
   };
 
-  // // after your other effects
-  // useEffect(() => {
-  //   if (!initialProfile && userIdFromRoute) {
-  //     // Try to recover client-side if ISR delivered empty props
-  //     fetchProfile();
-  //     fetchProducts(1, "");
-  //   }
-  // }, [initialProfile, userIdFromRoute]);
-
-
   // Only re-fetch if user ID changes or if we need to update client-side
   useEffect(() => {
     // Update currentPage and sortOrder from URL when route changes
@@ -393,6 +383,113 @@ CompanyProfile.getLayout = function getLayout(page) {
   )
 }
 
+// // ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction
+// export async function getStaticProps({ params }) {
+//   const timings = {};
+//   const startTime = Date.now();
+//   const profileId = params.profileId;
+  
+//   return await performance.trackPagePerformance('ProfilePage', { 
+//     pageType: 'ISR', 
+//     isSSR: false, 
+//     cacheStatus: 'generating',
+//     profileId 
+//   }, async () => {
+//     const page = 1; // ISR always serves page 1, pagination handled client-side
+//     const sortOrder = "";
+    
+//     try {
+//       performance.logMemoryUsage('Profile-Start', { profileId });
+
+//       // Track profile data API call
+//       const profileRes = await performance.timeAPICall(
+//         'GetCompanyProfile',
+//         () => getCompanyProfile(profileId),
+//         `getCompanyProfile/${profileId}`
+//       );
+//       const profile = profileRes.data.profile;
+//       timings.profileAPI = Date.now() - startTime;
+      
+//       if (!profile) {
+//         return { notFound: true };
+//       }
+      
+//       // Track products data API call
+//       const productsRes = await performance.timeAPICall(
+//         'GetCompanyProducts',
+//         () => getCompanyProducts(profileId, {
+//           page,
+//           pageSize: 12,
+//           search: "",
+//           sort: sortOrder,
+//         }),
+//         `getCompanyProducts/${profileId}?page=${page}&pageSize=12`
+//       );
+//       timings.productsAPI = Date.now() - startTime - timings.profileAPI;
+      
+//       const products = productsRes.data.products || [];
+//       const totalProducts = productsRes.data.totalProducts || 0;
+//       const totalPages = productsRes.data.totalPages || 1;
+
+//       performance.logMemoryUsage('Profile-AfterAPIs', { profileId });
+      
+//       // Generate SEO data
+//       const profileName = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
+//       const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+      
+//       // ✅ SEO Configuration for ISR
+//       const seoData = {
+//         title: `${profileName} - CAD Designer Profile | Cadbull`,
+//         description: `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull.`,
+//         canonicalUrl: baseUrl,
+//         noindex: false, // ISR version is always indexable
+//         prevPage: null,
+//         nextPage: null,
+//       };
+
+//       // Log cost event for ISR generation
+//       performance.logCostEvent('ISR-Generation', {
+//         page: 'ProfilePage',
+//         profileId,
+//         productCount: totalProducts,
+//         profileName,
+//       });
+      
+//       const result = {
+//         props: {
+//           initialProfile: profile,
+//           initialProducts: products,
+//           initialPagination: {
+//             currentPage: page,
+//             totalPages,
+//             totalProducts,
+//           },
+//           seoData,
+//         },
+//         // ✅ ISR: Regenerate every 2 hours (profile data doesn't change often)
+//         revalidate: 7200, // 2 hours = fresh enough for profile updates
+//       };
+
+//       timings.total = Date.now() - startTime;
+//       performance.generateSummary('ProfilePage-ISR', timings);
+      
+//       return result;
+      
+//     } catch (error) {
+//       console.error('Error in profile getStaticProps:', error);
+//       performance.logCostEvent('ISR-Error', {
+//         page: 'ProfilePage',
+//         profileId,
+//         error: error.message,
+//       });
+      
+//       return { 
+//         notFound: true,
+//         revalidate: 3600, // Retry in 1 hour if error
+//       };
+//     }
+//   });
+// }
 
 export async function getStaticProps({ params }) {
   const profileId = params.profileId;
@@ -471,150 +568,6 @@ export async function getStaticProps({ params }) {
     };
   }
 }
-
-// ✅ COST OPTIMIZATION: Convert to ISR for 95% cost reduction
-// export async function getStaticProps({ params }) {
-//   const timings = {};
-//   const startTime = Date.now();
-//   const profileId = params.profileId;
-
-//   // only 404 for truly invalid param shapes
-//   if (!/^\d+$/.test(String(profileId))) {
-//     return { notFound: true, revalidate: 60 };
-//   }
-  
-//   return await performance.trackPagePerformance('ProfilePage', { 
-//     pageType: 'ISR', 
-//     isSSR: false, 
-//     cacheStatus: 'generating',
-//     profileId 
-//   }, async () => {
-//     const page = 1; // ISR always serves page 1, pagination handled client-side
-//     const sortOrder = "";
-    
-//     try {
-//       performance.logMemoryUsage('Profile-Start', { profileId });
-
-//       // Track profile data API call
-//       const profileRes = await performance.timeAPICall(
-//         'GetCompanyProfile',
-//         () => getCompanyProfile(profileId),
-//         `getCompanyProfile/${profileId}`
-//       );
-//       const profile = profileRes.data.profile;
-//       timings.profileAPI = Date.now() - startTime;
-      
-//       // Soft-fail: render empty state instead of 404 (prevents sticky cached 404)
-//       if (!profile) {
-//         const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
-//         return {
-//           props: {
-//             initialProfile: null,
-//             initialProducts: [],
-//             initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
-//             seoData: {
-//               title: `User Profile | Cadbull`,
-//               description: `This profile is temporarily unavailable.`,
-//               canonicalUrl: baseUrl,
-//               noindex: false,
-//               prevPage: null,
-//               nextPage: null,
-//             },
-//           },
-//           revalidate: 600, // try again in 10 min
-//         };
-//       }
-      
-//       // Track products data API call
-//       const productsRes = await performance.timeAPICall(
-//         'GetCompanyProducts',
-//         () => getCompanyProducts(profileId, {
-//           page,
-//           pageSize: 12,
-//           search: "",
-//           sort: sortOrder,
-//         }),
-//         `getCompanyProducts/${profileId}?page=${page}&pageSize=12`
-//       );
-//       timings.productsAPI = Date.now() - startTime - timings.profileAPI;
-      
-//       const products = productsRes.data.products || [];
-//       const totalProducts = productsRes.data.totalProducts || 0;
-//       const totalPages = productsRes.data.totalPages || 1;
-
-//       performance.logMemoryUsage('Profile-AfterAPIs', { profileId });
-      
-//       // Generate SEO data
-//       const profileName = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
-//       const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
-      
-//       // ✅ SEO Configuration for ISR
-//       const seoData = {
-//         title: `${profileName} - CAD Designer Profile | Cadbull`,
-//         description: `View ${profileName}'s CAD designs and architectural drawings. Browse ${totalProducts} professional CAD files including house plans, elevations, and technical drawings on Cadbull.`,
-//         canonicalUrl: baseUrl,
-//         noindex: false, // ISR version is always indexable
-//         prevPage: null,
-//         nextPage: null,
-//       };
-
-//       // Log cost event for ISR generation
-//       performance.logCostEvent('ISR-Generation', {
-//         page: 'ProfilePage',
-//         profileId,
-//         productCount: totalProducts,
-//         profileName,
-//       });
-      
-//       const result = {
-//         props: {
-//           initialProfile: profile,
-//           initialProducts: products,
-//           initialPagination: {
-//             currentPage: page,
-//             totalPages,
-//             totalProducts,
-//           },
-//           seoData,
-//         },
-//         // ✅ ISR: Regenerate every 2 hours (profile data doesn't change often)
-//         revalidate: 7200, // 2 hours = fresh enough for profile updates
-//       };
-
-//       timings.total = Date.now() - startTime;
-//       performance.generateSummary('ProfilePage-ISR', timings);
-      
-//       return result;
-      
-//     } catch (error) {
-//       console.error('Error in profile getStaticProps:', error);
-//       performance.logCostEvent('ISR-Error', {
-//         page: 'ProfilePage',
-//         profileId,
-//         error: error.message,
-//     });
-      
-//     // Soft-fail on exceptions too
-//     const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
-//      return {
-//        props: {
-//          initialProfile: null,
-//          initialProducts: [],
-//          initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
-//          seoData: {
-//            title: `User Profile | Cadbull`,
-//            description: `This profile is temporarily unavailable.`,
-//            canonicalUrl: baseUrl,
-//            noindex: false,
-//            prevPage: null,
-//            nextPage: null,
-//          },
-//        },
-//        revalidate: 600,
-//      };
-//     }
-//   });
-// }
 
 // ✅ Generate static paths for popular profiles (first 100)
 export async function getStaticPaths() {
