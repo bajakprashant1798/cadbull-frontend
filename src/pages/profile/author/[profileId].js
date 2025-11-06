@@ -417,7 +417,7 @@ export async function getStaticProps({ params }) {
       
       // Soft-fail: render empty state instead of 404 (prevents sticky cached 404)
       if (!profile) {
-        const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_MAIN}/profile/author/${profileId}`;
         return {
           props: {
             initialProfile: null,
