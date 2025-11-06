@@ -770,7 +770,7 @@ const shortSub = (s) => ({
                     <div
                       className="hero-fallback"
                       role="img"
-                      aria-label={`${project?.work_title || "Preview"} (image not available)`}
+                      // aria-label={`${project?.work_title || "Preview"} (image not available)`}
                       style={{
                         aspectRatio: `${(project?.image_width || 4)} / ${(project?.image_height || 3)}`,
                         width: "100%",
