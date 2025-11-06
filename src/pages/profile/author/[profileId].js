@@ -388,6 +388,11 @@ export async function getStaticProps({ params }) {
   const timings = {};
   const startTime = Date.now();
   const profileId = params.profileId;
+
+  // only 404 for truly invalid param shapes
+  if (!/^\d+$/.test(String(profileId))) {
+    return { notFound: true, revalidate: 60 };
+  }
   
   return await performance.trackPagePerformance('ProfilePage', { 
     pageType: 'ISR', 
@@ -410,8 +415,25 @@ export async function getStaticProps({ params }) {
       const profile = profileRes.data.profile;
       timings.profileAPI = Date.now() - startTime;
       
+      // Soft-fail: render empty state instead of 404 (prevents sticky cached 404)
       if (!profile) {
-        return { notFound: true };
+        const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+        return {
+          props: {
+            initialProfile: null,
+            initialProducts: [],
+            initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
+            seoData: {
+              title: `User Profile | Cadbull`,
+              description: `This profile is temporarily unavailable.`,
+              canonicalUrl: baseUrl,
+              noindex: false,
+              prevPage: null,
+              nextPage: null,
+            },
+          },
+          revalidate: 600, // try again in 10 min
+        };
       }
       
       // Track products data API call
@@ -481,12 +503,26 @@ export async function getStaticProps({ params }) {
         page: 'ProfilePage',
         profileId,
         error: error.message,
-      });
+    });
       
-      return { 
-        notFound: true,
-        revalidate: 3600, // Retry in 1 hour if error
-      };
+    // Soft-fail on exceptions too
+    const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
+     return {
+       props: {
+         initialProfile: null,
+         initialProducts: [],
+         initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
+         seoData: {
+           title: `User Profile | Cadbull`,
+           description: `This profile is temporarily unavailable.`,
+           canonicalUrl: baseUrl,
+           noindex: false,
+           prevPage: null,
+           nextPage: null,
+         },
+       },
+       revalidate: 600,
+     };
     }
   });
 }
