@@ -496,9 +496,7 @@ export async function getStaticProps({ params }) {
   if (!/^\d+$/.test(String(profileId))) return { notFound: true, revalidate: 60 };
 
   const API_BASE =
-    process.env.API_MAIN ||
-    process.env.NEXT_PUBLIC_API_MAIN ||
-    'https://api.cadbull.com/api';
+    process.env.NEXT_PUBLIC_API_MAIN;
 
   try {
     const profRes = await fetch(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
