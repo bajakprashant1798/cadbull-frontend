@@ -1229,7 +1229,8 @@ export async function getServerSideProps(ctx) {
     // Validate ID parameter - must be a valid number
     if (!id || isNaN(parseInt(id))) {
       res.setHeader('Cache-Control', 'no-store');
-      return { notFound: true };
+      // return { notFound: true };
+      return { redirect: { destination: '/', permanent: false } };
     }
 
     // // 🧠 Memory tracking
@@ -1270,7 +1271,8 @@ export async function getServerSideProps(ctx) {
     
     if (!projectRes || !projectRes.data) {
       res.setHeader('Cache-Control', 'no-store');
-      return { notFound: true };
+      // return { notFound: true };
+      return { props: { initialProject: null, initialSimilar: [], canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`, softError: true } };
     }
     
     const project = projectRes.data;

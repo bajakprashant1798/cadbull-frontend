@@ -332,7 +332,7 @@ const UploadWork = () => {
                     <label className="mb-2">Upload File</label>
                   </div>
                   <UploadFiles
-                    acceptedFiles=" .zip file only"
+                    acceptedFiles=" AutoCAD, 3d max, revit, sketchup file only"
                   callback={handleUploadfile}
                   />
                 </div>

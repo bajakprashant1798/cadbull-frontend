@@ -52,7 +52,7 @@ const Footer = () => {
                     </div>
                     <div className="d-flex align-items-center gap-2">
                       <Image src={email} alt="icon" width={32} height={32} />
-                      <p className="text-white">support@cadbull.com</p>
+                      <p className="text-white">cadbull2014@gmail.com</p>
                     </div>
                   </li>
                 </ul>
