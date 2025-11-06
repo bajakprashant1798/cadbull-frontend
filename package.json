@@ -27,7 +27,6 @@
     "bootstrap": "^5.3.3",
     "classnames": "^2.5.1",
     "cookie": "^1.0.2",
-    "dotenv": "^17.2.3",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",
     "firebase": "^12.2.1",
