@@ -22,7 +22,6 @@ import { useSelector } from "react-redux";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
-import axios from "axios";
 
 const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, seoData }) => {
   // Get profileId from router query
@@ -500,7 +499,7 @@ export async function getStaticProps({ params }) {
     process.env.NEXT_PUBLIC_API_MAIN;
 
   try {
-    const profRes = await axios.get(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
+    const profRes = await fetch(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
     const profJson = await profRes.json();
     const profile = profJson?.profile || null;
 
