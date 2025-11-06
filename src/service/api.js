@@ -4,23 +4,15 @@ import store from "../../redux/app/store"; // Adjust based on your file structur
 import { logout } from "../../redux/app/features/authSlice";
 import { APITimer } from "../utils/apiTiming";
 
-// // const isServer = typeof window === "undefined";
-// const API_BASE_URL = process.env.API_BASE_URL ||
-//   process.env.NEXT_PUBLIC_API_MAIN ||
-//   'https://api.cadbull.com/api';
+// const isServer = typeof window === "undefined";
+const API_BASE_URL = process.env.API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_MAIN ||
+  'https://api.cadbull.com/api';
 
-// Resolve baseURL at runtime (both server & client)
-function resolveBaseURL() {
-  // avoid direct dot-notation so Next doesn’t inline during build
-  const env = (typeof process !== "undefined" && process.env) ? process.env : {};
-  const fromApiBase = env["API_BASE_URL"];
-  const fromNextPublic = env["NEXT_PUBLIC_API_MAIN"];
-  return fromApiBase || fromNextPublic || "https://api.cadbull.com/api";
-}
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
-  baseURL: resolveBaseURL(),
+  baseURL: API_BASE_URL,
   // baseURL: "/api",
   withCredentials: true, // Allows sending cookies if needed
   timeout: 20000, // 20 seconds
