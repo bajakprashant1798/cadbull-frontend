@@ -109,6 +109,16 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
     }
   };
 
+  // after your other effects
+  useEffect(() => {
+    if (!initialProfile && userIdFromRoute) {
+      // Try to recover client-side if ISR delivered empty props
+      fetchProfile();
+      fetchProducts(1, "");
+    }
+  }, [initialProfile, userIdFromRoute]);
+
+
   // Only re-fetch if user ID changes or if we need to update client-side
   useEffect(() => {
     // Update currentPage and sortOrder from URL when route changes
@@ -417,7 +427,7 @@ export async function getStaticProps({ params }) {
       
       // Soft-fail: render empty state instead of 404 (prevents sticky cached 404)
       if (!profile) {
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_MAIN}/profile/author/${profileId}`;
+        const baseUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/profile/author/${profileId}`;
         return {
           props: {
             initialProfile: null,
