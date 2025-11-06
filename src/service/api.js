@@ -12,7 +12,7 @@ const API_BASE_URL = process.env.API_BASE_URL ||
 
 // ✅ Create Centralized Axios Instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "https://api.cadbull.com/api",
   // baseURL: "/api",
   withCredentials: true, // Allows sending cookies if needed
   timeout: 20000, // 20 seconds
