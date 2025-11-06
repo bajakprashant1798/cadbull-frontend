@@ -458,31 +458,111 @@ export async function getServerSideProps({ params, req, res }) {
     // Block purely numeric slugs
     if (/^\d+$/.test(slug)) {
       console.log(`[SSR] ❌ Blocked numeric slug: ${slug}`);
-      return { notFound: true };
+      if (!data || !data.projects) {
+        console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalPages: 1,
+            initialSlug: slug,
+            page,
+            metaTitle: makeTitle(slug),
+            metaKeywords: '',
+            metaDescription: 'World Largest 2d CAD Library.',
+            description: '',
+            title: makeTitle(slug),
+            serverMainCategories: []
+          }
+        };
+      }
     }
     
     // Block invalid/system slugs
     if (invalidSlugs.includes(slug.toLowerCase())) {
       console.log(`[SSR] ❌ Blocked invalid slug: ${slug}`);
-      return { notFound: true };
+      if (!data || !data.projects) {
+        console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalPages: 1,
+            initialSlug: slug,
+            page,
+            metaTitle: makeTitle(slug),
+            metaKeywords: '',
+            metaDescription: 'World Largest 2d CAD Library.',
+            description: '',
+            title: makeTitle(slug),
+            serverMainCategories: []
+          }
+        };
+      }
     }
     
     // Block slugs with invalid characters
     if (!/^[a-zA-Z0-9\-_&]+$/.test(slug)) {
       console.log(`[SSR] ❌ Blocked invalid characters in slug: ${slug}`);
-      return { notFound: true };
+      if (!data || !data.projects) {
+        console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalPages: 1,
+            initialSlug: slug,
+            page,
+            metaTitle: makeTitle(slug),
+            metaKeywords: '',
+            metaDescription: 'World Largest 2d CAD Library.',
+            description: '',
+            title: makeTitle(slug),
+            serverMainCategories: []
+          }
+        };
+      }
     }
     
     // Block extremely long slugs (likely attacks)
     if (slug.length > 100) {
       console.log(`[SSR] ❌ Blocked oversized slug: ${slug}`);
-      return { notFound: true };
+      if (!data || !data.projects) {
+        console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalPages: 1,
+            initialSlug: slug,
+            page,
+            metaTitle: makeTitle(slug),
+            metaKeywords: '',
+            metaDescription: 'World Largest 2d CAD Library.',
+            description: '',
+            title: makeTitle(slug),
+            serverMainCategories: []
+          }
+        };
+      }
     }
     
     // Block invalid pages
     if (page < 1 || page > 1000) {
       console.log(`[SSR] ❌ Blocked invalid page: ${page}`);
-      return { notFound: true };
+      if (!data || !data.projects) {
+        console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+        return {
+          props: {
+            initialProjects: [],
+            initialTotalPages: 1,
+            initialSlug: slug,
+            page,
+            metaTitle: makeTitle(slug),
+            metaKeywords: '',
+            metaDescription: 'World Largest 2d CAD Library.',
+            description: '',
+            title: makeTitle(slug),
+            serverMainCategories: []
+          }
+        };
+      }
     }
     
     // ✅ PERFORMANCE MONITORING: Track SSR page generation
@@ -551,7 +631,23 @@ export async function getServerSideProps({ params, req, res }) {
         
         if (!data || !data.projects) {
           console.log(`[SSR] ❌ No projects found for slug: ${slug}, page: ${page}`);
-          return { notFound: true };
+          if (!data || !data.projects) {
+            console.log(`[SSR] ⚠️ No projects for slug: ${slug}, page: ${page}; sending soft fallback`);
+            return {
+              props: {
+                initialProjects: [],
+                initialTotalPages: 1,
+                initialSlug: slug,
+                page,
+                metaTitle: makeTitle(slug),
+                metaKeywords: '',
+                metaDescription: 'World Largest 2d CAD Library.',
+                description: '',
+                title: makeTitle(slug),
+                serverMainCategories: []
+              }
+            };
+          }
         }
 
         console.log(`[SSR] ✅ Found ${data.projects.length} projects for slug: ${slug}`);
@@ -643,7 +739,22 @@ export async function getServerSideProps({ params, req, res }) {
   } catch (error) {
     const totalTime = Date.now() - startTime;
     console.error(`[SSR] ❌ Error for slug: ${slug}, page: ${page} (${totalTime}ms):`, error);
-    return { notFound: true };
+    return {
+      props: {
+        initialProjects: [],
+        initialTotalPages: 1,
+        initialSlug: slug,
+        page,
+        metaTitle: makeTitle(slug),
+        metaKeywords: '',
+        metaDescription: 'World Largest 2d CAD Library.',
+        description: '',
+        title: makeTitle(slug),
+        serverMainCategories: [],
+        softError: true
+      }
+    };
+
   }
 }
 
