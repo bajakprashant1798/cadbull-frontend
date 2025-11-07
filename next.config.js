@@ -93,8 +93,8 @@ const nextConfig = {
       {
         source: '/_next/static/:path*',
         headers: [
-          // { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          // { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
         ],
       },
       // Let Next/CloudFront control ISR HTML caching. No extra header here.

@@ -5,7 +5,7 @@ import Head from "next/head";
 import { assets } from "@/utils/assets";
 const profile_dummy = assets.icons("profile.png");
 // import profile_dummy from "@/assets/icons/profile.png";
-import axios from "axios";
+
 
 
 import 'swiper/css';
@@ -15,7 +15,7 @@ import 'swiper/css/navigation';
 import Icons from "@/components/Icons";
 import SortByAZ from "@/components/drawer/SortByAZ";
 import SortByDate from "@/components/drawer/SortByDate";
-// import { getCompanyProducts, getCompanyProfile } from "@/service/api";
+import { getCompanyProducts, getCompanyProfile } from "@/service/api";
 import { useRouter } from "next/router";
 import { performance } from "@/utils/performance";
 import { useSelector } from "react-redux";
@@ -87,27 +87,27 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
   };
 
   // Fetch company products (only when needed for client-side updates)
-  // const fetchProducts = async (page = currentPage, sort = sortOrder) => {
-  //   setLoadingProducts(true);
-  //   try {
-  //     const res = await getCompanyProducts(
-  //       userId,
-  //       {
-  //         page: page,
-  //         pageSize: 12,
-  //         search: "",
-  //         sort: sort,
-  //       }
-  //     );
-  //     setProducts(res.data.products);
-  //     setTotalProducts(res.data.totalProducts);
-  //     setTotalPages(res.data.totalPages);
-  //   } catch (error) {
-  //     console.error("Error fetching products", error);
-  //   } finally {
-  //     setLoadingProducts(false);
-  //   }
-  // };
+  const fetchProducts = async (page = currentPage, sort = sortOrder) => {
+    setLoadingProducts(true);
+    try {
+      const res = await getCompanyProducts(
+        userId,
+        {
+          page: page,
+          pageSize: 12,
+          search: "",
+          sort: sort,
+        }
+      );
+      setProducts(res.data.products);
+      setTotalProducts(res.data.totalProducts);
+      setTotalPages(res.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching products", error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   // Only re-fetch if user ID changes or if we need to update client-side
   useEffect(() => {
@@ -495,11 +495,12 @@ export async function getStaticProps({ params }) {
   const profileId = params.profileId;
   if (!/^\d+$/.test(String(profileId))) return { notFound: true, revalidate: 60 };
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_MAIN || 'https://api.cadbull.com/api'; // ensure /api
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_MAIN;
 
   try {
-    // Axios: use .data
-    const { data: profJson } = await axios.get(`${API_BASE}/profile/author/${profileId}`);
+    const profRes = await axios.get(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
+    const profJson = await profRes.json();
     const profile = profJson?.profile || null;
 
     if (!profile) {
@@ -520,10 +521,11 @@ export async function getStaticProps({ params }) {
       };
     }
 
-    const { data: prodJson } = await axios.get(
-      `${API_BASE}/profile/author/${profileId}/products`,
-      { params: { page: 1, pageSize: 12 } }
+    const prodRes = await fetch(
+      `${API_BASE}/profile/author/${profileId}/products?page=1&pageSize=12`,
+      { cache: 'no-store' }
     );
+    const prodJson = await prodRes.json();
 
     const products = prodJson?.products || [];
     const totalProducts = prodJson?.totalProducts || 0;
