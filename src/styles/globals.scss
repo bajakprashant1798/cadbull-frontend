@@ -196,6 +196,20 @@
   color: #20325A !important;
 }
 
+/* Make ReactQuill vertically resizable via drag */
+.quill-resize .ql-container {
+  /* the handle appears only when overflow is not visible */
+  overflow: auto;
+  resize: vertical;          /* drag up/down */
+  min-height: 220px;         /* starting height */
+  max-height: 1000px;        /* optional guard */
+}
+
+/* keep a comfy editing area inside */
+.quill-resize .ql-editor {
+  min-height: 200px;
+}
+
 .logo {
   max-width: 140px;
   @media all and (max-width:767px) {

@@ -1212,7 +1212,7 @@ const shortSub = (s) => ({
         </div>
 
         {/* <div className="border-top border-bottom py-2"> */}
-          <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" />
+          {/* <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" /> */}
         {/* </div> */}
       </section>
     </Fragment>

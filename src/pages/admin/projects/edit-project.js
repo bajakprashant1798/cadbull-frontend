@@ -692,10 +692,11 @@ const EditProject = () => {
                 onChange={handleDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
-                style={{ 
-                  minHeight: '200px',
-                  backgroundColor: '#fff'
-                }}
+                className="quill-resize"
+                // style={{ 
+                //   minHeight: '200px',
+                //   backgroundColor: '#fff'
+                // }}
                 placeholder="Enter project description with rich text formatting..."
               />
             </div>
