@@ -243,8 +243,8 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                           <input
                             type="text"
                             className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
-                            placeholder="For e.g. House Design"
-                            aria-label="For e.g. House Design"
+                            placeholder="For ex. House Plan"
+                            aria-label="For ex. House Plan"
                             value={searchInput}
                             onChange={handleInputChange}
                           />

@@ -155,16 +155,16 @@ const UploadWork = () => {
   return (
     <Fragment>
       <Head>
-        <title>Upload and Share Your CAD Drawings and DWG Files on Cadbull</title>
+        <title>Upload Your CAD Drawing File and Share Design Projects</title>
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/work/upload`} />
         <meta name="description" content="Share your CAD designs and DWG files with the global community on Cadbull. Easily upload your architectural drawings to showcase and promote your work." />
 
-        <meta property="og:title" content="Upload and Share Your CAD Drawings and DWG Files on Cadbull" />
+        <meta property="og:title" content="Upload Your CAD Drawing File and Share Design Projects" />
         <meta property="og:description" content="Share your CAD designs and DWG files with the global community on Cadbull. Easily upload your architectural drawings to showcase and promote your work." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/work/upload`} />
         <meta property="og:image" content={logo} />
-        <meta name="twitter:title" content="Upload and Share Your CAD Drawings and DWG Files on Cadbull" />
+        <meta name="twitter:title" content="Upload Your CAD Drawing File and Share Design Projects" />
         <meta name="twitter:description" content="Share your CAD designs and DWG files with the global community on Cadbull. Easily upload your architectural drawings to showcase and promote your work." />
         <meta name="twitter:image" content={logo} />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />

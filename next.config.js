@@ -7,6 +7,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false,     // reduce bundle size/telemetry
   httpAgentOptions: { keepAlive: true },  // fewer TCP handshakes when SSR calls your API
   
+  
   // // ✅ CRITICAL: Production optimizations for 35-100 concurrent users
   // experimental: {
   //   // ✅ HTTP optimizations for high concurrency

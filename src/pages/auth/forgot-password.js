@@ -68,7 +68,7 @@ const ForgotPassword = () => {
     <Fragment>
       <Head>
         <title>Forgot Password | Cadbull </title>
-        <meta name="description" content="World Largest 2d CAD Library." />
+        <meta name="description" content="Reset your Cadbull account password easily. Enter your registered email to receive a secure password reset link and regain access to your CAD files quickly." />
       </Head>
 
       <section className="py-md-5 py-4 auth-page">

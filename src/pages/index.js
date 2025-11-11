@@ -407,7 +407,7 @@ export default function Home({
       </Head>
 
       {/* Hero section  */}
-      <section className="hero py-3 ">
+      <section className="hero ">
       {isLoading && <Loader/>}
         <div className="container py-3 py-md-5">
           <div className="row">
@@ -449,8 +449,8 @@ export default function Home({
                   <input
                     type="text"
                     className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
-                    placeholder="For e.g. House Design"
-                    aria-label="For e.g. House Design"
+                    placeholder="For ex. House Plan"
+                    aria-label="For ex. House Plan"
                     value={searchInput}
                     onChange={(e) => {
                       setSearchInput(e.target.value);
@@ -527,8 +527,8 @@ export default function Home({
                         <input
                           type="text"
                           className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
-                          placeholder="For e.g. House Design"
-                          aria-label="For e.g. House Design"
+                          placeholder="For ex. House Plan"
+                          aria-label="For ex. House Plan"
                           // onChange={(e) =>
                           //  setSearchTerm(e.target.value.trim())
                           // }

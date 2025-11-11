@@ -357,8 +357,8 @@ const Register = () => {
   return (
     <Fragment>
       <Head>
-        <title>Cadbull | Register</title>
-        <meta name="description" content="World Largest 2d CAD Library." />
+        <title>Join CADBULL Now and Access Free CAD Drawing Files Instantly</title>
+        <meta name="description" content="Create your Cadbull account to access and download thousands of free CAD drawings, DWG files, and design resources for architects, engineers, and designers." />
       </Head>
       <AuthLayout title={pageTitle.title} description={pageTitle.description}>
         {/* Form  */}
