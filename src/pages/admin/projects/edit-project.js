@@ -1077,7 +1077,7 @@ const handleDelete = async (imageId) => {
                 {newImages.map((file, idx) => {
                   const url = URL.createObjectURL(file);
                   return (
-                    <div key={idx} className="border rounded p-2 text-center" style={{ width: 120 }}>
+                    <div key={idx} className="border rounded p-2 text-center" style={{ width: 120, marginRight: 80 }}>
                       <img src={url} alt={file.name} width="100%" height="auto" />
                       <div className="small text-truncate mt-1">{file.name}</div>
 
@@ -1121,9 +1121,9 @@ const handleDelete = async (imageId) => {
               <small className="text-muted">No gallery images yet.</small>
             ) : (
               (projectDetails.images).map((img, index) => (
-                <div key={img.id} className="image-item">
+                <div key={img.id} className="image-item mb-3">
                   <img
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${img.image}`}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/small/${img.image}`}
                     width="100"
                     alt={`Project image ${index + 1}`}
                   />

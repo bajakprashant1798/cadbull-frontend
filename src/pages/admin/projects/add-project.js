@@ -888,7 +888,7 @@ const AddProject = () => {
                   <div
                     key={idx}
                     className="border rounded p-2 text-center"
-                    style={{ width: 140, position: "relative" }}
+                    style={{ width: 140, position: "relative", marginRight: 30 }}
                   >
                     {idx === 0 && (
                       <span
