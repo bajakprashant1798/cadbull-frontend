@@ -813,7 +813,19 @@ export const getAdminCategoriesWithSubcategories = async () => {
   return api.get("/admin/categories-with-subcategories");
 };
 
+export const reorderProjectImagesApi = (projectId, orderArray) =>
+  api.put(`/admin/projects/${projectId}/reorder`, { order: orderArray });
 
+export const deleteProjectImageApi = (imageId) =>
+  api.delete(`/admin/projects/images/${imageId}`);
+
+// ✅ Upload one or more gallery images for a project (admin)
+export const addProjectImagesApi = (projectId, formData) =>
+  api.post(`/admin/projects/${projectId}/images`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
+    timeout: 600000,
+  });
 // ==========================
 // ✅ Newsletter Email APIs
 // ==========================

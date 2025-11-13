@@ -36,6 +36,8 @@ import {
   updatesubcatslug,
 } from "../../../../redux/app/features/projectsSlice";
 
+import useEmblaCarousel from 'embla-carousel-react';
+
 // ✅ SPEED OPTIMIZATION: Lazy load social share components for better performance
 const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon), { 
   ssr: false,
@@ -160,6 +162,44 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const [showRelated, setShowRelated] = useState(false);
 
+  //---- GALLERY STATE ----
+  const [galleryUrls, setGalleryUrls] = useState([]); // array of URLs (strings)
+  const [showGallery, setShowGallery] = useState(false); // mount Swiper only when needed
+
+  // Build gallery once project is loaded
+  useEffect(() => {
+    // Prefer backend-provided gallery; fallback to single cover
+    const urls = Array.isArray(project?.gallery_urls) && project.gallery_urls.length
+      ? project.gallery_urls
+      : (project?.photo_url ? [project.photo_url] : []);
+    setGalleryUrls(urls);
+  }, [project?.id, project?.photo_url, project?.gallery_urls]);
+
+  useEffect(() => {
+    if (galleryUrls?.length > 1) {
+      const run = () => setShowGallery(true);
+      if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
+      else setTimeout(run, 800);
+    }
+  }, [galleryUrls]);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+  loop: galleryUrls.length > 1,
+});
+const [selectedIndex, setSelectedIndex] = useState(0);
+const [scrollSnaps, setScrollSnaps] = useState([]);
+
+const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
+useEffect(() => {
+  if (!emblaApi) return;
+  setScrollSnaps(emblaApi.scrollSnapList());
+  const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+  emblaApi.on('select', onSelect);
+  onSelect();
+}, [emblaApi]);
 
   // --- debug helpers (local-only; remove later) ---
 const shortCat = (c) => ({
@@ -514,6 +554,17 @@ const shortSub = (s) => ({
     }
   };
 
+  // Decide the aspect ratio once for the box (fallback 4/3)
+  // If only one image → do NOT use ratio
+  // If multiple images → use a fixed ratio box
+  let ratioStr = null;
+
+  if (galleryUrls.length > 1) {
+    ratioStr = project?.image_width && project?.image_height
+      ? `${project.image_width} / ${project.image_height}`
+      : '4 / 3';   // fallback ratio
+  }
+
   return (
     <Fragment>
       <Head>
@@ -718,37 +769,7 @@ const shortSub = (s) => ({
                 </div>
               </div>
 
-              <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
-                {/* <div className="bg-light p-3 rounded-2 shadow-sm heroFrame" >
-                  {!imgLoaded && <div className="shimmer" />}
-                  <Image
-                    key={project?.id || project?.photo_url}
-                    // src={getSafeImageUrl(project?.photo_url)}
-                    src={imgError ? '/default-img.png' : getSafeImageUrl(project?.photo_url)}
-                    width={project?.image_width || 800}
-                    height={project?.image_height || 600}
-                    alt={project?.work_title || "CAD Drawing"}
-                    className="img-fluid"
-                    priority
-                    fetchPriority="high"
-                    quality={85}
-                    // unoptimized    // ⬅️ avoids backend image processing = lower latency & lower compute cost
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                      // display: imgLoaded ? "block" : "none"
-                    }}
-                    // style={{ objectFit: "contain", width: "100%", height: "auto" }}
-                    placeholder="empty"
-                    blurDataURL={getSmallVersion(project?.photo_url)}
-                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                    onLoad={() => setImgLoaded(true)}            // NEW: works across browsers
-                    onError={() => { setImgError(true); setImgLoaded(true); }} // NEW fallback
-                    onLoadingComplete={() => setImgLoaded(true)}
-                  />
-
-                </div> */}
+              {/* <div className="mt-4" style={{ maxWidth: "100%", margin: "0 auto" }}>
                 <div className="bg-light p-3 rounded-2 shadow-sm heroFrame mb-3">
                   {project?.photo_url && !imgError ? (
                     <Image
@@ -779,7 +800,6 @@ const shortSub = (s) => ({
                     >
                       <div className="hero-fallback__inner">
                         <h2 className="hero-fallback__title">
-                          {/* {project?.work_title || "Preview not available"} */}
                           {project?.work_title}
                         </h2>
                         {project?.file_type && <p className="hero-fallback__meta">{project.file_type} file</p>}
@@ -787,7 +807,73 @@ const shortSub = (s) => ({
                     </div>
                   )}
                 </div>
+              </div> */}
 
+              <div className="bg-light p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2">
+                {galleryUrls.length > 1 ? (
+                  /* MULTI-IMAGE MODE (with ratio) */
+                  <div className="embla" ref={emblaRef}>
+                    <div className="embla__container">
+                      <div className="embla__slide">
+                        <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
+                          <Image
+                            src={getSafeImageUrl(galleryUrls[0])}
+                            alt={project?.work_title || "CAD Drawing"}
+                            fill
+                            priority
+                            fetchPriority="high"
+                            quality={85}
+                            sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                          />
+                        </div>
+                      </div>
+
+                      {galleryUrls.slice(1).map((url, idx) => (
+                        <div className="embla__slide" key={`embla-${idx + 1}`}>
+                          <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
+                            <Image
+                              src={getSafeImageUrl(url)}
+                              alt={project?.work_title || `Slide ${idx + 2}`}
+                              fill
+                              loading="lazy"
+                              decoding="async"
+                              sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* controls remain same */}
+                    <button className="embla__btn embla__btn--prev" onClick={scrollPrev}>‹</button>
+                    <button className="embla__btn embla__btn--next" onClick={scrollNext}>›</button>
+                    <div className="embla__dots">
+                      {scrollSnaps.map((_, i) => (
+                        <button
+                          key={i}
+                          className={`embla__dot ${i === selectedIndex ? "embla__dot--active" : ""}`}
+                          onClick={() => scrollTo(i)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  /* SINGLE IMAGE MODE (no ratio, use natural height) */
+                  <div className="embla__single">
+                    <Image
+                      key={project?.id || project?.photo_url}
+                      src={getSafeImageUrl(project?.photo_url)}
+                      alt={project?.work_title || "CAD Drawing"}
+                      width={1200}     // large reference width, auto-height
+                      height={0}       // 0 → auto height
+                      style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                      priority
+                      quality={85}
+                      sizes="100vw"
+                      onError={() => setImgError(true)}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="row my-3 d-lg-block d-none">

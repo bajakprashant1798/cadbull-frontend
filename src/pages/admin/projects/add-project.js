@@ -169,6 +169,33 @@ const AddProject = () => {
   // ✅ Add user selection state
   const [selectedUserId, setSelectedUserId] = useState("");
 
+  const [images, setImages] = useState([]);
+
+  const fileKey = (f) => `${f.name}_${f.size}_${f.lastModified}`;
+
+  const handleFileChange = (e) => {
+    const picked = Array.from(e.target.files || []);
+    if (!picked.length) return;
+
+    // existing keys
+    const existingKeys = new Set(images.map(fileKey));
+    // filter out duplicates
+    const uniqueNew = picked.filter(f => !existingKeys.has(fileKey(f)));
+
+    // enforce max 10 across previous + new
+    const room = Math.max(0, 10 - images.length);
+    const toAdd = uniqueNew.slice(0, room);
+
+    if (toAdd.length === 0) {
+      toast.error("You can upload up to 10 images only.");
+    } else {
+      setImages(prev => [...prev, ...toAdd]); // APPEND ✅
+    }
+
+    // allow re-selecting the same file(s) in future
+    e.target.value = "";
+  };
+
   // ✅ Predefined users list (same as old site)
   const predefinedUsers = [
     { id: 7481, name: 'Eiz Luna' },
@@ -360,6 +387,7 @@ const AddProject = () => {
       checkDuplicateTitle.cancel();
     };
   }, []);
+  
 
 
   // const handleWorkTitleChange = (e) => {
@@ -391,6 +419,23 @@ const AddProject = () => {
   //     setChecking(false);
   //   }, 350);
   // };
+
+  const moveImageUp = (idx) => {
+    if (idx <= 0) return;
+    setImages((prev) => {
+      const arr = [...prev];
+      [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+      return arr;
+    });
+  };
+  const moveImageDown = (idx) => {
+    if (idx >= images.length - 1) return;
+    setImages((prev) => {
+      const arr = [...prev];
+      [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+      return arr;
+    });
+  };
 
   const handleGenerateStandardSlug = () => {
     setSlug(standardSlugify(workTitle));
@@ -435,6 +480,10 @@ const AddProject = () => {
       return;
     }
     try {
+      if (images.length === 0) {
+        toast.error("Please select at least one image before uploading.");
+        return;
+      }
       setSubmitting(true);
       const formData = new FormData();
 
@@ -471,6 +520,8 @@ const AddProject = () => {
       // formData.append("user_id", selectedUserId);
       formData.append("user_id", Number(selectedUserId));
 
+      images.forEach((img) => formData.append("images", img));
+
       // ✅ Ensure file & image exist before appending
       if (data.file && data.file.length > 0) {
           const file = data.file[0];
@@ -489,22 +540,22 @@ const AddProject = () => {
           return;
       }
 
-      if (data.image && data.image.length > 0) {
-          const image = data.image[0];
+      // if (data.image && data.image.length > 0) {
+      //     const image = data.image[0];
           
-          // Check image size (10MB limit)
-          if (image.size > 10 * 1024 * 1024) {
-            toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
-            setSubmitting(false);
-            return;
-          }
+      //     // Check image size (10MB limit)
+      //     if (image.size > 10 * 1024 * 1024) {
+      //       toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
+      //       setSubmitting(false);
+      //       return;
+      //     }
           
-          formData.append("image", image);
-      } else {
-          toast.error("Please upload an Image.");
-          setSubmitting(false);
-          return;
-      }
+      //     formData.append("image", image);
+      // } else {
+      //     toast.error("Please upload an Image.");
+      //     setSubmitting(false);
+      //     return;
+      // }
 
       // ⬇️ ADD THIS
       // if (publishAtIst) {
@@ -805,7 +856,7 @@ const AddProject = () => {
           </div>
 
           {/* Upload Image */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label className="form-label">Upload Image *</label>
             <input 
               type="file" 
@@ -816,6 +867,96 @@ const AddProject = () => {
             <small className="form-text text-muted">
               🖼️ Maximum file size: 10MB. Supported formats: JPG, PNG, GIF, WEBP
             </small>
+          </div> */}
+
+          <label htmlFor="images" className="form-label">Upload Images (max 10)</label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            accept="image/*"
+            multiple
+            onChange={handleFileChange} // ✅ APPENDS across multiple picks
+          />
+          
+
+          {images.length > 0 && (
+            <div className="d-flex flex-wrap gap-3 mb-3">
+              {images.map((file, idx) => {
+                const url = URL.createObjectURL(file);
+                return (
+                  <div
+                    key={idx}
+                    className="border rounded p-2 text-center"
+                    style={{ width: 140, position: "relative" }}
+                  >
+                    {idx === 0 && (
+                      <span
+                        className="badge bg-primary"
+                        style={{ position: "absolute", top: 6, left: 6 }}
+                      >
+                        Cover
+                      </span>
+                    )}
+
+                    <img
+                      src={url}
+                      alt={file.name}
+                      width="100%"
+                      height="auto"
+                      onLoad={() => URL.revokeObjectURL(url)}
+                      style={{ borderRadius: 8 }}
+                    />
+                    <div className="small text-truncate mt-1" title={file.name}>
+                      {file.name}
+                    </div>
+
+                    <div className="d-flex justify-content-center gap-1 mt-1">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => moveImageUp(idx)}
+                        disabled={idx === 0}
+                        title="Move up"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => moveImageDown(idx)}
+                        disabled={idx === images.length - 1}
+                        title="Move down"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() =>
+                          setImages((prev) => prev.filter((_, i) => i !== idx))
+                        }
+                        title="Remove"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="d-flex gap-2 align-items-center mt-2">
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={() => setImages([])}
+              disabled={!images.length}
+            >
+              Clear all images
+            </button>
+            <small className="text-muted ms-1">{images.length}/10 selected</small>
           </div>
 
           {/* Schedule Publish (IST, optional) */}
@@ -831,6 +972,7 @@ const AddProject = () => {
               Leave empty to publish immediately. This value is interpreted as IST (UTC+05:30).
             </small>
           </div>
+
 
           {/* Submit Button */}
           {/* <button type="submit" className="btn btn-primary" disabled={isDuplicate || checking || !selectedUserId || !titleValidation.isValid}>

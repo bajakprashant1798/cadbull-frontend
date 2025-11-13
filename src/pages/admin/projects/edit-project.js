@@ -260,6 +260,108 @@ const EditProject = () => {
   //   }
   // }, [dispatch, token, storedToken]);
 
+  // --- Add near other useState hooks ---
+const [newImages, setNewImages] = useState([]); // File[] selected but not yet uploaded
+const [uploadingImages, setUploadingImages] = useState(false);
+
+// --- Allowed image types (adjust if needed) ---
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"
+];
+
+// Pick files
+const handleSelectNewImages = (e) => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  // filter invalids + 10MB cap per image
+  const filtered = [];
+  for (const f of files) {
+    if (!ALLOWED_IMAGE_TYPES.includes(f.type)) {
+      toast.error(`Unsupported type: ${f.name}`);
+      continue;
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      toast.error(`Too large (>10MB): ${f.name}`);
+      continue;
+    }
+    filtered.push(f);
+  }
+  if (filtered.length) {
+    setNewImages((prev) => [...prev, ...filtered]);
+  }
+  // reset input so same file can be re-picked later
+  e.target.value = "";
+};
+
+// Remove a not-yet-uploaded image from the preview list
+const removeNewImage = (idx) => {
+  setNewImages((prev) => prev.filter((_, i) => i !== idx));
+};
+
+const moveNewImageUp = (idx) => {
+  if (idx <= 0) return;
+  setNewImages((prev) => {
+    const arr = [...prev];
+    [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+    return arr;
+  });
+};
+
+const moveNewImageDown = (idx) => {
+  setNewImages((prev) => {
+    if (idx < 0 || idx >= prev.length - 1) return prev;
+    const arr = [...prev];
+    [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+    return arr;
+  });
+};
+
+// Upload selected images
+const uploadNewImages = async () => {
+  if (!newImages.length) return;
+  if (!projectDetails?.id) {
+    toast.error("Project not loaded yet.");
+    return;
+  }
+
+  try {
+    setUploadingImages(true);
+
+    const fd = new FormData();
+    // backend usually expects "images[]" (or "images"); keep both for safety
+    newImages.forEach((file) => fd.append("images", file));
+    // If your backend expects "image" for a single file, it should also accept array.
+    // If it ONLY accepts `image`, do: newImages.forEach(f => fd.append("image", f))
+
+    const res = await api.addProjectImagesApi(projectDetails.id, fd);
+
+    // Normalize response: assume it returns an array of rows like
+    // [{ id, image, position }, ...]
+    const created = Array.isArray(res.data?.data)
+      ? res.data.data
+      : Array.isArray(res.data)
+      ? res.data
+      : [];
+
+    if (!created.length) {
+      toast.error("Upload finished but no images returned.");
+    } else {
+      // Merge into gallery at the end
+      setProjectDetails((prev) => ({
+        ...prev,
+        images: [...(prev?.images ?? []), ...created].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999)),
+      }));
+      toast.success(`Uploaded ${created.length} image(s).`);
+      setNewImages([]);
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to upload images.");
+  } finally {
+    setUploadingImages(false);
+  }
+};
 
   const handleGenerateStandardSlug = () => {
     setSlug(standardSlugify(workTitle));
@@ -301,7 +403,10 @@ const EditProject = () => {
         if (!categoriesRes.data || !Array.isArray(categoriesRes.data)) {
           throw new Error("Invalid categories response");
         }
-        if (!projectRes.data) {
+        // Handle both new and old API formats
+        const projectData = projectRes.data?.data || projectRes.data;
+
+        if (!projectData) {
           throw new Error("Invalid project details response");
         }
 
@@ -314,18 +419,18 @@ const EditProject = () => {
         //     setValue(key, projectRes.data[key] || "");
         //   }
         // });
-        Object.keys(projectRes.data).forEach((key) => {
+        Object.keys(projectData).forEach((key) => {
           if (key === 'credit_days') return;          // keep your special handling
-          setValue(key, projectRes.data[key] ?? "");  // preserves 0
+          setValue(key, projectData[key] ?? "");  // preserves 0
         });
 
         // Ensure selects get proper string values
-        setValue("popular", String(projectRes.data.popular ?? 0)); // "0" or "1"
-        setValue("status",  String(projectRes.data.status  ?? 1)); // "1" or "2"
-        setValue("category_id", String(projectRes.data.category_id ?? ""));
+        setValue("popular", String(projectData.popular ?? 0)); // "0" or "1"
+        setValue("status",  String(projectData.status  ?? 1)); // "1" or "2"
+        setValue("category_id", String(projectData.category_id ?? ""));
         setValue(
           "subcategory_id",
-          projectRes.data.subcategory_id != null ? String(projectRes.data.subcategory_id) : ""
+          projectData.subcategory_id != null ? String(projectData.subcategory_id) : ""
         );
 
         // ✅ Set Categories
@@ -335,43 +440,43 @@ const EditProject = () => {
         // setSlugMode("custom"); // Or infer from slug format
         let initialSlug = "";
         let initialSlugMode = "standard";
-        if (projectRes.data.slug && projectRes.data.slug.trim() !== "") {
-          initialSlug = projectRes.data.slug;
+        if (projectData.slug && projectData.slug.trim() !== "") {
+          initialSlug = projectData.slug;
           initialSlugMode = "custom";
-        } else if (projectRes.data.work_title) {
-          initialSlug = oldSiteSlugify(projectRes.data.work_title);
+        } else if (projectData.work_title) {
+          initialSlug = oldSiteSlugify(projectData.work_title);
           initialSlugMode = "old";
         }
         setSlug(initialSlug);
         setSlugMode(initialSlugMode);
 
         // setPublishAtIst(mysqlUtcToDatetimeLocalIST(projectRes.data.publish_at));
-        setPublishAtIst(projectRes.data.publish_at_ist || "");
+        setPublishAtIst(projectData.publish_at_ist || "");
 
         //// ✅ Set Form Data
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
-        setTagsCsv(projectRes.data.tags || "");
+        setTagsCsv(projectData.tags || "");
         
         // Set description for React Quill
-        setDescription(projectRes.data.description || "");
+        setDescription(projectData.description || "");
 
-        setProjectDetails(projectRes.data); // For comparing on duplicate check
-        setWorkTitle(projectRes.data.work_title || ""); // Set controlled input
-        setValue("work_title", projectRes.data.work_title || "");
+        setProjectDetails(projectData); // For comparing on duplicate check
+        setWorkTitle(projectData.work_title || ""); // Set controlled input
+        setValue("work_title", projectData.work_title || "");
 
         // ✅ Initialize SEO validations with existing data
-        setSeoTitleValidation(validateSEOTitle(projectRes.data.work_title || ""));
-        setSeoDescriptionValidation(validateSEODescription(projectRes.data.description || ""));
-        setSeoMetaTitleValidation(validateSEOMetaTitle(projectRes.data.meta_title || ""));
-        setSeoMetaDescriptionValidation(validateSEOMetaDescription(projectRes.data.meta_description || ""));
+        setSeoTitleValidation(validateSEOTitle(projectData.work_title || ""));
+        setSeoDescriptionValidation(validateSEODescription(projectData.description || ""));
+        setSeoMetaTitleValidation(validateSEOMetaTitle(projectData.meta_title || ""));
+        setSeoMetaDescriptionValidation(validateSEOMetaDescription(projectData.meta_description || ""));
 
 
         // ✅ Set Category & Subcategory
-        if (projectRes.data.category_id) {
-          const selectedCategory = categoriesRes.data.find((cat) => cat.id === Number(projectRes.data.category_id));
+        if (projectData.category_id) {
+          const selectedCategory = categoriesRes.data.find((cat) => cat.id === Number(projectData.category_id));
           setSubcategories(selectedCategory?.project_sub_categories || []);
-          setValue("subcategory_id", projectRes.data.subcategory_id || ""); // ✅ Handle null subcategory
+          setValue("subcategory_id", projectData.subcategory_id || ""); // ✅ Handle null subcategory
         }
 
         setLoading(false);
@@ -406,6 +511,61 @@ const EditProject = () => {
       setSeoMetaDescriptionValidation(validateSEOMetaDescription(watchMetaDescription));
     }
   }, [watchMetaDescription, isRejected]);
+
+
+  // 🟢 Move Up
+const handleMoveUp = async (imageId) => {
+  try {
+    const imgs = [...(projectDetails?.images ?? [])];
+    const i = imgs.findIndex((x) => x.id === imageId);
+    if (i <= 0) return;
+
+    [imgs[i - 1], imgs[i]] = [imgs[i], imgs[i - 1]];
+    setProjectDetails((prev) => ({ ...prev, images: imgs }));
+
+    await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
+  } catch (err) {
+    toast.error("Couldn’t move image up.");
+    console.error(err);
+  }
+};
+
+// 🟢 Move Down
+const handleMoveDown = async (imageId) => {
+  try {
+    const imgs = [...(projectDetails?.images ?? [])];
+    const i = imgs.findIndex((x) => x.id === imageId);
+    if (i < 0 || i >= imgs.length - 1) return;
+
+    [imgs[i], imgs[i + 1]] = [imgs[i + 1], imgs[i]];
+    setProjectDetails((prev) => ({ ...prev, images: imgs }));
+
+    await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
+  } catch (err) {
+    toast.error("Couldn’t move image down.");
+    console.error(err);
+  }
+};
+
+// 🗑️ Delete
+const handleDelete = async (imageId) => {
+  try {
+    if (!confirm("Delete this image?")) return;
+
+    await api.deleteProjectImageApi(imageId);
+
+    setProjectDetails((prev) => ({
+      ...prev,
+      images: (prev?.images ?? []).filter((x) => x.id !== imageId),
+    }));
+
+    toast.success("Image deleted.");
+  } catch (err) {
+    toast.error("Couldn’t delete image.");
+    console.error(err);
+  }
+};
+
 
   const handleWorkTitleChange = (e) => {
     const value = e.target.value;
@@ -875,7 +1035,7 @@ const EditProject = () => {
           </div>
 
           {/* Upload New Image */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label className="form-label">Upload New Image</label>
             <input 
               type="file" 
@@ -886,6 +1046,117 @@ const EditProject = () => {
             <small className="form-text text-muted">
               🖼️ Maximum file size: 10MB. Leave empty to keep current image. Supported formats: JPG, PNG, GIF, WEBP
             </small>
+          </div> */}
+
+          {/* Add More Images */}
+          <div className="mb-3">
+            <label className="form-label">Project Gallery Images</label>
+
+            <div className="d-flex gap-2 align-items-center mb-2">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleSelectNewImages}
+                className="form-control"
+                style={{ maxWidth: 360 }}
+              />
+              <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={uploadNewImages}
+                disabled={!newImages.length || uploadingImages}
+              >
+                {uploadingImages ? "Uploading..." : `Upload ${newImages.length || ""} ${newImages.length === 1 ? "image" : "images"}`}
+              </button>
+            </div>
+
+            {/* Pre-upload previews */}
+            {newImages.length > 0 && (
+              <div className="d-flex flex-wrap gap-3 mb-3">
+                {newImages.map((file, idx) => {
+                  const url = URL.createObjectURL(file);
+                  return (
+                    <div key={idx} className="border rounded p-2 text-center" style={{ width: 120 }}>
+                      <img src={url} alt={file.name} width="100%" height="auto" />
+                      <div className="small text-truncate mt-1">{file.name}</div>
+
+                      <div className="d-flex justify-content-center gap-1 mt-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveNewImageUp(idx)}
+                          disabled={idx === 0}
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => moveNewImageDown(idx)}
+                          disabled={idx === newImages.length - 1}
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeNewImage(idx)}
+                          title="Remove"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="image-gallery">
+            {(projectDetails?.images ?? []).length === 0 ? (
+              <small className="text-muted">No gallery images yet.</small>
+            ) : (
+              (projectDetails.images).map((img, index) => (
+                <div key={img.id} className="image-item">
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${img.image}`}
+                    width="100"
+                    alt={`Project image ${index + 1}`}
+                  />
+                  <span>#{index + 1}</span>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); handleMoveUp(img.id); }}
+                    disabled={index === 0}
+                    aria-label="Move up"
+                  >
+                    ↑
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); handleMoveDown(img.id); }}
+                    disabled={index === (projectDetails.images.length - 1)}
+                    aria-label="Move down"
+                  >
+                    ↓
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); handleDelete(img.id); }}
+                    aria-label="Delete"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Project Status */}
