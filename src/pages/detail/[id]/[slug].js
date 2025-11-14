@@ -816,18 +816,18 @@ const shortSub = (s) => ({
                     <div className="embla__container">
                       {galleryUrls.map((url, idx) => {
                         const isFirst = idx === 0;
-                        // Only load current, previous and next slide
-                        const isNearCurrent = Math.abs(idx - selectedIndex) <= 1;
+                        // ✅ Only load the CURRENT slide's image
+                        const shouldLoad = idx === selectedIndex;
 
                         return (
                           <div className="embla__slide" key={`embla-${idx}`}>
                             <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
-                              {isNearCurrent ? (
+                              {shouldLoad ? (
                                 <Image
-                                  src={getSafeImageUrl(url)}   // ✅ still your original high-quality image
+                                  src={getSafeImageUrl(url)}   // still high-quality ORIGINAL image
                                   alt={project?.work_title || `Slide ${idx + 1}`}
                                   fill
-                                  priority={isFirst}
+                                  priority={isFirst}                          // LCP image
                                   fetchPriority={isFirst ? "high" : "auto"}
                                   loading={isFirst ? "eager" : "lazy"}
                                   decoding={isFirst ? "auto" : "async"}
@@ -835,10 +835,8 @@ const shortSub = (s) => ({
                                   sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
                                 />
                               ) : (
-                                // Lightweight placeholder instead of loading full image
-                                <div className="embla__placeholder">
-                                  {/* optional text/icon here */}
-                                </div>
+                                // Very light placeholder, no network request
+                                <div className="embla__placeholder" />
                               )}
                             </div>
                           </div>
