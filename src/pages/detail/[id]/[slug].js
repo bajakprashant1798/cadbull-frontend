@@ -811,42 +811,48 @@ const shortSub = (s) => ({
 
               <div className="bg-light p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2">
                 {galleryUrls.length > 1 ? (
-                  /* MULTI-IMAGE MODE (with ratio) */
+                  /* MULTI-IMAGE MODE (with ratio, but only 1–2 images loaded at a time) */
                   <div className="embla" ref={emblaRef}>
                     <div className="embla__container">
-                      <div className="embla__slide">
-                        <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
-                          <Image
-                            src={getSafeImageUrl(galleryUrls[0])}
-                            alt={project?.work_title || "CAD Drawing"}
-                            fill
-                            priority
-                            fetchPriority="high"
-                            quality={85}
-                            sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                          />
-                        </div>
-                      </div>
+                      {galleryUrls.map((url, idx) => {
+                        const isFirst = idx === 0;
+                        // Only load current, previous and next slide
+                        const isNearCurrent = Math.abs(idx - selectedIndex) <= 1;
 
-                      {galleryUrls.slice(1).map((url, idx) => (
-                        <div className="embla__slide" key={`embla-${idx + 1}`}>
-                          <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
-                            <Image
-                              src={getSafeImageUrl(url)}
-                              alt={project?.work_title || `Slide ${idx + 2}`}
-                              fill
-                              loading="lazy"
-                              decoding="async"
-                              sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                            />
+                        return (
+                          <div className="embla__slide" key={`embla-${idx}`}>
+                            <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
+                              {isNearCurrent ? (
+                                <Image
+                                  src={getSafeImageUrl(url)}   // ✅ still your original high-quality image
+                                  alt={project?.work_title || `Slide ${idx + 1}`}
+                                  fill
+                                  priority={isFirst}
+                                  fetchPriority={isFirst ? "high" : "auto"}
+                                  loading={isFirst ? "eager" : "lazy"}
+                                  decoding={isFirst ? "auto" : "async"}
+                                  quality={85}
+                                  sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                                />
+                              ) : (
+                                // Lightweight placeholder instead of loading full image
+                                <div className="embla__placeholder">
+                                  {/* optional text/icon here */}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     {/* controls remain same */}
-                    <button className="embla__btn embla__btn--prev" onClick={scrollPrev}>‹</button>
-                    <button className="embla__btn embla__btn--next" onClick={scrollNext}>›</button>
+                    <button className="embla__btn embla__btn--prev" onClick={scrollPrev}>
+                      <Icons.leftSwip />
+                    </button>
+                    <button className="embla__btn embla__btn--next" onClick={scrollNext}>
+                      <Icons.rightSwip />
+                    </button>
                     <div className="embla__dots">
                       {scrollSnaps.map((_, i) => (
                         <button

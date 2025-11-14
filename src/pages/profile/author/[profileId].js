@@ -8,8 +8,8 @@ const profile_dummy = assets.icons("profile.png");
 
 
 
-import 'swiper/css';
-import 'swiper/css/navigation';
+// import 'swiper/css';
+// import 'swiper/css/navigation';
 
 // import required modules
 import Icons from "@/components/Icons";

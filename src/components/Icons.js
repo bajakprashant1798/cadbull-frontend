@@ -25,6 +25,9 @@ const User = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16
 
 // ******************* Whatsapp *******************
 
+const rightSwip = () => <svg fill="#ed4d4c" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>play</title> <path d="M5.92 24.096q0 1.088 0.928 1.728 0.512 0.288 1.088 0.288 0.448 0 0.896-0.224l16.16-8.064q0.48-0.256 0.8-0.736t0.288-1.088-0.288-1.056-0.8-0.736l-16.16-8.064q-0.448-0.224-0.896-0.224-0.544 0-1.088 0.288-0.928 0.608-0.928 1.728v16.16z"></path> </g></svg>
+const leftSwip = () => <svg fill="#ed4d4c" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" transform="rotate(180)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>play</title> <path d="M5.92 24.096q0 1.088 0.928 1.728 0.512 0.288 1.088 0.288 0.448 0 0.896-0.224l16.16-8.064q0.48-0.256 0.8-0.736t0.288-1.088-0.288-1.056-0.8-0.736l-16.16-8.064q-0.448-0.224-0.896-0.224-0.544 0-1.088 0.288-0.928 0.608-0.928 1.728v16.16z"></path> </g></svg>
+
 const Whatsapp = () =>
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 18.988 18.988">
     <path id="Icon_awesome-whatsapp" data-name="Icon awesome-whatsapp" d="M16.144,5.009A9.412,9.412,0,0,0,1.335,16.364L0,21.238l4.989-1.31a9.381,9.381,0,0,0,4.5,1.144h0a9.5,9.5,0,0,0,9.5-9.409,9.446,9.446,0,0,0-2.844-6.654ZM9.49,19.488A7.807,7.807,0,0,1,5.506,18.4l-.284-.17L2.263,19l.788-2.886-.186-.3A7.836,7.836,0,1,1,17.4,11.664,7.908,7.908,0,0,1,9.49,19.488Zm4.289-5.858c-.233-.119-1.39-.687-1.606-.763s-.373-.119-.53.119-.606.763-.746.924-.275.178-.509.059a6.4,6.4,0,0,1-3.2-2.8c-.242-.415.242-.386.691-1.284a.436.436,0,0,0-.021-.411C7.8,9.358,7.328,8.2,7.133,7.73s-.386-.394-.53-.4-.292-.008-.449-.008a.871.871,0,0,0-.627.292A2.642,2.642,0,0,0,4.7,9.574a4.606,4.606,0,0,0,.958,2.433,10.506,10.506,0,0,0,4.018,3.552,4.6,4.6,0,0,0,2.823.589,2.408,2.408,0,0,0,1.585-1.119,1.966,1.966,0,0,0,.136-1.119C14.169,13.8,14.012,13.745,13.779,13.63Z" transform="translate(0 -2.25)" fill="currentColor" />
@@ -452,6 +455,8 @@ const Icons = {
   Instagram,
   X,
   Youtube,
+  rightSwip,
+  leftSwip,
 }
 
 
