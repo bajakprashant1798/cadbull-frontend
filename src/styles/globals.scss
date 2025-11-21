@@ -728,6 +728,20 @@
   font-size: 12px;
   color: #999;
 }
+
+/* ensure transform origin works consistently across browsers */
+.embla__btn svg {
+  transform-box: fill-box;         /* modern browsers */
+  -webkit-transform-box: fill-box; /* Safari prefixed */
+  transform-origin: center;
+  -webkit-transform-origin: center;
+}
+
+/* rotate only the prev button svg (safe in Safari/Chrome/Firefox) */
+.embla__btn--prev svg {
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+}
 // [slug].js
 
 // ******** Dropdown ********
