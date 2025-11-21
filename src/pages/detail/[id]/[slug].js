@@ -867,15 +867,29 @@ const shortSub = (s) => ({
                   /* SINGLE IMAGE MODE (no ratio, use natural height) */
                   <div className="embla__single">
                     <Image
+                      // key={project?.id || project?.photo_url}
+                      // src={getSafeImageUrl(project?.photo_url)}
+                      // alt={project?.work_title || "CAD Drawing"}
+                      // width={project?.image_width || 800}
+                      // height={project?.image_height || 600}
+                      // style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                      // priority
+                      // quality={85}
+                      // sizes="100vw"
+                      // onError={() => setImgError(true)}
+
                       key={project?.id || project?.photo_url}
                       src={getSafeImageUrl(project?.photo_url)}
-                      alt={project?.work_title || "CAD Drawing"}
                       width={project?.image_width || 800}
                       height={project?.image_height || 600}
-                      style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                      alt={project?.work_title || "CAD Drawing"}
+                      className="img-fluid"
                       priority
+                      fetchPriority="high"
                       quality={85}
-                      sizes="100vw"
+                      placeholder="empty"
+                      sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                      style={{ objectFit: "contain", width: "100%", height: "auto" }}
                       onError={() => setImgError(true)}
                     />
                   </div>
