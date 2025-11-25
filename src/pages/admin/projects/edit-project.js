@@ -700,8 +700,10 @@ const handleDelete = async (imageId) => {
         meta_description: data.meta_description,
         tags: tagsCsv,
         file_type: data.file_type,
-        category_id: data.category_id,
-        subcategory_id: data.subcategory_id || null, // ✅ Handle null subcategory
+        // category_id: data.category_id,
+        // subcategory_id: data.subcategory_id || null, // ✅ Handle null subcategory
+        category_id: data.category_id && data.category_id !== "" ? data.category_id : null,
+        subcategory_id: data.subcategory_id && data.subcategory_id !== "" ? data.subcategory_id : null,
         type: data.type,
         status: data.status !== undefined && data.status !== "" ? Number(data.status) : 1,
         popular: data.popular !== undefined && data.popular !== "" ? Number(data.popular) : 0,
@@ -743,13 +745,22 @@ const handleDelete = async (imageId) => {
 
       const formData = new FormData();
 
+      // for (const key in updatedData) {
+      //   if (key === "file" || key === "image") {
+      //     if (updatedData[key] && updatedData[key].length > 0) {
+      //       formData.append(key, updatedData[key][0]); // Append file directly
+      //     }
+      //   } else {
+      //     formData.append(key, updatedData[key]);
+      //   }
+      // }
       for (const key in updatedData) {
+        const val = updatedData[key];
+        if (val === null || val === undefined) continue; // don't append nulls (backend will treat as NULL)
         if (key === "file" || key === "image") {
-          if (updatedData[key] && updatedData[key].length > 0) {
-            formData.append(key, updatedData[key][0]); // Append file directly
-          }
+          if (val && val.length > 0) formData.append(key, val[0]);
         } else {
-          formData.append(key, updatedData[key]);
+          formData.append(key, val);
         }
       }
 
