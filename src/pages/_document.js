@@ -80,15 +80,47 @@ export default function Document(props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
+              // "@context": "https://schema.org",
+              // "@type": "Corporation",
+              // "name": "Cadbull",
+              // "alternateName": "Cadbull",
+              // "url": "https://cadbull.com/",
+              // "logo": "https://cadbull.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.380b44c9.png&w=384&q=75",
+              // "description": "Download Free & Premium CAD Files, DWG Files, and AutoCAD Blocks for Architecture, Interior Design, and Engineering Projects. Access 1000+ high-quality CAD drawings and design resources.",
+              // "foundingDate": "2014",
+              // "knowsAbout": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings"],
+              // "address": {
+              //   "@type": "PostalAddress",
+              //   "streetAddress": "403 Fortune Business Hub Beside Shell Petrol Pump Science City Road, Sola",
+              //   "addressLocality": "Ahmedabad",
+              //   "addressCountry": "India"
+              // },
+              // "contactPoint": {
+              //   "@type": "ContactPoint",
+              //   "telephone": "+91-989-874-8697",
+              //   "contactType": "customer service",
+              //   "email": "support@cadbull.com"
+              // },
+              // "sameAs": [
+              //   "https://www.facebook.com/cadbull/"
+              // ],
+              // "keywords": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings", "Free CAD downloads", "Premium CAD files"]
               "@context": "https://schema.org",
               "@type": "Corporation",
               "name": "Cadbull",
               "alternateName": "Cadbull",
               "url": "https://cadbull.com/",
-              "logo": "https://cadbull.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Flogo.380b44c9.png&w=384&q=75",
+              "logo": "https://assets.cadbull.com/assets/images/logo.png",
               "description": "Download Free & Premium CAD Files, DWG Files, and AutoCAD Blocks for Architecture, Interior Design, and Engineering Projects. Access 1000+ high-quality CAD drawings and design resources.",
               "foundingDate": "2014",
-              "knowsAbout": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings"],
+              "knowsAbout": [
+                "CAD files",
+                "DWG files",
+                "AutoCAD blocks",
+                "Architecture plans",
+                "Interior design",
+                "Engineering drawings"
+              ],
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "403 Fortune Business Hub Beside Shell Petrol Pump Science City Road, Sola",
@@ -102,9 +134,25 @@ export default function Document(props) {
                 "email": "support@cadbull.com"
               },
               "sameAs": [
-                "https://www.facebook.com/cadbull/"
+                "https://www.facebook.com/cadbull/",
+                "https://www.youtube.com/channel/UCy5GarRRRiH5he-WQ5JS5gQ",
+                "https://twitter.com/cadbull",
+                "https://medium.com/@cadbull1",
+                "https://www.instagram.com/cadbull/",
+                "https://www.signalhire.com/companies/cadbull",
+                "https://www.crunchbase.com/organization/cadbull",
+                "https://www.zoominfo.com/c/cadbull/363357395"
               ],
-              "keywords": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings", "Free CAD downloads", "Premium CAD files"]
+              "keywords": [
+                "CAD files",
+                "DWG files",
+                "AutoCAD blocks",
+                "Architecture plans",
+                "Interior design",
+                "Engineering drawings",
+                "Free CAD downloads",
+                "Premium CAD files"
+              ]
             })
           }}
         />
