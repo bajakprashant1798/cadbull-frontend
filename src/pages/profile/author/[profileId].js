@@ -493,132 +493,50 @@ CompanyProfile.getLayout = function getLayout(page) {
 // }
 
 
-export async function getStaticProps({ params }) {
-  const profileId = params.profileId;
-  if (!/^\d+$/.test(String(profileId))) {
-    return { notFound: true, revalidate: 60 };
-  }
-
-  const api = createServerApi(); // get an SNI-aware axios instance
-
-  try {
-    // fetch profile
-    const profRes = await api.get(`/api/profile/author/${profileId}`);
-    const profile = profRes?.data?.profile || null;
-
-    if (!profile) {
-      const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
-      return {
-        props: {
-          initialProfile: null,
-          initialProducts: [],
-          initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
-          seoData: {
-            title: "User Profile | Cadbull",
-            description: "This profile is temporarily unavailable.",
-            canonicalUrl: `${front}/profile/author/${profileId}`,
-            noindex: false,
-            prevPage: null,
-            nextPage: null,
-          },
-        },
-        revalidate: 600,
-      };
-    }
-
-    // fetch products
-    const prodRes = await api.get(`/api/profile/author/${profileId}/products`, {
-      params: { page: 1, pageSize: 12 },
-    });
-
-    const products = prodRes.data?.products || [];
-    const totalProducts = prodRes.data?.totalProducts || 0;
-    const totalPages = prodRes.data?.totalPages || 1;
-
-    const name = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
-    const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
-
-    return {
-      props: {
-        initialProfile: profile,
-        initialProducts: products,
-        initialPagination: { currentPage: 1, totalPages, totalProducts },
-        seoData: {
-          title: `${name} - CAD Designer Profile | Cadbull`,
-          description: `View ${name}'s CAD designs and drawings on Cadbull.`,
-          canonicalUrl: `${front}/profile/author/${profileId}`,
-          noindex: false,
-          prevPage: null,
-          nextPage: null,
-        },
-      },
-      revalidate: 7200,
-    };
-  } catch (err) {
-    // more detailed logging
-    console.error("Profile SSR internal API error:", err?.meta ?? err?.response?.status, err?.meta?.data ?? err?.response?.data ?? err?.message);
-    const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
-    return {
-      props: {
-        initialProfile: null,
-        initialProducts: [],
-        initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
-        seoData: {
-          title: "User Profile | Cadbull",
-          description: "This profile is temporarily unavailable.",
-          canonicalUrl: `${front}/profile/author/${profileId}`,
-          noindex: false,
-          prevPage: null,
-          nextPage: null,
-        },
-      },
-      revalidate: 600,
-    };
-  }
-}
-
 // export async function getStaticProps({ params }) {
 //   const profileId = params.profileId;
-//   if (!/^\d+$/.test(String(profileId))) return { notFound: true, revalidate: 60 };
+//   if (!/^\d+$/.test(String(profileId))) {
+//     return { notFound: true, revalidate: 60 };
+//   }
 
-//   const API_BASE =
-//     process.env.NEXT_PUBLIC_API_MAIN;
+//   const api = createServerApi(); // get an SNI-aware axios instance
 
 //   try {
-//     const profRes = await fetch(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
-//     const profJson = await profRes.json();
-//     const profile = profJson?.profile || null;
+//     // fetch profile
+//     const profRes = await api.get(`/api/profile/author/${profileId}`);
+//     const profile = profRes?.data?.profile || null;
 
 //     if (!profile) {
-//       const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+//       const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
 //       return {
 //         props: {
 //           initialProfile: null,
 //           initialProducts: [],
 //           initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
 //           seoData: {
-//             title: 'User Profile | Cadbull',
-//             description: 'This profile is temporarily unavailable.',
+//             title: "User Profile | Cadbull",
+//             description: "This profile is temporarily unavailable.",
 //             canonicalUrl: `${front}/profile/author/${profileId}`,
-//             noindex: false, prevPage: null, nextPage: null,
+//             noindex: false,
+//             prevPage: null,
+//             nextPage: null,
 //           },
 //         },
 //         revalidate: 600,
 //       };
 //     }
 
-//     const prodRes = await fetch(
-//       `${API_BASE}/profile/author/${profileId}/products?page=1&pageSize=12`,
-//       { cache: 'no-store' }
-//     );
-//     const prodJson = await prodRes.json();
+//     // fetch products
+//     const prodRes = await api.get(`/api/profile/author/${profileId}/products`, {
+//       params: { page: 1, pageSize: 12 },
+//     });
 
-//     const products = prodJson?.products || [];
-//     const totalProducts = prodJson?.totalProducts || 0;
-//     const totalPages = prodJson?.totalPages || 1;
+//     const products = prodRes.data?.products || [];
+//     const totalProducts = prodRes.data?.totalProducts || 0;
+//     const totalPages = prodRes.data?.totalPages || 1;
 
-//     const name = [profile.firstname, profile.lastname].filter(Boolean).join(' ') || 'User';
-//     const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+//     const name = [profile.firstname, profile.lastname].filter(Boolean).join(" ") || "User";
+//     const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
 
 //     return {
 //       props: {
@@ -629,29 +547,111 @@ export async function getStaticProps({ params }) {
 //           title: `${name} - CAD Designer Profile | Cadbull`,
 //           description: `View ${name}'s CAD designs and drawings on Cadbull.`,
 //           canonicalUrl: `${front}/profile/author/${profileId}`,
-//           noindex: false, prevPage: null, nextPage: null,
+//           noindex: false,
+//           prevPage: null,
+//           nextPage: null,
 //         },
 //       },
 //       revalidate: 7200,
 //     };
-//   } catch (e) {
-//     const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+//   } catch (err) {
+//     // more detailed logging
+//     console.error("Profile SSR internal API error:", err?.meta ?? err?.response?.status, err?.meta?.data ?? err?.response?.data ?? err?.message);
+//     const front = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
 //     return {
 //       props: {
 //         initialProfile: null,
 //         initialProducts: [],
 //         initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
 //         seoData: {
-//           title: 'User Profile | Cadbull',
-//           description: 'This profile is temporarily unavailable.',
+//           title: "User Profile | Cadbull",
+//           description: "This profile is temporarily unavailable.",
 //           canonicalUrl: `${front}/profile/author/${profileId}`,
-//           noindex: false, prevPage: null, nextPage: null,
+//           noindex: false,
+//           prevPage: null,
+//           nextPage: null,
 //         },
 //       },
 //       revalidate: 600,
 //     };
 //   }
 // }
+
+export async function getStaticProps({ params }) {
+  const profileId = params.profileId;
+  if (!/^\d+$/.test(String(profileId))) return { notFound: true, revalidate: 60 };
+
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_MAIN;
+
+  try {
+    const profRes = await fetch(`${API_BASE}/profile/author/${profileId}`, { cache: 'no-store' });
+    const profJson = await profRes.json();
+    const profile = profJson?.profile || null;
+
+    if (!profile) {
+      const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+      return {
+        props: {
+          initialProfile: null,
+          initialProducts: [],
+          initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
+          seoData: {
+            title: 'User Profile | Cadbull',
+            description: 'This profile is temporarily unavailable.',
+            canonicalUrl: `${front}/profile/author/${profileId}`,
+            noindex: false, prevPage: null, nextPage: null,
+          },
+        },
+        revalidate: 600,
+      };
+    }
+
+    const prodRes = await fetch(
+      `${API_BASE}/profile/author/${profileId}/products?page=1&pageSize=12`,
+      { cache: 'no-store' }
+    );
+    const prodJson = await prodRes.json();
+
+    const products = prodJson?.products || [];
+    const totalProducts = prodJson?.totalProducts || 0;
+    const totalPages = prodJson?.totalPages || 1;
+
+    const name = [profile.firstname, profile.lastname].filter(Boolean).join(' ') || 'User';
+    const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+
+    return {
+      props: {
+        initialProfile: profile,
+        initialProducts: products,
+        initialPagination: { currentPage: 1, totalPages, totalProducts },
+        seoData: {
+          title: `${name} - CAD Designer Profile | Cadbull`,
+          description: `View ${name}'s CAD designs and drawings on Cadbull.`,
+          canonicalUrl: `${front}/profile/author/${profileId}`,
+          noindex: false, prevPage: null, nextPage: null,
+        },
+      },
+      revalidate: 7200,
+    };
+  } catch (e) {
+    const front = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+    return {
+      props: {
+        initialProfile: null,
+        initialProducts: [],
+        initialPagination: { currentPage: 1, totalPages: 1, totalProducts: 0 },
+        seoData: {
+          title: 'User Profile | Cadbull',
+          description: 'This profile is temporarily unavailable.',
+          canonicalUrl: `${front}/profile/author/${profileId}`,
+          noindex: false, prevPage: null, nextPage: null,
+        },
+      },
+      revalidate: 600,
+    };
+  }
+}
 
 // ✅ Generate static paths for popular profiles (first 100)
 export async function getStaticPaths() {
