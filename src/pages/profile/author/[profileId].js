@@ -507,7 +507,7 @@ export async function getStaticProps({ params }) {
   const profileId = params.profileId;
   if (!/^\d+$/.test(String(profileId))) return { notFound: true, revalidate: 60 };
 
-  const API_BASE = process.env.API_BASE_URL_INTERNAL || "https://api.cadbull.com:7081";
+  const API_BASE = process.env.API_BASE_URL_INTERNAL || "https://api.cadbull.com:7081/api";
   let hostname = "api.cadbull.com";
   try {
     hostname = new URL(API_BASE).hostname || hostname;
