@@ -54,7 +54,7 @@ const Sidebar = () => {
         </li> */}
 
         {/* Content Creator (Role 5) should only see User Management */}
-        {userRole === 5 ? (
+        {userRole === 5 || userRole === 6 ? (
           <>
             {/* Optional: Dashboard Link */}
             {/* <li className="nav-item">

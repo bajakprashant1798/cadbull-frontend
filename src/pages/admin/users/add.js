@@ -195,6 +195,7 @@ const AddUser = () => {
                     <option value="3">Agent</option>
                     <option value="4">Data Operator</option>
                     <option value="5">Content Creator</option>
+                    <option value="6">Content Creator with files</option>
                   </select>
                   {errors.role && <div className="invalid-feedback">{errors.role.message}</div>}
                 </div>
