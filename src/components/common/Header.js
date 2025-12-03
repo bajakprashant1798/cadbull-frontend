@@ -495,7 +495,7 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                      
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
-                      {isClient && status?.user?.role === 1 || status?.user?.role === 5 ? (
+                      {isClient && (status?.user?.role === 1 || status?.user?.role === 5 || status?.user?.role === 6) ? (
                         
                         <li>
                           <Link
