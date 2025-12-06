@@ -22,6 +22,15 @@ import CancelSubsConfirm from "@/components/CancelSubsConfirm";
 import { useRouter } from "next/router";
 import { parse } from "cookie";
 
+// billing.js — add near the top, after imports
+function mapIntervalToPrice(interval) {
+  const key = String(interval || "").toLowerCase();
+  if (key === "week") return 13;
+  if (key === "month") return 20;
+  if (key === "year") return 99;
+  return 50;
+}
+
 const ManageBilling = ({ initialSubscribedPlan }) => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -145,7 +154,9 @@ const handleCancelSubscription = () => {
                             : "is-invalid"
                         }`}
                         readOnly
-                        value={`${subscribedPlan.plan_name} (${subscribedPlan.amount}$/${subscribedPlan.interval}) `}
+                        // value={`${subscribedPlan.plan_name} (${subscribedPlan.amount}$/${subscribedPlan.interval}) `}
+                        // value={`${subscribedPlan.plan_name} `}
+                        value={`${subscribedPlan.plan_name} (${(subscribedPlan.currency ?? "$")}${(subscribedPlan.display_amount ?? mapIntervalToPrice(subscribedPlan.interval)).toFixed(2)}/${(subscribedPlan.interval ?? "")})`}
                       />
                       {subscribedPlan.cancelled_at== null ? (
                         <div class="valid-feedback">Your plan is active</div>
