@@ -770,7 +770,10 @@ ul.dropdown-menu {
   }
 }
 
-
+.h2-primary-color h2 {
+  color: $primary !important;
+  font: normal normal 600 40px / 50px "Poppins", sans-serif;
+}
 
 .designer-profile {
   .select-country {

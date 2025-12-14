@@ -575,7 +575,11 @@ const shortSub = (s) => ({
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
         {/* <meta property="og:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
-        <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
+
+        {galleryUrls.map((url, i) => (
+          <meta property="og:image" content={getSafeImageUrl(url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} key={i} />
+        ))}
+        {/* <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
 
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -599,6 +603,23 @@ const shortSub = (s) => ({
 
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta name="keywords" content={project?.tags || ""} />
+
+        {galleryUrls?.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "CreativeWork",
+                "name": project?.work_title,
+                "description": project?.meta_description || project?.description,
+                "image": galleryUrls.map((url) => getSafeImageUrl(url)),
+                "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
+                "mainEntityOfPage": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`
+              }),
+            }}
+          />
+        )}
 
         <link rel="canonical" href={canonicalUrl} />
         <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />

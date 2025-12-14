@@ -68,7 +68,7 @@ const Experiences = ({ initialOccupations, initialExperiences }) => {
     <Fragment>
       <Head>
         <title>Experiences | Cadbull</title>
-        <meta name="description" content="World's Largest 2D CAD Library." />
+        <meta name="description" content="Explore the world’s largest 2D CAD library featuring thousands of AutoCAD DWG blocks, architectural drawings, and design resources for professionals" />
       </Head>
 
       <section className="py-lg-5 py-4 experience-page">

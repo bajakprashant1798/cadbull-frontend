@@ -617,7 +617,7 @@ const RegisterPhone = () => {
   return (
     <Fragment>
       <Head>
-        <title>Cadbull | Register</title>
+        <title>Register on Cadbull with your phone to access CAD resources.</title>
         <meta name="description" content="World Largest 2d CAD Library." />
       </Head>
       <AuthLayout title={pageTitle.title} description={pageTitle.description}>

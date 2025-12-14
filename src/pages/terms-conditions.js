@@ -9,17 +9,17 @@ const TermsPrivacyFaq = ({termsData}) => {
   return (
     <Fragment>
         <Head>
-            <title>Cadbull Terms & Conditions | DWG File Usage & User Policies</title>
-            <meta name="description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <title>Cadbull Terms and Conditions for DWG, AutoCAD Files, and CAD Content</title>
+            <meta name="description" content="Read Cadbull’s terms and conditions to learn about user rights, account usage, copyright policy, and legal rules for accessing DWG CAD files and design content." />
             <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-conditions`} />
 
             <meta property="og:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
-            <meta property="og:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <meta property="og:description" content="Read Cadbull’s terms and conditions to learn about user rights, account usage, copyright policy, and legal rules for accessing DWG CAD files and design content." />
             <meta property="og:type" content="website" />
             <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/terms-conditions`} />
             <meta property="og:image" content={logo} />
             <meta name="twitter:title" content="Cadbull Terms & Conditions | DWG File Usage & User Policies" />
-            <meta name="twitter:description" content="Explore CADBull’s Terms & Conditions covering user rights, DWG file usage, account policies, intellectual property, and content sharing rules for a safe and fair experience." />
+            <meta name="twitter:description" content="Read Cadbull’s terms and conditions to learn about user rights, account usage, copyright policy, and legal rules for accessing DWG CAD files and design content." />
             <meta name="twitter:image" content={logo} />
             <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
         </Head>
@@ -29,7 +29,7 @@ const TermsPrivacyFaq = ({termsData}) => {
         <div className="row">
           <div className="col-md-12">
             {/* <img src="https://img.freepik.com/free-photo/business-concept-with-team-close-up_23-2149151159.jpg?w=996&t=st=1689992075~exp=1689992675~hmac=d498ed8f133f12b3b6905ffbbdd7427865feecb214c682a44a27a208f09d1695" className="w-100 rounded-2 mb-3 mb-md-4 object-fit-cover" alt="cover" height={350} /> */}
-            <div>
+            <div className="h2-primary-color">
                 <h1>Terms of Use</h1>
                 <p style={{ marginBottom: '1em' }}>
                     The terms 'Cadbull' and 'Cadbull.com' are used in this document (or Agreement) to refer to the Web site itself and to Cadbull.com, the company which owns and operates the Cadbull website.
@@ -42,7 +42,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                     <li>This Agreement constitutes the entire agreement between you and Cadbull and governs your use of the Cadbull Service, superseding any prior agreements between you and Cadbull.</li>
                 </ul>
             
-              <h1>Acceptance</h1>
+              <h2>Acceptance</h2>
               <p style={{ marginBottom: '1em' }}>
                   For the purpose of the Terms, which shall mean any person who uses the Websites or the Services in any manner, including creating the profile and downloading layouts on the Websites thereby means they agree to comply with these Terms.
               </p>
@@ -54,7 +54,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                       Please do not contribute to Cadbull in any manner unless you have carefully read and agree with all of these terms.
                   </li>
               </ul>
-              <h1>Accessing Content</h1>
+              <h2>Accessing Content</h2>
               <p style={{ marginBottom: '1em' }}>
                   All the content available for public access on Cadbull is protected by copyright. Your use of this material must adhere to the following terms, unless you are the original contributor of the content to Cadbull, in which case your use is governed by the terms governing Cadbull's relationship with its contributors as covered below.
               </p>
@@ -68,7 +68,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>You may forward Internet URLs (Uniform Resource Locators) to third parties for private, non-commercial use, along with brief extracts that do not violate Fair Use guidelines.</li>
                   <li>You can download 20 files daily. Gold account purchased users can get 100 files daily download.</li>
               </ul>
-              <h1>Intellectual Property</h1>
+              <h2>Intellectual Property</h2>
               <p style={{ marginBottom: '1em' }}>
                   Subject to your compliance with these Terms of Use, any applicable license agreement with Cadbull.com, and the law, you may access and use the site. Cadbull.com remains the sole owner of all rights, title, and interest in the site and reserves all rights not expressly granted under these Terms of Use. Cadbull.com may replace, modify, or discontinue the site or any part thereof at any time, for any reason, with or without notice, in Cadbull.com's sole discretion.
               </p>
@@ -84,7 +84,7 @@ const TermsPrivacyFaq = ({termsData}) => {
               <p>
                   You may not remove any watermarks or copyright notices contained in the Cadbull.com content.
               </p>
-              <h1>Cadbull.com Trademark</h1>
+              <h2>Cadbull.com Trademark</h2>
               <p style={{ marginBottom: '1em' }}>
                   For the purpose of these Terms of Use, the term "Trademark" means all common law or registered trademarks, logos, service marks, trade names, Internet domain names, or other indications of origin now or in the future used by Cadbull.com.
               </p>
@@ -99,7 +99,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>You may not use a Cadbull.com trademark, logo, image, or other proprietary graphic of Cadbull.com to link to the Cadbull.com website without the prior written consent of Cadbull.com.</li>
                   <li>You may not frame or hotlink to the Cadbull.com website or any image without the prior written consent of Cadbull.com.</li>
               </ul>
-              <h1>Contribution</h1>
+              <h2>Contribution</h2>
               <p style={{ marginBottom: '1em' }}>
                   Cadbull also provides a variety of forums for its members to express themselves in the form of services, layouts that can be downloaded for free or by using a gold account. Cadbull provides value to its contributors by making available to them its vast global audience reach. The terms in this section apply to all the content contributed to Cadbull in any of its various services and forums.
               </p>
@@ -131,7 +131,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>Once granted and your content is published, the distribution rights cannot be revoked. In other words, once your contribution is published on Cadbull it automatically becomes a permanent part of the publicly-accessible Cadbull archives. You may, however, subject to our approval, update or revise your contributions on Cadbull.</li>
                   <li>You grant us the right to organize, categorize, collate your contributed content and present it on the website in any manner we see fit. We may remove or edit your contribution at our discretion without having to secure your permission. We will, however, make reasonable efforts to inform you of the changes.</li>
               </ul>
-              <h1>Termination</h1>
+              <h2>Termination</h2>
               <p style={{ marginBottom: '1em' }}>
                   We generally do not object to our contributors posting their Cadbull contributions on other, freely accessible non-commercial Internet locations, so long as Cadbull is clearly cited as the original publisher, and a link to <a href="https://cadbull.com">https://cadbull.com</a> is provided.
               </p>
@@ -146,7 +146,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>Disrupt the normal flow of dialogue by repeatedly posting the same or similar material, or otherwise acting in a manner that negatively affects other users.</li>
                   <li>Post layouts that contain untruthful representations, deceptive practices, inducements to commit any illegal activity.</li>
               </ul>
-              <h1>Access to our service</h1>
+              <h2>Access to our service</h2>
               <p>
                   This Section covers the terms under which various Cadbull services, including, but not limited to, link forwarding services, event information, and any information available on Cadbull, are made available to you.
               </p>
@@ -161,7 +161,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>A possibility exists that the Site could include inaccuracies or errors. Additionally, a possibility exists that unauthorized additions, deletions, and alterations could be made by third parties to the Site. Although Cadbull attempts to ensure the integrity and the accuracy of the Site, it makes no guarantees whatsoever as to the correctness or accuracy of the Site.</li>
               </ul>
 
-              <h1>Visitor Responsibility</h1>
+              <h2>Visitor Responsibility</h2>
               <p style={{ marginBottom: '1em' }}>
                   Cadbull has not reviewed, and cannot review, all of the material, including computer software, posted to the Website, and cannot therefore be responsible for that material’s content, use or effects. By operating the Website, Cadbull does not represent or imply that it endorses the material there posted, or that it believes such material to be accurate, useful or non-harmful.
               </p>
@@ -172,7 +172,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   Cadbull disclaims any responsibility for any harm resulting from the use by visitors of the Website, or from any downloading by those visitors of content there posted. If you believe that material located on or linked to by Cadbull.com is offensive, indecent, violates your copyright, or is otherwise objectionable, you are encouraged to notify our team via the report abuse link or via email. In the case of a visitor who may infringe or repeatedly infringes the copyrights or other intellectual property rights of Cadbull or others, Cadbull may, in its discretion, terminate or deny access to and use of the Website.
               </p>
 
-              <h1>Member Registration</h1>
+              <h2>Member Registration</h2>
               <p>
                   Cadbull requires registration for those who participate in a variety of its services. When you register as a Cadbull member, you accept the following terms and conditions:
               </p>
@@ -185,22 +185,22 @@ const TermsPrivacyFaq = ({termsData}) => {
                   <li>By using Cadbull.com services and providing us your email address, you agree to receive mails from our employees/customers.</li>
               </ul>
 
-              <h1>DMCA & Copyright Infringement</h1>
+              <h2>DMCA & Copyright Infringement</h2>
               <p>
                   If you believe that any CAD file or other material made available by Cadbull.com infringes upon any copyright that you own or control, you may notify Cadbull.com in the manner set forth in our DMCA Copyright Infringement Notice Policy.
               </p>
 
-              <h1>Refund Policy</h1>
+              <h2>Refund Policy</h2>
               <p>
                   As per our policy and our claim for the free download of CAD files for General Users, you will get the free copy listed in the free option. You can cancel your subscription at any time but we have a NO refund policy. Our goods are digital (DWG files, PDF files, .3ds files and files in other design file formats) and once a user has downloaded them, the user has full access to our digital work. We would encourage you to create a free account on cadbull.com and download a few free files before purchasing. All subscription plans provided on cadbull.com are auto-renewed at defined intervals and you'll be automatically charged by our Payment Processor "Stripe" at each billing cycle unless you've cancelled your subscription. To cancel your subscription please click on "Manage Billing" option on Cadbull.com Profile Page. Please reach out to support@cadbull.com if you need more help or facing any errors. You can contact support@cadbull.com if you're facing any issues with downloading files and we'll respond within 48 hours.
               </p>
 
-              <h1>Indemnification</h1>
+              <h2>Indemnification</h2>
               <p>
                   You agree to defend, indemnify and hold harmless Cadbull.com, its affiliates, licensors, employees, agents, third party information providers, Submitters and Independent contractors against any claims, damages, costs, liabilities, and expense ( including, but not limited to, reasonable attorneys’ fees) arising out of or related to your conduct, your use or inability to use the site, your breach or alleged breach of the website Terms of Use or of any representation or warranty contained herein, your unauthorized use of the Cadbull.com Content, or your violation of any rights of another.
               </p>
 
-              <h1>Disclaimer</h1>
+              <h2>Disclaimer</h2>
               <p style={{ marginBottom: '1em' }}>
                   YOUR USE OF CADBULL IS AT YOUR OWN RISK. THIS WEBSITE IS PROVIDED BY CADBULL.COM, ON AN "AS IS" AND "AS AVAILABLE" BASIS. WEBSITES DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
               </p>
@@ -216,7 +216,7 @@ const TermsPrivacyFaq = ({termsData}) => {
                   ANY MATERIAL DOWNLOADED OR OTHERWISE OBTAINED THROUGH THE USE OF CADBULL IS DONE AT YOUR OWN DISCRETION AND RISK, AND YOU WILL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR LOSS OF DATA THAT RESULTS FROM THE DOWNLOAD.
               </p>
 
-              <h1>Declaration</h1>
+              <h2>Declaration</h2>
               <p>
                   YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT AND AGREE TO ALL ITS TERMS AND CONDITIONS. YOU HAVE INDEPENDENTLY EVALUATED THE DESIRABILITY OF PARTICIPATING IN CADBULL FOR POSTING YOUR WORK AND DOWNLOADING CONTENT AND ARE NOT RELYING ON ANY REPRESENTATION, GUARANTEE, OR STATEMENTS OTHER THAN AS SET FORTH IN THIS AGREEMENT.
               </p>

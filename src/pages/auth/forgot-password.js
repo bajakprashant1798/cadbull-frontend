@@ -67,7 +67,7 @@ const ForgotPassword = () => {
   return (
     <Fragment>
       <Head>
-        <title>Forgot Password | Cadbull </title>
+        <title>Reset Your Cadbull Password to Regain Access to Your Account</title>
         <meta name="description" content="Reset your Cadbull account password easily. Enter your registered email to receive a secure password reset link and regain access to your CAD files quickly." />
       </Head>
 

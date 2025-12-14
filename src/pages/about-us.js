@@ -27,7 +27,7 @@ const About = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="text-center">
-                <h3 className="text-primary fw-bold mb-2">Impress Your Imagination</h3>
+                <h1 className="text-primary fw-bold mb-2">Impress Your Imagination</h1>
                 <p>Imagination and technological prowess to create something radical so that an idea is worth executing.</p>
               </div>
             </div>

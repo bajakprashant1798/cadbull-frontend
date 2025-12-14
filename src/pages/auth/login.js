@@ -275,7 +275,7 @@ const Login = () => {
   return (
     <Fragment>
       <Head>
-        <title>Cadbull | Login</title>
+        <title>Login to Cadbull Account and Start Uploading Your Work</title>
         <meta name="description" content="World Largest 2d CAD Library." />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/login`} />
       </Head>

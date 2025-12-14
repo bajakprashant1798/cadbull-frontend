@@ -223,9 +223,9 @@ const CompanyProfile = ({ initialProfile, initialProducts, initialPagination, se
                 />
                 <div className="d-md-none">
                   {(profile?.firstname || profile?.lastname) ? (
-                    <h4 className="fw-semibold text-primary">
+                    <h1 className="fw-semibold text-primary">
                       {[profile?.firstname, profile?.lastname].filter(Boolean).join(" ")}
-                    </h4>
+                    </h1>
                   ) 
                   : (
                     <h4 className="fw-semibold text-primary">Update your profile and add your name.</h4>
@@ -627,7 +627,7 @@ export async function getStaticProps({ params }) {
         initialPagination: { currentPage: 1, totalPages, totalProducts },
         seoData: {
           title: `${name} - CAD Designer Profile | Cadbull`,
-          description: `View ${name}'s CAD designs and drawings on Cadbull.`,
+          description: `Explore ${name}’s CAD drawings with ${totalProducts} ready-to-use files on Cadbull.`,
           canonicalUrl: `${front}/profile/author/${profileId}`,
           noindex: false, prevPage: null, nextPage: null,
         },
