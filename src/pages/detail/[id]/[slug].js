@@ -565,6 +565,12 @@ const shortSub = (s) => ({
       : '4 / 3';   // fallback ratio
   }
 
+  // Decide preview image for social sharing (ALWAYS ONE)
+  const previewImage =
+    galleryUrls?.length > 0
+      ? galleryUrls[0]          // first gallery image
+      : project?.photo_url || null;
+
   return (
     <Fragment>
       <Head>
@@ -576,8 +582,16 @@ const shortSub = (s) => ({
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
         {/* <meta property="og:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
 
-        {galleryUrls.map((url, i) => (
+        {/* {galleryUrls.map((url, i) => (
           <meta property="og:image" content={getSafeImageUrl(url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} key={i} />
+        ))} */}
+
+        {galleryUrls.slice(1).map((url, i) => (
+          <meta
+            property="og:image"
+            content={getSafeImageUrl(url)}
+            key={`og-extra-${i}`}
+          />
         ))}
         {/* <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
 
@@ -620,6 +634,7 @@ const shortSub = (s) => ({
             }}
           />
         )}
+        
 
         <link rel="canonical" href={canonicalUrl} />
         <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
@@ -736,7 +751,7 @@ const shortSub = (s) => ({
                   {/* // pinterest share  */}
                   <PinterestShareButton
                     title={project?.work_title}
-                    media={project?.photo_url}
+                    media={getSafeImageUrl(previewImage)}
                     url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
                   >
                     <PinterestIcon size={32} borderRadius={"10"} />
