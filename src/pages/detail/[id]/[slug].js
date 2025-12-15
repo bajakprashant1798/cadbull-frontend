@@ -585,19 +585,31 @@ const shortSub = (s) => ({
         {/* {galleryUrls.map((url, i) => (
           <meta property="og:image" content={getSafeImageUrl(url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} key={i} />
         ))} */}
+        {/* <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
 
-        {galleryUrls.slice(1).map((url, i) => (
+        {/* PRIMARY OG IMAGE (MANDATORY) */}
+        {previewImage && (
+          <meta
+            property="og:image"
+            content={getSafeImageUrl(previewImage)}
+          />
+        )}
+
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta
+          property="og:image:alt"
+          content={`${project?.work_title} - CAD Drawing from Cadbull`}
+        />
+
+        {/* OPTIONAL: additional gallery images */}
+        {galleryUrls.slice(1, 4).map((url, i) => (
           <meta
             property="og:image"
             content={getSafeImageUrl(url)}
             key={`og-extra-${i}`}
           />
         ))}
-        {/* <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
-
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta property="og:site_name" content="Cadbull" />
         <meta property="fb:app_id" content="1018457459282520" />
         
@@ -613,8 +625,14 @@ const shortSub = (s) => ({
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         
         {/* <meta name="twitter:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
-        <meta name="twitter:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} />
-
+        {/* <meta name="twitter:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
+        <meta
+          name="twitter:image"
+          content={previewImage
+            ? getSafeImageUrl(previewImage)
+            : `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`
+          }
+        />
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta name="keywords" content={project?.tags || ""} />
 
