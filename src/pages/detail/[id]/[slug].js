@@ -1389,9 +1389,10 @@ export async function getServerSideProps(ctx) {
   try {
     // Validate ID parameter - must be a valid number
     if (!id || isNaN(parseInt(id))) {
-      res.setHeader('Cache-Control', 'no-store');
-      // return { notFound: true };
-      return { redirect: { destination: '/', permanent: false } };
+      // res.setHeader('Cache-Control', 'no-store');
+      res.statusCode = 404;
+      return { notFound: true };
+      // return { redirect: { destination: '/', permanent: false } };
     }
 
     // // 🧠 Memory tracking
@@ -1432,8 +1433,9 @@ export async function getServerSideProps(ctx) {
     
     if (!projectRes || !projectRes.data) {
       res.setHeader('Cache-Control', 'no-store');
-      // return { notFound: true };
-      return { props: { initialProject: null, initialSimilar: [], canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`, softError: true } };
+      // return { props: { initialProject: null, initialSimilar: [], canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`, softError: true } };
+      res.statusCode = 410; // 🔥 DMCA BEST PRACTICE
+      return { notFound: true };
     }
     
     const project = projectRes.data;
@@ -1508,14 +1510,17 @@ export async function getServerSideProps(ctx) {
     });
 
     res.setHeader('Cache-Control', 'no-store');
-    return {
-     props: {
-       initialProject: null,
-       initialSimilar: [],
-       canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`,
-       softError: true,
-     },
-   };
+  //   return {
+  //    props: {
+  //      initialProject: null,
+  //      initialSimilar: [],
+  //      canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`,
+  //      softError: true,
+  //    },
+  //  };
+
+    res.statusCode = 404;
+    return { notFound: true };
   }
 }
 
