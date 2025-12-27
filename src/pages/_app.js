@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { Poppins } from "next/font/google";
-import { ToastContainer } from "react-toastify";
+// import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Authprovider from "@/component/Authprovider/Authprovider";
 import { Provider } from "react-redux";
@@ -14,7 +14,10 @@ import { store } from "../../redux/app/store";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
-import WhatsAppButton from "@/components/WhatsAppButton";
+import dynamic from "next/dynamic";
+// import WhatsAppButton from "@/components/WhatsAppButton";
+const WhatsAppButton = dynamic(() => import("@/components/WhatsAppButton"), { ssr: false });
+const ToastContainer = dynamic(() => import("react-toastify").then((mod) => mod.ToastContainer), { ssr: false });
 import { GTM_ID, pageview } from '../lib/gtm';
 import { trackPageView } from '../lib/fbpixel';
 // Remove conflicting adsense lib import
@@ -34,7 +37,7 @@ const poppins = Poppins({
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   // const dispatch = useDispatch(); // Redux Dispatch
-  
+
   React.useEffect(() => {
     // ✅ SPEED OPTIMIZATION: Defer non-critical bootstrap loading
     const loadBootstrap = () => {
@@ -42,7 +45,7 @@ export default function App({ Component, pageProps }) {
         import("bootstrap/dist/js/bootstrap.bundle.min");
       }
     };
-    
+
     // Load bootstrap after initial render
     setTimeout(loadBootstrap, 100);
 
@@ -53,7 +56,7 @@ export default function App({ Component, pageProps }) {
       pageview(url);
       // Track page view with Meta Pixel
       trackPageView();
-      
+
       //// ✅ ADDED: Force AdSense refresh on route change for SSG pages
       // setTimeout(() => {
       //   if (typeof window !== 'undefined' && window.adsbygoogle) {
@@ -72,14 +75,14 @@ export default function App({ Component, pageProps }) {
       //   }
       // }, 1000);
     };
-    
+
     router.events.on('routeChangeComplete', handleRouteChange);
-    
+
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
-  
+
   // --- Detect AMP route ---
   const isAmpRoute = router.pathname.startsWith('/amp'); // Adjust if needed
 
@@ -94,7 +97,7 @@ export default function App({ Component, pageProps }) {
           {/* <meta name="viewport" content="initial-scale=1.0, width=device-width" /> */}
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
-          
+
         </Head>
 
         {/* <style jsx global>{`
@@ -103,8 +106,8 @@ export default function App({ Component, pageProps }) {
           }
         `}</style> */}
         {getLayout(<Component {...pageProps} />)}
-      {/* ✅ Single AdSense Script - Only for AMP pages */}
-      {/* <Script
+        {/* ✅ Single AdSense Script - Only for AMP pages */}
+        {/* <Script
         id="adsense-script-amp"
         async
         strategy="lazyOnload"
@@ -181,7 +184,8 @@ export default function App({ Component, pageProps }) {
       {/* ✅ SINGLE GTM Script - Revenue Optimized */}
       <Script
         id="gtm-script"
-        strategy="afterInteractive"
+        // strategy="afterInteractive"
+        strategy="lazyOnload" // ✅ PERFORMANCE: Moved to lazyOnload
         dangerouslySetInnerHTML={{
           __html: `
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -240,27 +244,27 @@ export default function App({ Component, pageProps }) {
 
       {/* <Authprovider> */}
       <Provider store={store}>
-      
-      <Head>
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <title>Cadbull</title>
-        <meta name="description" content="World Largest 2d CAD Library." />
-      </Head>
-      
-      <style jsx global>{`
+
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          <title>Cadbull</title>
+          <meta name="description" content="World Largest 2d CAD Library." />
+        </Head>
+
+        <style jsx global>{`
         * {
           font-family: 'Poppins', system-ui, arial !important;
         }
       `}</style>
-      {getLayout(<Component {...pageProps} />)}
+        {getLayout(<Component {...pageProps} />)}
 
-      {/* ✅ AdSense Signal Script for Ad Blocking Recovery */}
-      <Script
-        id="adsense-signal-script"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
+        {/* ✅ AdSense Signal Script for Ad Blocking Recovery */}
+        <Script
+          id="adsense-signal-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
             (function() {
               function signalGooglefcPresent() {
                 if (!window.frames['googlefcPresent']) {
@@ -278,12 +282,12 @@ export default function App({ Component, pageProps }) {
               signalGooglefcPresent();
             })();
           `,
-        }}
-      />
+          }}
+        />
 
-      <ToastContainer />
-      <WhatsAppButton />
-      {/* </PersistGate> */}
+        <ToastContainer />
+        <WhatsAppButton />
+        {/* </PersistGate> */}
       </Provider>
       {/* </Authprovider> */}
     </Fragment>

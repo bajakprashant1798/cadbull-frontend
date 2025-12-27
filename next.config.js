@@ -6,8 +6,8 @@ const nextConfig = {
   output: 'standalone',                   // ✅ important for EC2 (smaller runtime image)
   productionBrowserSourceMaps: false,     // reduce bundle size/telemetry
   httpAgentOptions: { keepAlive: true },  // fewer TCP handshakes when SSR calls your API
-  
-  
+
+
   // // ✅ CRITICAL: Production optimizations for 35-100 concurrent users
   // experimental: {
   //   // ✅ HTTP optimizations for high concurrency
@@ -23,7 +23,7 @@ const nextConfig = {
   //   // ✅ Optimize for Chrome's resource loading
   //   optimizeServerReact: true,
   //   serverComponentsExternalPackages: ['@aws-sdk/client-s3'],
-    
+
   //   // ✅ Reduce Chrome's parse blocking
   //   webVitalsAttribution: ['CLS', 'LCP', 'FCP'],
   // },
@@ -35,13 +35,13 @@ const nextConfig = {
     // Number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 5, // Reduced from default to save memory
   },
-  
+
   // AMP configuration
   amp: {
     canonicalBase: 'https://cadbull.com',
     skipValidation: false,
   },
-  
+
   // Build optimizations to reduce compute costs
   compiler: {
     // ✅ SELECTIVE CONSOLE REMOVAL: Keep performance logs, remove debug logs
@@ -51,15 +51,15 @@ const nextConfig = {
     // ✅ SPEED OPTIMIZATION: Enable styled-jsx for better CSS optimization
     styledJsx: true,
   },
-  
+
   // ✅ Ensure custom error pages are properly built
   generateBuildId: async () => {
     // Ensure consistent builds and proper 404 page generation
     return `build-${Date.now()}`;
   },
-  
+
   images: {
-    unoptimized: true,
+    // unoptimized: true, // ✅ ENABLED OPTIMIZATION
     remotePatterns: [
       {
         protocol: 'https',
@@ -79,7 +79,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000, // 1 year cache
   },
-  
+
   // ✅ PERFORMANCE MONITORING: Add logging configuration
   logging: {
     fetches: {
@@ -105,7 +105,7 @@ const nextConfig = {
         source: '/assets/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
-      
+
       // ✅ CHROME PERFORMANCE: Additional resource hints for homepage
       {
         source: '/',
@@ -120,7 +120,7 @@ const nextConfig = {
           },
         ],
       },
-      
+
       // ✅ CHROME: API performance hints
       {
         source: '/api/:path*',
@@ -156,7 +156,7 @@ const nextConfig = {
         destination: '/?page=:pageNumber',
         permanent: true,
       },
-      
+
       // ✅ BLOCK OLD DOWNLOAD URLS - Return 410 Gone
       {
         source: '/products/download/:path*',
@@ -168,7 +168,7 @@ const nextConfig = {
         destination: '/410',
         permanent: true,
       },
-      
+
       // ✅ BLOCK OLD URL PATTERNS
       {
         source: '/gold',
@@ -180,12 +180,12 @@ const nextConfig = {
         destination: '/categories',
         permanent: true,
       },
-      { source: '/login',  destination: '/auth/login',  permanent: true },
+      { source: '/login', destination: '/auth/login', permanent: true },
       { source: '/signup', destination: '/auth/register', permanent: true },
       // Optional: handle trailing slashes explicitly
-      { source: '/login/',  destination: '/auth/login',  permanent: true },
+      { source: '/login/', destination: '/auth/login', permanent: true },
       { source: '/signup/', destination: '/auth/register', permanent: true },
-      
+
       // // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
       // {
       //   source: '/detail/:id/:slug*',

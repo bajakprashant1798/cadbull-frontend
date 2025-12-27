@@ -2,9 +2,9 @@ import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document(props) {
   const { __NEXT_DATA__ } = props;
-  const isAmp = __NEXT_DATA__?.props?.pageProps?.ampHtml || 
-               __NEXT_DATA__?.page?.startsWith('/amp') ||
-               __NEXT_DATA__?.query?.amp !== undefined;
+  const isAmp = __NEXT_DATA__?.props?.pageProps?.ampHtml ||
+    __NEXT_DATA__?.page?.startsWith('/amp') ||
+    __NEXT_DATA__?.query?.amp !== undefined;
 
   return (
     <Html lang="en">
@@ -13,8 +13,8 @@ export default function Document(props) {
 
         {/* ✅ CRITICAL CSS: Inline critical styles for LCP optimization */}
         {!isAmp && (
-        <style dangerouslySetInnerHTML={{
-          __html: `
+          <style dangerouslySetInnerHTML={{
+            __html: `
             body{font-family:'Poppins',system-ui,arial,sans-serif!important;margin:0;padding:0}
             .container{max-width:1200px;margin:0 auto;padding:0 15px}
             .row{display:flex;flex-wrap:wrap;margin:0 -15px}
@@ -29,10 +29,10 @@ export default function Document(props) {
             .text-primary{color:#0d6efd!important}
             .fw-bold{font-weight:700!important}
           `
-        }} />
+          }} />
         )}
 
-        
+
         {/* Only load fonts for non-AMP pages to prevent duplicate amp-custom */}
         {!isAmp && (
           <>
@@ -40,41 +40,29 @@ export default function Document(props) {
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
-            
+
             {/* ✅ CHROME: AdSense preconnects to reduce initial blocking */}
             <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://tpc.googlesyndication.com" crossOrigin="anonymous" />
             <link rel="preconnect" href="https://fundingchoicesmessages.google.com" crossOrigin="anonymous" />
-            
+
             {/* ✅ CHROME: DNS prefetch for third-party resources */}
             <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
             <link rel="dns-prefetch" href="https://connect.facebook.net" />
             <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-            
+
             {/* ✅ CHROME: Preload critical API endpoints */}
             {/* <link rel="prefetch" href="/api/projects/latest?page=1&limit=6" /> */}
-            
+
             {/* ✅ PERFORMANCE: Preload critical resources */}
             <link rel="preload" href="/favicon.ico" as="image" />
             {/* <link rel="modulepreload" href="/_next/static/chunks/main.js" /> */}
-            
-            {/* ✅ SPEED OPTIMIZATION: Optimized font loading with display=swap and reduced weight variations */}
-            <link
-              rel="preload"
-              href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-              as="style"
-              onLoad="this.onload=null;this.rel='stylesheet'"
-            />
-            <noscript>
-              <link
-                href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-                rel="stylesheet"
-              />
-            </noscript>
+
+            {/* ✅ SPEED OPTIMIZATION: Fonts are handled by next/font in _app.js */}
           </>
         )}
-        
+
         {/* Schema.org Structured Data */}
         <script
           type="application/ld+json"
@@ -189,20 +177,20 @@ export default function Document(props) {
             ></iframe>
           </noscript>
         )}
-        
+
         {/* Meta Pixel (noscript) Fallback - Only for non-AMP pages */}
         {!isAmp && (
           <noscript>
-            <img 
-              height="1" 
-              width="1" 
+            <img
+              height="1"
+              width="1"
               style={{ display: 'none' }}
               src="https://www.facebook.com/tr?id=295971664520262&ev=PageView&noscript=1"
               alt=""
             />
           </noscript>
         )}
-        
+
         <Main />
         <NextScript />
       </body>
