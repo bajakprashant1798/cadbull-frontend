@@ -59,7 +59,7 @@ const nextConfig = {
   },
 
   images: {
-    // unoptimized: true, // ✅ ENABLED OPTIMIZATION
+    unoptimized: true, // ✅ REVERTED: Fixed 30s load time regression by serving directly from CDN
     remotePatterns: [
       {
         protocol: 'https',
