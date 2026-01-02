@@ -227,6 +227,15 @@ export default function App({ Component, pageProps }) {
       />
       {/* ✅ END: ADD GOOGLE ANALYTICS SCRIPTS */}
 
+      {/* ✅ PushAlert Script (NON-AMP ONLY, Revenue Safe) */}
+      {!isAmpRoute && (
+        <Script
+          id="pushalert-script"
+          strategy="afterInteractive"
+          src="https://cdn.pushalert.co/integrate_182209e50efe761570815b891ddf44fd.js"
+        />
+      )}
+
       <Script
         id="fb-pixel"
         strategy="lazyOnload"
