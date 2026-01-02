@@ -48,7 +48,7 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
           <h5 className="mt-2 d-block btn btn-primary px-3 py-2 w-50 m-auto ">
             {/* <span className="text-primary">Drap your file(s) or</span> */}
             <span className="text-white">Upload zip file or</span>{" "}
-            <span className="text-danger">browse</span>
+            <span className="text-warning">browse</span>
           </h5>
         </div>
         <input
