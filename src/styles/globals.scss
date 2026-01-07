@@ -18,7 +18,7 @@
 }
 
 .product-description-title {
-  font: normal normal 700 18px / 24px Poppins, sans-serif;
+  font: normal normal 700 18px / 24px Inter, sans-serif;
   color: #20325A;
 }
 .description-container {
@@ -95,9 +95,9 @@
 
 
 .h7 {
-    font: normal normal 900 30px / 50px "Poppins", sans-serif;
+    font: normal normal 900 30px / 50px "Inter", sans-serif;
     @media (max-width: 796px) {
-      font: normal normal 900 28px / 50px "Poppins", sans-serif;
+      font: normal normal 900 28px / 50px "Inter", sans-serif;
     } 
 }
 
@@ -224,14 +224,14 @@
 .hero {
 
   p {
-    font: normal normal 600 30px/39px 'Poppins', sans-serif;
+    font: normal normal 600 30px/39px 'Inter', sans-serif;
 
     span {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     @media all and (max-width:767px) {
-      font: normal normal 600 24px/30px 'Poppins', sans-serif;
+      font: normal normal 600 24px/30px 'Inter', sans-serif;
     }
   }
 
@@ -249,31 +249,31 @@
     }
 
     h6 {
-      font: normal normal 600 15px/15px 'Poppins', sans-serif !important;
+      font: normal normal 600 15px/15px 'Inter', sans-serif !important;
       color: $black;
 
       @media all and (max-width:767px) {
-        font: normal normal 600 10px/11px 'Poppins', sans-serif;
+        font: normal normal 600 10px/11px 'Inter', sans-serif;
       }
     }
     span {
-      font: normal normal 600 15px/15px 'Poppins', sans-serif !important;
+      font: normal normal 600 15px/15px 'Inter', sans-serif !important;
       color: $black;
 
       @media all and (max-width:767px) {
-        font: normal normal 600 10px/11px 'Poppins', sans-serif;
+        font: normal normal 600 10px/11px 'Inter', sans-serif;
       }
     }
 
     p {
-      font: normal normal 500 12px/15px 'Poppins', sans-serif;
+      font: normal normal 500 12px/15px 'Inter', sans-serif;
 
       @media all and (max-width:767px) {
-        font: normal normal 500 8px/11px 'Poppins', sans-serif;
+        font: normal normal 500 8px/11px 'Inter', sans-serif;
       }
 
       @media all and (max-width:350px) {
-        font: normal normal 500 7px/11px 'Poppins', sans-serif;
+        font: normal normal 500 7px/11px 'Inter', sans-serif;
       }
     }
     // @media all  and (max-width:575px) {
@@ -384,7 +384,7 @@
     }
 
     span {
-      font: normal normal 500 12px/1 'Poppins', sans-serif;
+      font: normal normal 500 12px/1 'Inter', sans-serif;
     }
 
     p {
@@ -408,7 +408,7 @@
 
     p {
       color: $black;
-      font: normal normal 600 15px/20px 'Poppins', sans-serif;
+      font: normal normal 600 15px/20px 'Inter', sans-serif;
       background-color: $white;
       position: relative;
       display: inline-block;
@@ -482,20 +482,20 @@
 // ******** Category ********
 .category-wrapper {
   h6 {
-    font: normal normal 600 16px/1 'Poppins', sans-serif;
+    font: normal normal 600 16px/1 'Inter', sans-serif;
     color: $black;
 
     @media all and (max-width:767px) {
-      font: normal normal 600 14px/1 'Poppins', sans-serif;
+      font: normal normal 600 14px/1 'Inter', sans-serif;
     }
   }
 
   h4 {
-    font: normal normal 600 16px/1 'Poppins', sans-serif;
+    font: normal normal 600 16px/1 'Inter', sans-serif;
     color: $black;
 
     @media all and (max-width:767px) {
-      font: normal normal 600 14px/1 'Poppins', sans-serif;
+      font: normal normal 600 14px/1 'Inter', sans-serif;
     }
   }
 
@@ -619,15 +619,15 @@
 
 .auth-page {
   h1 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   h4 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: $black;
 
     span {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
   }
 
@@ -759,20 +759,20 @@ ul.dropdown-menu {
     box-shadow: $shadowMd;
   }
 
-  font-family: 'Poppins',
+  font-family: 'Inter',
   sans-serif;
 
   h5,
   h6 {
     span {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
   }
 }
 
 .h2-primary-color h2 {
   color: $primary !important;
-  font: normal normal 600 40px / 50px "Poppins", sans-serif;
+  font: normal normal 600 40px / 50px "Inter", sans-serif;
 }
 
 .designer-profile {
@@ -795,7 +795,7 @@ ul.dropdown-menu {
 
 .form-wrapper h6 {
   span {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -908,7 +908,7 @@ table {
 
 .category-page {
   h3 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -936,10 +936,10 @@ table {
 }
 
 .categories-pcount-font-size {
-  font: normal normal 500 12px/20px 'Poppins', sans-serif !important;
+  font: normal normal 500 12px/20px 'Inter', sans-serif !important;
 }
 .categories-name-font-size {
-  font: normal normal 400 12px/20px 'Poppins', sans-serif !important;
+  font: normal normal 400 12px/20px 'Inter', sans-serif !important;
 }
 
 .border-start-primary {
@@ -995,10 +995,10 @@ table {
   border-radius: 0;
   white-space: nowrap;
   border-bottom: 3px solid transparent;
-  font: normal normal 500 16px/24px 'Poppins', sans-serif;
+  font: normal normal 500 16px/24px 'Inter', sans-serif;
 
   @media all and (max-width:991px) {
-    font: normal normal 500 14px/20px 'Poppins', sans-serif;
+    font: normal normal 500 14px/20px 'Inter', sans-serif;
   }
 }
 
@@ -1059,7 +1059,7 @@ table {
 .radio-tags {
   p {
 
-    font: normal normal normal 12px/20px 'Poppins',
+    font: normal normal normal 12px/20px 'Inter',
       sans-serif;
   }
 

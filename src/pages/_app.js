@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 // import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Authprovider from "@/component/Authprovider/Authprovider";
@@ -24,15 +25,24 @@ import { trackPageView } from '../lib/fbpixel';
 // import { initializeAdSense } from '../lib/adsense';
 
 config.autoAddCss = false;
-// ✅ SPEED OPTIMIZATION: Keep all font weights but optimize loading
-const poppins = Poppins({
-  weight: ["300", "400", "500", "600", "700", "800", "900"], // Keep all weights for UI consistency
-  style: ["normal", "italic"], // Keep both styles to prevent UI issues
+
+const inter = Inter({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
   preload: true,
-  display: "swap", // ✅ Critical: Prevents font render blocking while keeping all weights
   fallback: ["system-ui", "arial"],
 });
+
+// ✅ SPEED OPTIMIZATION: Keep all font weights but optimize loading
+// const poppins = Poppins({
+//   weight: ["300", "400", "500", "600", "700", "800", "900"], // Keep all weights for UI consistency
+//   style: ["normal", "italic"], // Keep both styles to prevent UI issues
+//   subsets: ["latin"],
+//   preload: true,
+//   display: "swap", // ✅ Critical: Prevents font render blocking while keeping all weights
+//   fallback: ["system-ui", "arial"],
+// });
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -105,7 +115,9 @@ export default function App({ Component, pageProps }) {
             font-family: ${poppins.style.fontFamily} !important;
           }
         `}</style> */}
-        {getLayout(<Component {...pageProps} />)}
+        <div className={inter.className}>
+          {getLayout(<Component {...pageProps} />)}
+        </div>
         {/* ✅ Single AdSense Script - Only for AMP pages */}
         {/* <Script
         id="adsense-script-amp"
@@ -261,11 +273,11 @@ export default function App({ Component, pageProps }) {
           <meta name="description" content="World Largest 2d CAD Library." />
         </Head>
 
-        <style jsx global>{`
+        {/* <style jsx global>{`
         * {
-          font-family: 'Poppins', system-ui, arial !important;
+          font-family: 'Inter', system-ui, arial !important;
         }
-      `}</style>
+      `}</style> */}
         {getLayout(<Component {...pageProps} />)}
 
         {/* ✅ AdSense Signal Script for Ad Blocking Recovery */}

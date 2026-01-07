@@ -1,6 +1,6 @@
 /* Critical CSS - Inline the most important styles for LCP */
 body {
-  font-family: 'Poppins', system-ui, arial, sans-serif !important;
+  font-family: 'Inter', system-ui, arial, sans-serif !important;
   margin: 0;
   padding: 0;
 }

@@ -15,7 +15,7 @@ export default function Document(props) {
         {!isAmp && (
           <style dangerouslySetInnerHTML={{
             __html: `
-            body{font-family:'Poppins',system-ui,arial,sans-serif!important;margin:0;padding:0}
+            body{font-family:'Inter',system-ui,arial,sans-serif!important;margin:0;padding:0}
             .container{max-width:1200px;margin:0 auto;padding:0 15px}
             .row{display:flex;flex-wrap:wrap;margin:0 -15px}
             .col-lg-9{flex:0 0 75%;max-width:75%;padding:0 15px}

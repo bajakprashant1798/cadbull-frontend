@@ -8,11 +8,11 @@
   border-radius: 5px;
   padding: 10px 20px;
   box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.1607843137);
-  font: normal normal 500 14px/1 "Poppins", sans-serif;
+  font: normal normal 500 14px/1 "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn {
-    font: normal normal 500 12px/1 "Poppins", sans-serif;
+    font: normal normal 500 12px/1 "Inter", sans-serif;
   }
 }
 
@@ -54,7 +54,7 @@
   position: relative;
   border-radius: 60px;
   padding: 12px 24px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .btn-light-rounded::before {
   position: absolute;
@@ -113,11 +113,11 @@
   background-color: #3D6098;
   border-color: #3D6098;
   color: #fff;
-  font: normal normal 500 13px/18px "Poppins", sans-serif;
+  font: normal normal 500 13px/18px "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-secondary-variant {
-    font: normal normal 500 12px/16px "Poppins", sans-serif;
+    font: normal normal 500 12px/16px "Inter", sans-serif;
   }
 }
 .btn-secondary-variant:hover {
@@ -131,19 +131,19 @@
   background-color: #5B5B5B;
   border-color: #5B5B5B;
   color: #fff;
-  font: normal normal 500 13px/18px "Poppins", sans-serif;
+  font: normal normal 500 13px/18px "Inter", sans-serif;
   padding: 10px 20px;
   text-transform: capitalize;
-  font: normal normal 500 14px/1 "Poppins", sans-serif;
+  font: normal normal 500 14px/1 "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-light-secondary {
-    font: normal normal 500 12px/16px "Poppins", sans-serif;
+    font: normal normal 500 12px/16px "Inter", sans-serif;
   }
 }
 @media all and (max-width: 767px) {
   .btn-light-secondary {
-    font: normal normal 500 12px/1 "Poppins", sans-serif;
+    font: normal normal 500 12px/1 "Inter", sans-serif;
   }
 }
 .btn-light-secondary:hover {
@@ -157,11 +157,11 @@
   background-color: #39A234;
   border-color: #39A234;
   color: #fff;
-  font: normal normal 500 13px/18px "Poppins", sans-serif;
+  font: normal normal 500 13px/18px "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-success {
-    font: normal normal 500 12px/16px "Poppins", sans-serif;
+    font: normal normal 500 12px/16px "Inter", sans-serif;
   }
 }
 .btn-success:hover {
@@ -176,19 +176,19 @@
   background-color: #EF4B4C;
   border-color: #EF4B4C;
   color: #fff;
-  font: normal normal 500 13px/18px "Poppins", sans-serif;
+  font: normal normal 500 13px/18px "Inter", sans-serif;
   padding: 10px 20px;
   text-transform: capitalize;
-  font: normal normal 500 14px/1 "Poppins", sans-serif;
+  font: normal normal 500 14px/1 "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-danger-variant {
-    font: normal normal 500 12px/16px "Poppins", sans-serif;
+    font: normal normal 500 12px/16px "Inter", sans-serif;
   }
 }
 @media all and (max-width: 767px) {
   .btn-danger-variant {
-    font: normal normal 500 12px/1 "Poppins", sans-serif;
+    font: normal normal 500 12px/1 "Inter", sans-serif;
   }
 }
 .btn-danger-variant:hover {
@@ -203,11 +203,11 @@
   background-color: #fff;
   border-color: #dee2e6;
   color: #3D6098;
-  font: normal normal 500 13px/18px "Poppins", sans-serif;
+  font: normal normal 500 13px/18px "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-default {
-    font: normal normal 500 12px/16px "Poppins", sans-serif;
+    font: normal normal 500 12px/16px "Inter", sans-serif;
   }
 }
 .btn-default:hover {
@@ -311,11 +311,11 @@
   border-radius: 3px;
   color: #20325A;
   background-color: #dee2e6;
-  font: normal normal 500 14px/1 "Poppins", sans-serif;
+  font: normal normal 500 14px/1 "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-pricing {
-    font: normal normal 500 12px/1 "Poppins", sans-serif;
+    font: normal normal 500 12px/1 "Inter", sans-serif;
     padding: 7px 14px;
   }
 }
@@ -328,11 +328,11 @@
   border-radius: 5px;
   color: #3D6098;
   text-transform: uppercase;
-  font: normal normal 500 14px/1 "Poppins", sans-serif;
+  font: normal normal 500 14px/1 "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .btn-profile {
-    font: normal normal 500 12px/1 "Poppins", sans-serif;
+    font: normal normal 500 12px/1 "Inter", sans-serif;
   }
 }
 .btn-profile.active {
@@ -342,17 +342,17 @@
 
 body {
   letter-spacing: 0px;
-  font: normal normal 500 15px/20px "Poppins", sans-serif;
+  font: normal normal 500 15px/20px "Inter", sans-serif;
   color: #5B5B5B;
 }
 @media all and (max-width: 767px) {
   body {
-    font: normal normal 500 14px/16px "Poppins", sans-serif;
+    font: normal normal 500 14px/16px "Inter", sans-serif;
   }
 }
 @media all and (max-width: 350px) {
   body {
-    font: normal normal 500 12px/13px "Poppins", sans-serif;
+    font: normal normal 500 12px/13px "Inter", sans-serif;
   }
 }
 
@@ -371,82 +371,82 @@ a {
 }
 
 h1 {
-  font: normal normal 600 40px/50px "Poppins", sans-serif;
+  font: normal normal 600 40px/50px "Inter", sans-serif;
   color: #20325A;
 }
 h1 span {
   font-weight: 700;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   h1 {
-    font: normal normal 600 24px/32px "Poppins", sans-serif;
+    font: normal normal 600 24px/32px "Inter", sans-serif;
   }
 }
 
 h2 {
-  font: normal normal 900 36px/50px "Poppins", sans-serif;
+  font: normal normal 900 36px/50px "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   h2 {
-    font: normal normal 900 22px/26px "Poppins", sans-serif;
+    font: normal normal 900 22px/26px "Inter", sans-serif;
   }
 }
 
 h3 {
-  font: normal normal 500 28px/36px "Poppins", sans-serif;
+  font: normal normal 500 28px/36px "Inter", sans-serif;
   color: #20325A;
 }
 h3 span {
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   h3 {
-    font: normal normal 500 20px/30px "Poppins", sans-serif;
+    font: normal normal 500 20px/30px "Inter", sans-serif;
   }
 }
 
 h4 {
-  font: normal normal 500 22px/30px "Poppins", sans-serif;
+  font: normal normal 500 22px/30px "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   h4 {
-    font: normal normal 500 18px/30px "Poppins", sans-serif;
+    font: normal normal 500 18px/30px "Inter", sans-serif;
   }
 }
 
 h5 {
-  font: normal normal 500 18px/24px "Poppins", sans-serif;
+  font: normal normal 500 18px/24px "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   h5 {
-    font: normal normal 500 16px/20px "Poppins", sans-serif;
+    font: normal normal 500 16px/20px "Inter", sans-serif;
   }
 }
 
 h6 {
-  font: normal normal 500 16px/20px "Poppins", sans-serif;
+  font: normal normal 500 16px/20px "Inter", sans-serif;
   color: #5B5B5B;
 }
 @media all and (max-width: 991px) {
   h6 {
-    font: normal normal 500 14px/20px "Poppins", sans-serif;
+    font: normal normal 500 14px/20px "Inter", sans-serif;
   }
 }
 
 p {
   color: #5B5B5B;
-  font: normal normal 500 14px/24px "Poppins", sans-serif;
+  font: normal normal 500 14px/24px "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   p {
-    font: normal normal 500 12px/20px "Poppins", sans-serif;
+    font: normal normal 500 12px/20px "Inter", sans-serif;
   }
 }
 
 footer a {
-  font: normal normal normal 14px/1 "Poppins", sans-serif;
+  font: normal normal normal 14px/1 "Inter", sans-serif;
   text-decoration: none;
   color: #fff;
   display: inline-flex;
@@ -458,7 +458,7 @@ footer a:hover {
 }
 @media all and (max-width: 991px) {
   footer a {
-    font: normal normal normal 13px/1 "Poppins", sans-serif;
+    font: normal normal normal 13px/1 "Inter", sans-serif;
   }
 }
 
@@ -469,17 +469,17 @@ footer a:hover {
 @media all and (max-width: 991px) {
   .footer-lower-wrapper a,
   .footer-lower-wrapper li {
-    font: normal normal normal 10px/20px "Poppins", sans-serif;
+    font: normal normal normal 10px/20px "Inter", sans-serif;
   }
 }
 
 form label {
-  font: normal normal 600 16px/34px "Poppins", sans-serif !important;
+  font: normal normal 600 16px/34px "Inter", sans-serif !important;
   color: #3D6098;
 }
 @media all and (max-width: 991px) {
   form label {
-    font: normal normal 600 14px/24px "Poppins", sans-serif !important;
+    font: normal normal 600 14px/24px "Inter", sans-serif !important;
   }
 }
 form label:after {
@@ -510,7 +510,7 @@ header img {
   mix-blend-mode: darken;
 }
 header a {
-  font: normal normal 500 15px/20px "Poppins", sans-serif;
+  font: normal normal 500 15px/20px "Inter", sans-serif;
   letter-spacing: 0px;
   color: #5B5B5B;
 }
@@ -536,7 +536,7 @@ footer {
 }
 .pagination .page-item .page-link {
   border: 0 !important;
-  font: normal normal 500 15px/20px "Poppins", sans-serif;
+  font: normal normal 500 15px/20px "Inter", sans-serif;
   color: #1A1A1A;
   /* background: #fff; */
 }
@@ -633,24 +633,24 @@ aside {
 }
 
 ::-moz-placeholder {
-  font: normal normal 500 14px/18px "Poppins", sans-serif !important;
+  font: normal normal 500 14px/18px "Inter", sans-serif !important;
   color: #757575 !important;
   font-style: normal !important;
 }
 
 ::placeholder,
 .ql-editor.ql-blank::before {
-  font: normal normal 500 14px/18px "Poppins", sans-serif !important;
+  font: normal normal 500 14px/18px "Inter", sans-serif !important;
   color: #757575 !important;
   font-style: normal !important;
 }
 @media all and (max-width: 767px) {
   ::-moz-placeholder {
-    font: normal normal normal 13px/16px "Poppins", sans-serif;
+    font: normal normal normal 13px/16px "Inter", sans-serif;
   }
   ::placeholder,
   .ql-editor.ql-blank::before {
-    font: normal normal normal 13px/16px "Poppins", sans-serif;
+    font: normal normal normal 13px/16px "Inter", sans-serif;
   }
 }
 
@@ -806,14 +806,14 @@ select:-webkit-autofill:focus {
 }
 
 .hero p {
-  font: normal normal 600 30px/39px "Poppins", sans-serif;
+  font: normal normal 600 30px/39px "Inter", sans-serif;
 }
 .hero p span {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .hero p {
-    font: normal normal 600 10px/13px "Poppins", sans-serif;
+    font: normal normal 600 10px/13px "Inter", sans-serif;
   }
 }
 .hero form {
@@ -828,29 +828,29 @@ select:-webkit-autofill:focus {
   mix-blend-mode: darken;
 }
 .hero .drawing-type-wrapper h6 {
-  font: normal normal 600 15px/15px "Poppins", sans-serif !important;
+  font: normal normal 600 15px/15px "Inter", sans-serif !important;
   color: #1A1A1A;
 }
 /* .hero .drawing-type-wrapper span {
-  font: normal normal 600 15px/15px "Poppins", sans-serif !important;
+  font: normal normal 600 15px/15px "Inter", sans-serif !important;
   color: #1A1A1A !important;
 } */
 @media all and (max-width: 767px) {
   .hero .drawing-type-wrapper h6 {
-    font: normal normal 600 10px/11px "Poppins", sans-serif;
+    font: normal normal 600 10px/11px "Inter", sans-serif;
   }
 }
 .hero .drawing-type-wrapper p {
-  font: normal normal 500 12px/15px "Poppins", sans-serif;
+  font: normal normal 500 12px/15px "Inter", sans-serif;
 }
 @media all and (max-width: 767px) {
   .hero .drawing-type-wrapper p {
-    font: normal normal 500 8px/11px "Poppins", sans-serif;
+    font: normal normal 500 8px/11px "Inter", sans-serif;
   }
 }
 @media all and (max-width: 350px) {
   .hero .drawing-type-wrapper p {
-    font: normal normal 500 7px/11px "Poppins", sans-serif;
+    font: normal normal 500 7px/11px "Inter", sans-serif;
   }
 }
 
@@ -921,7 +921,7 @@ select:-webkit-autofill:focus {
   border-left: 4px solid #5B5B5B;
 }
 .project-day-card .project-day-card-description span {
-  font: normal normal 500 12px/1 "Poppins", sans-serif;
+  font: normal normal 500 12px/1 "Inter", sans-serif;
 }
 .project-day-card .project-day-card-description p {
   max-width: 28ch;
@@ -931,7 +931,7 @@ select:-webkit-autofill:focus {
 }
 .project-day-card .project-day-card-link p {
   color: #1A1A1A;
-  font: normal normal 600 15px/20px "Poppins", sans-serif;
+  font: normal normal 600 15px/20px "Inter", sans-serif;
   background-color: #fff;
   position: relative;
   display: inline-block;
@@ -947,7 +947,7 @@ select:-webkit-autofill:focus {
 }
 
 .category-wrapper h6 {
-  font: normal normal 600 16px/1 "Poppins", sans-serif;
+  font: normal normal 600 16px/1 "Inter", sans-serif;
   color: #1A1A1A;
 }
 /* .category-wrapper:hover h6 {
@@ -955,7 +955,7 @@ select:-webkit-autofill:focus {
 } */
 @media all and (max-width: 767px) {
   .category-wrapper h6 {
-    font: normal normal 600 14px/1 "Poppins", sans-serif;
+    font: normal normal 600 14px/1 "Inter", sans-serif;
   }
 }
 
@@ -1050,14 +1050,14 @@ select:-webkit-autofill:focus {
 }
 
 .auth-page h1 {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .auth-page h4 {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1A1A1A;
 }
 .auth-page h4 span {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .form-wrapper {
@@ -1075,7 +1075,7 @@ ul.dropdown-menu {
 }
 
 .profile-page {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .profile-page .form-wrapper {
   background: #fff 0% 0% no-repeat padding-box;
@@ -1087,7 +1087,7 @@ ul.dropdown-menu {
 }
 .profile-page h5 span,
 .profile-page h6 span {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .designer-profile .select-country .dropdown-toggle::after {
@@ -1102,7 +1102,7 @@ ul.dropdown-menu {
 }
 
 .form-wrapper h6 span {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .upload-icon-wraper input[type=file] {
@@ -1187,7 +1187,7 @@ table tbody td > * {
 }
 
 .category-page h3 {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .category-list-wrapper li {
@@ -1252,11 +1252,11 @@ table tbody td > * {
   border-radius: 0;
   white-space: nowrap;
   border-bottom: 3px solid transparent;
-  font: normal normal 500 16px/24px "Poppins", sans-serif;
+  font: normal normal 500 16px/24px "Inter", sans-serif;
 }
 @media all and (max-width: 991px) {
   .nav-link {
-    font: normal normal 500 14px/20px "Poppins", sans-serif;
+    font: normal normal 500 14px/20px "Inter", sans-serif;
   }
 }
 
@@ -1312,7 +1312,7 @@ table tbody td > * {
 }
 
 .radio-tags p {
-  font: normal normal normal 12px/20px "Poppins", sans-serif;
+  font: normal normal normal 12px/20px "Inter", sans-serif;
 }
 .radio-tags .btn-radio-primary {
   border: 0.5px solid #dee2e6;

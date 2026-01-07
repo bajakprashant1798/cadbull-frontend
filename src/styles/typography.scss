@@ -2,15 +2,15 @@
 
 body {
   letter-spacing: 0px;
-  font: normal normal 500 15px/20px 'Poppins', sans-serif;
+  font: normal normal 500 15px/20px 'Inter', sans-serif;
   color: $gray;
 
   @media all and (max-width:767px) {
-    font: normal normal 500 14px/16px 'Poppins', sans-serif;
+    font: normal normal 500 14px/16px 'Inter', sans-serif;
   }
 
   @media all and (max-width:350px) {
-    font: normal normal 500 12px/13px 'Poppins', sans-serif;
+    font: normal normal 500 12px/13px 'Inter', sans-serif;
   }
 }
 
@@ -30,81 +30,81 @@ a {
 }
 
 h1 {
-  font: normal normal 600 40px/50px 'Poppins', sans-serif;
+  font: normal normal 600 40px/50px 'Inter', sans-serif;
   color: $primary;
 
   span {
     font-weight: 700;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   @media all and (max-width:991px) {
-    font: normal normal 600 24px/32px 'Poppins', sans-serif;
+    font: normal normal 600 24px/32px 'Inter', sans-serif;
   }
 }
 
 h2 {
-  font: normal normal 900 36px/50px 'Poppins', sans-serif;
+  font: normal normal 900 36px/50px 'Inter', sans-serif;
 
   @media all and (max-width:767px) {
-    font: normal normal 900 22px/26px 'Poppins', sans-serif;
+    font: normal normal 900 22px/26px 'Inter', sans-serif;
   }
 }
 
 
 h3 {
-  font: normal normal 500 28px/36px 'Poppins', sans-serif;
+  font: normal normal 500 28px/36px 'Inter', sans-serif;
   color: $primary;
 
   span {
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   @media all and (max-width:991px) {
-    font: normal normal 500 20px/30px 'Poppins', sans-serif;
+    font: normal normal 500 20px/30px 'Inter', sans-serif;
   }
 }
 
 h4 {
-  font: normal normal 500 22px/30px 'Poppins', sans-serif;
+  font: normal normal 500 22px/30px 'Inter', sans-serif;
 
   @media all and (max-width:991px) {
-    font: normal normal 500 18px/30px 'Poppins', sans-serif;
+    font: normal normal 500 18px/30px 'Inter', sans-serif;
   }
 }
 
 
 h5 {
-  font: normal normal 500 18px/24px 'Poppins', sans-serif;
+  font: normal normal 500 18px/24px 'Inter', sans-serif;
 
   @media all and (max-width:991px) {
-    font: normal normal 500 16px/20px 'Poppins', sans-serif;
+    font: normal normal 500 16px/20px 'Inter', sans-serif;
   }
 }
 
 h6 {
-  font: normal normal 500 16px/20px 'Poppins', sans-serif;
+  font: normal normal 500 16px/20px 'Inter', sans-serif;
   color: $gray;
 
   @media all and (max-width:991px) {
-    font: normal normal 500 14px/20px 'Poppins', sans-serif;
+    font: normal normal 500 14px/20px 'Inter', sans-serif;
   }
 }
 
 p {
   color: $gray;
-  font: normal normal 500 15px/24px 'Poppins', sans-serif;
+  font: normal normal 500 15px/24px 'Inter', sans-serif;
 
   @media all and (max-width:991px) {
-    font: normal normal 500 15px/20px 'Poppins', sans-serif;
+    font: normal normal 500 15px/20px 'Inter', sans-serif;
   }
 }
 
 
 footer {
   a {
-    font: normal normal normal 14px/1 'Poppins', sans-serif;
+    font: normal normal normal 14px/1 'Inter', sans-serif;
     text-decoration: none;
     color: $white;
     display: inline-flex;
@@ -116,7 +116,7 @@ footer {
     }
 
     @media all and (max-width:991px) {
-      font: normal normal normal 13px/1 'Poppins', sans-serif;
+      font: normal normal normal 13px/1 'Inter', sans-serif;
     }
   }
 }
@@ -130,7 +130,7 @@ footer {
   a,
   li {
     @media all and (max-width:991px) {
-      font: normal normal normal 10px/20px 'Poppins', sans-serif;
+      font: normal normal normal 10px/20px 'Inter', sans-serif;
     }
   }
 }
@@ -138,11 +138,11 @@ footer {
 
 form {
   label {
-    font: normal normal 600 16px/34px 'Poppins', sans-serif !important;
+    font: normal normal 600 16px/34px 'Inter', sans-serif !important;
     color: $secondary;
 
     @media all and (max-width:991px) {
-      font: normal normal 600 14px/24px 'Poppins', sans-serif !important;
+      font: normal normal 600 14px/24px 'Inter', sans-serif !important;
     }
 
     &:after {

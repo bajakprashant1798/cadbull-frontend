@@ -136,7 +136,7 @@ const ContactSuccessModal = ({ isOpen, onClose }) => {
           border-radius: 5px;
           padding: 12px 24px;
           box-shadow: 0px 3px 0px rgba(0, 0, 0, 0.1607843137);
-          font: normal normal 500 14px/1 "Poppins", sans-serif;
+          font: normal normal 500 14px/1 "Inter", sans-serif;
           text-transform: capitalize;
           cursor: pointer;
           margin-top: 20px;
@@ -156,7 +156,7 @@ const ContactSuccessModal = ({ isOpen, onClose }) => {
         
         @media (max-width: 767px) {
           .contact-success-button {
-            font: normal normal 500 12px/1 "Poppins", sans-serif;
+            font: normal normal 500 12px/1 "Inter", sans-serif;
           }
         }
         
