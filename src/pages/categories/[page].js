@@ -22,14 +22,15 @@ import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
 import AdSense from "@/components/AdSense";
+import TrapLink from '@/components/TrapLink'; // ✅ HONEYPOT
 import { performance } from "@/utils/performance";
 import { useComponentTimer } from "@/utils/apiTiming";
 
 const Categories = ({
-//   initialCategories,
-//   initialProjects,
-//   totalPages: initialTotalPages,
-//   initialFavourites
+  //   initialCategories,
+  //   initialProjects,
+  //   totalPages: initialTotalPages,
+  //   initialFavourites
   initialCategories,
   initialProjects,
   totalPages: initialTotalPages,
@@ -42,7 +43,7 @@ const Categories = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
   const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
-//   const [currentPage, setCurrentPage] = useState(initialPage || 1);
+  //   const [currentPage, setCurrentPage] = useState(initialPage || 1);
   const [showSearchBreadCrumb, setShowSearchBreadCrumb] = useState(false);
   const [searchedText, setSearchedText] = useState("");
   const dispatch = useDispatch();
@@ -100,10 +101,10 @@ const Categories = ({
   const loadRecords = useCallback(
     (page, searchText, fileType, type) => {
       const { timer } = useComponentTimer("Categories-loadRecords");
-      
+
       startLoading();
       timer.mark('loading-started');
-      
+
       getallprojects(page, 9, searchText, fileType, type)
         .then((response) => {
           timer.mark('api-response-received');
@@ -111,7 +112,7 @@ const Categories = ({
           setTotalPages(response.data.totalPages);
           timer.mark('state-updated');
           stopLoading();
-          
+
           timer.complete(true, {
             page,
             projectsCount: response.data?.products?.length || 0,
@@ -132,7 +133,7 @@ const Categories = ({
   );
 
 
-  
+
   // Load records on query param change
   useEffect(() => {
     loadRecords(currentPage, search, file_type, type);
@@ -210,64 +211,64 @@ const Categories = ({
   //     dispatch(resetCategoriesList()); // ✅ Clears list when leaving the page
   //   };
   // }, [dispatch]);
-  
+
   const CategoriesProps = showSearchBreadCrumb
     ? {
-        title: "Search Results",
-        description:
-          "Cadbull presents variety of online drawing including DWG drawing, Cad drawing, AutoCAD drawing, 3D Drawing. Wide range of 3D Drawing, DWG drawing, Cad drawing, AutoCAD drawing available as per your need.",
-        categories: catalog,
-        type: "Categories",
-        pageName: "Search Results",
-      }
+      title: "Search Results",
+      description:
+        "Cadbull presents variety of online drawing including DWG drawing, Cad drawing, AutoCAD drawing, 3D Drawing. Wide range of 3D Drawing, DWG drawing, Cad drawing, AutoCAD drawing available as per your need.",
+      categories: catalog,
+      type: "Categories",
+      pageName: "Search Results",
+    }
     : {
-        title: "Categories",
-        description:
-          "Choose your category according to your choice & need. In each category you will found your desire one among multiple option.",
+      title: "Categories",
+      description:
+        "Choose your category according to your choice & need. In each category you will found your desire one among multiple option.",
 
-        categories: catalog,
-        type: "Categories",
-      };
-
-    const handleTypeChange = (e) => {
-      const newType = e.target.value;
-      setSortType(newType);
-      router.push({
-        pathname: '/categories/1',
-        query: buildQuery({
-          type: newType,
-          file_type: sortTerm,
-          search: searchTerm,
-        })
-      }, undefined, { shallow: true });
+      categories: catalog,
+      type: "Categories",
     };
 
+  const handleTypeChange = (e) => {
+    const newType = e.target.value;
+    setSortType(newType);
+    router.push({
+      pathname: '/categories/1',
+      query: buildQuery({
+        type: newType,
+        file_type: sortTerm,
+        search: searchTerm,
+      })
+    }, undefined, { shallow: true });
+  };
 
-    const handleSortChange = (e) => {
-      const newFileType = e.target.value;
-      setSortTerm(newFileType);
-      router.push({
-        pathname: '/categories/1',
-        query: buildQuery({
-          type: sortType,
-          file_type: newFileType,
-          search: searchTerm,
-        })
-      }, undefined, { shallow: true });
-    };
+
+  const handleSortChange = (e) => {
+    const newFileType = e.target.value;
+    setSortTerm(newFileType);
+    router.push({
+      pathname: '/categories/1',
+      query: buildQuery({
+        type: sortType,
+        file_type: newFileType,
+        search: searchTerm,
+      })
+    }, undefined, { shallow: true });
+  };
 
 
-    // Pagination handler
-    const handlePageChange = (newPage) => {
-      router.push({
-        pathname: `/categories/${newPage}`,
-        query: buildQuery({
-          type: sortType,
-          file_type: sortTerm,
-          search: searchTerm,
-        })
-      }, undefined, { shallow: true });
-    };
+  // Pagination handler
+  const handlePageChange = (newPage) => {
+    router.push({
+      pathname: `/categories/${newPage}`,
+      query: buildQuery({
+        type: sortType,
+        file_type: sortTerm,
+        search: searchTerm,
+      })
+    }, undefined, { shallow: true });
+  };
 
   return (
     <Fragment>
@@ -452,7 +453,9 @@ const Categories = ({
                 </div>
               </div>
             </div>
-            
+
+            <br />
+            <TrapLink />
           </div>
         </section>
       </CategoriesLayout>
@@ -538,7 +541,7 @@ const Categories = ({
 //         const timings = { categoriesAPI: 50, projectsAPI: 100, total: 150 }; // Placeholder - would be real in production
 //         performance.generateSummary("CategoriesPage-ISR", timings);
 
-        
+
 //         const totalTime = Date.now() - startTime;
 //         const SLOW_MS = 1500;
 //         if (totalTime > SLOW_MS) {
@@ -601,7 +604,7 @@ const Categories = ({
 export async function getServerSideProps({ params, query, req, res }) {
   const startTime = Date.now();
   const currentPage = parseInt(params?.page || "1", 10);
-  
+
   // ✅ Early validation to block invalid page numbers and reduce server load
   if (isNaN(currentPage) || currentPage < 1 || currentPage > 10000) {
     return { notFound: true };
@@ -616,16 +619,16 @@ export async function getServerSideProps({ params, query, req, res }) {
 
   // ✅ Performance tracking start
   console.log(`🎯 SSR-START: Categories page ${currentPage} at ${new Date().toISOString()}`);
-  
+
   // ✅ Browser caching headers for better performance
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=1800');
 
   // ✅ PERFORMANCE MONITORING: Track categories page generation
   return await performance.trackPagePerformance(
     "CategoriesPage-SSR",
-    { 
-      pageType: "SSR", 
-      isSSR: true, 
+    {
+      pageType: "SSR",
+      isSSR: true,
       cacheStatus: "fresh",
       userAgent: req.headers['user-agent'] || "unknown",
       page: currentPage
@@ -636,12 +639,12 @@ export async function getServerSideProps({ params, query, req, res }) {
       try {
         // ✅ Track API calls with performance monitoring and parallel execution with timeout protection
         const apiCalls = [
-          performance.timeAPICall("GetAllCategories-Categories-SSR", 
-            () => getallCategories(""), 
+          performance.timeAPICall("GetAllCategories-Categories-SSR",
+            () => getallCategories(""),
             "getallCategories"
           ),
-          performance.timeAPICall("GetAllProjects-Categories-SSR", 
-            () => getallprojects(currentPage, 9, "", "", ""), 
+          performance.timeAPICall("GetAllProjects-Categories-SSR",
+            () => getallprojects(currentPage, 9, "", "", ""),
             `getallprojects?page=${currentPage}&limit=9`
           ),
         ];
@@ -650,12 +653,12 @@ export async function getServerSideProps({ params, query, req, res }) {
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('CATEGORIES_API_TIMEOUT')), 3000);
         });
-        
+
         const results = await Promise.race([
           Promise.allSettled(apiCalls),
           timeoutPromise
         ]);
-        
+
         const [categoriesRes, projectsRes] = results;
 
         performance.logMemoryUsage("Categories-SSR-AfterAPIs", { page: currentPage });
@@ -663,7 +666,7 @@ export async function getServerSideProps({ params, query, req, res }) {
         // ✅ Handle potential API failures gracefully
         const categoriesData = categoriesRes.status === 'fulfilled' ? categoriesRes.value?.data?.categories || [] : [];
         const projectsData = projectsRes.status === 'fulfilled' ? projectsRes.value?.data || {} : {};
-        
+
         const projects = projectsData.products || [];
         const totalPages = Math.max(1, projectsData.totalPages || 1);
 
@@ -677,19 +680,19 @@ export async function getServerSideProps({ params, query, req, res }) {
 
         const endTime = Date.now();
         const totalTime = endTime - startTime;
-        
+
         // ✅ Performance logging
         console.log(`🚀 SSR-COMPLETE: Categories page ${currentPage} generated in ${totalTime.toFixed(0)}ms`);
-        
+
         if (totalTime > 1000) {
           console.warn(`⚠️ [SLOW-SSR-ALERT] Categories page ${currentPage} took ${totalTime.toFixed(0)}ms - may need optimization`);
         }
 
         // ✅ Generate performance summary
-        performance.generateSummary("CategoriesPage-SSR", { 
-          categoriesAPI: categoriesRes.status === 'fulfilled' ? 50 : 0, 
-          projectsAPI: projectsRes.status === 'fulfilled' ? 100 : 0, 
-          total: totalTime 
+        performance.generateSummary("CategoriesPage-SSR", {
+          categoriesAPI: categoriesRes.status === 'fulfilled' ? 50 : 0,
+          projectsAPI: projectsRes.status === 'fulfilled' ? 100 : 0,
+          total: totalTime
         });
 
         return {
@@ -702,7 +705,7 @@ export async function getServerSideProps({ params, query, req, res }) {
         };
       } catch (err) {
         console.error("❌ Error in Categories getServerSideProps:", err);
-        
+
         // ✅ Graceful fallback for any unexpected errors
         return {
           props: {

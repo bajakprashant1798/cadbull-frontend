@@ -39,37 +39,37 @@ import {
 import useEmblaCarousel from 'embla-carousel-react';
 
 // ✅ SPEED OPTIMIZATION: Lazy load social share components for better performance
-const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon), { 
+const EmailIcon = dynamic(() => import('react-share').then(mod => mod.EmailIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#f0f0f0' }} />
 });
 const EmailShareButton = dynamic(() => import('react-share').then(mod => mod.EmailShareButton), { ssr: false });
-const FacebookIcon = dynamic(() => import('react-share').then(mod => mod.FacebookIcon), { 
+const FacebookIcon = dynamic(() => import('react-share').then(mod => mod.FacebookIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#1877f2' }} />
 });
-const FacebookMessengerIcon = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerIcon), { 
+const FacebookMessengerIcon = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#00b2ff' }} />
 });
 const FacebookMessengerShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookMessengerShareButton), { ssr: false });
 const FacebookShareButton = dynamic(() => import('react-share').then(mod => mod.FacebookShareButton), { ssr: false });
-const LinkedinIcon = dynamic(() => import('react-share').then(mod => mod.LinkedinIcon), { 
+const LinkedinIcon = dynamic(() => import('react-share').then(mod => mod.LinkedinIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#0077b5' }} />
 });
 const LinkedinShareButton = dynamic(() => import('react-share').then(mod => mod.LinkedinShareButton), { ssr: false });
-const PinterestIcon = dynamic(() => import('react-share').then(mod => mod.PinterestIcon), { 
+const PinterestIcon = dynamic(() => import('react-share').then(mod => mod.PinterestIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#bd081c' }} />
 });
 const PinterestShareButton = dynamic(() => import('react-share').then(mod => mod.PinterestShareButton), { ssr: false });
-const TwitterIcon = dynamic(() => import('react-share').then(mod => mod.TwitterIcon), { 
+const TwitterIcon = dynamic(() => import('react-share').then(mod => mod.TwitterIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#1da1f2' }} />
 });
 const TwitterShareButton = dynamic(() => import('react-share').then(mod => mod.TwitterShareButton), { ssr: false });
-const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.WhatsappIcon), { 
+const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.WhatsappIcon), {
   ssr: false,
   loading: () => <div className="social-icon-placeholder" style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#25d366' }} />
 });
@@ -84,16 +84,17 @@ import { getSafeImageUrl, handleImageError, getSmallVersion } from "@/utils/imag
 
 import parse from "html-react-parser";
 import AdSense from "@/components/AdSense";
+import TrapLink from '@/components/TrapLink'; // ✅ HONEYPOT
 // ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
 import Image from 'next/image';
 
 // CDN asset URLs (no local imports)
-const autoCad       = assets.images.filetype("file_white.png");
-const cad        = assets.images.filetype("file_white_double.png");
+const autoCad = assets.images.filetype("file_white.png");
+const cad = assets.images.filetype("file_white_double.png");
 const cad_category = assets.images.filetype("file_white.png");
-const goldblocks       = assets.images.filetype("file.png");
-const profile_dummy   = assets.images.icons("profile.png");
-const link       = assets.images.social("link.png"); // if you ever need the image file
+const goldblocks = assets.images.filetype("file.png");
+const profile_dummy = assets.images.icons("profile.png");
+const link = assets.images.social("link.png"); // if you ever need the image file
 const file_size = assets.images.filetype("filesize.png");
 
 function transform(node, index) {
@@ -129,7 +130,7 @@ function slugify(title) {
     .replace(/\s+/g, '-')           // Replace spaces with -
     .replace(/\-+/g, '-')           // Collapse multiple dashes
     .replace(/^\-+|\-+$/g, '');     // Trim dashes from start and end
-    // .toLowerCase();
+  // .toLowerCase();
 }
 
 // new added calculate file size function
@@ -147,8 +148,8 @@ const formatBytes = (bytes) => {
 
 const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const dispatch = useDispatch();
-  const [project, setProject] = useState( initialProject || []);
-  const [similarProjects, setSimilarProjects] = useState( initialSimilar || []);
+  const [project, setProject] = useState(initialProject || []);
+  const [similarProjects, setSimilarProjects] = useState(initialSimilar || []);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -184,34 +185,34 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   }, [galleryUrls]);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-  loop: galleryUrls.length > 1,
-});
-const [selectedIndex, setSelectedIndex] = useState(0);
-const [scrollSnaps, setScrollSnaps] = useState([]);
+    loop: galleryUrls.length > 1,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
 
-const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
-useEffect(() => {
-  if (!emblaApi) return;
-  setScrollSnaps(emblaApi.scrollSnapList());
-  const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
-  emblaApi.on('select', onSelect);
-  onSelect();
-}, [emblaApi]);
+  useEffect(() => {
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on('select', onSelect);
+    onSelect();
+  }, [emblaApi]);
 
   // --- debug helpers (local-only; remove later) ---
-const shortCat = (c) => ({
-  id: c?.id, title: c?.title, slug: c?.slug,
-  category_path: c?.category_path, path: c?.path
-});
-const shortSub = (s) => ({
-  id: s?.id, title: s?.title, slug: s?.slug,
-  subcategory_path: s?.subcategory_path, path: s?.path
-});
+  const shortCat = (c) => ({
+    id: c?.id, title: c?.title, slug: c?.slug,
+    category_path: c?.category_path, path: c?.path
+  });
+  const shortSub = (s) => ({
+    id: s?.id, title: s?.title, slug: s?.slug,
+    subcategory_path: s?.subcategory_path, path: s?.path
+  });
 
-// console.log("Initial Project:", { project });
+  // console.log("Initial Project:", { project });
 
   useEffect(() => {
     const run = () => setShowRelated(true);
@@ -226,7 +227,7 @@ const shortSub = (s) => ({
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
-  
+
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
   const { categoryAndSubCategory, categoriesList } = useSelector((store) => store.projectinfo);
@@ -239,7 +240,7 @@ const shortSub = (s) => ({
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   // const [imgLoaded, setImgLoaded] = useState(false);
-  const [imgError, setImgError]   = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   // reset loader each time the main image url changes
   useEffect(() => {
@@ -254,7 +255,7 @@ const shortSub = (s) => ({
   //   return () => router.events.off("routeChangeStart", onStart);
   // }, [router.events]);
 
-  
+
   useEffect(() => {
     const handleRouteChange = () => {
       setFavouritesFetched(false);
@@ -281,11 +282,11 @@ const shortSub = (s) => ({
     }
   }, [isAuthenticated, dispatch, id]);
 
-  
+
   const projectId = Number(id);
   useEffect(() => {
     // if (favouriteList && Array.isArray(favouriteList)) {
-      setIsFavorited(favouriteList.some((fav) => fav.id ===  Number(projectId)));
+    setIsFavorited(favouriteList.some((fav) => fav.id === Number(projectId)));
     // }
   }, [favouriteList, projectId, id]);
 
@@ -308,7 +309,7 @@ const shortSub = (s) => ({
         // console.log(singleProjectData);
 
         // console.log("singleProjectData: ", singleProjectData);
-        
+
         setSimilarProjectId(singleProjectData.product_sub_category_id);
       } catch (error) {
         // console.error("Error fetching project data", error);
@@ -320,7 +321,7 @@ const shortSub = (s) => ({
       fetchData();
     }
   }, [id]);
-  
+
   const visitedIdsRef = useRef([Number(id)]); // always include current
 
   // When similarProjects are fetched/shown:
@@ -337,7 +338,7 @@ const shortSub = (s) => ({
       // // Exclude all visited
       // const excludeIds = visitedIdsRef.current.join(",");
       // const response = await getsimilerllprojects(1, 12, similarProjectId, excludeIds);
-      
+
       // setSimilarProjects(response.data.projects);
 
       const excludeIdsArray = Array.from(shownSimilarIdsRef.current);
@@ -353,10 +354,10 @@ const shortSub = (s) => ({
       setSimilarProjects(response.data.projects);
 
     } catch (error) {
-        console.error("Error fetching similar projects:", error);
+      console.error("Error fetching similar projects:", error);
     }
   };
-  
+
 
   useEffect(() => {
     // When route changes (clicked to another project), add the new id to the ref
@@ -375,7 +376,7 @@ const shortSub = (s) => ({
   // Reset pagination when the component unmounts
   useEffect(() => {
     return () => {
-        dispatch(getSimilarProjectsPage(1));
+      dispatch(getSimilarProjectsPage(1));
     };
   }, []);
 
@@ -403,7 +404,7 @@ const shortSub = (s) => ({
         setIsFavorited(true);
         toast.success("Added to Favorite list", { position: "top-right" });
         // Dispatch Redux action to add favorite (using project data)
-        
+
         if (project) {
           dispatch(
             addedFavouriteItem({
@@ -457,12 +458,12 @@ const shortSub = (s) => ({
   useEffect(() => {
     console.log("categoryAndSubCategory", categoryAndSubCategory);
     console.log("categoriesList", categoriesList);
-    
+
     if (categoryAndSubCategory.length === 0) {
       getCategoriesWithSubcategories()
         .then((res) => {
           // console.log("sub", res);
-          
+
           dispatch(addCategoryAndSubCategoryData(res));
           // console.log('api response upload==========',res)
         })
@@ -470,22 +471,22 @@ const shortSub = (s) => ({
           // console.log(err)
         });
     }
-    if(categoriesList.length===0){
-     getallCategories('').then((res)=>{
-      // console.log("res", res);
-      
-        dispatch(addAllCategoriesData(res.data.categories));
-      }).catch((err)=>{
+    if (categoriesList.length === 0) {
+      getallCategories('').then((res) => {
+        // console.log("res", res);
 
-      }) 
+        dispatch(addAllCategoriesData(res.data.categories));
+      }).catch((err) => {
+
+      })
     }
- 
-  }, [categoryAndSubCategory,categoriesList]);
+
+  }, [categoryAndSubCategory, categoriesList]);
   const onSearchSubmitHandler = (e) => {
     e.preventDefault();
     // console.log("selectedCategory", selectedCategory);
     // console.log("selectedSubCategory", selectedSubCategory);
-    
+
     // if (selectedCategory && selectedSubCategory) {
     //   dispatch(updatesubcatslug(selectedSubCategory));
     //   dispatch(updatesubcatpage(1));
@@ -612,18 +613,18 @@ const shortSub = (s) => ({
         ))}
         <meta property="og:site_name" content="Cadbull" />
         <meta property="fb:app_id" content="1018457459282520" />
-        
+
         {/* Pinterest specific tags */}
         <meta name="pinterest-rich-pin" content="true" />
         <meta property="og:locale" content="en_US" />
-        
+
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@cadbull" />
         <meta name="twitter:creator" content="@cadbull" />
         <meta name="twitter:title" content={project?.meta_title || project?.work_title} />
         <meta name="twitter:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
-        
+
         {/* <meta name="twitter:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
         {/* <meta name="twitter:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
         <meta
@@ -652,7 +653,7 @@ const shortSub = (s) => ({
             }}
           />
         )}
-        
+
 
         <link rel="canonical" href={canonicalUrl} />
         <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
@@ -692,7 +693,7 @@ const shortSub = (s) => ({
                     {project?.product_category_title && (
                       <li className="breadcrumb-item">
                         {/* <Link  href={`/categories/sub/${project?.category_path}`}> */}
-                        <Link  href={`/${project?.category_path}/1`}>
+                        <Link href={`/${project?.category_path}/1`}>
                           {project?.product_category_title}
                         </Link>
                       </li>
@@ -990,15 +991,15 @@ const shortSub = (s) => ({
                             <p className='fst-italic fs-12'>Uploaded by:</p>
                             <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
                               <span>{project?.firstname} </span>
-                              
+
                             </h6>
                             <p>
                               {project?.lastname}
                             </p>
-                            
+
                             <div className=" mt-1 d-md-none text-start text-md-end">
                               <Link
-                                href={`/profile/author/${project?.user_id}`} 
+                                href={`/profile/author/${project?.user_id}`}
                                 className="btn btn-primary"
                               >
                                 View Profile
@@ -1026,14 +1027,14 @@ const shortSub = (s) => ({
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
               <div className="d-none d-lg-block">
-                <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+                <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} shouldShow={project?.showAds} />
               </div>
               {/* </div> */}
-          
-              
+
+
             </div>
 
-        
+
             <div className="col-lg-4">
               <div className="d-flex flex-column gap-3">
 
@@ -1043,8 +1044,8 @@ const shortSub = (s) => ({
                     <div className="row">
                       <div className="col-md-12">
                         <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
-                          <div className="" style={{paddingLeft: '25px'}}>
-                          
+                          <div className="" style={{ paddingLeft: '25px' }}>
+
                             <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
                               <div>
                                 <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
@@ -1056,16 +1057,16 @@ const shortSub = (s) => ({
                               description={project?.description} 
                               className="mt-2"
                             /> */}
-                            
+
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* <div className="d-none d-lg-block"> */}
-                      <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
+                    <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} shouldShow={project?.showAds} />
                     {/* </div> */}
-                    
+
                     <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
                         <FileDescription
@@ -1083,7 +1084,7 @@ const shortSub = (s) => ({
                           image={file_size}
                           type={"File Size:"}
                           title={formatBytes(project?.size) || "—"}
-                          // className={"text-dark"}
+                        // className={"text-dark"}
                         />
                       </div>
 
@@ -1112,7 +1113,7 @@ const shortSub = (s) => ({
                           className={"text-primary"}
                         />
                       </Link>
-                      
+
                     </div>
 
                     <div className="row my-3 d-block d-lg-none">
@@ -1155,12 +1156,12 @@ const shortSub = (s) => ({
                                   <p className='fst-italic fs-12'>Uploaded by:</p>
                                   <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
                                     <span>{project?.firstname} </span>
-                                    
+
                                   </h6>
                                   <p>
                                     {project?.lastname}
                                   </p>
-                                  
+
                                   {/* <div className=" mt-1 d-md-none text-start text-md-end">
                                     <Link
                                       href={`/profile/author/${project?.user_id}`} 
@@ -1187,13 +1188,13 @@ const shortSub = (s) => ({
                         </div>
                       </div>
                     </div>
-                    
+
 
                     {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                      {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
+                    {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
                     {/* </div> */}
 
-                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} shouldShow={project?.showAds} />
 
                     <div className="row justify-content-center">
                       <div className="col-md-12 col-12 text-center">
@@ -1222,7 +1223,7 @@ const shortSub = (s) => ({
                             </span>
                             <span>Add to libary</span>
                           </button>
-                          
+
                         </div>
                       </div>
                     </div>
@@ -1239,7 +1240,7 @@ const shortSub = (s) => ({
                       <form className="d-flex gap-3 flex-column">
                         Category
                         <div>
-                          
+
                           <select
                             defaultValue=""
                             className="form-select"
@@ -1293,7 +1294,7 @@ const shortSub = (s) => ({
                             })}
                           </select>
                         </div>
-                        
+
                         <div className="mt-2obbs">
                           <button
                             onClick={onSearchSubmitHandler}
@@ -1308,7 +1309,7 @@ const shortSub = (s) => ({
                   </aside>
                 </div>
                 {/* ads image */}
-                
+
                 {/* <div className="d-block d-lg-none">
                   <AdSense slot="4406439781" format="fluid" layout="in-article" />
                 </div> */}
@@ -1372,7 +1373,7 @@ const shortSub = (s) => ({
         </div>
 
         {/* <div className="border-top border-bottom py-2"> */}
-          {/* <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" /> */}
+        {/* <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" /> */}
         {/* </div> */}
       </section>
     </Fragment>
@@ -1385,7 +1386,7 @@ export async function getServerSideProps(ctx) {
   // const startTime = Date.now();
   const { params, res } = ctx;
   const id = params.id;
-  
+
   try {
     // Validate ID parameter - must be a valid number
     if (!id || isNaN(parseInt(id))) {
@@ -1403,7 +1404,7 @@ export async function getServerSideProps(ctx) {
     let projectRes;
     let retryCount = 0;
     const maxRetries = 3;
-    
+
     while (retryCount < maxRetries) {
       try {
         projectRes = await getsingleallprojects("", id);
@@ -1416,45 +1417,45 @@ export async function getServerSideProps(ctx) {
           url: error.config?.url || 'unknown',
           method: error.config?.method || 'GET'
         });
-        
+
         if (error.response?.status === 429 && retryCount < maxRetries) {
           // Wait before retrying (exponential backoff)
           await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           continue;
         }
-        
+
         // If final retry or non-429 error, throw
         throw error;
       }
     }
     // const projectAPITime = Date.now() - projectAPIStart;
-    
+
     // logAPICall('getsingleallprojects', projectAPITime, 200, JSON.stringify(projectRes?.data || {}).length);
-    
+
     if (!projectRes || !projectRes.data) {
       res.setHeader('Cache-Control', 'no-store');
       // return { props: { initialProject: null, initialSimilar: [], canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`, softError: true } };
       res.statusCode = 410; // 🔥 DMCA BEST PRACTICE
       return { notFound: true };
     }
-    
+
     const project = projectRes.data;
 
-      // // Use backend slug if available and not empty/null, else fallback to slugify
-      // const backendSlug = project.slug || null;
+    // // Use backend slug if available and not empty/null, else fallback to slugify
+    // const backendSlug = project.slug || null;
 
-      // const canonicalSlug = backendSlug ? String(backendSlug).trim() : slugify(project.work_title);
+    // const canonicalSlug = backendSlug ? String(backendSlug).trim() : slugify(project.work_title);
 
-      // // Redirect if param slug is wrong (case-insensitive)
-      // const incomingSlug = decodeURIComponent(params.slug || "");
-      // if (incomingSlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
-      //   return {
-      //     redirect: {
-      //       destination: `/detail/${id}/${canonicalSlug}`,
-      //       permanent: true,
-      //     },
-      //   };
-      // }
+    // // Redirect if param slug is wrong (case-insensitive)
+    // const incomingSlug = decodeURIComponent(params.slug || "");
+    // if (incomingSlug.toLowerCase() !== canonicalSlug.toLowerCase()) {
+    //   return {
+    //     redirect: {
+    //       destination: `/detail/${id}/${canonicalSlug}`,
+    //       permanent: true,
+    //     },
+    //   };
+    // }
 
     // 1) take DB slug exactly if it's a real string
     let dbSlug = typeof project?.slug === 'string' ? project.slug.trim() : '';
@@ -1468,7 +1469,7 @@ export async function getServerSideProps(ctx) {
     if (incomingSlug !== canonicalSlug) {
       return {
         redirect: {
-        destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
+          destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
           permanent: true,
         },
       };
@@ -1483,7 +1484,7 @@ export async function getServerSideProps(ctx) {
       // Continue without similar projects if API fails
       similarRes = { data: { projects: [] } };
     }
-    
+
 
     // ✅ Cache the HTML at the CDN for a short time
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
@@ -1510,14 +1511,14 @@ export async function getServerSideProps(ctx) {
     });
 
     res.setHeader('Cache-Control', 'no-store');
-  //   return {
-  //    props: {
-  //      initialProject: null,
-  //      initialSimilar: [],
-  //      canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`,
-  //      softError: true,
-  //    },
-  //  };
+    //   return {
+    //    props: {
+    //      initialProject: null,
+    //      initialSimilar: [],
+    //      canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}`,
+    //      softError: true,
+    //    },
+    //  };
 
     res.statusCode = 404;
     return { notFound: true };
