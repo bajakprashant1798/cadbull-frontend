@@ -43,7 +43,7 @@
 //     const loadAd = () => {
 //       try {
 //         const adElement = adRef.current?.querySelector('.adsbygoogle');
-        
+
 //         // Check if element exists and is empty
 //         if (!adElement) {
 //           // console.warn(`AdSense element not found for slot: ${slot}`);
@@ -65,7 +65,7 @@
 //             if (adElement.hasAttribute('data-adsbygoogle-status')) {
 //               adElement.removeAttribute('data-adsbygoogle-status');
 //             }
-            
+
 //             // Push the ad request
 //             (window.adsbygoogle = window.adsbygoogle || []).push({});
 //             isAdLoaded.current = true;
@@ -237,7 +237,7 @@ const AdSense = ({
           try {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             pushedRef.current = true;
-          } catch {}
+          } catch { }
         }, 600);
       }
     };
@@ -245,7 +245,7 @@ const AdSense = ({
     // slight delay to ensure script is ready
     const t = setTimeout(tryPush, 300);
     return () => clearTimeout(t);
-  }, [mounted, clientId]);
+  }, [mounted, clientId, keyBump]);
 
   if (process.env.NODE_ENV === "development") {
     return (
