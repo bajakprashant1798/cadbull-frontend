@@ -203,67 +203,86 @@ BlogDetail.getLayout = (page) => <MainLayout>{page}</MainLayout>;
 //         };
 //     }
 // }
-export async function getStaticPaths() {
-    const blogsRes = await fetchStrapiAPI("/blogs");
-
-    return {
-        paths: blogsRes.data.map((blog) => ({
-            params: {
-                id: blog.id.toString(),
-                slug: blog.slug, // must match your actual API structure
-            },
-        })),
-        fallback: "blocking",
-    };
-}
-
-export async function getStaticProps({ params }) {
-    console.log("🚀 [Article Detail] getStaticProps called for ID:", params.id);
+export async function getServerSideProps({ params }) {
     try {
-        // Fetch by filtering on collection endpoint
+        console.log("🔥 SSR fetching blog for slug:", params.slug);
+
         const blogRes = await fetchStrapiAPI("/blogs", {
             filters: {
-                id: {
-                    $eq: params.id
-                }
+                slug: { $eq: params.slug }
             },
             populate: {
                 featured_image: true,
-                seo: {
-                    populate: "*"
-                },
-                body: {
-                    populate: "*"
-                }
+                seo: { populate: "*" },
+                body: { populate: "*" }
             },
         });
 
-        console.log("🚀 [Article Detail] Strapi Response Length:", blogRes?.data?.length);
+        console.log("🔥 SSR Strapi response:", blogRes?.data?.length);
 
-        const blog = blogRes.data[0];
+        const blog = blogRes?.data?.[0];
 
         if (!blog) {
-            console.warn(`❌ [Article Detail] Blog not found for id: ${params.id}`);
-            return {
-                notFound: true,
-            };
+            console.log("❌ Blog not found in SSR");
+            return { notFound: true };
         }
 
-        console.log("✅ [Article Detail] Blog found:", blog.title);
-        console.log("📦 [Article Detail] Body field type:", typeof blog.body, Array.isArray(blog.body));
-
         return {
-            props: {
-                blog,
-            },
-            revalidate: 300,
+            props: { blog }
         };
     } catch (error) {
-        console.error("❌ [Article Detail] Error fetching blog:", error);
-        return {
-            notFound: true,
-        };
+        console.error("❌ SSR Error:", error);
+        return { notFound: true };
     }
 }
+
+// export async function getStaticProps({ params }) {
+//     console.log("🚀 [Article Detail] getStaticProps called for ID:", params.id);
+//     try {
+//         // Fetch by filtering on collection endpoint
+//         const blogRes = await fetchStrapiAPI("/blogs", {
+//             filters: {
+//                 id: {
+//                     $eq: params.id
+//                 }
+//             },
+//             populate: {
+//                 featured_image: true,
+//                 seo: {
+//                     populate: "*"
+//                 },
+//                 body: {
+//                     populate: "*"
+//                 }
+//             },
+//         });
+
+//         console.log("🚀 [Article Detail] Strapi Response Length:", blogRes?.data?.length);
+
+//         const blog = blogRes.data[0];
+
+//         if (!blog) {
+//             console.warn(`❌ [Article Detail] Blog not found for id: ${params.id}`);
+//             return {
+//                 notFound: true,
+//             };
+//         }
+
+//         console.log("✅ [Article Detail] Blog found:", blog.title);
+//         console.log("📦 [Article Detail] Body field type:", typeof blog.body, Array.isArray(blog.body));
+
+//         return {
+//             props: {
+//                 blog,
+//             },
+//             revalidate: 300,
+//         };
+//     } catch (error) {
+//         console.error("❌ [Article Detail] Error fetching blog:", error);
+//         return {
+//             notFound: true,
+//         };
+//     }
+// }
 
 export default BlogDetail;
