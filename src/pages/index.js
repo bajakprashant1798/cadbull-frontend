@@ -41,10 +41,11 @@ const Architecture = assets.image("Architecture.png");
 const logo = assets.image("logo.png");
 
 import { getallCategories, getallprojects } from "@/service/api";
+import { fetchStrapiAPI, getStrapiMedia } from "@/lib/strapiApi";
 import { useDispatch, useSelector } from "react-redux";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
-import {  getserachTerm } from "../../redux/app/features/projectsSlice";
+import { getserachTerm } from "../../redux/app/features/projectsSlice";
 import { useRouter } from "next/router";
 import { getFavouriteItems } from "@/service/api";
 import { setFavouriteList } from "../../redux/app/features/projectsSlice";
@@ -106,22 +107,23 @@ const debounce = (func, delay) => {
 
 
 export default function Home({
-    initialProjects,
-    totalPages: initialTotalPages,
-    totalProducts, // You can use this prop directly
-    lastProductId,
-    housePlanFiles,
-    initialCategories,
-    currentPage: initialCurrentPage = 1, // default to 1 if not passed
-    filters = {},
+  initialProjects,
+  totalPages: initialTotalPages,
+  totalProducts, // You can use this prop directly
+  lastProductId,
+  housePlanFiles,
+  initialCategories,
+  currentPage: initialCurrentPage = 1, // default to 1 if not passed
+  filters = {},
+  //   initialBlogs = [],
 }) {
   const [blogs, setBlogs] = useState([]);
-  const [isLoading,startLoading,stopLoading]=useLoading();
-  
-//   const [searchTerm,setSearchTerm]=useState('');
-//   const [sortTerm,setSortTerm]=useState('');
+  const [isLoading, startLoading, stopLoading] = useLoading();
+
+  //   const [searchTerm,setSearchTerm]=useState('');
+  //   const [sortTerm,setSortTerm]=useState('');
   const [totalPages, setTotalPages] = useState(initialTotalPages || 1);
-  
+
   const [searchInput, setSearchInput] = useState('');
   // const favouriteList = useSelector((store) => store.projectinfo.favouriteList);
 
@@ -158,44 +160,44 @@ export default function Home({
     setCurrentPage(initialCurrentPage || 1);
   }, [initialCurrentPage]);
 
-  
+
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const favouriteList = useSelector((state) => state.projectinfo.favouriteList);
-    // console.log("favouriteList index: ", favouriteList);
+  // console.log("favouriteList index: ", favouriteList);
 
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const router = useRouter();
 
-    const initialSearch = filters?.search || router.query.search || '';
-    const initialSort = filters?.sort || router.query.sort || '';
+  const initialSearch = filters?.search || router.query.search || '';
+  const initialSort = filters?.sort || router.query.sort || '';
 
-    const [currentPage, setCurrentPage] = useState(Number(router.query.page) || 1);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [projectSearchInput, setProjectSearchInput] = useState('');
-    const [sortTerm, setSortTerm] = useState(router.query.file_type || "");
+  const [currentPage, setCurrentPage] = useState(Number(router.query.page) || 1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [projectSearchInput, setProjectSearchInput] = useState('');
+  const [sortTerm, setSortTerm] = useState(router.query.file_type || "");
 
-    useEffect(() => {
-      setCurrentPage(Number(router.query.page) || 1);
-      setSearchTerm(router.query.search || "");
-      setSortTerm(router.query.file_type || "");
-    }, [router.query]);
+  useEffect(() => {
+    setCurrentPage(Number(router.query.page) || 1);
+    setSearchTerm(router.query.search || "");
+    setSortTerm(router.query.file_type || "");
+  }, [router.query]);
 
-    const buildQuery = (params) => {
-        const query = {};
-        // if (params.type) query.type = params.type;
-        if (params.file_type) query.file_type = params.file_type;
-        if (params.search) query.search = params.search;
-        // page will be in path
-        return query;
-    };
+  const buildQuery = (params) => {
+    const query = {};
+    // if (params.type) query.type = params.type;
+    if (params.file_type) query.file_type = params.file_type;
+    if (params.search) query.search = params.search;
+    // page will be in path
+    return query;
+  };
 
   const [favouritesFetched, setFavouritesFetched] = useState(false);
 
   useEffect(() => {
     // console.log("isAuthenticated index:",isAuthenticated);
-    
-    if ( !favouritesFetched && isAuthenticated ) {
+
+    if (!favouritesFetched && isAuthenticated) {
       // console.log("isAuthenticated index:",isAuthenticated);
       getFavouriteItems()
         .then((favRes) => {
@@ -208,41 +210,41 @@ export default function Home({
           setFavouritesFetched(true);
         });
     }
-  }, [ favouritesFetched, dispatch]);
+  }, [favouritesFetched, dispatch]);
 
-    const loadProjects = async (page, pageSize = 12) => {
-        startLoading(true);
-        try {
-            const response = await getallprojects(
-            page,
-            pageSize,
-            searchTerm,
-            sortTerm
-            // you can add type if needed
-            );
-            setProjects(response.data.products);
-            setTotalPages(response.data.totalPages);
+  const loadProjects = async (page, pageSize = 12) => {
+    startLoading(true);
+    try {
+      const response = await getallprojects(
+        page,
+        pageSize,
+        searchTerm,
+        sortTerm
+        // you can add type if needed
+      );
+      setProjects(response.data.products);
+      setTotalPages(response.data.totalPages);
 
-            // <-- add this so the hero count updates even if SSR was 0
-            setLastId(
-              response.data.lastProductId ??
-              response.data.totalProducts ??
-              (response.data.products?.[0]?.id || 0)
-            );
-            // --> added after plesk migration to avoid caching issue
-        } catch (error) {
-            console.error("Failed to fetch projects:", error);
-        } finally {
-            stopLoading(false);
-        }
-    };
+      // <-- add this so the hero count updates even if SSR was 0
+      setLastId(
+        response.data.lastProductId ??
+        response.data.totalProducts ??
+        (response.data.products?.[0]?.id || 0)
+      );
+      // --> added after plesk migration to avoid caching issue
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+    } finally {
+      stopLoading(false);
+    }
+  };
 
   // Initial load and page change effect
   useEffect(() => {
     // Skip fetching if we’re already on the SSG state (page 1, no filters)
     // const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
     // if (isInitial && projects?.length) return;
-    
+
     // Load projects whenever currentPage, searchTerm, or sortTerm change
     if (!router.isReady) return;
     loadProjects(currentPage, 12);
@@ -303,36 +305,36 @@ export default function Home({
   //   // Optionally: clear search input after redirect
   //   // setSearchInput('');
   // };
-    const handleSearch = (e) => {
-      e.preventDefault();
-      const trimmedSearch = searchInput.trim();
-      if (trimmedSearch) {
-        // Track search with Meta Pixel
-        trackSearch(trimmedSearch);
-      }
-      setSearchTerm(trimmedSearch);
-      dispatch(getserachTerm(trimmedSearch));
-      // Now pass the search as a query parameter!
-      router.push({
-        pathname: '/categories/search',
-        query: trimmedSearch ? { search: trimmedSearch } : {}, // only if not empty
-      });
-    };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmedSearch = searchInput.trim();
+    if (trimmedSearch) {
+      // Track search with Meta Pixel
+      trackSearch(trimmedSearch);
+    }
+    setSearchTerm(trimmedSearch);
+    dispatch(getserachTerm(trimmedSearch));
+    // Now pass the search as a query parameter!
+    router.push({
+      pathname: '/categories/search',
+      query: trimmedSearch ? { search: trimmedSearch } : {}, // only if not empty
+    });
+  };
 
-    const handleProjectSearch = (e) => {
-      e.preventDefault();
-      const trimmed = projectSearchInput.trim();
-      if (trimmed) {
-        // Track search with Meta Pixel
-        trackSearch(trimmed);
-      }
-      setSearchTerm(trimmed);
-      dispatch(getserachTerm(trimmed));
-      router.push({
-        pathname: '/categories/search',
-        query: trimmed ? { search: trimmed } : {},
-      });
-    };
+  const handleProjectSearch = (e) => {
+    e.preventDefault();
+    const trimmed = projectSearchInput.trim();
+    if (trimmed) {
+      // Track search with Meta Pixel
+      trackSearch(trimmed);
+    }
+    setSearchTerm(trimmed);
+    dispatch(getserachTerm(trimmed));
+    router.push({
+      pathname: '/categories/search',
+      query: trimmed ? { search: trimmed } : {},
+    });
+  };
 
 
 
@@ -362,15 +364,15 @@ export default function Home({
     <Fragment>
       <Head>
         <title>{currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull'}</title>
-        
+
         {/* ✅ SEO PAGINATION: Only index the main page, noindex pagination pages */}
         {currentPage > 1 && (
           <meta name="robots" content="noindex, nofollow" />
         )}
-        
+
         {/* ✅ CANONICAL: Always point to main page for pagination */}
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
-        
+
         <meta name="description" content={currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more."} />
 
         {/* Pagination SEO: Previous/Next links */}
@@ -391,11 +393,11 @@ export default function Home({
         <meta property="og:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
         <meta property="og:site_name" content="Cadbull" />
         <meta property="fb:app_id" content="1018457459282520" />
-        
+
         {/* Pinterest specific tags */}
         <meta name="pinterest-rich-pin" content="true" />
         <meta property="og:locale" content="en_US" />
-        
+
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@cadbull" />
         <meta name="twitter:creator" content="@cadbull" />
@@ -408,7 +410,7 @@ export default function Home({
 
       {/* Hero section  */}
       <section className="hero ">
-      {isLoading && <Loader/>}
+        {isLoading && <Loader />}
         <div className="container py-3 py-md-5">
           <div className="row">
             <div className="col-md-12">
@@ -426,7 +428,7 @@ export default function Home({
                 <p className="mb-4 mb-md-5">
                   {/* User */}
                   <span className="text-danger">{Number(lastId).toLocaleString("en-US")}+</span> <span className="fw-light"> Free & Premium
-                  CADFiles
+                    CADFiles
                   </span>
                 </p>
                 <Link href="/categories" className="btn btn-primary">
@@ -499,13 +501,13 @@ export default function Home({
           </div>
         </div>
         {/* <div className="border-top border-bottom py-2"> */}
-          {/* <AdSense slot="1744284284" format="fluid" layout="in-article" lazy={false} /> */}
+        {/* <AdSense slot="1744284284" format="fluid" layout="in-article" lazy={false} /> */}
         {/* </div> */}
       </section>
 
       {/* Project of the Day  */}
       <section className="py-3" ref={projectOfDayRef}>
-       
+
         <div className="container">
           <div className="row mb-4 mb-md-5">
             <div className="col-md-12">
@@ -573,7 +575,7 @@ export default function Home({
               </div>
             </div>
           </div>
- 
+
           {/* <div className="row g-4">
             {projects.map((project) => {
               return (
@@ -607,8 +609,8 @@ export default function Home({
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
-          
-          
+
+
           {/* <LoadMore
           currentPage={currentPage}
           totalPage={totalPages}
@@ -620,7 +622,7 @@ export default function Home({
       </section>
 
       {/* <div className="border-top border-bottom py-2"> */}
-        {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
+      {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
       {/* </div> */}
 
       {/* Categories */}
@@ -670,7 +672,7 @@ export default function Home({
       </section>
 
       {/* <div className="border-top border-bottom py-2"> */}
-        {/* <AdSense slot="8049838180" format="fluid" layout="in-article" /> */}
+      {/* <AdSense slot="8049838180" format="fluid" layout="in-article" /> */}
       {/* </div> */}
 
       {/* Main PRINCIPLES  */}
@@ -976,76 +978,17 @@ export default function Home({
                   <button className="btn btn-danger">GET YOUR HOUSE PLAN</button>
                 </Link>
               </div>
-              
+
             </div>
           </div>
         </div>
       </section>
 
-      {/* Project of the Day  */}
-      {/* <section className="py-md-5 py-3">
-        <div className="container">
-          <div className="row mb-4 mb-md-5">
-            <div className="col-md-12">
-              <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-3  gap-md-5">
-                <div className="ps-5">
-                  <SectionHeading
-                    subHeading={"FIND OUR ARTICLES"}
-                    mainHeading={"Latest Articles"}
-                    mainHeadingBold={"Blogs"}
-                  />
-                </div>
-                <div className="w-100 text-center text-md-end">
-                  <Link href="" className="btn btn-primary">
-                    VIEW ALL ARTICLES
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="row g-4">
-            {blogs.map((blog) => {
-              return (
-                <div className="col-lg-4 col-sm-6" key={blog.id}>
-                  <div className="project-day-card h-100">
-                    <div className="project-day-card-image mb-3 position-relative">
-                      <img
-                        src={blog.image_url}
-                        alt="blog"
-                        className="w-100 img-fluid"
-                      />
-                    </div>
-
-                    <div className="project-day-card-title d-flex justify-content-between">
-                      <h6 className="fs-6" style={{ width: "40ch" }}>
-                        {blog.title}
-                      </h6>
-                      <div>
-                        <span className="badge bg-secondary text-white text-uppercase">
-                          {blog.type}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="project-day-card-description my-3">
-                      <p className="ps-3 w-100 " style={{ maxWidth: "100%" }}>
-                        {parser(`${blog.content}`)}
-                      </p>
-                    </div>
-                    <div className="project-day-card-link">
-                      <p className="pe-2">MORE DETAILS</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section> */}
+      {/* Latest Articles Removed */}
 
       {/* Get Off */}
       {/* <GetOff /> */}
-    </Fragment>
+    </Fragment >
   );
 }
 

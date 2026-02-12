@@ -54,6 +54,11 @@ const links = [
     active: false,
   },
   {
+    url: "/articles",
+    title: "BLOG",
+    active: false,
+  },
+  {
     url: "/about-us",
     title: "ABOUT US",
     active: false,
@@ -75,23 +80,23 @@ const Header = () => {
 
   // ✅ Production-grade auth check: Add a status to prevent FOUC
   const [authCheckStatus, setAuthCheckStatus] = useState("pending");
-  
+
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
-  
+
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
-  
+
   const [showHamburgerMenuItem, setShowHamburgerMenuItem] = useState(false);
 
   const handleLogout = async () => {
     // Prevent duplicate logout calls
     if (isLoggedOut) return;
     setIsLoggedOut(true);
-    
+
     try {
       // Call the backend logout endpoint so cookies are cleared
       await logoutApiHandler();
@@ -139,7 +144,7 @@ const Header = () => {
         <nav className="navbar navbar-expand-xl">
           <div className="container-fluid">
             <Link href="/">
-              <Image src={logo} width={150} height={36} alt="logo" className="logo"  priority  />
+              <Image src={logo} width={150} height={36} alt="logo" className="logo" priority />
             </Link>
             <button
               className="navbar-toggler border-0 p-0 shadow-none"
@@ -147,16 +152,16 @@ const Header = () => {
               // data-bs-toggle="collapse"
               // data-bs-target="#navbarSupportedContent"
               // aria-controls="navbarSupportedContent"
-              onClick={(e)=>{
+              onClick={(e) => {
                 e.stopPropagation()
                 setShowHamburgerMenuItem(!showHamburgerMenuItem)
               }}
               aria-expanded="false"
               aria-label="Toggle navigation"
             >
-             {!isAuthenticated &&  <Link
+              {!isAuthenticated && <Link
                 href={"/auth/login"}
-                onClick={(e)=>{
+                onClick={(e) => {
                   e.stopPropagation()
                 }}
                 className="btn btn-secondary d-inline-flex d-xl-none gap-1 align-items-center text-white me-2"
@@ -168,7 +173,7 @@ const Header = () => {
               </span>
             </button>
             <div
-              className={` collapse navbar-collapse ${showHamburgerMenuItem?"show":''} `}
+              className={` collapse navbar-collapse ${showHamburgerMenuItem ? "show" : ''} `}
               id="navbarSupportedContent"
             >
 
@@ -183,17 +188,17 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       {status?.user?.profile_pic == null ? (
-                        <Image src={profile_dummy} alt="profile" width={30} height={30}  />
+                        <Image src={profile_dummy} alt="profile" width={30} height={30} />
                       ) : (
                         <Image
                           src={status?.user?.profile_pic || profile_dummy}
                           alt="profile"
                           width={30}
                           height={30}
-                          style={{borderRadius:"50%"}}
+                          style={{ borderRadius: "50%" }}
                           onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
                         />
-                      )} 
+                      )}
                     </button>
                     <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
                       <li>
@@ -210,7 +215,7 @@ const Header = () => {
                               src={status?.user?.profile_pic || profile_dummy}
                               alt="profile"
                               width={30} height={30}
-                              style={{borderRadius:"50%"}}
+                              style={{ borderRadius: "50%" }}
                               onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
                             />
                           )}
@@ -227,10 +232,10 @@ const Header = () => {
                         </Link>
                       </li>
                       <li className="dropdown-divider my-1"></li>
-                     
+
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
                       {isClient && status?.user?.role === 1 || status?.user?.role === 5 || status?.user?.role === 6 ? (
-                        
+
                         <li>
                           <Link
                             href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
@@ -291,7 +296,7 @@ const Header = () => {
                           <small>Edit Profile</small>
                         </Link>
                       </li>
-                      
+
                       <li>
                         <Link
                           href="/profile/billing"
@@ -306,7 +311,7 @@ const Header = () => {
                           <small>Manage Billing</small>
                         </Link>
                       </li>
-                      
+
                       <li>
                         <Link
                           href="/favourites"
@@ -392,9 +397,10 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                       <li>
                         <button
-                          onClick={() =>{ 
+                          onClick={() => {
                             handleLogout()
-                           closeHamburgerMenu()}}
+                            closeHamburgerMenu()
+                          }}
                           className="dropdown-item bg-transparent text-black"
                         >
                           <FontAwesomeIcon
@@ -409,7 +415,7 @@ const Header = () => {
                     </ul>
                   </div>
                 </>
-              ) }
+              )}
               {/* small screen device responsive */}
 
               <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
@@ -417,15 +423,14 @@ const Header = () => {
                   return (
                     <li className="b-bottom-md" key={index}>
                       <Link
-                       onClick={()=>{
-                        closeHamburgerMenu();
-                        //  if(link.url==='/categories'){
-                        //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
-                        //  }
-                       }}
-                        className={`${
-                          link.url === Router.asPath ? "active" : ""
-                        } nav-link`}
+                        onClick={() => {
+                          closeHamburgerMenu();
+                          //  if(link.url==='/categories'){
+                          //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
+                          //  }
+                        }}
+                        className={`${link.url === Router.asPath ? "active" : ""
+                          } nav-link`}
                         aria-current="page"
                         href={link.url}
                       >
@@ -455,10 +460,10 @@ const Header = () => {
                           alt="profile"
                           width={30}
                           height={30}
-                          style={{borderRadius:"50%"}}
+                          style={{ borderRadius: "50%" }}
                           onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
                         />
-                      )} 
+                      )}
                     </button>
                     <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
                       <li>
@@ -476,7 +481,7 @@ const Header = () => {
                               alt="profile"
                               width={30}
                               height={30}
-                              style={{borderRadius:"50%"}}
+                              style={{ borderRadius: "50%" }}
                               onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
                             />
                           )}
@@ -493,10 +498,10 @@ const Header = () => {
                         </Link>
                       </li>
                       <li className="dropdown-divider my-1"></li>
-                     
+
                       {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5) */}
                       {isClient && (status?.user?.role === 1 || status?.user?.role === 5 || status?.user?.role === 6) ? (
-                        
+
                         <li>
                           <Link
                             href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
@@ -557,7 +562,7 @@ const Header = () => {
                           <small>Edit Profile</small>
                         </Link>
                       </li>
-                      
+
                       <li>
                         <Link
                           href="/profile/billing"
@@ -572,7 +577,7 @@ const Header = () => {
                           <small>Manage Billing</small>
                         </Link>
                       </li>
-                      
+
                       <li>
                         <Link
                           href="/favourites"
@@ -658,9 +663,10 @@ const Header = () => {
                       <li className="dropdown-divider my-1"></li>
                       <li>
                         <button
-                          onClick={() =>{ 
+                          onClick={() => {
                             handleLogout()
-                           closeHamburgerMenu()}}
+                            closeHamburgerMenu()
+                          }}
                           className="dropdown-item bg-transparent text-black"
                         >
                           <FontAwesomeIcon

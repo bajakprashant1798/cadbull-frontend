@@ -72,6 +72,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: '*.googleusercontent.com' },
       { protocol: 'https', hostname: 's3.amazonaws.com' },
+      {
+        protocol: 'https',
+        hostname: 'strapi.cadbull.com',
+      },
     ],
     // Add optimization settings to reduce bandwidth
     formats: ['image/webp', 'image/avif'],

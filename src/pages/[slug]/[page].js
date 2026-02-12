@@ -52,7 +52,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   const [pageChanged, setPageChanged] = useState(false);
 
   const { type = "", file_type = "", search = "" } = router.query;
-  
+
   const buildQuery = (params) => {
     const query = {};
     if (params.type) query.type = params.type;
@@ -62,7 +62,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   };
 
   // console.log("getStaticProps for slug:", initialSlug, "page:", initialPage, "metaTitle:", metaTitle, "metaKeywords:", metaKeywords, "metaDescription:", metaDescription, "description:", description, "title:", title);
-  
+
 
   // ✅ Optimized: Only fetch main categories if not provided via SSR
   useEffect(() => {
@@ -166,22 +166,22 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
   // Prepare layout props
   const CategoriesProps = searchedText.length
     ? {
-        title: "Search Results",
-        description: "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
-        mainCategories,
-        subCategories: subcat,
-        slug,
-        type: "Sub Categories",
-        pageName: "Search Results",
-      }
+      title: "Search Results",
+      description: "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
+      mainCategories,
+      subCategories: subcat,
+      slug,
+      type: "Sub Categories",
+      pageName: "Search Results",
+    }
     : {
-        title: title ? title : makeTitle(slug),
-        description: description || "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
-        mainCategories,
-        subCategories: subcat,
-        slug,
-        type: "Sub Categories",
-      };
+      title: title ? title : makeTitle(slug),
+      description: description || "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
+      mainCategories,
+      subCategories: subcat,
+      slug,
+      type: "Sub Categories",
+    };
 
   // Pagination handler for router navigation
   const handlePageChange = (newPage) => {
@@ -263,14 +263,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
           content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")}
         />
         {metaKeywords && <meta name="keywords" content={metaKeywords} />}
-        
+
         {/* Pagination SEO: noindex for pagination pages */}
         {currentPage > 1 && (
           <>
             <meta name="robots" content="noindex,nofollow" />
           </>
         )}
-        
+
         {/* Pagination SEO: Previous/Next links */}
         {currentPage > 1 && (
           <link rel="prev" href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage - 1}`} />
@@ -278,7 +278,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
         {currentPage < totalPages && (
           <link rel="next" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/${slug}/${currentPage + 1}`} />
         )}
-        
+
         <meta property="og:title" content={currentPage > 1 ? `${metaTitle ? metaTitle : makeTitle(slug)} - Page ${currentPage} | Cadbull` : `${metaTitle ? metaTitle : makeTitle(slug)} | Cadbull`} />
         <meta property="og:description" content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")} />
         <meta property="og:type" content="website" />
@@ -437,24 +437,31 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, page:
 export async function getServerSideProps({ params, req, res }) {
   const startTime = Date.now();
   const slug = params.slug;
+
+  // ✅ CRITICAL: Force 404 for 'articles' so static route handles it
+  if (slug === 'articles') {
+    console.log("[SSR] 🛑 blocked 'articles' slug in dynamic route");
+    return { notFound: true };
+  }
+
   const page = parseInt(params.page, 10) || 1;
-  
+
   // ✅ Add caching headers for better performance
   res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=1800');
-  
+
   try {
     console.log(`[SSR] 🚀 Generating page for slug: ${slug}, page: ${page}`);
-    
+
     // ✅ Early validation - reject invalid slugs immediately
     const invalidSlugs = [
-      'admin', 'wp-admin', 'wp-content', 'wp-includes', 
+      'admin', 'wp-admin', 'wp-content', 'wp-includes',
       'phpmyadmin', 'pma', 'mysql', 'database',
       'api', 'auth', 'login', 'register', 'logout',
       'dashboard', 'profile', 'settings', 'config',
       'null', 'undefined', 'favicon.ico', 'robots.txt',
       'sitemap.xml', '.env', '.htaccess'
     ];
-    
+
     // Block purely numeric slugs
     if (/^\d+$/.test(slug)) {
       console.log(`[SSR] ❌ Blocked numeric slug: ${slug}`);
@@ -476,7 +483,7 @@ export async function getServerSideProps({ params, req, res }) {
         };
       }
     }
-    
+
     // Block invalid/system slugs
     if (invalidSlugs.includes(slug.toLowerCase())) {
       console.log(`[SSR] ❌ Blocked invalid slug: ${slug}`);
@@ -498,7 +505,7 @@ export async function getServerSideProps({ params, req, res }) {
         };
       }
     }
-    
+
     // Block slugs with invalid characters
     if (!/^[a-zA-Z0-9\-_&]+$/.test(slug)) {
       console.log(`[SSR] ❌ Blocked invalid characters in slug: ${slug}`);
@@ -520,7 +527,7 @@ export async function getServerSideProps({ params, req, res }) {
         };
       }
     }
-    
+
     // Block extremely long slugs (likely attacks)
     if (slug.length > 100) {
       console.log(`[SSR] ❌ Blocked oversized slug: ${slug}`);
@@ -542,7 +549,7 @@ export async function getServerSideProps({ params, req, res }) {
         };
       }
     }
-    
+
     // Block invalid pages
     if (page < 1 || page > 1000) {
       console.log(`[SSR] ❌ Blocked invalid page: ${page}`);
@@ -564,13 +571,13 @@ export async function getServerSideProps({ params, req, res }) {
         };
       }
     }
-    
+
     // ✅ PERFORMANCE MONITORING: Track SSR page generation
     return await performance.trackPagePerformance(
       "CategoryDetailPage-SSR",
-      { 
-        pageType: "SSR", 
-        isSSR: true, 
+      {
+        pageType: "SSR",
+        isSSR: true,
         cacheStatus: "generating",
         userAgent: req.headers['user-agent'] || "unknown",
         slug,
@@ -582,29 +589,29 @@ export async function getServerSideProps({ params, req, res }) {
         // ✅ PERFORMANCE: Reduce API timeout from 8s to 6s for faster response
         const apiCalls = [
           performance.timeAPICall(
-            "GetSubCategories", 
+            "GetSubCategories",
             () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
             `subcategories/${slug}?page=${page}&pageSize=9`
           ).catch(error => ({ error, type: 'subcategories' })),
-          
+
           performance.timeAPICall(
-            "GetCategoryMeta", 
+            "GetCategoryMeta",
             () => getCategoryBySlug(slug),
             `category/${slug}`
           ).catch(error => ({ error, type: 'metadata' })),
 
           performance.timeAPICall(
-            "GetMainCategories", 
+            "GetMainCategories",
             () => getallCategories(),
             `allcategories`
           ).catch(error => ({ error, type: 'categories' }))
         ];
-        
+
         // ✅ CRITICAL: Reduced timeout from 8s to 5s for faster response
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('API_TIMEOUT')), 8000);
         });
-        
+
         const results = await Promise.race([
           Promise.allSettled(apiCalls),
           timeoutPromise
@@ -620,15 +627,15 @@ export async function getServerSideProps({ params, req, res }) {
           }
           throw error;
         });
-        
+
         const [subcategoriesResult, metadataResult, categoriesResult] = results;
-        
+
         // Handle subcategories data
         let data = null;
         if (subcategoriesResult.status === 'fulfilled' && !subcategoriesResult.value.error) {
           data = subcategoriesResult.value;
         }
-        
+
         if (!data || !data.projects) {
           console.log(`[SSR] ❌ No projects found for slug: ${slug}, page: ${page}`);
           if (!data || !data.projects) {
@@ -652,10 +659,10 @@ export async function getServerSideProps({ params, req, res }) {
 
         console.log(`[SSR] ✅ Found ${data.projects.length} projects for slug: ${slug}`);
 
-        performance.logMemoryUsage("CategoryDetail-SSR-AfterMainAPI", { 
-          slug, 
-          page, 
-          projectCount: data.projects.length 
+        performance.logMemoryUsage("CategoryDetail-SSR-AfterMainAPI", {
+          slug,
+          page,
+          projectCount: data.projects.length
         });
 
         // Handle metadata
@@ -687,10 +694,10 @@ export async function getServerSideProps({ params, req, res }) {
           console.log(`[SSR] ⚠️ Error fetching main categories, component will fallback to client-side`);
         }
 
-        performance.logMemoryUsage("CategoryDetail-SSR-AfterAllAPIs", { 
-          slug, 
-          page, 
-          projectCount: data.projects.length 
+        performance.logMemoryUsage("CategoryDetail-SSR-AfterAllAPIs", {
+          slug,
+          page,
+          projectCount: data.projects.length
         });
 
         const projectCount = data.projects?.length || 0;
@@ -706,11 +713,11 @@ export async function getServerSideProps({ params, req, res }) {
 
         // ✅ Generate performance summary
         const totalTime = Date.now() - startTime;
-        const timings = { 
-          subcategoriesAPI: subcategoriesResult.status === 'fulfilled' ? 150 : 0, 
+        const timings = {
+          subcategoriesAPI: subcategoriesResult.status === 'fulfilled' ? 150 : 0,
           categoryMetaAPI: metadataResult.status === 'fulfilled' ? 50 : 0,
           mainCategoriesAPI: categoriesResult.status === 'fulfilled' ? 100 : 0,
-          total: totalTime 
+          total: totalTime
         };
         performance.generateSummary("CategoryDetailPage-SSR", timings);
 
