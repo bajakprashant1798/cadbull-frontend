@@ -1,3 +1,4 @@
+import React from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,24 @@ const BlogDetail = ({ blog }) => {
     if (!blog) return null;
 
     const { title, body, excerpt, featured_image, published_date, seo, slug } = blog;
+
+    // DEBUG: Client-side check for API access
+    React.useEffect(() => {
+        console.log("🔍 [Debug] Checking API Access for ID:", blog.id);
+        const debugFetch = async () => {
+            try {
+                const apiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"}/api/blogs?filters[id][$eq]=${blog.id}&populate=*`;
+                console.log("🔍 [Debug] Fetching:", apiUrl);
+                const res = await fetch(apiUrl);
+                console.log("🔍 [Debug] Status:", res.status);
+                const json = await res.json();
+                console.log("🔍 [Debug] Response:", json);
+            } catch (err) {
+                console.error("🔍 [Debug] Error:", err);
+            }
+        };
+        debugFetch();
+    }, [blog.id]);
     const imageUrl = getStrapiMedia(featured_image);
     const date = new Date(published_date).toLocaleDateString("en-US", {
         year: "numeric",
@@ -164,25 +183,38 @@ const BlogDetail = ({ blog }) => {
 
 BlogDetail.getLayout = (page) => <MainLayout>{page}</MainLayout>;
 
+// export async function getStaticPaths() {
+//     try {
+//         const blogsRes = await fetchStrapiAPI("/blogs", { fields: ["slug", "id"] });
+//         return {
+//             paths: blogsRes.data.map((blog) => ({
+//                 params: {
+//                     id: blog.id.toString(),
+//                     slug: blog.slug,
+//                 },
+//             })),
+//             fallback: "blocking",
+//         };
+//     } catch (error) {
+//         console.error("Error fetching paths:", error);
+//         return {
+//             paths: [],
+//             fallback: "blocking",
+//         };
+//     }
+// }
 export async function getStaticPaths() {
-    try {
-        const blogsRes = await fetchStrapiAPI("/blogs", { fields: ["slug", "id"] });
-        return {
-            paths: blogsRes.data.map((blog) => ({
-                params: {
-                    id: blog.id.toString(),
-                    slug: blog.slug,
-                },
-            })),
-            fallback: "blocking",
-        };
-    } catch (error) {
-        console.error("Error fetching paths:", error);
-        return {
-            paths: [],
-            fallback: "blocking",
-        };
-    }
+    const blogsRes = await fetchStrapiAPI("/blogs");
+
+    return {
+        paths: blogsRes.data.map((blog) => ({
+            params: {
+                id: blog.id.toString(),
+                slug: blog.slug, // must match your actual API structure
+            },
+        })),
+        fallback: "blocking",
+    };
 }
 
 export async function getStaticProps({ params }) {
