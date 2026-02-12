@@ -183,33 +183,15 @@ const BlogDetail = ({ blog }) => {
 
 BlogDetail.getLayout = (page) => <MainLayout>{page}</MainLayout>;
 
-// export async function getStaticPaths() {
-//     try {
-//         const blogsRes = await fetchStrapiAPI("/blogs", { fields: ["slug", "id"] });
-//         return {
-//             paths: blogsRes.data.map((blog) => ({
-//                 params: {
-//                     id: blog.id.toString(),
-//                     slug: blog.slug,
-//                 },
-//             })),
-//             fallback: "blocking",
-//         };
-//     } catch (error) {
-//         console.error("Error fetching paths:", error);
-//         return {
-//             paths: [],
-//             fallback: "blocking",
-//         };
-//     }
-// }
+// // Use SSR for easier debugging and to avoid potential build-time fetching issues for now
 export async function getServerSideProps({ params }) {
+    console.log("🔥 [SSR] Fetching blog for ID:", params.id);
     try {
-        console.log("🔥 SSR fetching blog for slug:", params.slug);
-
+        // Attempt filtering using shorthand syntax to avoid '$' character issues with WAF/Firewalls
+        // filters[id]=123 instead of filters[id][$eq]=123
         const blogRes = await fetchStrapiAPI("/blogs", {
             filters: {
-                slug: { $eq: params.slug }
+                id: params.id
             },
             populate: {
                 featured_image: true,
@@ -218,71 +200,24 @@ export async function getServerSideProps({ params }) {
             },
         });
 
-        console.log("🔥 SSR Strapi response:", blogRes?.data?.length);
+        console.log("� [SSR] Strapi Response Length:", blogRes?.data?.length);
 
         const blog = blogRes?.data?.[0];
 
         if (!blog) {
-            console.log("❌ Blog not found in SSR");
+            console.warn(`❌ [SSR] Blog not found for id: ${params.id}`);
             return { notFound: true };
         }
+
+        console.log("✅ [SSR] Blog found:", blog.title);
 
         return {
             props: { blog }
         };
     } catch (error) {
-        console.error("❌ SSR Error:", error);
+        console.error("❌ [SSR] Error fetching blog:", error);
         return { notFound: true };
     }
 }
-
-// export async function getStaticProps({ params }) {
-//     console.log("🚀 [Article Detail] getStaticProps called for ID:", params.id);
-//     try {
-//         // Fetch by filtering on collection endpoint
-//         const blogRes = await fetchStrapiAPI("/blogs", {
-//             filters: {
-//                 id: {
-//                     $eq: params.id
-//                 }
-//             },
-//             populate: {
-//                 featured_image: true,
-//                 seo: {
-//                     populate: "*"
-//                 },
-//                 body: {
-//                     populate: "*"
-//                 }
-//             },
-//         });
-
-//         console.log("🚀 [Article Detail] Strapi Response Length:", blogRes?.data?.length);
-
-//         const blog = blogRes.data[0];
-
-//         if (!blog) {
-//             console.warn(`❌ [Article Detail] Blog not found for id: ${params.id}`);
-//             return {
-//                 notFound: true,
-//             };
-//         }
-
-//         console.log("✅ [Article Detail] Blog found:", blog.title);
-//         console.log("📦 [Article Detail] Body field type:", typeof blog.body, Array.isArray(blog.body));
-
-//         return {
-//             props: {
-//                 blog,
-//             },
-//             revalidate: 300,
-//         };
-//     } catch (error) {
-//         console.error("❌ [Article Detail] Error fetching blog:", error);
-//         return {
-//             notFound: true,
-//         };
-//     }
-// }
 
 export default BlogDetail;
