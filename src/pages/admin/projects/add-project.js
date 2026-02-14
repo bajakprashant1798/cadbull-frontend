@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
-import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi } from "@/service/api";
+import { addProjectApi, getAdminCategoriesWithSubcategories, getCategoriesApi, checkProjectNameApi, generateAIContent } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 // import TagsField from "@/components/TagsField";
 import debounce from "lodash.debounce";
 
 // Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { 
+const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>
 });
@@ -43,41 +43,41 @@ function validateWorkTitle(title) {
   const unsafeChars = /[\/\\?#%&=+<>{}[\]|^`"']/;
   if (unsafeChars.test(title)) {
     const foundChars = title.match(/[\/\\?#%&=+<>{}[\]|^`"']/g);
-    return { 
-      isValid: false, 
-      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.` 
+    return {
+      isValid: false,
+      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.`
     };
   }
 
   // Check for multiple consecutive spaces (can cause slug issues)
   if (/\s{2,}/.test(title)) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot contain multiple consecutive spaces." 
+    return {
+      isValid: false,
+      message: "Work title cannot contain multiple consecutive spaces."
     };
   }
 
   // Check for leading/trailing spaces
   if (title !== title.trim()) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot start or end with spaces." 
+    return {
+      isValid: false,
+      message: "Work title cannot start or end with spaces."
     };
   }
 
   // Check minimum length
   if (title.trim().length < 3) {
-    return { 
-      isValid: false, 
-      message: "Work title must be at least 3 characters long." 
+    return {
+      isValid: false,
+      message: "Work title must be at least 3 characters long."
     };
   }
 
   // Check maximum length
   if (title.length > 100) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot exceed 100 characters." 
+    return {
+      isValid: false,
+      message: "Work title cannot exceed 100 characters."
     };
   }
 
@@ -141,7 +141,7 @@ const AddProject = () => {
   // const [tags, setTags] = useState([]);
   const [tagsCsv, setTagsCsv] = useState("");    // CSV tags as-is
   const [submitting, setSubmitting] = useState(false); // lock while uploading
-  
+
   const [workTitle, setWorkTitle] = useState(""); // Controlled input for title
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -196,6 +196,62 @@ const AddProject = () => {
     e.target.value = "";
   };
 
+  const [generatingAI, setGeneratingAI] = useState(false);
+
+  const handleAIContentGeneration = async () => {
+    if (images.length === 0) {
+      toast.error("Please upload an image first to generate content.");
+      return;
+    }
+
+    try {
+      setGeneratingAI(true);
+      const formData = new FormData();
+      formData.append("image", images[0]); // Send the first image
+
+      const res = await generateAIContent(formData);
+      const data = res.data;
+
+      console.log("AI Response:", data);
+
+      if (data) {
+        // 1. Work Title
+        if (data.work_title) {
+          handleWorkTitleChange({ target: { value: data.work_title } });
+        }
+
+        // 2. Description
+        if (data.description) {
+          handleQuillDescriptionChange(data.description);
+        }
+
+        // 3. Meta Title
+        if (data.meta_title) {
+          setValue("meta_title", data.meta_title);
+          // Trigger validation manually if needed, or rely on watch
+        }
+
+        // 4. Meta Description
+        if (data.meta_description) {
+          setValue("meta_description", data.meta_description);
+        }
+
+        // 5. Keywords (Tags)
+        if (data.keywords) {
+          setTagsCsv(data.keywords);
+        }
+
+        toast.success("Content generated successfully!");
+      }
+
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+      toast.error("Failed to generate content. Please try again.");
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
+
   // ✅ Predefined users list (same as old site)
   const predefinedUsers = [
     { id: 7481, name: 'Eiz Luna' },
@@ -245,9 +301,9 @@ const AddProject = () => {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
       ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
       [{ 'size': ['small', false, 'large', 'huge'] }],
       [{ 'color': [] }, { 'background': [] }],
       [{ 'align': [] }],
@@ -302,7 +358,7 @@ const AddProject = () => {
       toast.error("❌ Missing authentication token");
       return;
     }
-  
+
     try {
       console.log("🚀 Fetching categories for admin panel...");
       const res = await getAdminCategoriesWithSubcategories();
@@ -313,14 +369,14 @@ const AddProject = () => {
       toast.error(error.message || "Error fetching categories");
     }
   };
-  
+
 
   // ✅ Handle Category Selection
   const handleCategoryChange = (categoryId) => {
     const selectedCategory = categories.find((cat) => cat.id === Number(categoryId));
     setSubcategories(selectedCategory?.project_sub_categories || []);
   };
-  
+
 
   // ✅ Handle Description Character Count (for legacy textarea)
   const handleDescriptionChange = (e) => {
@@ -332,7 +388,7 @@ const AddProject = () => {
   const handleQuillDescriptionChange = (content) => {
     setDescription(content);
     setValue("description", content); // Sync with react-hook-form
-    
+
     // ✅ SEO Length validation for description
     const seoValidation = validateSEODescription(content);
     setSeoDescriptionValidation(seoValidation);
@@ -387,21 +443,21 @@ const AddProject = () => {
       checkDuplicateTitle.cancel();
     };
   }, []);
-  
+
 
 
   // const handleWorkTitleChange = (e) => {
   //   const value = e.target.value;
   //   setWorkTitle(value);
   //   setValue("work_title", value); // Sync with react-hook-form
-    
+
   //   setIsDuplicate(false);
 
   //   if (slugMode === "standard" || slug.trim() === "") {
   //     setSlug(standardSlugify(value));
   //   }
   //   if (typingTimeout.current) clearTimeout(typingTimeout.current);
-    
+
 
   //   typingTimeout.current = setTimeout(async () => {
   //     if (!value.trim()) {
@@ -506,7 +562,7 @@ const AddProject = () => {
       formData.append("file_type", data.file_type || "");
       // formData.append("category_id", data.category_id || "");
       // formData.append("subcategory_id", data.subcategory_id ? data.subcategory_id : null);
-      
+
       // coerce numeric-ish fields so backend never gets '' for INT columns
       const categoryId = data.category_id ? Number(data.category_id) : null;
       const subcategoryId = data.subcategory_id ? Number(data.subcategory_id) : null;
@@ -515,7 +571,7 @@ const AddProject = () => {
       // popular defaults to 0 (regular project) on create
       formData.append("popular", 0);
       formData.append("type", data.type || "Free");
-      
+
       // ✅ Add selected user_id
       // formData.append("user_id", selectedUserId);
       formData.append("user_id", Number(selectedUserId));
@@ -524,32 +580,32 @@ const AddProject = () => {
 
       // ✅ Ensure file & image exist before appending
       if (data.file && data.file.length > 0) {
-          const file = data.file[0];
-          
-          // Check file size (1GB limit)
-          if (file.size > 1024 * 1024 * 1024) {
-            toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
-            setSubmitting(false);
-            return;
-          }
-          
-          formData.append("file", file);
-      } else {
-          toast.error("Please upload a ZIP file.");
+        const file = data.file[0];
+
+        // Check file size (1GB limit)
+        if (file.size > 1024 * 1024 * 1024) {
+          toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
           setSubmitting(false);
           return;
+        }
+
+        formData.append("file", file);
+      } else {
+        toast.error("Please upload a ZIP file.");
+        setSubmitting(false);
+        return;
       }
 
       // if (data.image && data.image.length > 0) {
       //     const image = data.image[0];
-          
+
       //     // Check image size (10MB limit)
       //     if (image.size > 10 * 1024 * 1024) {
       //       toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
       //       setSubmitting(false);
       //       return;
       //     }
-          
+
       //     formData.append("image", image);
       // } else {
       //     toast.error("Please upload an Image.");
@@ -575,20 +631,20 @@ const AddProject = () => {
       setSelectedUserId(""); // Reset user selection
       router.push("/admin/projects/view-projects");
     } catch (error) {
-        console.error("❌ Error Adding Project:", error.response?.data || error.message, error);
-        
-        // Handle specific error types
-        if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
-          toast.error("Upload timeout - File too large or connection slow. Try with a smaller file or check your internet connection.");
-        } else if (error.response?.status === 413) {
-          toast.error("File too large - Please reduce file size and try again.");
-        } else if (error.response?.data?.error) {
-          toast.error(error.response.data.error);
-        } else {
-          toast.error("Error adding project. Please try again.");
-        }
+      console.error("❌ Error Adding Project:", error.response?.data || error.message, error);
+
+      // Handle specific error types
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        toast.error("Upload timeout - File too large or connection slow. Try with a smaller file or check your internet connection.");
+      } else if (error.response?.status === 413) {
+        toast.error("File too large - Please reduce file size and try again.");
+      } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Error adding project. Please try again.");
+      }
     } finally {
-       setSubmitting(false);
+      setSubmitting(false);
     }
   };
 
@@ -597,13 +653,13 @@ const AddProject = () => {
       <div className="container ">
         <h2>Add New Project</h2>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-          
+
           {/* ✅ Choose Username */}
           <div className="mb-3">
             <label className="form-label">Choose Username *</label>
-            <select 
-              className="form-control" 
-              value={selectedUserId} 
+            <select
+              className="form-control"
+              value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
               required
             >
@@ -651,8 +707,8 @@ const AddProject = () => {
               </div>
             )}
             {/* ✅ SEO Length Validation */}
-            <div style={{ 
-              color: seoTitleValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoTitleValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -671,7 +727,7 @@ const AddProject = () => {
                 onChange={handleQuillDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
-                style={{ 
+                style={{
                   minHeight: '200px',
                   backgroundColor: '#fff'
                 }}
@@ -679,17 +735,17 @@ const AddProject = () => {
               />
             </div>
             <small className="form-text text-muted mt-2 d-block">
-              🎨 <strong>Formatting options available:</strong><br/>
-              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
-              • Headers (H1, H2, H3)<br/>
-              • Bullet points and numbered lists<br/>
-              • Links to external websites<br/>
-              • Text colors and highlighting<br/>
+              🎨 <strong>Formatting options available:</strong><br />
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br />
+              • Headers (H1, H2, H3)<br />
+              • Bullet points and numbered lists<br />
+              • Links to external websites<br />
+              • Text colors and highlighting<br />
               • Code blocks and quotes
             </small>
             {/* ✅ Description Character Count (No length restrictions) */}
-            <div style={{ 
-              color: "green", 
+            <div style={{
+              color: "green",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -701,14 +757,14 @@ const AddProject = () => {
           {/* Meta Title */}
           <div className="mb-3">
             <label className="form-label">Meta Title</label>
-            <input 
-              className="form-control" 
-              {...register("meta_title")} 
+            <input
+              className="form-control"
+              {...register("meta_title")}
               placeholder="Enter SEO meta title (50-60 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Title */}
-            <div style={{ 
-              color: seoMetaTitleValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoMetaTitleValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -720,15 +776,15 @@ const AddProject = () => {
           {/* Meta Description */}
           <div className="mb-3">
             <label className="form-label">Meta Description</label>
-            <textarea 
-              className="form-control" 
+            <textarea
+              className="form-control"
               {...register("meta_description")}
               rows="3"
               placeholder="Enter SEO meta description (150-160 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Description */}
-            <div style={{ 
-              color: seoMetaDescriptionValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoMetaDescriptionValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -844,10 +900,10 @@ const AddProject = () => {
           {/* Upload Zip File */}
           <div className="mb-3">
             <label className="form-label">Upload Zip File *</label>
-            <input 
-              type="file" 
-              className="form-control" 
-              {...register("file", { required: true })} 
+            <input
+              type="file"
+              className="form-control"
+              {...register("file", { required: true })}
               accept=".zip,.rar,.tar,.gz"
             />
             <small className="form-text text-muted">
@@ -878,7 +934,7 @@ const AddProject = () => {
             multiple
             onChange={handleFileChange} // ✅ APPENDS across multiple picks
           />
-          
+
 
           {images.length > 0 && (
             <div className="d-flex flex-wrap gap-3 mb-3">
@@ -959,6 +1015,28 @@ const AddProject = () => {
             <small className="text-muted ms-1">{images.length}/10 selected</small>
           </div>
 
+          {/* ✅ AI Generation Button */}
+          <div className="mb-3 mt-3">
+            <button
+              type="button"
+              className="btn btn-warning text-dark fw-bold"
+              onClick={handleAIContentGeneration}
+              disabled={generatingAI || images.length === 0}
+            >
+              {generatingAI ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                  Generating AI Content...
+                </>
+              ) : (
+                "✨ Auto Generate AI Content"
+              )}
+            </button>
+            <small className="d-block text-muted mt-1">
+              Upload an image first, then click this to auto-fill Title, Description, and SEO fields.
+            </small>
+          </div>
+
           {/* Schedule Publish (IST, optional) */}
           <div className="mb-3">
             <label className="form-label">Schedule Publish (IST)</label>
@@ -982,10 +1060,10 @@ const AddProject = () => {
             type="submit"
             className="btn btn-primary"
             disabled={
-              submitting || 
-              isDuplicate || 
-              checking || 
-              !selectedUserId || 
+              submitting ||
+              isDuplicate ||
+              checking ||
+              !selectedUserId ||
               !titleValidation.isValid ||
               !seoTitleValidation.isValid ||
               // !seoDescriptionValidation.isValid || // Removed - description has no length restrictions

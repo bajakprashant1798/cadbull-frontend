@@ -5,11 +5,11 @@ import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import * as api from "@/service/api";
 import { toast } from "react-toastify";
-import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi } from "@/service/api";
+import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi, generateAIContent } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 
 // Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { 
+const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>
 });
@@ -36,7 +36,7 @@ function mysqlUtcToDatetimeLocalIST(mysqlUtc) {
     if (isNaN(utc.getTime())) return "";
     const ist = new Date(utc.getTime() + 330 * 60 * 1000);
     const pad = (n) => String(n).padStart(2, "0");
-    return `${ist.getFullYear()}-${pad(ist.getMonth()+1)}-${pad(ist.getDate())}T${pad(ist.getHours())}:${pad(ist.getMinutes())}:${pad(ist.getSeconds())}`;
+    return `${ist.getFullYear()}-${pad(ist.getMonth() + 1)}-${pad(ist.getDate())}T${pad(ist.getHours())}:${pad(ist.getMinutes())}:${pad(ist.getSeconds())}`;
   } catch {
     return "";
   }
@@ -69,41 +69,41 @@ function validateWorkTitle(title) {
   const unsafeChars = /[\/\\?#%&=+<>{}[\]|^`"']/;
   if (unsafeChars.test(title)) {
     const foundChars = title.match(/[\/\\?#%&=+<>{}[\]|^`"']/g);
-    return { 
-      isValid: false, 
-      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.` 
+    return {
+      isValid: false,
+      message: `Work title contains URL-unsafe characters: ${[...new Set(foundChars)].join(', ')}. These characters will break the product URL.`
     };
   }
 
   // Check for multiple consecutive spaces (can cause slug issues)
   if (/\s{2,}/.test(title)) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot contain multiple consecutive spaces." 
+    return {
+      isValid: false,
+      message: "Work title cannot contain multiple consecutive spaces."
     };
   }
 
   // Check for leading/trailing spaces
   if (title !== title.trim()) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot start or end with spaces." 
+    return {
+      isValid: false,
+      message: "Work title cannot start or end with spaces."
     };
   }
 
   // Check minimum length
   if (title.trim().length < 3) {
-    return { 
-      isValid: false, 
-      message: "Work title must be at least 3 characters long." 
+    return {
+      isValid: false,
+      message: "Work title must be at least 3 characters long."
     };
   }
 
   // Check maximum length
   if (title.length > 100) {
-    return { 
-      isValid: false, 
-      message: "Work title cannot exceed 100 characters." 
+    return {
+      isValid: false,
+      message: "Work title cannot exceed 100 characters."
     };
   }
 
@@ -166,7 +166,7 @@ const EditProject = () => {
       status: "1",
     },
   });
-  
+
 
   const router = useRouter();
   const { id } = router.query;
@@ -206,7 +206,7 @@ const EditProject = () => {
 
   const [slug, setSlug] = useState("");         // Slug input
   const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
-  
+
   // Rich text editor state
   const [description, setDescription] = useState("");
 
@@ -215,9 +215,9 @@ const EditProject = () => {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
       ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
       [{ 'size': ['small', false, 'large', 'huge'] }],
       [{ 'color': [] }, { 'background': [] }],
       [{ 'align': [] }],
@@ -261,107 +261,162 @@ const EditProject = () => {
   // }, [dispatch, token, storedToken]);
 
   // --- Add near other useState hooks ---
-const [newImages, setNewImages] = useState([]); // File[] selected but not yet uploaded
-const [uploadingImages, setUploadingImages] = useState(false);
+  const [newImages, setNewImages] = useState([]); // File[] selected but not yet uploaded
+  const [uploadingImages, setUploadingImages] = useState(false);
 
-// --- Allowed image types (adjust if needed) ---
-const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"
-];
+  // --- Allowed image types (adjust if needed) ---
+  const ALLOWED_IMAGE_TYPES = [
+    "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"
+  ];
 
-// Pick files
-const handleSelectNewImages = (e) => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+  // Pick files
+  const handleSelectNewImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  // filter invalids + 10MB cap per image
-  const filtered = [];
-  for (const f of files) {
-    if (!ALLOWED_IMAGE_TYPES.includes(f.type)) {
-      toast.error(`Unsupported type: ${f.name}`);
-      continue;
+    // filter invalids + 10MB cap per image
+    const filtered = [];
+    for (const f of files) {
+      if (!ALLOWED_IMAGE_TYPES.includes(f.type)) {
+        toast.error(`Unsupported type: ${f.name}`);
+        continue;
+      }
+      if (f.size > 10 * 1024 * 1024) {
+        toast.error(`Too large (>10MB): ${f.name}`);
+        continue;
+      }
+      filtered.push(f);
     }
-    if (f.size > 10 * 1024 * 1024) {
-      toast.error(`Too large (>10MB): ${f.name}`);
-      continue;
+    if (filtered.length) {
+      setNewImages((prev) => [...prev, ...filtered]);
     }
-    filtered.push(f);
-  }
-  if (filtered.length) {
-    setNewImages((prev) => [...prev, ...filtered]);
-  }
-  // reset input so same file can be re-picked later
-  e.target.value = "";
-};
+    // reset input so same file can be re-picked later
+    e.target.value = "";
+  };
 
-// Remove a not-yet-uploaded image from the preview list
-const removeNewImage = (idx) => {
-  setNewImages((prev) => prev.filter((_, i) => i !== idx));
-};
+  // Remove a not-yet-uploaded image from the preview list
+  const removeNewImage = (idx) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== idx));
+  };
 
-const moveNewImageUp = (idx) => {
-  if (idx <= 0) return;
-  setNewImages((prev) => {
-    const arr = [...prev];
-    [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
-    return arr;
-  });
-};
+  const moveNewImageUp = (idx) => {
+    if (idx <= 0) return;
+    setNewImages((prev) => {
+      const arr = [...prev];
+      [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+      return arr;
+    });
+  };
 
-const moveNewImageDown = (idx) => {
-  setNewImages((prev) => {
-    if (idx < 0 || idx >= prev.length - 1) return prev;
-    const arr = [...prev];
-    [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
-    return arr;
-  });
-};
+  const moveNewImageDown = (idx) => {
+    setNewImages((prev) => {
+      if (idx < 0 || idx >= prev.length - 1) return prev;
+      const arr = [...prev];
+      [arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]];
+      return arr;
+    });
+  };
 
-// Upload selected images
-const uploadNewImages = async () => {
-  if (!newImages.length) return;
-  if (!projectDetails?.id) {
-    toast.error("Project not loaded yet.");
-    return;
-  }
-
-  try {
-    setUploadingImages(true);
-
-    const fd = new FormData();
-    // backend usually expects "images[]" (or "images"); keep both for safety
-    newImages.forEach((file) => fd.append("images", file));
-    // If your backend expects "image" for a single file, it should also accept array.
-    // If it ONLY accepts `image`, do: newImages.forEach(f => fd.append("image", f))
-
-    const res = await api.addProjectImagesApi(projectDetails.id, fd);
-
-    // Normalize response: assume it returns an array of rows like
-    // [{ id, image, position }, ...]
-    const created = Array.isArray(res.data?.data)
-      ? res.data.data
-      : Array.isArray(res.data)
-      ? res.data
-      : [];
-
-    if (!created.length) {
-      toast.error("Upload finished but no images returned.");
-    } else {
-      // Merge into gallery at the end
-      setProjectDetails((prev) => ({
-        ...prev,
-        images: [...(prev?.images ?? []), ...created].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999)),
-      }));
-      toast.success(`Uploaded ${created.length} image(s).`);
-      setNewImages([]);
+  // Upload selected images
+  const uploadNewImages = async () => {
+    if (!newImages.length) return;
+    if (!projectDetails?.id) {
+      toast.error("Project not loaded yet.");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to upload images.");
-  } finally {
-    setUploadingImages(false);
-  }
-};
+
+    try {
+      setUploadingImages(true);
+
+      const fd = new FormData();
+      // backend usually expects "images[]" (or "images"); keep both for safety
+      newImages.forEach((file) => fd.append("images", file));
+      // If your backend expects "image" for a single file, it should also accept array.
+      // If it ONLY accepts `image`, do: newImages.forEach(f => fd.append("image", f))
+
+      const res = await api.addProjectImagesApi(projectDetails.id, fd);
+
+      // Normalize response: assume it returns an array of rows like
+      // [{ id, image, position }, ...]
+      const created = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
+
+      if (!created.length) {
+        toast.error("Upload finished but no images returned.");
+      } else {
+        // Merge into gallery at the end
+        setProjectDetails((prev) => ({
+          ...prev,
+          images: [...(prev?.images ?? []), ...created].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999)),
+        }));
+        toast.success(`Uploaded ${created.length} image(s).`);
+        setNewImages([]);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload images.");
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const [generatingAI, setGeneratingAI] = useState(false);
+
+  const handleAIContentGeneration = async () => {
+    if (newImages.length === 0) {
+      toast.error("Please select a NEW image to generate content.");
+      return;
+    }
+
+    try {
+      setGeneratingAI(true);
+      const formData = new FormData();
+      formData.append("image", newImages[0]); // Send the first new image
+
+      const res = await generateAIContent(formData);
+      const data = res.data;
+
+      console.log("AI Response:", data);
+
+      if (data) {
+        // 1. Work Title
+        if (data.work_title) {
+          handleWorkTitleChange({ target: { value: data.work_title } });
+        }
+
+        // 2. Description
+        if (data.description) {
+          handleDescriptionChange(data.description);
+        }
+
+        // 3. Meta Title
+        if (data.meta_title) {
+          setValue("meta_title", data.meta_title);
+        }
+
+        // 4. Meta Description
+        if (data.meta_description) {
+          setValue("meta_description", data.meta_description);
+        }
+
+        // 5. Keywords (Tags)
+        if (data.keywords) {
+          setTagsCsv(data.keywords);
+        }
+
+        toast.success("Content generated successfully!");
+      }
+
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+      toast.error("Failed to generate content. Please try again.");
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
 
   const handleGenerateStandardSlug = () => {
     setSlug(standardSlugify(workTitle));
@@ -414,7 +469,7 @@ const uploadNewImages = async () => {
         // Object.keys(projectRes.data).forEach((key) => {
         //   // ✅ ADD THIS CONDITION to skip setting the credit_days value
         //   console.log(projectRes.data, "product data log");
-          
+
         //   if (key !== 'credit_days') {
         //     setValue(key, projectRes.data[key] || "");
         //   }
@@ -426,7 +481,7 @@ const uploadNewImages = async () => {
 
         // Ensure selects get proper string values
         setValue("popular", String(projectData.popular ?? 0)); // "0" or "1"
-        setValue("status",  String(projectData.status  ?? 1)); // "1" or "2"
+        setValue("status", String(projectData.status ?? 1)); // "1" or "2"
         setValue("category_id", String(projectData.category_id ?? ""));
         setValue(
           "subcategory_id",
@@ -457,7 +512,7 @@ const uploadNewImages = async () => {
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
         setTagsCsv(projectData.tags || "");
-        
+
         // Set description for React Quill
         setDescription(projectData.description || "");
 
@@ -514,57 +569,57 @@ const uploadNewImages = async () => {
 
 
   // 🟢 Move Up
-const handleMoveUp = async (imageId) => {
-  try {
-    const imgs = [...(projectDetails?.images ?? [])];
-    const i = imgs.findIndex((x) => x.id === imageId);
-    if (i <= 0) return;
+  const handleMoveUp = async (imageId) => {
+    try {
+      const imgs = [...(projectDetails?.images ?? [])];
+      const i = imgs.findIndex((x) => x.id === imageId);
+      if (i <= 0) return;
 
-    [imgs[i - 1], imgs[i]] = [imgs[i], imgs[i - 1]];
-    setProjectDetails((prev) => ({ ...prev, images: imgs }));
+      [imgs[i - 1], imgs[i]] = [imgs[i], imgs[i - 1]];
+      setProjectDetails((prev) => ({ ...prev, images: imgs }));
 
-    await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
-  } catch (err) {
-    toast.error("Couldn’t move image up.");
-    console.error(err);
-  }
-};
+      await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
+    } catch (err) {
+      toast.error("Couldn’t move image up.");
+      console.error(err);
+    }
+  };
 
-// 🟢 Move Down
-const handleMoveDown = async (imageId) => {
-  try {
-    const imgs = [...(projectDetails?.images ?? [])];
-    const i = imgs.findIndex((x) => x.id === imageId);
-    if (i < 0 || i >= imgs.length - 1) return;
+  // 🟢 Move Down
+  const handleMoveDown = async (imageId) => {
+    try {
+      const imgs = [...(projectDetails?.images ?? [])];
+      const i = imgs.findIndex((x) => x.id === imageId);
+      if (i < 0 || i >= imgs.length - 1) return;
 
-    [imgs[i], imgs[i + 1]] = [imgs[i + 1], imgs[i]];
-    setProjectDetails((prev) => ({ ...prev, images: imgs }));
+      [imgs[i], imgs[i + 1]] = [imgs[i + 1], imgs[i]];
+      setProjectDetails((prev) => ({ ...prev, images: imgs }));
 
-    await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
-  } catch (err) {
-    toast.error("Couldn’t move image down.");
-    console.error(err);
-  }
-};
+      await api.reorderProjectImagesApi(projectDetails.id, imgs.map((x) => x.id));
+    } catch (err) {
+      toast.error("Couldn’t move image down.");
+      console.error(err);
+    }
+  };
 
-// 🗑️ Delete
-const handleDelete = async (imageId) => {
-  try {
-    if (!confirm("Delete this image?")) return;
+  // 🗑️ Delete
+  const handleDelete = async (imageId) => {
+    try {
+      if (!confirm("Delete this image?")) return;
 
-    await api.deleteProjectImageApi(imageId);
+      await api.deleteProjectImageApi(imageId);
 
-    setProjectDetails((prev) => ({
-      ...prev,
-      images: (prev?.images ?? []).filter((x) => x.id !== imageId),
-    }));
+      setProjectDetails((prev) => ({
+        ...prev,
+        images: (prev?.images ?? []).filter((x) => x.id !== imageId),
+      }));
 
-    toast.success("Image deleted.");
-  } catch (err) {
-    toast.error("Couldn’t delete image.");
-    console.error(err);
-  }
-};
+      toast.success("Image deleted.");
+    } catch (err) {
+      toast.error("Couldn’t delete image.");
+      console.error(err);
+    }
+  };
 
 
   const handleWorkTitleChange = (e) => {
@@ -633,7 +688,7 @@ const handleDelete = async (imageId) => {
   const handleDescriptionChange = (content) => {
     setDescription(content);
     setValue("description", content); // Sync with react-hook-form
-    
+
     // ✅ SEO Length validation for description
     const seoValidation = validateSEODescription(content);
     setSeoDescriptionValidation(seoValidation);
@@ -666,7 +721,7 @@ const handleDelete = async (imageId) => {
         return;
       }
     }
-    
+
     // if (isDuplicate) {
     //   toast.error("Cannot save: Duplicate project title.");
     //   return;
@@ -714,26 +769,26 @@ const handleDelete = async (imageId) => {
       // ✅ Append files if they exist
       if (data.file && data.file.length > 0) {
         const file = data.file[0];
-        
+
         // Check file size (1GB limit)
         if (file.size > 1024 * 1024 * 1024) {
           toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
           setSubmitting(false);
           return;
         }
-        
+
         updatedData.file = data.file;
       }
       if (data.image && data.image.length > 0) {
         const image = data.image[0];
-        
+
         // Check image size (10MB limit)
         if (image.size > 10 * 1024 * 1024) {
           toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
           setSubmitting(false);
           return;
         }
-        
+
         updatedData.image = data.image;
       }
       // If credit_days is blank, don’t send it (prevents "" → INT issues)
@@ -778,7 +833,7 @@ const handleDelete = async (imageId) => {
       router.push("/admin/projects/view-projects");
     } catch (error) {
       console.error("❌ Error updating project:", error.response?.data || error.message);
-      
+
       // Handle specific error types
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         toast.error("Update timeout - File too large or connection slow. Try with a smaller file or check your internet connection.");
@@ -843,8 +898,8 @@ const handleDelete = async (imageId) => {
               </div>
             )}
             {/* ✅ SEO Length Validation */}
-            <div style={{ 
-              color: seoTitleValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoTitleValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -872,17 +927,17 @@ const handleDelete = async (imageId) => {
               />
             </div>
             <small className="form-text text-muted mt-2 d-block">
-              🎨 <strong>Formatting options available:</strong><br/>
-              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
-              • Headers (H1, H2, H3)<br/>
-              • Bullet points and numbered lists<br/>
-              • Links to external websites<br/>
-              • Text colors and highlighting<br/>
+              🎨 <strong>Formatting options available:</strong><br />
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br />
+              • Headers (H1, H2, H3)<br />
+              • Bullet points and numbered lists<br />
+              • Links to external websites<br />
+              • Text colors and highlighting<br />
               • Code blocks and quotes
             </small>
             {/* ✅ Description Character Count (No length restrictions) */}
-            <div style={{ 
-              color: "green", 
+            <div style={{
+              color: "green",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -894,14 +949,14 @@ const handleDelete = async (imageId) => {
           {/* Meta Title */}
           <div className="mb-3">
             <label className="form-label">Meta Title</label>
-            <input 
-              className="form-control" 
-              {...register("meta_title")} 
+            <input
+              className="form-control"
+              {...register("meta_title")}
               placeholder="Enter SEO meta title (50-60 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Title */}
-            <div style={{ 
-              color: seoMetaTitleValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoMetaTitleValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -913,15 +968,15 @@ const handleDelete = async (imageId) => {
           {/* Meta Description */}
           <div className="mb-3">
             <label className="form-label">Meta Description</label>
-            <textarea 
-              className="form-control" 
+            <textarea
+              className="form-control"
               {...register("meta_description")}
               rows="3"
               placeholder="Enter SEO meta description (150-160 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Description */}
-            <div style={{ 
-              color: seoMetaDescriptionValidation.isValid ? "green" : "red", 
+            <div style={{
+              color: seoMetaDescriptionValidation.isValid ? "green" : "red",
               fontSize: "13px",
               fontWeight: "500",
               marginTop: "4px"
@@ -1082,6 +1137,28 @@ const handleDelete = async (imageId) => {
               </button>
             </div>
 
+            {/* ✅ AI Generation Button */}
+            <div className="mb-3 mt-3">
+              <button
+                type="button"
+                className="btn btn-warning text-dark fw-bold"
+                onClick={handleAIContentGeneration}
+                disabled={generatingAI || (!newImages.length && !projectDetails?.image)}
+              >
+                {generatingAI ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                    Generating AI Content...
+                  </>
+                ) : (
+                  "✨ Auto Generate AI Content"
+                )}
+              </button>
+              <small className="d-block text-muted mt-1">
+                Uses <b>New Image</b> (if selected) OR <b>Existing Cover Image</b> to generate content.
+              </small>
+            </div>
+
             {/* Pre-upload previews */}
             {newImages.length > 0 && (
               <div className="d-flex flex-wrap gap-3 mb-3">
@@ -1223,7 +1300,7 @@ const handleDelete = async (imageId) => {
             type="submit"
             className="btn btn-primary"
             disabled={
-              submitting || 
+              submitting ||
               // isDuplicate && !isRejected ||
               // checking || 
               // !titleValidation.isValid ||

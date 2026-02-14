@@ -219,10 +219,10 @@ export const getallCategories = async (searchTerm = "") => {
   try {
     const params = searchTerm ? { search: searchTerm } : {};
     timer.mark('request-params-prepared');
-    
+
     const response = await api.get("/categories", { params });
     timer.mark('response-received');
-    
+
     timer.complete(true, { categoriesCount: response.data?.categories?.length || 0 });
     return response;
   } catch (error) {
@@ -242,10 +242,10 @@ export const getallsubCategories = async (searchTerm = "", slug = "") => {
   try {
     const params = searchTerm ? { search: searchTerm } : {};
     timer.mark('request-params-prepared');
-    
+
     const response = await api.get(`/categories/sub/${slug}`, { params });
     timer.mark('response-received');
-    
+
     timer.complete(true, { subCategoriesCount: response.data?.subCategories?.length || 0, slug });
     return response;
   } catch (error) {
@@ -261,14 +261,14 @@ export const getallprojects = async (page, pageSize, searchTerm = "", sortTerm =
     if (searchTerm && searchTerm.trim() !== "") params.search = searchTerm;
     if (type && type.trim() !== "") params.type = type;
     if (sortTerm && sortTerm.trim() !== "") params.file_type = sortTerm;
-    
+
     timer.mark('request-params-prepared');
-    
+
     const response = await api.get("/projects", { params });
     timer.mark('response-received');
-    
-    timer.complete(true, { 
-      projectsCount: response.data?.products?.length || 0, 
+
+    timer.complete(true, {
+      projectsCount: response.data?.products?.length || 0,
       totalPages: response.data?.totalPages || 0,
       page,
       searchTerm,
@@ -310,7 +310,7 @@ export const getFavouriteItems = () => {
   return api.get("/favorites");
 };
 
-export const getPaginatedFavouriteItems = ( page = 1, pageSize = 10) => {
+export const getPaginatedFavouriteItems = (page = 1, pageSize = 10) => {
   return api.get("/favorites/paginated", {
     params: { page, pageSize },
     // headers: { Authorization: `Bearer ${token}` },
@@ -318,7 +318,7 @@ export const getPaginatedFavouriteItems = ( page = 1, pageSize = 10) => {
 };
 
 
-export const removeFavouriteItem = ( id) => {
+export const removeFavouriteItem = (id) => {
   return api.delete(`/favorites/${id}`);
 };
 
@@ -485,7 +485,7 @@ export const updateUserProfileInfo = async (userData) => {
   return api.put("/profile", userData);
 };
 
-export const updateProfilePicture = ( file) => {
+export const updateProfilePicture = (file) => {
   const fd = new FormData();
   fd.append('file', file); // <-- must be "file" to match upload.single('file')
   return api.put('/profile/picture', fd, {
@@ -539,7 +539,7 @@ export const getCategoriesWithSubcategories = async () => {
   }
 };
 
-export const getUploadedProjectList = async ( page = 1, pageSize = 10) => {
+export const getUploadedProjectList = async (page = 1, pageSize = 10) => {
   try {
     const response = await api.get(`/projects/uploaded/list?pageSize=${pageSize}&page=${page}`, {
       // headers: { Authorization: `Bearer ${token}` },
@@ -552,7 +552,7 @@ export const getUploadedProjectList = async ( page = 1, pageSize = 10) => {
   }
 };
 
-export const removeProject = async ( id) => {
+export const removeProject = async (id) => {
   return api.delete(`/projects/remove/${id}`);
 };
 
@@ -576,7 +576,7 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
     const params = { page: currentPage, perPage: pageSize };
 
     console.log("Fetching subcategories with params:", { slug, currentPage, pageSize, search, file_type, type });
-    
+
 
     if (search) params.search = search;
     if (type) params.type = type;
@@ -616,7 +616,7 @@ export const getUserByIdApi = (id) => {
 // };
 // Accept a single "params" object to allow extra params (like last)
 export const getUsersByRoleApi = async (params) => {
-  return api.get("/admin/users", { 
+  return api.get("/admin/users", {
     params: {
       ...params,
       // Add support for ID-based pagination
@@ -792,6 +792,7 @@ export const getProjectByIdApi = (id) => {
   return api.get(`/admin/projects/${id}`);
 };
 
+// ✅ AI Content Generation
 // ✅ Update Project (With File Upload)
 export const updateProjectApi = async (id, formData) => {
   return api.put(`/admin/projects/${id}`, formData, {
@@ -799,7 +800,17 @@ export const updateProjectApi = async (id, formData) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  }); // ✅ Let Axios detect content type
+  });
+};
+
+// ✅ AI Content Generation
+export const generateAIContent = async (formData) => {
+  return api.post("/ai/generate", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    timeout: 60000, // 60 seconds timeout for AI generation
+  });
 };
 
 
@@ -962,7 +973,7 @@ export const getRedeemRequestList = async () => {
 // search result api
 export const getSearchResults = async (query, page = 1, perPage = "", file_type, type) => {
   return api.get(`/projects/search`, {
-      params: { query, page, perPage, file_type, type },
+    params: { query, page, perPage, file_type, type },
   });
 };
 
