@@ -365,16 +365,41 @@ const EditProject = () => {
 
   const [generatingAI, setGeneratingAI] = useState(false);
 
+  // Helper to check if any image exists
+  const hasExistingImages = (projectDetails?.images && projectDetails.images.length > 0) || !!projectDetails?.image;
+  const hasNewImages = newImages.length > 0;
+  const canGenerateAI = hasNewImages || hasExistingImages;
+
   const handleAIContentGeneration = async () => {
-    if (newImages.length === 0) {
-      toast.error("Please select a NEW image to generate content.");
+    // 1. Identify which image to use
+    let imageToSend = null;
+    let isNewImage = false;
+
+    if (newImages.length > 0) {
+      imageToSend = newImages[0];
+      isNewImage = true;
+    } else if (projectDetails?.images && projectDetails.images.length > 0) {
+      // Use the first image from the gallery
+      imageToSend = projectDetails.images[0].image;
+    } else if (projectDetails?.image) {
+      // Fallback
+      imageToSend = projectDetails.image;
+    }
+
+    if (!imageToSend) {
+      toast.error("No image available to generate content.");
       return;
     }
 
     try {
       setGeneratingAI(true);
       const formData = new FormData();
-      formData.append("image", newImages[0]); // Send the first new image
+
+      if (isNewImage) {
+        formData.append("image", imageToSend); // File object
+      } else {
+        formData.append("existingImage", imageToSend); // String filename
+      }
 
       const res = await generateAIContent(formData);
       const data = res.data;
@@ -1143,7 +1168,7 @@ const EditProject = () => {
                 type="button"
                 className="btn btn-warning text-dark fw-bold"
                 onClick={handleAIContentGeneration}
-                disabled={generatingAI || (!newImages.length && !projectDetails?.image)}
+                disabled={generatingAI || !canGenerateAI}
               >
                 {generatingAI ? (
                   <>
@@ -1155,7 +1180,7 @@ const EditProject = () => {
                 )}
               </button>
               <small className="d-block text-muted mt-1">
-                Uses <b>New Image</b> (if selected) OR <b>Existing Cover Image</b> to generate content.
+                Uses <b>New Image</b> (if selected) OR <b>First Gallery Image</b> to generate content.
               </small>
             </div>
 
