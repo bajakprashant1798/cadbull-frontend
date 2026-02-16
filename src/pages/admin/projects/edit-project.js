@@ -7,6 +7,7 @@ import * as api from "@/service/api";
 import { toast } from "react-toastify";
 import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi, generateAIContent } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
+import { handledownload } from "@/service/globalfunction";
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), {
@@ -263,6 +264,26 @@ const EditProject = () => {
   // --- Add near other useState hooks ---
   const [newImages, setNewImages] = useState([]); // File[] selected but not yet uploaded
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null); // For zoom modal
+  const [zoomScale, setZoomScale] = useState(1); // For image zoom level
+  const [pan, setPan] = useState({ x: 0, y: 0 }); // For image panning
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   // --- Allowed image types (adjust if needed) ---
   const ALLOWED_IMAGE_TYPES = [
@@ -891,8 +912,120 @@ const EditProject = () => {
 
   return (
     <AdminLayout>
+      {/* Zoom Modal */}
+      {selectedImage && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.9)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column", // Stack image and controls
+          }}
+          onClick={() => { setSelectedImage(null); setZoomScale(1); setPan({ x: 0, y: 0 }); }}
+        >
+          <div
+            style={{
+              position: "relative",
+              width: "90%",
+              height: "80%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden", // Crop if zoomed out of bounds of this container
+              cursor: isDragging ? "grabbing" : "grab",
+            }}
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking background of container
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            <img
+              src={selectedImage}
+              alt="Zoomed"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                borderRadius: "8px",
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoomScale})`,
+                transition: isDragging ? "none" : "transform 0.2s ease-out",
+                cursor: isDragging ? "grabbing" : "grab",
+                userSelect: "none"
+              }}
+              draggable={false}
+            />
+          </div>
+
+          {/* Zoom Controls Bar */}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              gap: "15px",
+              background: "rgba(255,255,255,0.1)",
+              padding: "10px 20px",
+              borderRadius: "30px",
+              backdropFilter: "blur(5px)",
+              zIndex: 10000 // Ensure controls are above everything
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="btn btn-sm btn-light rounded-circle"
+              style={{ width: 40, height: 40, fontWeight: "bold", fontSize: "18px" }}
+              onClick={() => setZoomScale(prev => Math.max(0.5, prev - 0.5))}
+              title="Zoom Out"
+            >
+              −
+            </button>
+            <span style={{ color: "white", alignSelf: "center", minWidth: "60px", textAlign: "center" }}>
+              {Math.round(zoomScale * 100)}%
+            </span>
+            <button
+              className="btn btn-sm btn-light rounded-circle"
+              style={{ width: 40, height: 40, fontWeight: "bold", fontSize: "18px" }}
+              onClick={() => setZoomScale(prev => Math.min(5, prev + 0.5))}
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              className="btn btn-sm btn-outline-light rounded-pill px-3"
+              onClick={() => { setZoomScale(1); setPan({ x: 0, y: 0 }); }}
+              title="Reset Zoom"
+            >
+              Reset
+            </button>
+            <button
+              className="btn btn-sm btn-danger rounded-circle ms-3"
+              style={{ width: 40, height: 40, fontWeight: "bold" }}
+              onClick={() => { setSelectedImage(null); setZoomScale(1); setPan({ x: 0, y: 0 }); }}
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="container ">
-        <h2>Edit Project</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2>Edit Project</h2>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={() => handledownload(id, isAuthenticated, router)}
+          >
+            📥 Download Project
+          </button>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
           {/* Work Title */}
           <div className="mb-3">
@@ -1238,39 +1371,77 @@ const EditProject = () => {
               <small className="text-muted">No gallery images yet.</small>
             ) : (
               (projectDetails.images).map((img, index) => (
-                <div key={img.id} className="image-item mb-3">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/small/${img.image}`}
-                    width="100"
-                    alt={`Project image ${index + 1}`}
-                  />
-                  <span>#{index + 1}</span>
-
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); handleMoveUp(img.id); }}
-                    disabled={index === 0}
-                    aria-label="Move up"
+                <div key={img.id} className="image-item mb-3 p-2 border rounded" style={{ display: "flex", alignItems: "center", gap: "10px", background: "#f8f9fa" }}>
+                  <div
+                    style={{ cursor: "zoom-in", position: "relative" }}
+                    onClick={() => {
+                      setSelectedImage(`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/original/${img.image}`);
+                      setZoomScale(1);
+                      setPan({ x: 0, y: 0 });
+                    }}
+                    title="Click to zoom"
                   >
-                    ↑
-                  </button>
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/small/${img.image}`}
+                      style={{
+                        width: "150px",
+                        height: "auto",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                        border: "1px solid #dee2e6"
+                      }}
+                      alt={`Project image ${index + 1}`}
+                    />
+                    <div style={{
+                      position: "absolute",
+                      bottom: 5,
+                      right: 5,
+                      background: "rgba(0,0,0,0.5)",
+                      color: "white",
+                      padding: "2px 5px",
+                      borderRadius: "3px",
+                      fontSize: "10px"
+                    }}>
+                      Zoom 🔍
+                    </div>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); handleMoveDown(img.id); }}
-                    disabled={index === (projectDetails.images.length - 1)}
-                    aria-label="Move down"
-                  >
-                    ↓
-                  </button>
+                  <div className="d-flex flex-column gap-2">
+                    <span className="fw-bold">Image #{index + 1}</span>
+                    <div className="d-flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={(e) => { e.preventDefault(); handleMoveUp(img.id); }}
+                        disabled={index === 0}
+                        aria-label="Move up"
+                        title="Move Up"
+                      >
+                        ↑
+                      </button>
 
-                  <button
-                    type="button"
-                    onClick={(e) => { e.preventDefault(); handleDelete(img.id); }}
-                    aria-label="Delete"
-                  >
-                    🗑️
-                  </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={(e) => { e.preventDefault(); handleMoveDown(img.id); }}
+                        disabled={index === (projectDetails.images.length - 1)}
+                        aria-label="Move down"
+                        title="Move Down"
+                      >
+                        ↓
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={(e) => { e.preventDefault(); handleDelete(img.id); }}
+                        aria-label="Delete"
+                        title="Delete Image"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))
             )}
