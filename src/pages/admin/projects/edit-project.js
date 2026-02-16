@@ -419,11 +419,7 @@ const EditProject = () => {
       if (isNewImage) {
         formData.append("image", imageToSend); // File object
       } else {
-        // Construct Full Image URL for Backend to fetch
-        // Use 'original' folder for best quality, or same logic as rendering (small -> original)
-        const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
-        const imageUrl = `${baseUrl}/product_img/original/${imageToSend}`;
-        formData.append("existingImage", imageUrl);
+        formData.append("existingImage", imageToSend); // String filename
       }
 
       const res = await generateAIContent(formData);
