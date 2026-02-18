@@ -232,8 +232,10 @@ export const getallCategories = async (searchTerm = "") => {
 };
 
 // Add this at the bottom of api.js (or wherever you want)
-export const getCategoryBySlug = (slug) => {
-  return api.get(`/categories/slug/${slug}`);
+// Add this at the bottom of api.js (or wherever you want)
+export const getCategoryBySlug = (slug, parent_slug = null) => {
+  const params = parent_slug ? { parent_slug } : {};
+  return api.get(`/categories/slug/${slug}`, { params });
 };
 
 
@@ -570,7 +572,7 @@ export const getBlogs = async () => {
 // ========================
 // ✅ Get Subcategories for Projects Page (Public API)
 // ========================
-export const getSubCategories = async ({ slug, currentPage, pageSize, search, file_type, type }) => {
+export const getSubCategories = async ({ slug, currentPage, pageSize, search, file_type, type, parent_slug }) => {
   try {
     const url = `/categories/sub/${slug}/projects`;
     const params = { page: currentPage, perPage: pageSize };
@@ -581,6 +583,7 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
     if (search) params.search = search;
     if (type) params.type = type;
     if (file_type) params.file_type = file_type;
+    if (parent_slug) params.parent_slug = parent_slug; // ✅ Pass parent_slug
 
     const response = await api.get(url, { params });
     return response.data;

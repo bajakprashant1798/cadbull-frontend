@@ -160,8 +160,17 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
     const loadProjects = (slug, page, type, file_type, search) => {
         startLoading();
-        // API ONLY CARES ABOUT THE SLUG (Last segment), NOT THE FULL PATH
-        getSubCategories({ slug, currentPage: page, pageSize: 9, type, file_type, search })
+        // Extract parent_slug from currentPath if available
+        // currentPath might be "residential/bungalows" -> parent="residential"
+        let parent_slug = null;
+        if (currentPath && currentPath.includes('/')) {
+            const parts = currentPath.split('/');
+            if (parts.length >= 2) {
+                parent_slug = parts[parts.length - 2];
+            }
+        }
+
+        getSubCategories({ slug, currentPage: page, pageSize: 9, type, file_type, search, parent_slug })
             .then((response) => {
                 dispatch(getSubCategory(response.projects));
                 setTotalPages(response.totalPages);
@@ -470,6 +479,7 @@ export async function getServerSideProps({ params, req, res }) {
     let slug = "";
     let page = 1;
     let path = ""; // The full path string (without page)
+    let parent_slug = null; // ✅ capture parent_slug for strict lookup
 
     if (slugArray.length === 0) {
         return { notFound: true };
@@ -483,12 +493,24 @@ export async function getServerSideProps({ params, req, res }) {
         page = parseInt(lastSegment, 10);
         slug = slugArray[slugArray.length - 2]; // The actual category slug
         path = slugArray.slice(0, slugArray.length - 1).join("/");
+
+        // Parent is the one before slug (if exists)
+        // slugs=['residential', 'bungalows', '2'] -> slug='bungalows', parent='residential'
+        if (slugArray.length > 2) {
+            parent_slug = slugArray[slugArray.length - 3];
+        }
+
     } else {
         // /bungalows -> slugs=['bungalows']
         // /residential/bungalows -> slugs=['residential', 'bungalows']
         page = 1;
         slug = lastSegment; // The actual category slug
         path = slugArray.join("/");
+
+        // Parent is the one before slug (if exists)
+        if (slugArray.length > 1) {
+            parent_slug = slugArray[slugArray.length - 2];
+        }
     }
 
 
@@ -638,13 +660,13 @@ export async function getServerSideProps({ params, req, res }) {
                 const apiCalls = [
                     performance.timeAPICall(
                         "GetSubCategories",
-                        () => getSubCategories({ slug, currentPage: page, pageSize: 9 }),
+                        () => getSubCategories({ slug, currentPage: page, pageSize: 9, parent_slug }), // ✅ Pass parent_slug
                         `subcategories/${slug}?page=${page}&pageSize=9`
                     ).catch(error => ({ error, type: 'subcategories' })),
 
                     performance.timeAPICall(
                         "GetCategoryMeta",
-                        () => getCategoryBySlug(slug),
+                        () => getCategoryBySlug(slug, parent_slug), // ✅ Pass parent_slug
                         `category/${slug}`
                     ).catch(error => ({ error, type: 'metadata' })),
 
@@ -734,20 +756,40 @@ export async function getServerSideProps({ params, req, res }) {
                         }
 
                         // Compare with the actual requested path (excluding page number)
-                        if (path !== expectedPath) {
-                            console.log(`[SSR] 🔄 301 Redirecting: /${path} -> /${expectedPath}`);
-                            let destination = `/${expectedPath}`;
-                            if (page > 1) {
-                                destination += `/${page}`;
-                            }
+                        console.log(`[SSR] 🔍 Path Check: Requested '${path}' vs Expected '${expectedPath}'`);
+                        console.log(`[SSR] 🔍 Parent Check: URL Parent '${parent_slug}' vs Category Parent '${cat.parent_slug}'`);
 
-                            // Return redirect immediately
-                            return {
-                                redirect: {
-                                    destination,
-                                    permanent: true,
-                                },
-                            };
+                        // 🛑 CRITICAL FIX: Don't redirect if we are already on a valid distinct parent path
+                        // If user is at /Cad-Architecture/Bungalows, and cat.parent_slug is 'Cad-Architecture', we are good.
+                        // Even if cat.path says 'Bungalows', expectedPath construction handles the slash.
+
+                        const isSame = path === expectedPath;
+
+                        // If they don't match, we usually redirect. BUT, if we have duplicate slugs, we might have fetched the WRONG category.
+                        // If we fetched "Bungalows (3d-Drawings)" but we are at "Cad-Architecture/Bungalows", 
+                        // AND we explicitly asked for "Cad-Architecture", then the backend returned the wrong data!
+                        // In that case, we should NOT redirect to the wrong category. We should rely on the empty project list or 404 from backend.
+
+                        if (!isSame) {
+                            if (parent_slug && cat.parent_slug !== parent_slug) {
+                                console.warn(`[SSR] ⚠️ POTENTIAL MISMATCH: Requested parent '${parent_slug}' but got category with parent '${cat.parent_slug}'. NOT REDIRECTING to avoid loops.`);
+                                // We probably got the wrong category from backend (e.g. fallback triggered before we removed it).
+                                // Since we removed fallback, this theoretically shouldn't happen if backend is strict.
+                                // But if it does, we stay here.
+                            } else {
+                                console.log(`[SSR] 🔄 301 Redirecting: /${path} -> /${expectedPath}`);
+                                let destination = `/${expectedPath}`;
+                                if (page > 1) {
+                                    destination += `/${page}`;
+                                }
+
+                                return {
+                                    redirect: {
+                                        destination,
+                                        permanent: true,
+                                    },
+                                };
+                            }
                         }
                     } else {
                         console.log(`[SSR] ⚠️ No category meta found for slug: ${slug}`);
