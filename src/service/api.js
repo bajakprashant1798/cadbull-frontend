@@ -243,7 +243,7 @@ export const getallsubCategories = async (searchTerm = "", slug = "") => {
     const params = searchTerm ? { search: searchTerm } : {};
     timer.mark('request-params-prepared');
 
-    const response = await api.get(`/categories/sub/${slug}`, { params });
+    const response = await api.get(`/categories/sub/${encodeURIComponent(slug)}`, { params });
     timer.mark('response-received');
 
     timer.complete(true, { subCategoriesCount: response.data?.subCategories?.length || 0, slug });

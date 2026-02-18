@@ -199,7 +199,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
             title: title ? title : makeTitle(slug),
             description: description || "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
             mainCategories,
-            subCategories: subcat,
+            subCategories: null, // ✅ FIX: Pass null to prevent SearchCategories from resetting state to empty []
             slug,
             currentPath,
             type: "Sub Categories",

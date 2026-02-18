@@ -25,12 +25,19 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
   const querySlug = router.query.slug;
   const effectiveSlug = propSlug || (Array.isArray(querySlug) ? querySlug[querySlug.length - 1] : querySlug);
 
+  // Debug log for sidebar issue
+  useEffect(() => {
+    if (type === "Sub Categories") {
+      console.log(`[SearchCategories] Debug: type=${type}, propSlug=${propSlug}, querySlug=${JSON.stringify(querySlug)}, effectiveSlug=${effectiveSlug}`);
+    }
+  }, [type, propSlug, querySlug, effectiveSlug]);
+
   // Initialize catalog safely
   const [catalog, setCatalog] = useState(Array.isArray(categories) ? categories : []);
   const [searchTerm, setSearchTerm] = useState("");
   const [previousCategories, setPreviousCategories] = useState([]);
 
-  // Sync catalog when props change
+  // Sync catalog when props change - only if valid array provided
   useEffect(() => {
     if (categories && Array.isArray(categories)) {
       setCatalog(categories);
