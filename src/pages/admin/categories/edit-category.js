@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
 // Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { 
+const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>
 });
@@ -35,9 +35,9 @@ const EditCategory = () => {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
       ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
       [{ 'size': ['small', false, 'large', 'huge'] }],
       [{ 'color': [] }, { 'background': [] }],
       [{ 'align': [] }],
@@ -157,7 +157,7 @@ const EditCategory = () => {
   // Filter parent categories based on search term
   const filteredParentCategories = parentCategories
     .filter((cat) => cat.id.toString() !== id) // Exclude current category
-    .filter((cat) => 
+    .filter((cat) =>
       cat.name.toLowerCase().includes(parentSearchTerm.toLowerCase())
     );
 
@@ -186,8 +186,8 @@ const EditCategory = () => {
             <label className="form-label">Parent Category</label>
             <div style={{ position: "relative" }} ref={dropdownRef}>
               {/* Selected Parent Display */}
-              <div 
-                className="form-control d-flex justify-content-between align-items-center" 
+              <div
+                className="form-control d-flex justify-content-between align-items-center"
                 style={{ cursor: "pointer", backgroundColor: "#f8f9fa" }}
                 onClick={() => setShowParentDropdown(!showParentDropdown)}
               >
@@ -197,7 +197,7 @@ const EditCategory = () => {
 
               {/* Searchable Dropdown */}
               {showParentDropdown && (
-                <div 
+                <div
                   style={{
                     position: "absolute",
                     top: "100%",
@@ -298,6 +298,11 @@ const EditCategory = () => {
           </div>
 
           <div className="mb-3">
+            <label className="form-label">Category Path (Slug) - <small className="text-danger">Change with caution! Affects URLs.</small></label>
+            <input className="form-control" {...register("path")} placeholder="e.g. bungalows" />
+          </div>
+
+          <div className="mb-3">
             <label className="form-label">Description</label>
             <div style={{ backgroundColor: '#fff' }}>
               <ReactQuill
@@ -306,7 +311,7 @@ const EditCategory = () => {
                 onChange={handleDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
-                style={{ 
+                style={{
                   minHeight: '200px',
                   backgroundColor: '#fff'
                 }}
@@ -314,12 +319,12 @@ const EditCategory = () => {
               />
             </div>
             <small className="form-text text-muted mt-2 d-block">
-              🎨 <strong>Formatting options available:</strong><br/>
-              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
-              • Headers (H1, H2, H3)<br/>
-              • Bullet points and numbered lists<br/>
-              • Links to external websites<br/>
-              • Text colors and highlighting<br/>
+              🎨 <strong>Formatting options available:</strong><br />
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br />
+              • Headers (H1, H2, H3)<br />
+              • Bullet points and numbered lists<br />
+              • Links to external websites<br />
+              • Text colors and highlighting<br />
               • Code blocks and quotes
             </small>
           </div>
