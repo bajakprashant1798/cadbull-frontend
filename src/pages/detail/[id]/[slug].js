@@ -1051,13 +1051,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                 <h5 className="product-description-title mb-2">Description</h5>
                               </div>
                             </div>
-                            <div>{parse(`${project.description ? project.description.replace(/<a\b[^>]*>/gi, (tagMatch) => {
-                              return tagMatch.replace(/ style="[^"]*"/gi, (styleMatch) => {
-                                let newStyleAttr = styleMatch.replace(/(?:^|["\s;])(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
-                                if (/style="\s*"/.test(newStyleAttr) || newStyleAttr === ' style=""') return '';
-                                return newStyleAttr;
-                              });
-                            }) : ""}`)}</div>
+                            <div>{parse(`${project.description}`)}</div>
                             {/* <DescriptionRenderer 
                               description={project?.description} 
                               className="mt-2"
