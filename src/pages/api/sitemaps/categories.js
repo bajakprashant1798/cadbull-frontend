@@ -16,7 +16,7 @@ const escapeXml = (unsafe) => {
 export default async function handler(req, res) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_FRONT_URL;
-    
+
     // ✅ CORRECTED: Call the new /api/categories/sitemap endpoint
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_MAIN}/categories/sitemap`);
     const categories = response.data.categories || [];
@@ -30,9 +30,14 @@ export default async function handler(req, res) {
         ? new Date(cat.timestamp).toISOString()
         : new Date().toISOString();
 
+      // Construct nested URL if parent_slug exists
+      const loc = cat.parent_slug
+        ? `${baseUrl}/${cat.parent_slug}/${cat.slug}`
+        : `${baseUrl}/${cat.slug}`;
+
       res.write(`
         <url>
-          <loc>${escapeXml(`${baseUrl}/${cat.slug}`)}</loc>
+          <loc>${escapeXml(loc)}</loc>
           <lastmod>${lastmod}</lastmod>
           <changefreq>monthly</changefreq>
           <priority>0.6</priority>

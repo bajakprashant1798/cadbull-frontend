@@ -17,25 +17,27 @@ function CategoriesList({
   // projectsCount,
   // id,
   path,
-  active, name, slug, pcount
+  active, name, slug, pcount,
+  ...props
 }) {
   const dispatch = useDispatch();
-  const router= useRouter();
-// console.log("path: ", slug);
+  const router = useRouter();
+  // console.log("path: ", slug);
 
   return (
     <li
-      className={`category-item d-flex justify-content-between align-items-start gap-2 ${
-        active ? "active" : ""
-      }`}
+      className={`category-item d-flex justify-content-between align-items-start gap-2 ${active ? "active" : ""
+        }`}
     >
       {slug ? (
         <Link
-        onClick={(e)=>{
-          dispatch(closeDrawerHandler({drawerType:"category"}))
-          router.push(`/${slug}`)
-        }}
-          href={`/${slug}`}
+          onClick={(e) => {
+            dispatch(closeDrawerHandler({ drawerType: "category" }))
+            // Prefer 'link' prop if provided, otherwise fallback to slug
+            const destination = props.link ? `/${props.link}` : `/${slug}`;
+            router.push(destination)
+          }}
+          href={props.link ? `/${props.link}` : `/${slug}`}
           className="d-inline-flex gap-1 align-items-center"
         >
           {/* <img src={icon.src} alt="icon" width={30} /> */}
@@ -48,7 +50,7 @@ function CategoriesList({
           onClick={(e) => {
             dispatch(updatesubcatslug(name));
             dispatch(updatesubcatpage(1));
-            dispatch(closeDrawerHandler({drawerType:"subcategory"}))
+            dispatch(closeDrawerHandler({ drawerType: "subcategory" }))
           }}
           className="d-inline-flex gap-1 align-items-center  "
         >
@@ -57,8 +59,8 @@ function CategoriesList({
         </div>
       )}
       <p className="categories-pcount-font-size">{pcount || 0}</p>
-          
-      
+
+
     </li>
   );
 }

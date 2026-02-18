@@ -7,9 +7,9 @@ import AdSense from "@/components/AdSense";
 export const makeTitle = (slug) => {
   return slug
     ? slug
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
     : "";
 };
 
@@ -20,6 +20,7 @@ const CategoriesLayout = ({
   mainCategories, // Array of main categories
   subCategories,  // Array of subcategories
   slug,           // Current slug (if any)
+  currentPath,    // Current full path (e.g. "residential/bungalows")
   type,
   pageName = "Categories",
 }) => {
@@ -36,28 +37,28 @@ const CategoriesLayout = ({
                   {makeTitle(title)}
                   {/* {title ? makeTitle(title) : pageName  } */}
                 </h1>
-                <div 
-                  dangerouslySetInnerHTML={{ 
-                    __html: description || "" 
-                  }} 
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: description || ""
+                  }}
                 />
               </div>
               {/* Breadcrum  */}
               <div className="mt-4">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb justify-content-center justify-content-md-start">
-                     {router.asPath === '/Architecture-House-Plan-CAD-Drawings' || router.asPath.startsWith('/Architecture-House-Plan-CAD-Drawings/')?  <>
-                    <li className="breadcrumb-item">
-                      <Link href="/">Home</Link>
-                    </li>
-                     <li className="breadcrumb-item"><Link href="/Architecture-House-Plan-CAD-Drawings">House Plan</Link></li>
-                     </>:<>
-                     <li className="breadcrumb-item">
-                      <Link href="/">Home</Link>
-                    </li>
-                    <li className="breadcrumb-item">
-                      <Link href="/categories">Categories</Link>
-                    </li></>}
+                    {router.asPath === '/Architecture-House-Plan-CAD-Drawings' || router.asPath.startsWith('/Architecture-House-Plan-CAD-Drawings/') ? <>
+                      <li className="breadcrumb-item">
+                        <Link href="/">Home</Link>
+                      </li>
+                      <li className="breadcrumb-item"><Link href="/Architecture-House-Plan-CAD-Drawings">House Plan</Link></li>
+                    </> : <>
+                      <li className="breadcrumb-item">
+                        <Link href="/">Home</Link>
+                      </li>
+                      <li className="breadcrumb-item">
+                        <Link href="/categories">Categories</Link>
+                      </li></>}
                     {router.asPath !== "/categories" && router.asPath !== "/Architecture-House-Plan-CAD-Drawings" && !router.asPath.startsWith('/Architecture-House-Plan-CAD-Drawings/') && (
                       <li className="breadcrumb-item">{makeTitle(title)}</li>
                     )}
@@ -100,14 +101,17 @@ const CategoriesLayout = ({
                     <SearchCategories
                       categories={subCategories}
                       type="Sub Categories"
-                      // url="categories/sub/"
+                      slug={slug}
+                      currentPath={currentPath}
+                    // url="categories/sub/"
                     />
                   </div>
                   <div className="mb-4 d-none d-xl-block">
                     <SearchCategories
                       categories={mainCategories}
                       type="Categories"
-                      // url="categories/"
+                      slug={null} // Main categories don't rely on current slug
+                    // url="categories/"
                     />
                   </div>
                 </>
@@ -139,5 +143,5 @@ const CategoriesLayout = ({
     </Fragment>
   );
 };
- 
+
 export default CategoriesLayout;

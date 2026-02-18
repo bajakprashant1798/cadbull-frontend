@@ -63,7 +63,7 @@ const EditCategory = () => {
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
-  const { register, handleSubmit, reset, setValue } = useForm();
+  const { register, handleSubmit, reset, setValue, watch } = useForm();
   const [parentCategories, setParentCategories] = useState([]);
 
   useEffect(() => {
@@ -300,6 +300,39 @@ const EditCategory = () => {
           <div className="mb-3">
             <label className="form-label">Category Path (Slug) - <small className="text-danger">Change with caution! Affects URLs.</small></label>
             <input className="form-control" {...register("path")} placeholder="e.g. bungalows" />
+            {/* URL Preview */}
+            {/* URL Preview Debug */}
+            <div className="mt-2 p-2 border border-primary rounded" style={{ background: '#eef', display: 'block' }}>
+              <strong>Preview URL: </strong>
+              <span className="text-primary">
+                https://cadbull.com
+                {(() => {
+                  try {
+                    const parent = parentCategories.find(c => c.id.toString() === currentParentId);
+
+                    // DEBUG: Show what keys are available in parent object
+                    if (parent) {
+                      console.log("Parent Object Keys:", Object.keys(parent));
+                      console.log("Parent Object:", parent);
+                      // Fallback to 'path' if 'slug' is missing, based on my suspicion
+                      const parentSlug = parent.slug || parent.path || '';
+                      const currentSlug = watch("path") || "";
+                      return parentSlug
+                        ? `/${parentSlug}/${currentSlug}`
+                        : `/${currentSlug}`;
+                    }
+
+                    const currentSlug = watch("path") || "";
+                    return `/${currentSlug}`;
+                  } catch (e) {
+                    return " (Error generating preview)";
+                  }
+                })()}
+              </span>
+              <div className="text-muted small mt-1">
+                (Debug: Parent ID: {currentParentId}, Found: {parentCategories.find(c => c.id.toString() === currentParentId) ? "Yes" : "No"})
+              </div>
+            </div>
           </div>
 
           <div className="mb-3">

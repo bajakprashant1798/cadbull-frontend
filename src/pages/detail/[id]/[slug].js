@@ -497,8 +497,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     // }
     // Go directly to subcategory if chosen
     if (selectedSubCategory) {
-      // If your route schema needs a page segment, use `/${selectedSubCategory}/1`
-      router.push(`/${selectedSubCategory}`);
+      // Use nested routing: /category/subcategory
+      router.push(`/${selectedCategory}/${selectedSubCategory}`);
       return;
     }
 
@@ -1095,7 +1095,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           title={project?.product_category_title}
                         />
                       </Link>
-                      <Link href={`/${project?.subcategory_path}/1`} className="text-decoration-none">
+                      <Link href={`/${project?.category_path}/${project?.subcategory_path}/1`} className="text-decoration-none">
                         <FileDescription
                           bgColor={"#5B5B5B"}
                           image={cad}

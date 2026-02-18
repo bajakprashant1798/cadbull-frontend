@@ -14,84 +14,81 @@ import SubCategoriesDrawer from "./drawer/SubCategoriesDrawer";
 import { openDrawerHandler } from "../../redux/app/features/drawerSlice";
 import { useEffectTimer } from "@/utils/apiTiming";
 
-const SearchCategories = ({ categories, type }) => {
+const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => {
   const router = useRouter();
   const { subCategoriesList, categoriesList } = useSelector(
     (store) => store.projectinfo
   );
   const dispatch = useDispatch();
-  const { slug } = router.query;
-  // console.log("slug: ", slug);
-  
-  const [catalog, setCatalog] = useState([categories]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [previousCategories, setPreviousCategories] = useState([]); // ✅ Store previous categories for fallback
 
-  // useEffect(() => {
-  //   console.log("Full URL Path:", router.asPath);
-  //   console.log("Router Query:", router.query);
-  //   console.log("Extracted Slug:", slug);
-  // }, [router]);
-  
+  // Use propSlug if available, otherwise try to extract from router (handling array case)
+  const querySlug = router.query.slug;
+  const effectiveSlug = propSlug || (Array.isArray(querySlug) ? querySlug[querySlug.length - 1] : querySlug);
+
+  // Initialize catalog safely
+  const [catalog, setCatalog] = useState(Array.isArray(categories) ? categories : []);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [previousCategories, setPreviousCategories] = useState([]);
+
+  // Sync catalog when props change
+  useEffect(() => {
+    if (categories && Array.isArray(categories)) {
+      setCatalog(categories);
+    }
+  }, [categories]);
 
   async function fetchCategories() {
-    const timer = useEffectTimer("SearchCategories-fetchCategories", [type, slug, searchTerm]);
-    
+    const timer = useEffectTimer("SearchCategories-fetchCategories", [type, effectiveSlug, searchTerm]);
+
     if (type === "Categories") {
       try {
         timer.mark('categories-fetch-start');
         const response = await getallCategories(searchTerm);
         timer.mark('categories-response-received');
-        
+
         response.data.categories.forEach((item) => {
+          item.link = item.slug;
           item.url = "categories/sub/";
         });
-        // console.log("searchcategoreis: ", response.data);
-        
+
         setCatalog(response.data.categories);
         dispatch(addAllCategoriesData(response.data.categories));
-        
+
         timer.complete(true, { categoriesCount: response.data.categories.length });
       } catch (error) {
         timer.error(error);
-        // console.error("Error fetching categories:", error);
       }
     }
-    if (type === "Sub Categories" && slug) {
+    if (type === "Sub Categories" && effectiveSlug) {
       try {
         timer.mark('subcategories-fetch-start');
-        const response = await getallsubCategories(searchTerm, slug);
+        // Use effectiveSlug (string) explicitly
+        const response = await getallsubCategories(searchTerm, effectiveSlug);
         timer.mark('subcategories-response-received');
-        
+
         const fetchedSubCategories = response.data.subCategories || [];
 
-        // ✅ Your brilliant idea: Use previous categories if current is empty
         if (fetchedSubCategories.length > 0) {
-          // Store current categories as previous for future fallback
           setPreviousCategories(fetchedSubCategories);
           setCatalog(fetchedSubCategories);
         } else if (previousCategories.length > 0) {
-          // Use previous categories if current fetch returned empty
-          console.log("Empty subcategories, using previous:", previousCategories.length);
           setCatalog(previousCategories);
         } else {
-          // No previous categories available, show empty
           setCatalog([]);
         }
 
         dispatch(addAllSubCategoriesData(fetchedSubCategories));
-        timer.complete(true, { subCategoriesCount: fetchedSubCategories.length, slug });
-        // console.log("subcategoriedta", response.data);
+        timer.complete(true, { subCategoriesCount: fetchedSubCategories.length, slug: effectiveSlug });
       } catch (error) {
         timer.error(error);
-        // console.error("Error fetching categories:", error);
       }
     }
   }
+
   let timers;
   useEffect(() => {
     const effectTimer = useEffectTimer("SearchCategories-useEffect", [searchTerm]);
-    
+
     timers = setTimeout(() => {
       effectTimer.mark('timeout-triggered');
       fetchCategories().then(() => {
@@ -103,7 +100,7 @@ const SearchCategories = ({ categories, type }) => {
     return () => {
       clearTimeout(timers);
     };
-  }, [searchTerm, slug]);
+  }, [searchTerm, effectiveSlug]); // Depend on effectiveSlug
 
   const handleSearch = (e) => {
     if (e.target.value.trim().length >= 2) {
@@ -193,16 +190,23 @@ const SearchCategories = ({ categories, type }) => {
             </div>
           </form>
           <ul className="list-unstyled category-list-wrapper mb-0 d-flex flex-column gap-2">
-            {/* {catalog.map((category, index) => {
-              return <CategoriesList key={index} {...category} />;
-            })} */}
             {catalog.length > 0 ? (
-              catalog.map((category, index) => <CategoriesList key={index} {...category} />)
-              ) : (
-                <li className="text-center text-muted">No categories found</li>
+              catalog.map((category, index) => (
+                <CategoriesList
+                  key={index}
+                  {...category}
+                  link={
+                    type === "Sub Categories"
+                      ? (currentPath ? `${currentPath}/${category.slug}` : `${effectiveSlug}/${category.slug}`)
+                      : category.slug
+                  }
+                />
+              ))
+            ) : (
+              <li className="text-center text-muted">No categories found</li>
             )}
           </ul>
-          
+
           <div></div>
         </div>
       </aside>
