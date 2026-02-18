@@ -11,6 +11,12 @@
   padding: 12px 15px;
 }
 
+/* Fix link color inside editor */
+.ql-editor a {
+  color: #0d6efd !important;
+  text-decoration: underline !important;
+}
+
 .ql-toolbar {
   border-top: 1px solid #ddd;
   border-left: 1px solid #ddd;
