@@ -12,7 +12,9 @@
 }
 
 /* Fix link color inside editor */
-.ql-editor a {
+.admin-editor-container .ql-editor a,
+.admin-editor-container .ql-editor a:visited,
+.admin-editor-container .ql-editor a span {
   color: #0d6efd !important;
   text-decoration: underline !important;
 }
@@ -99,15 +101,16 @@
   .ql-toolbar {
     padding: 8px;
   }
-  
+
   .ql-toolbar .ql-formats {
     margin-right: 8px;
     margin-bottom: 5px;
   }
-  
+
   .ql-editor {
     padding: 10px;
-    font-size: 16px; /* Prevent zoom on iOS */
+    font-size: 16px;
+    /* Prevent zoom on iOS */
   }
 }
 
@@ -117,12 +120,12 @@
     /* background-color: #495057; */
     border-color: #6c757d;
   }
-  
+
   .ql-container {
     border-color: #6c757d;
     background-color: #fff;
   }
-  
+
   .ql-toolbar button:hover {
     /* background-color: #6c757d; */
   }
@@ -145,12 +148,29 @@
   font-weight: 600;
 }
 
-.formatted-description h1 { font-size: 1.8em; }
-.formatted-description h2 { font-size: 1.6em; }
-.formatted-description h3 { font-size: 1.4em; }
-.formatted-description h4 { font-size: 1.2em; }
-.formatted-description h5 { font-size: 1.1em; }
-.formatted-description h6 { font-size: 1em; }
+.formatted-description h1 {
+  font-size: 1.8em;
+}
+
+.formatted-description h2 {
+  font-size: 1.6em;
+}
+
+.formatted-description h3 {
+  font-size: 1.4em;
+}
+
+.formatted-description h4 {
+  font-size: 1.2em;
+}
+
+.formatted-description h5 {
+  font-size: 1.1em;
+}
+
+.formatted-description h6 {
+  font-size: 1em;
+}
 
 .formatted-description p {
   margin-bottom: 1em;

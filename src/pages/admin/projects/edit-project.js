@@ -732,11 +732,22 @@ const EditProject = () => {
 
   // Handle description changes from React Quill
   const handleDescriptionChange = (content) => {
-    setDescription(content);
-    setValue("description", content); // Sync with react-hook-form
+    // ✅ Strip inline color/background styles from links so CSS can style them
+    const cleanedContent = content.replace(/<a\b[^>]*>/gi, (tagMatch) => {
+      return tagMatch.replace(/ style="[^"]*"/gi, (styleMatch) => {
+        // Remove color, background-color, background properties
+        let newStyleAttr = styleMatch.replace(/(?:^|["\s;])(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
+        // If the style attribute becomes empty or just contains quotes/spaces, remove it
+        if (/style="\s*"/.test(newStyleAttr) || newStyleAttr === ' style=""') return '';
+        return newStyleAttr;
+      });
+    });
+
+    setDescription(cleanedContent);
+    setValue("description", cleanedContent); // Sync with react-hook-form
 
     // ✅ SEO Length validation for description
-    const seoValidation = validateSEODescription(content);
+    const seoValidation = validateSEODescription(cleanedContent);
     setSeoDescriptionValidation(seoValidation);
   };
 
@@ -1069,7 +1080,7 @@ const EditProject = () => {
           {/* Description with Rich Text Editor */}
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <div style={{ backgroundColor: '#fff' }}>
+            <div className="admin-editor-container" style={{ backgroundColor: '#fff' }}>
               <ReactQuill
                 theme="snow"
                 value={description}
