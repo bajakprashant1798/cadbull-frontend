@@ -41,18 +41,9 @@ function CategoriesList({
             // 2. Normalize both paths (lowercase, remove trailing slash) for comparison
             const normalize = (p) => p.toLowerCase().replace(/\/$/, "");
 
-            console.log(`[CategoriesList] Navigation Check:`);
-            console.log(`  Current (Raw): ${router.asPath}`);
-            console.log(`  Target  (Raw): ${destination}`);
-            console.log(`  Current (Norm): ${normalize(decodeURIComponent(currentPathClean))}`);
-            console.log(`  Target  (Norm): ${normalize(destination)}`);
-
             if (normalize(decodeURIComponent(currentPathClean)) === normalize(destination)) {
-              console.log("  🛑 Preventing navigation (Same URL)");
               e.preventDefault();
               return;
-            } else {
-              console.log("  ✅ Allowing navigation");
             }
 
             dispatch(closeDrawerHandler({ drawerType: "category" }))

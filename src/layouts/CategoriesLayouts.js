@@ -112,12 +112,12 @@ const CategoriesLayout = ({
                         basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
                       }
 
-                      console.log(`[CategoriesLayout] slug=${slug}, parent_slug=${parent_slug}, currentPath=${currentPath}, calculatedBasePath=${basePath}`);
                       return (
                         <SearchCategories
                           categories={subCategories}
                           type="Sub Categories"
                           slug={slug}
+                          fetchSlug={parent_slug || slug}
                           currentPath={basePath}
                         // url="categories/sub/"
                         />

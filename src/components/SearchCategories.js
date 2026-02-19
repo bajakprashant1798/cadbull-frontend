@@ -14,7 +14,7 @@ import SubCategoriesDrawer from "./drawer/SubCategoriesDrawer";
 import { openDrawerHandler } from "../../redux/app/features/drawerSlice";
 import { useEffectTimer } from "@/utils/apiTiming";
 
-const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => {
+const SearchCategories = ({ categories, type, slug: propSlug, fetchSlug, currentPath }) => {
   const router = useRouter();
   const { subCategoriesList, categoriesList } = useSelector(
     (store) => store.projectinfo
@@ -25,12 +25,9 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
   const querySlug = router.query.slug;
   const effectiveSlug = propSlug || (Array.isArray(querySlug) ? querySlug[querySlug.length - 1] : querySlug);
 
-  // Debug log for sidebar issue
-  useEffect(() => {
-    if (type === "Sub Categories") {
-      console.log(`[SearchCategories] Debug: type=${type}, propSlug=${propSlug}, querySlug=${JSON.stringify(querySlug)}, effectiveSlug=${effectiveSlug}`);
-    }
-  }, [type, propSlug, querySlug, effectiveSlug]);
+  // Determine which slug to use for fetching data
+  // If fetchSlug is provided (e.g. parent slug), use it. Otherwise use current slug.
+  const slugTarget = fetchSlug || effectiveSlug;
 
   // Initialize catalog safely
   const [catalog, setCatalog] = useState(Array.isArray(categories) ? categories : []);
@@ -45,7 +42,7 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
   }, [categories]);
 
   async function fetchCategories() {
-    const timer = useEffectTimer("SearchCategories-fetchCategories", [type, effectiveSlug, searchTerm]);
+    const timer = useEffectTimer("SearchCategories-fetchCategories", [type, slugTarget, searchTerm]);
 
     if (type === "Categories") {
       try {
@@ -66,11 +63,11 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
         timer.error(error);
       }
     }
-    if (type === "Sub Categories" && effectiveSlug) {
+    if (type === "Sub Categories" && slugTarget) {
       try {
         timer.mark('subcategories-fetch-start');
-        // Use effectiveSlug (string) explicitly
-        const response = await getallsubCategories(searchTerm, effectiveSlug);
+        // Use slugTarget (fetchSlug || effectiveSlug)
+        const response = await getallsubCategories(searchTerm, slugTarget);
         timer.mark('subcategories-response-received');
 
         const fetchedSubCategories = response.data.subCategories || [];
@@ -85,7 +82,7 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
         }
 
         dispatch(addAllSubCategoriesData(fetchedSubCategories));
-        timer.complete(true, { subCategoriesCount: fetchedSubCategories.length, slug: effectiveSlug });
+        timer.complete(true, { subCategoriesCount: fetchedSubCategories.length, slug: slugTarget });
       } catch (error) {
         timer.error(error);
       }
@@ -107,7 +104,7 @@ const SearchCategories = ({ categories, type, slug: propSlug, currentPath }) => 
     return () => {
       clearTimeout(timers);
     };
-  }, [searchTerm, effectiveSlug]); // Depend on effectiveSlug
+  }, [searchTerm, slugTarget]); // Depend on slugTarget
 
   const handleSearch = (e) => {
     if (e.target.value.trim().length >= 2) {
