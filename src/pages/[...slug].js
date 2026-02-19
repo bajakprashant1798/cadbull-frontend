@@ -26,14 +26,16 @@ import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories }) => {
     const router = useRouter();
     const { slug: querySlugArray, page: queryPage } = router.query;
+
 
     // Derive current slug and page from query if not provided by SSR (client-side nav)
     let derivedSlug = initialSlug;
     let derivedPage = initialPage;
     let derivedPath = initialPath; // Full path for canonical URL (e.g., "residential/bungalows")
+    let derivedParentSlug = initialParentSlug;
 
     // Client-side fallback logic (matched with getServerSideProps logic)
     if (!derivedSlug && querySlugArray && Array.isArray(querySlugArray)) {
@@ -210,6 +212,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
             mainCategories,
             subCategories: null, // ✅ FIX: Pass null to prevent SearchCategories from resetting state to empty []
             slug,
+            parent_slug: derivedParentSlug, // ✅ Pass parent_slug explicitly
             currentPath,
             type: "Sub Categories",
         };
@@ -844,15 +847,16 @@ export async function getServerSideProps({ params, req, res }) {
 
                 return {
                     props: {
-                        initialProjects: data.projects,
+                        initialProjects: data.projects || [],
                         initialTotalPages: data.totalPages || 1,
                         initialSlug: slug,
                         initialPath: path,
+                        initialParentSlug: parent_slug || null, // ✅ Pass parent_slug
                         page,
-                        metaTitle: metaTitle || `${title || makeTitle(slug)} | Page ${page}`,
+                        metaTitle: metaTitle || makeTitle(slug),
                         metaKeywords: metaKeywords || '',
                         metaDescription: metaDescription || 'World Largest 2d CAD Library.',
-                        description: description || '',
+                        description: '',
                         title: title || makeTitle(slug),
                         serverMainCategories: serverMainCategories || []
                     }

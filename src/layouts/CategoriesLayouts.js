@@ -20,6 +20,7 @@ const CategoriesLayout = ({
   mainCategories, // Array of main categories
   subCategories,  // Array of subcategories
   slug,           // Current slug (if any)
+  parent_slug,    // Parent slug (if any)
   currentPath,    // Current full path (e.g. "residential/bungalows")
   type,
   pageName = "Categories",
@@ -98,13 +99,30 @@ const CategoriesLayout = ({
                 // If slug exists, show Subcategories first then Main Categories
                 <>
                   <div className="mb-4">
-                    <SearchCategories
-                      categories={subCategories}
-                      type="Sub Categories"
-                      slug={slug}
-                      currentPath={currentPath}
-                    // url="categories/sub/"
-                    />
+                    {/* 
+                        Fix for recursive URLs: 
+                        If parent_slug is provided (from [...slug].js), use it as the base.
+                        Otherwise, fallback to stripping the last segment.
+                    */}
+                    {(() => {
+                      let basePath = currentPath;
+                      if (parent_slug) {
+                        basePath = parent_slug;
+                      } else if (currentPath.includes('/')) {
+                        basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                      }
+
+                      console.log(`[CategoriesLayout] slug=${slug}, parent_slug=${parent_slug}, currentPath=${currentPath}, calculatedBasePath=${basePath}`);
+                      return (
+                        <SearchCategories
+                          categories={subCategories}
+                          type="Sub Categories"
+                          slug={slug}
+                          currentPath={basePath}
+                        // url="categories/sub/"
+                        />
+                      );
+                    })()}
                   </div>
                   <div className="mb-4 d-none d-xl-block">
                     <SearchCategories

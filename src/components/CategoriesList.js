@@ -32,10 +32,30 @@ function CategoriesList({
       {slug ? (
         <Link
           onClick={(e) => {
-            dispatch(closeDrawerHandler({ drawerType: "category" }))
-            // Prefer 'link' prop if provided, otherwise fallback to slug
             const destination = props.link ? `/${props.link}` : `/${slug}`;
-            router.push(destination)
+
+            // ✅ Fix: Robust check to prevent same-URL navigation
+            // 1. Remove query params and hash from current path
+            const currentPathClean = router.asPath.split('?')[0].split('#')[0];
+
+            // 2. Normalize both paths (lowercase, remove trailing slash) for comparison
+            const normalize = (p) => p.toLowerCase().replace(/\/$/, "");
+
+            console.log(`[CategoriesList] Navigation Check:`);
+            console.log(`  Current (Raw): ${router.asPath}`);
+            console.log(`  Target  (Raw): ${destination}`);
+            console.log(`  Current (Norm): ${normalize(decodeURIComponent(currentPathClean))}`);
+            console.log(`  Target  (Norm): ${normalize(destination)}`);
+
+            if (normalize(decodeURIComponent(currentPathClean)) === normalize(destination)) {
+              console.log("  🛑 Preventing navigation (Same URL)");
+              e.preventDefault();
+              return;
+            } else {
+              console.log("  ✅ Allowing navigation");
+            }
+
+            dispatch(closeDrawerHandler({ drawerType: "category" }))
           }}
           href={props.link ? `/${props.link}` : `/${slug}`}
           className="d-inline-flex gap-1 align-items-center"
