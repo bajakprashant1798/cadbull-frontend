@@ -386,22 +386,11 @@ const AddProject = () => {
 
   // Handle description changes from React Quill
   const handleQuillDescriptionChange = (content) => {
-    // ✅ Strip inline color/background styles from links so CSS can style them
-    const cleanedContent = content.replace(/<a\b[^>]*>/gi, (tagMatch) => {
-      return tagMatch.replace(/ style="[^"]*"/gi, (styleMatch) => {
-        // Remove color, background-color, background properties
-        let newStyleAttr = styleMatch.replace(/(?:^|["\s;])(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
-        // If the style attribute becomes empty or just contains quotes/spaces, remove it
-        if (/style="\s*"/.test(newStyleAttr) || newStyleAttr === ' style=""') return '';
-        return newStyleAttr;
-      });
-    });
-
-    setDescription(cleanedContent);
-    setValue("description", cleanedContent); // Sync with react-hook-form
+    setDescription(content);
+    setValue("description", content); // Sync with react-hook-form
 
     // ✅ SEO Length validation for description
-    const seoValidation = validateSEODescription(cleanedContent);
+    const seoValidation = validateSEODescription(content);
     setSeoDescriptionValidation(seoValidation);
   };
 
@@ -561,9 +550,23 @@ const AddProject = () => {
       // console.log("🚀 Form Data BEFORE Append:", data);
       console.log("🚀 Form BEFORE Append:", data);
 
+      // ✅ Strip inline color/background styles from links so CSS can style them (moved from onChange)
+      let cleanedDescription = description;
+      if (cleanedDescription) {
+        cleanedDescription = cleanedDescription.replace(/<a\b[^>]*>/gi, (tagMatch) => {
+          return tagMatch.replace(/ style="[^"]*"/gi, (styleMatch) => {
+            // Remove color, background-color, background properties
+            let newStyleAttr = styleMatch.replace(/(?:^|["\s;])(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
+            // If the style attribute becomes empty or just contains quotes/spaces, remove it
+            if (/style="\s*"/.test(newStyleAttr) || newStyleAttr === ' style=""') return '';
+            return newStyleAttr;
+          });
+        });
+      }
+
       // ✅ Explicitly append all form fields
       formData.append("work_title", data.work_title || "");
-      formData.append("description", description || ""); // Use rich text description
+      formData.append("description", cleanedDescription || ""); // Use cleaned rich text description
       formData.append("meta_title", data.meta_title || "");
       formData.append("meta_description", data.meta_description || "");
       // In formData append:
