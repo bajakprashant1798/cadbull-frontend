@@ -154,6 +154,35 @@ function validateSEOMetaDescription(metaDescription) {
   return { isValid: true, message: `Perfect SEO length (${length}/150-160 chars)` };
 }
 
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': [] }],
+    ['link'],
+    ['blockquote', 'code-block'],
+    ['clean']
+  ],
+  clipboard: {
+    // toggle to add extra line breaks when pasting HTML:
+    matchVisual: false,
+  }
+};
+
+const quillFormats = [
+  'header', 'size',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'code-block',
+  'align', 'color', 'background',
+  'script'
+];
+
 const EditProject = () => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector(
@@ -167,7 +196,6 @@ const EditProject = () => {
       status: "1",
     },
   });
-
 
   const router = useRouter();
   const { id } = router.query;
@@ -195,7 +223,6 @@ const EditProject = () => {
   const user = useSelector((store) => store.logininfo.user);
   const userRole = user?.role;
 
-
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   // const [tags, setTags] = useState([]);
@@ -210,36 +237,6 @@ const EditProject = () => {
 
   // Rich text editor state
   const [description, setDescription] = useState("");
-
-  // React Quill configuration
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      ['link'],
-      ['blockquote', 'code-block'],
-      ['clean']
-    ],
-    clipboard: {
-      // toggle to add extra line breaks when pasting HTML:
-      matchVisual: false,
-    }
-  };
-
-  const quillFormats = [
-    'header', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'code-block',
-    'align', 'color', 'background',
-    'script'
-  ];
 
   // const [storedToken, setStoredToken] = useState(null);
 

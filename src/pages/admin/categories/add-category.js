@@ -9,10 +9,38 @@ import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
 // Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { 
+const ReactQuill = dynamic(() => import('react-quill'), {
   ssr: false,
   loading: () => <p>Loading editor...</p>
 });
+
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': [] }],
+    ['link'],
+    ['blockquote', 'code-block'],
+    ['clean']
+  ],
+  clipboard: {
+    matchVisual: false,
+  }
+};
+
+const quillFormats = [
+  'header', 'size',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'code-block',
+  'align', 'color', 'background',
+  'script'
+];
 
 const AddCategory = () => {
   const router = useRouter();
@@ -20,7 +48,7 @@ const AddCategory = () => {
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
-  
+
   const { register, handleSubmit, reset, setValue } = useForm();
   const [parentCategories, setParentCategories] = useState([]);
 
@@ -32,34 +60,7 @@ const AddCategory = () => {
   // Rich text editor state
   const [description, setDescription] = useState("");
 
-  // React Quill configuration
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      ['link'],
-      ['blockquote', 'code-block'],
-      ['clean']
-    ],
-    clipboard: {
-      matchVisual: false,
-    }
-  };
 
-  const quillFormats = [
-    'header', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'code-block',
-    'align', 'color', 'background',
-    'script'
-  ];
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -167,7 +168,7 @@ const AddCategory = () => {
                 onChange={handleDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
-                style={{ 
+                style={{
                   minHeight: '200px',
                   backgroundColor: '#fff'
                 }}
@@ -175,12 +176,12 @@ const AddCategory = () => {
               />
             </div>
             <small className="form-text text-muted mt-2 d-block">
-              🎨 <strong>Formatting options available:</strong><br/>
-              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br/>
-              • Headers (H1, H2, H3)<br/>
-              • Bullet points and numbered lists<br/>
-              • Links to external websites<br/>
-              • Text colors and highlighting<br/>
+              🎨 <strong>Formatting options available:</strong><br />
+              • <strong>Bold</strong>, <em>Italic</em>, <u>Underline</u> text<br />
+              • Headers (H1, H2, H3)<br />
+              • Bullet points and numbered lists<br />
+              • Links to external websites<br />
+              • Text colors and highlighting<br />
               • Code blocks and quotes
             </small>
           </div>
