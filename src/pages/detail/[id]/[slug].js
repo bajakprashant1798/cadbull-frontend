@@ -1051,7 +1051,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                 <h5 className="product-description-title mb-2">Description</h5>
                               </div>
                             </div>
-                            <div>{parse(`${project.description}`)}</div>
+                            <div>{parse(`${(project.description || "").replace(/\s*style=">/g, '>')}`)}</div>
                             {/* <DescriptionRenderer 
                               description={project?.description} 
                               className="mt-2"

@@ -557,7 +557,10 @@ const EditProject = () => {
         setTagsCsv(projectData.tags || "");
 
         // Set description for React Quill
-        setDescription(projectData.description || "");
+        let rawDesc = projectData.description || "";
+        // Auto-repair HTML corrupted by the previous buggy RegExp
+        rawDesc = rawDesc.replace(/\s*style=">/g, '>');
+        setDescription(rawDesc);
 
         setProjectDetails(projectData); // For comparing on duplicate check
         setWorkTitle(projectData.work_title || ""); // Set controlled input
@@ -792,13 +795,12 @@ const EditProject = () => {
     try {
       setSubmitting(true);
 
-      // ✅ Strip inline color/background styles from links so CSS can style them (moved from onChange)
       let cleanedDescription = description;
       if (cleanedDescription) {
         cleanedDescription = cleanedDescription.replace(/<a\b[^>]*>/gi, (tagMatch) => {
           return tagMatch.replace(/ style="[^"]*"/gi, (styleMatch) => {
             // Remove color, background-color, background properties
-            let newStyleAttr = styleMatch.replace(/(?:^|["\s;])(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
+            let newStyleAttr = styleMatch.replace(/\b(?:color|background-color|background)\s*:[^;"]+;?/gi, '');
             // If the style attribute becomes empty or just contains quotes/spaces, remove it
             if (/style="\s*"/.test(newStyleAttr) || newStyleAttr === ' style=""') return '';
             return newStyleAttr;

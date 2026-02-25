@@ -135,7 +135,10 @@ export async function getServerSideProps(context) {
 
 export default function AmpProductPage({ product, similar, publisher, categoryName, subcategoryName, user }) {
   const title = product?.work_title || "Product";
-  const description = product?.description || "";
+  let rawDesc = product?.description || "";
+  // Auto-repair HTML corrupted by the previous admin buggy RegExp
+  rawDesc = rawDesc.replace(/\s*style=">/g, '>');
+  const description = rawDesc;
   const metaDescription = description ? description.replace(/<[^>]+>/g, '') : "";
   const imageUrl = product?.image
     ? `https://assets.cadbull.com/product_img/original/${product.image}`
