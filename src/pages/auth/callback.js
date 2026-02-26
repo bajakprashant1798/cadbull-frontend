@@ -14,16 +14,16 @@ const OAuthCallback = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get("user");
     const redirectParam = urlParams.get("redirect");
-  
+
     if (userParam) {
       try {
         const userData = JSON.parse(decodeURIComponent(userParam));
-        
+
         // Store user data
         localStorage.setItem("userData", JSON.stringify(userData));
         dispatch(loginSuccess({ user: userData, status: "authenticated" }));
         window.dispatchEvent(new Event("userLoggedIn"));
-  
+
         // Check if we're in a popup (for Safari compatibility)
         if (window.opener && !window.opener.closed) {
           // We're in a popup - send data to parent and close
@@ -36,9 +36,9 @@ const OAuthCallback = () => {
             window.close();
           } catch (error) {
             // If postMessage fails, redirect parent window
-            const redirectUrl = redirectParam && redirectParam !== '/auth/login' 
+            const redirectUrl = redirectParam && redirectParam !== '/auth/login'
               ? decodeURIComponent(redirectParam)
-              : (userData.role === 1 ? "/admin/dashboard" : "/");
+              : ([1, 5, 6, 7].includes(userData.role) ? "/admin/dashboard" : "/");
             window.opener.location.href = redirectUrl;
             window.close();
           }
@@ -55,7 +55,7 @@ const OAuthCallback = () => {
       } catch (error) {
         console.error("❌ Failed to parse user data:", error);
         toast.error("Failed to retrieve user details.");
-        
+
         if (window.opener && !window.opener.closed) {
           window.opener.postMessage({
             type: 'SOCIAL_LOGIN_ERROR',
@@ -72,7 +72,7 @@ const OAuthCallback = () => {
       router.replace("/auth/login");
     }
   }, [router, dispatch]);
-  
+
 
   return <p>Processing login...</p>;
 };

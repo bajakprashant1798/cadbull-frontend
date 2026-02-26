@@ -14,7 +14,7 @@ const EditUser = () => {
   // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
   const { register, handleSubmit, reset } = useForm();
-  
+
   // const [storedToken, setStoredToken] = useState(null);
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,17 +67,17 @@ const EditUser = () => {
     };
 
     fetchUserData();
-  }, [id, reset, isAuthenticated,  router]);
+  }, [id, reset, isAuthenticated, router]);
 
   // ✅ Fetch country list
   useEffect(() => {
     // const authToken = token || storedToken;
     if (!isAuthenticated) return;
-    
+
     api.getCountriesApi()
       .then((res) => setCountries(res.data.countries))
       .catch((err) => console.error("❌ Error fetching countries:", err));
-  }, [ isAuthenticated]);
+  }, [isAuthenticated]);
 
   const onSubmit = async (data) => {
     try {
@@ -139,11 +139,13 @@ const EditUser = () => {
           <div className="mb-3">
             <label className="form-label">Role</label>
             <select className="form-control" {...register("role")}>
-              <option value="1">Admin</option>
+              <option value="1">Super Admin</option>
               <option value="2">User</option>
               <option value="3">Agent</option>
               <option value="4">Data Operator</option>
               <option value="5">Content Creator</option>
+              <option value="6">Content Creator with files</option>
+              <option value="7">Admin</option>
             </select>
           </div>
 

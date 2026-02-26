@@ -8,13 +8,13 @@
 export const redirectToLogin = (router, loginPath = '/auth/login') => {
   const currentPath = router.asPath;
   const loginUrl = `${loginPath}?redirect=${encodeURIComponent(currentPath)}`;
-  
+
   console.log('🔑 redirectToLogin called:', {
     currentPath,
     encodedPath: encodeURIComponent(currentPath),
     loginUrl
   });
-  
+
   router.push(loginUrl);
 };
 
@@ -26,7 +26,7 @@ export const redirectToLogin = (router, loginPath = '/auth/login') => {
  */
 export const redirectAfterLogin = (router, user, defaultPath = '/') => {
   const redirectUrl = router.query.redirect;
-  
+
   console.log('🔄 redirectAfterLogin called with:', {
     redirectUrl,
     userRole: user.role,
@@ -35,14 +35,14 @@ export const redirectAfterLogin = (router, user, defaultPath = '/') => {
     routerAsPath: router.asPath,
     currentURL: typeof window !== 'undefined' ? window.location.href : 'SSR'
   });
-  
+
   // Admin users always go to dashboard
-  if (user.role === 1 || user.role === 5) {
+  if (user.role === 1 || user.role === 5 || user.role === 6 || user.role === 7) {
     console.log('👤 Admin user detected, redirecting to dashboard');
     router.push('/admin/dashboard');
     return;
   }
-  
+
   // Regular users: redirect to original page or default
   if (redirectUrl && redirectUrl !== '/auth/login') {
     const decodedUrl = decodeURIComponent(redirectUrl);

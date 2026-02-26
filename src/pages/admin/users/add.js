@@ -21,7 +21,7 @@ const validationSchema = Yup.object().shape({
     .required("Phone number is required."),
   country: Yup.string().required("Country is required."),
   status: Yup.string().oneOf(["0", "1"], "Invalid status").required("Status is required."),
-  role: Yup.string().oneOf(["1", "2", "3", "4", "5"], "Invalid role").required("Role is required."),
+  role: Yup.string().oneOf(["1", "2", "3", "4", "5", "6", "7"], "Invalid role").required("Role is required."),
 });
 
 const AddUser = () => {
@@ -48,7 +48,7 @@ const AddUser = () => {
       })
       .catch((err) => console.error("❌ Error fetching countries:", err));
   }, [isAuthenticated]);
-  
+
 
   const addUserHandler = (data) => {
     if (!isDirty) return;
@@ -152,19 +152,19 @@ const AddUser = () => {
 
                 {/* ✅ Country (Dropdown) */}
                 <div className="col-lg-6">
-                    <label>Country</label>
-                    <select
-                        {...register("country")}
-                        className={`form-control ${errors.country ? "is-invalid" : ""}`}
-                    >
-                        <option value="">Select Country</option>
-                        {countries.map((c, index) => (
-                        <option key={index} value={c.country}>
-                            {c.country}
-                        </option>
-                        ))}
-                    </select>
-                    {errors.country && <div className="invalid-feedback">{errors.country.message}</div>}
+                  <label>Country</label>
+                  <select
+                    {...register("country")}
+                    className={`form-control ${errors.country ? "is-invalid" : ""}`}
+                  >
+                    <option value="">Select Country</option>
+                    {countries.map((c, index) => (
+                      <option key={index} value={c.country}>
+                        {c.country}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.country && <div className="invalid-feedback">{errors.country.message}</div>}
                 </div>
 
 
@@ -196,6 +196,7 @@ const AddUser = () => {
                     <option value="4">Data Operator</option>
                     <option value="5">Content Creator</option>
                     <option value="6">Content Creator with files</option>
+                    <option value="7">Admin</option>
                   </select>
                   {errors.role && <div className="invalid-feedback">{errors.role.message}</div>}
                 </div>

@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import MainLayout from "@/layouts/MainLayout";
 import { fetchStrapiAPI, getStrapiMedia } from "@/lib/strapiApi";
-import BlocksRenderer from "@/components/BlocksRenderer";
 
 const BlogDetail = ({ blog }) => {
     if (!blog) return null;
 
-    const { title, body, excerpt, featured_image, published_date, seo, slug } = blog;
+    const { title, content, excerpt, featured_image, published_date, seo, slug } = blog;
 
     // DEBUG: Client-side check for API access
     React.useEffect(() => {
@@ -120,44 +119,14 @@ const BlogDetail = ({ blog }) => {
                             {/* Article Body */}
                             <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm">
                                 <div className="blog-content fs-5 lh-lg font-serif"> {/* Use a serif font class if available or default sans */}
-                                    {blog.body ? (
-                                        blog.body.map((block, index) => {
-                                            switch (block.__component) {
-                                                case "blog.text-block":
-                                                    return (
-                                                        <div key={index} className="mb-4">
-                                                            <BlocksRenderer content={block.text} />
-                                                        </div>
-                                                    );
-                                                case "blog.image-block":
-                                                    const imgUrl = getStrapiMedia(block.image);
-                                                    return (
-                                                        <figure key={index} className="my-5 w-100 text-center">
-                                                            <div className="position-relative w-100 rounded-3 overflow-hidden shadow-sm mx-auto" style={{ height: "450px", maxWidth: "90%" }}>
-                                                                {imgUrl && (
-                                                                    <Image
-                                                                        src={imgUrl}
-                                                                        alt={block.caption || "Blog Image"}
-                                                                        fill
-                                                                        style={{ objectFit: "contain" }} // Changed to contain to show full diagram/image
-                                                                        className="bg-light"
-                                                                        sizes="(max-width: 1200px) 100vw, 1200px"
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                            {block.caption && (
-                                                                <figcaption className="text-center text-muted mt-3 fst-italic small">
-                                                                    {block.caption}
-                                                                </figcaption>
-                                                            )}
-                                                        </figure>
-                                                    );
-                                                default:
-                                                    return null;
-                                            }
-                                        })
+                                    {blog.content ? (
+                                        <div
+                                            dangerouslySetInnerHTML={{ __html: blog.content }}
+                                        />
                                     ) : (
-                                        <p className="text-muted fst-italic">No content available for this article.</p>
+                                        <p className="text-muted fst-italic">
+                                            No content available for this article.
+                                        </p>
                                     )}
                                 </div>
 
@@ -177,6 +146,48 @@ const BlogDetail = ({ blog }) => {
                     </div>
                 </article>
             </main>
+            <style jsx>{`
+                .blog-content h1, .blog-content h2, .blog-content h3 {
+                    margin-top: 1.5rem;
+                    margin-bottom: 1rem;
+                    font-weight: 700;
+                    color: #212529;
+                }
+                .blog-content p {
+                    margin-bottom: 1.5rem;
+                    line-height: 1.8;
+                }
+                .blog-content ul, .blog-content ol {
+                    margin-bottom: 1.5rem;
+                    padding-left: 2rem;
+                }
+                .blog-content li {
+                    margin-bottom: 0.5rem;
+                }
+                .blog-content figure {
+                    margin: 2rem auto;
+                    max-width: 100%;
+                    text-align: center;
+                }
+                .blog-content figure.image-style-align-left {
+                    float: left;
+                    margin-right: 1.5rem;
+                }
+                .blog-content figure.image-style-align-right {
+                    float: right;
+                    margin-left: 1.5rem;
+                }
+                .blog-content figure.image-style-align-center {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .blog-content img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    border-radius: 0.5rem;
+                    display: inline-block;
+                }
+            `}</style>
         </>
     );
 };
@@ -195,8 +206,7 @@ export async function getServerSideProps({ params }) {
             },
             populate: {
                 featured_image: true,
-                seo: { populate: "*" },
-                body: { populate: "*" }
+                seo: { populate: "*" }
             },
         });
 
