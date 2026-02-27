@@ -856,7 +856,7 @@ export async function getServerSideProps({ params, req, res }) {
                         metaTitle: metaTitle || makeTitle(slug),
                         metaKeywords: metaKeywords || '',
                         metaDescription: metaDescription || 'World Largest 2d CAD Library.',
-                        description: '',
+                        description: description || '',
                         title: title || makeTitle(slug),
                         serverMainCategories: serverMainCategories || []
                     }

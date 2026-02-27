@@ -62,7 +62,8 @@ const AddUser = () => {
       })
       .catch((err) => {
         stopLoading();
-        toast.error("Error adding user. Try again.");
+        const errorMessage = err.response?.data?.error || err.response?.data?.message || "Error adding user. Try again.";
+        toast.error(errorMessage);
         console.error("❌ Error Adding User:", err);
       });
   };
