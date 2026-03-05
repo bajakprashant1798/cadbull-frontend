@@ -1494,7 +1494,7 @@ export async function getServerSideProps(ctx) {
       props: {
         initialProject: project,
         initialSimilar: similarRes?.data?.projects || [],
-        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${canonicalSlug}`,
+        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
       },
     };
   } catch (err) {
