@@ -1,3 +1,6 @@
+# ------------------------------------------------
+# GLOBAL RULES
+# ------------------------------------------------
 User-agent: *
 Allow: /
 Allow: /ads.txt
@@ -25,4 +28,165 @@ Disallow: /amp/71588/
 # ✅ BLOCK PATTERN FOR POTENTIAL REJECTED PRODUCTS
 # Add more specific product IDs as needed
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Master configuration for SEO + AI crawlers + crawl efficiency
+# Updated 2026
+
+
+# Allow important SEO sections
+Allow: /detail/
+Allow: /category/
+Allow: /categories/
+
+# ------------------------------------------------
+# Block obsolete download systems
+# ------------------------------------------------
+Disallow: /products/download/
+Disallow: /products/ampdownload/
+
+# ------------------------------------------------
+# Block outdated author pages
+# ------------------------------------------------
+Disallow: /author-profile/
+
+# ------------------------------------------------
+# Block legacy / broken URL patterns
+# ------------------------------------------------
+Disallow: /gold?
+Disallow: /1.CAD?
+Disallow: /categories/sub/
+
+# ------------------------------------------------
+# Block duplicate parameter URLs
+# ------------------------------------------------
+Disallow: /*?replytocom=
+Disallow: /*?share=
+Disallow: /*?amp
+Disallow: /*?print
+Disallow: /*?download
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?sessionid=
+
+# ------------------------------------------------
+# Block invalid detail URLs
+# ------------------------------------------------
+Disallow: /detail/*?*
+Disallow: /detail/*/*?*
+
+# ------------------------------------------------
+# Block rejected or unpublished CAD drawings
+# ------------------------------------------------
+Disallow: /detail/71588/
+Disallow: /amp/71588/
+
+# Add additional rejected IDs if needed
+# Disallow: /detail/XXXXX/
+
+# ------------------------------------------------
+# Reduce crawl pressure
+# ------------------------------------------------
+Crawl-delay: 5
+
+# ------------------------------------------------
+# SITEMAP
+# ------------------------------------------------
 Sitemap: https://cadbull.com/sitemap.xml
+
+
+# =================================================
+# AI SEARCH CRAWLERS
+# =================================================
+
+# OpenAI / ChatGPT crawler
+User-agent: GPTBot
+Allow: /
+
+# OpenAI search crawler
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic Claude
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Google AI crawler
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl dataset
+User-agent: CCBot
+Allow: /
+
+# Facebook AI crawler
+User-agent: FacebookBot
+Allow: /
+
+
+# =================================================
+# SEARCH ENGINE BOTS
+# =================================================
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+
+# =================================================
+# IMAGE SEARCH BOTS
+# =================================================
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot-Image
+Allow: /
+
+
+# =================================================
+# BLOCK BAD SCRAPER BOTS
+# =================================================
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
