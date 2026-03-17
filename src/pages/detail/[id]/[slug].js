@@ -880,7 +880,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               {isNearCurrent ? (
                                 <Image
                                   src={getSafeImageUrl(url)}   // ✅ still your original high-quality image
-                                  alt={project?.work_title || `Slide ${idx + 1}`}
+                                  alt={project?.work_title ? (idx === 0 ? project.work_title : `${project.work_title} ${idx + 1}`) : `Slide ${idx + 1}`}
                                   fill
                                   priority={isFirst}
                                   fetchPriority={isFirst ? "high" : "auto"}
