@@ -575,6 +575,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     <Fragment>
       <Head>
         <title>{project?.meta_title || project?.work_title}</title>
+        <meta name="robots" content="index, follow" />
         <meta name="description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta property="og:title" content={project?.meta_title || project?.work_title} />
         <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
