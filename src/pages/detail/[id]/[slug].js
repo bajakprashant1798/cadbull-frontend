@@ -604,7 +604,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         />
 
         {/* OPTIONAL: additional gallery images */}
-        {galleryUrls.slice(1, 4).map((url, i) => (
+        {/* {galleryUrls.slice(1, 4).map((url, i) => ( */}
+        {galleryUrls.slice(1).map((url, i) => (
           <meta
             property="og:image"
             content={getSafeImageUrl(url)}
