@@ -750,14 +750,14 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
               <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-3  gap-md-5">
                 <div className="ps-5">
                   <SectionHeading
-                    subHeading={"FIND OUR ARTICLES"}
-                    mainHeading={"Latest Articles"}
+                    subHeading={"FIND OUR POSTS"}
+                    mainHeading={"Latest Posts"}
                     mainHeadingBold={"Blogs"}
                   />
                 </div>
                 <div className="w-100 text-center text-md-end">
                   <Link href="" className="btn btn-primary">
-                    VIEW ALL ARTICLES
+                    VIEW ALL POSTS
                   </Link>
                 </div>
               </div>

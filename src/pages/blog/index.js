@@ -36,9 +36,9 @@ const BlogListing = ({ blogs }) => {
     return (
         <>
             <Head>
-                <title>Cadbull Articles - Latest Architecture & CAD Updates</title>
+                <title>Cadbull Blog - Latest Architecture & CAD Updates</title>
                 <meta name="description" content={seo.description} />
-                <link rel="canonical" href="https://cadbull.com/articles" />
+                <link rel="canonical" href="https://cadbull.com/blog" />
             </Head>
 
             <main className="min-vh-100 d-flex flex-column bg-light">
@@ -61,7 +61,7 @@ const BlogListing = ({ blogs }) => {
                                 <input
                                     type="text"
                                     className="form-control border-start-0 ps-0"
-                                    placeholder="Search articles..."
+                                    placeholder="Search blog..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -91,8 +91,8 @@ const BlogListing = ({ blogs }) => {
                     {/* Featured Post */}
                     {featuredPost && (
                         <div className="mb-5">
-                            <h2 className="h4 fw-bold mb-4">Featured Article</h2>
-                            <Link href={`/articles/${featuredPost.id}/${featuredPost.slug}`} className="text-decoration-none">
+                            <h2 className="h4 fw-bold mb-4">Featured Post</h2>
+                            <Link href={`/blog/${featuredPost.id}/${featuredPost.slug}`} className="text-decoration-none">
                                 <div className="card shadow-sm border-0 overflow-hidden hover-shadow transition-all">
                                     <div className="row g-0">
                                         <div className="col-md-7 position-relative" style={{ minHeight: "350px" }}>
@@ -138,7 +138,7 @@ const BlogListing = ({ blogs }) => {
 
                     {/* Blog Grid */}
                     <div className="mb-5">
-                        <h2 className="h4 fw-bold mb-4">Latest Articles</h2>
+                        <h2 className="h4 fw-bold mb-4">Latest Posts</h2>
                         {remainingPosts.length > 0 ? (
                             <div className="row g-4">
                                 {remainingPosts.map((blog) => {
@@ -147,7 +147,7 @@ const BlogListing = ({ blogs }) => {
 
                                     return (
                                         <div key={blog.id} className="col-md-6 col-lg-4">
-                                            <Link href={`/articles/${blog.id}/${blog.slug}`} className="text-decoration-none h-100 d-block">
+                                            <Link href={`/blog/${blog.id}/${blog.slug}`} className="text-decoration-none h-100 d-block">
                                                 <div className="card h-100 shadow-sm border-0 rounded-3 overflow-hidden hover-translate-up transition-all">
                                                     <div className="position-relative" style={{ height: "220px" }}>
                                                         {imageUrl ? (
@@ -167,7 +167,7 @@ const BlogListing = ({ blogs }) => {
                                                     <div className="card-body p-4">
                                                         <div className="mb-3">
                                                             <span className="badge bg-light text-secondary border rounded-pill">
-                                                                Article
+                                                                Blog
                                                             </span>
                                                         </div>
                                                         <h5 className="card-title fw-bold text-dark mb-3 line-clamp-2" style={{ minHeight: '3rem' }}>
@@ -192,7 +192,7 @@ const BlogListing = ({ blogs }) => {
                         ) : (
                             <div className="text-center py-5">
                                 <div className="text-muted mb-3"><i className="fa fa-search fa-3x"></i></div>
-                                <h4 className="text-muted">No articles found</h4>
+                                <h4 className="text-muted">No posts found</h4>
                                 <p className="text-muted">Try adjusting your search or category.</p>
                             </div>
                         )}
@@ -206,7 +206,7 @@ const BlogListing = ({ blogs }) => {
                             <div className="col-lg-6">
                                 <h2 className="fw-bold mb-3">Subscribe to Our Newsletter</h2>
                                 <p className="mb-4 text-white-50">
-                                    Get the latest articles, tutorials, and CAD news delivered straight to your inbox.
+                                    Get the latest posts, tutorials, and CAD news delivered straight to your inbox.
                                 </p>
                                 <div className="input-group input-group-lg bg-white rounded-3 p-1">
                                     <input

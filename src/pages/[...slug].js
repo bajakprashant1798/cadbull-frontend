@@ -517,9 +517,9 @@ export async function getServerSideProps({ params, req, res }) {
     }
 
 
-    // ✅ CRITICAL: Force 404 for 'articles' so static route handles it
-    if (slug === 'articles') {
-        console.log("[SSR] 🛑 blocked 'articles' slug in dynamic route");
+    // ✅ CRITICAL: Force 404 for 'blog' so static route handles it
+    if (slug === 'blog') {
+        console.log("[SSR] 🛑 blocked 'blog' slug in dynamic route");
         return { notFound: true };
     }
 

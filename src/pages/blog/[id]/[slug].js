@@ -37,7 +37,7 @@ const BlogDetail = ({ blog }) => {
     const seoMeta = seo || {};
     const metaTitle = seoMeta.metaTitle || title;
     const metaDescription = seoMeta.metaDescription || excerpt;
-    const canonicalUrl = seoMeta.canonicalURL || `https://cadbull.com/articles/${blog.id}/${slug}`;
+    const canonicalUrl = seoMeta.canonicalURL || `https://cadbull.com/blog/${blog.id}/${slug}`;
 
     const structuredData = {
         "@context": "https://schema.org",
@@ -72,8 +72,8 @@ const BlogDetail = ({ blog }) => {
                         <nav aria-label="breadcrumb" className="d-flex justify-content-center mb-4">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item"><Link href="/" className="text-decoration-none text-muted">Home</Link></li>
-                                <li className="breadcrumb-item"><Link href="/articles" className="text-decoration-none text-muted">Articles</Link></li>
-                                <li className="breadcrumb-item active" aria-current="page">Current Article</li>
+                                <li className="breadcrumb-item"><Link href="/blog" className="text-decoration-none text-muted">Blog</Link></li>
+                                <li className="breadcrumb-item active" aria-current="page">Current Post</li>
                             </ol>
                         </nav>
 
@@ -125,14 +125,14 @@ const BlogDetail = ({ blog }) => {
                                         />
                                     ) : (
                                         <p className="text-muted fst-italic">
-                                            No content available for this article.
+                                            No content available for this post.
                                         </p>
                                     )}
                                 </div>
 
                                 <div className="mt-5 pt-5 border-top d-flex justify-content-between align-items-center">
-                                    <Link href="/articles" className="btn btn-outline-secondary rounded-pill px-4">
-                                        &larr; Back to Articles
+                                    <Link href="/blog" className="btn btn-outline-secondary rounded-pill px-4">
+                                        &larr; Back to Blog
                                     </Link>
                                     {/* Share buttons placeholder */}
                                     <div className="d-flex gap-2">
