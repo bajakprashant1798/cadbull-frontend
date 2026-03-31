@@ -10,6 +10,11 @@ const BlogDetail = ({ blog }) => {
 
     const { title, content, excerpt, featured_image, published_date, seo, slug } = blog;
 
+    // Process content to ensure inline images use the CDN
+    const processedContent = content 
+        ? content.replace(/https?:\/\/strapi\.cadbull\.com\/uploads/g, 'https://strapi-assets.cadbull.com/uploads')
+        : null;
+
     // DEBUG: Client-side check for API access
     React.useEffect(() => {
         console.log("🔍 [Debug] Checking API Access for ID:", blog.id);
@@ -119,9 +124,9 @@ const BlogDetail = ({ blog }) => {
                             {/* Article Body */}
                             <div className="bg-white p-4 p-md-5 rounded-4 shadow-sm">
                                 <div className="blog-content fs-5 lh-lg font-serif"> {/* Use a serif font class if available or default sans */}
-                                    {blog.content ? (
+                                    {processedContent ? (
                                         <div
-                                            dangerouslySetInnerHTML={{ __html: blog.content }}
+                                            dangerouslySetInnerHTML={{ __html: processedContent }}
                                         />
                                     ) : (
                                         <p className="text-muted fst-italic">
