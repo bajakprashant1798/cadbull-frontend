@@ -66,6 +66,10 @@ const nextConfig = {
         hostname: 'assets.cadbull.com',
       },
       {
+        protocol: 'https',
+        hostname: 'strapi-assets.cadbull.com',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
       },

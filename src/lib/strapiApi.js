@@ -64,7 +64,7 @@ export function getStrapiMedia(image) {
     return null;
   }
   if (url.startsWith("/")) {
-    return getStrapiURL(url);
+    return `https://strapi-assets.cadbull.com${url}`;
   }
   return url;
 }
