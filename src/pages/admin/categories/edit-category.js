@@ -42,6 +42,27 @@ const quillFormats = [
   'script'
 ];
 
+function standardSlugify(text) {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
+
+function oldSiteSlugify(text) {
+  if (!text) return '';
+  return text
+    .replace(/\s+/g, '-')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '')
+    .split('-')
+    .map(word => word ? word.charAt(0).toUpperCase() + word.slice(1) : '')
+    .join('-');
+}
+
 const EditCategory = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -57,6 +78,9 @@ const EditCategory = () => {
 
   // Rich text editor state
   const [description, setDescription] = useState("");
+
+  const [slug, setSlug] = useState("");         // Slug input
+  const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
 
 
 
@@ -78,6 +102,19 @@ const EditCategory = () => {
           setCurrentParentId(categoryData.parent_id?.toString() || "0");
           // Set description for React Quill
           setDescription(categoryData.description || "");
+
+          let initialSlug = "";
+          let initialSlugMode = "standard";
+          if (categoryData.path && categoryData.path.trim() !== "") {
+            initialSlug = categoryData.path;
+            initialSlugMode = "custom";
+          } else if (categoryData.name) {
+            initialSlug = oldSiteSlugify(categoryData.name);
+            initialSlugMode = "old";
+          }
+          setSlug(initialSlug);
+          setSlugMode(initialSlugMode);
+          setValue("path", initialSlug);
         })
         .catch(() => toast.error("Error fetching category details"));
 
@@ -153,6 +190,24 @@ const EditCategory = () => {
       }
       setChecking(false);
     }, 350);
+  };
+
+  const handleGenerateStandardSlug = () => {
+    const newSlug = standardSlugify(slug);
+    setSlug(newSlug);
+    setSlugMode('standard');
+    setValue("path", newSlug);
+  };
+  const handleGenerateOldSiteSlug = () => {
+    const newSlug = oldSiteSlugify(slug);
+    setSlug(newSlug);
+    setSlugMode('old');
+    setValue("path", newSlug);
+  };
+  const handleSlugInputChange = (e) => {
+    setSlug(e.target.value);
+    setSlugMode('custom');
+    setValue("path", e.target.value);
   };
 
   // Filter parent categories based on search term
@@ -299,9 +354,29 @@ const EditCategory = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Category Path (Slug) - <small className="text-danger">Change with caution! Affects URLs.</small></label>
-            <input className="form-control" {...register("path")} placeholder="e.g. bungalows" />
-            {/* URL Preview */}
+            <label className="form-label">Category Path (Slug)</label>
+            <div className="mb-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm me-2" onClick={handleGenerateStandardSlug}>
+                Generate Standard Slug
+              </button>
+              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleGenerateOldSiteSlug}>
+                Generate Old Site Slug
+              </button>
+            </div>
+            <input
+              className="form-control"
+              value={slug}
+              onChange={handleSlugInputChange}
+              placeholder="Enter slug or use generate buttons"
+            />
+            {slugMode === "custom" && (
+              <small className="text-danger mt-1 d-block">
+                Changing the slug will affect Category URLs and SEO. Only modify if you understand the impact.
+              </small>
+            )}
+            {/* Hidden field so the form submits it */}
+            <input type="hidden" {...register("path")} />
+
             {/* URL Preview Debug */}
             <div className="mt-2 p-2 border border-primary rounded" style={{ background: '#eef', display: 'block' }}>
               <strong>Preview URL: </strong>
@@ -311,28 +386,21 @@ const EditCategory = () => {
                   try {
                     const parent = parentCategories.find(c => c.id.toString() === currentParentId);
 
-                    // DEBUG: Show what keys are available in parent object
                     if (parent) {
-                      console.log("Parent Object Keys:", Object.keys(parent));
-                      console.log("Parent Object:", parent);
-                      // Fallback to 'path' if 'slug' is missing, based on my suspicion
                       const parentSlug = parent.slug || parent.path || '';
-                      const currentSlug = watch("path") || "";
+                      const currentSlug = slug || "";
                       return parentSlug
                         ? `/${parentSlug}/${currentSlug}`
                         : `/${currentSlug}`;
                     }
 
-                    const currentSlug = watch("path") || "";
+                    const currentSlug = slug || "";
                     return `/${currentSlug}`;
                   } catch (e) {
                     return " (Error generating preview)";
                   }
                 })()}
               </span>
-              <div className="text-muted small mt-1">
-                (Debug: Parent ID: {currentParentId}, Found: {parentCategories.find(c => c.id.toString() === currentParentId) ? "Yes" : "No"})
-              </div>
             </div>
           </div>
 

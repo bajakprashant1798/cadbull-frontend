@@ -42,6 +42,27 @@ const quillFormats = [
   'script'
 ];
 
+function standardSlugify(text) {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '');
+}
+
+function oldSiteSlugify(text) {
+  if (!text) return '';
+  return text
+    .replace(/\s+/g, '-')
+    .replace(/\-+/g, '-')
+    .replace(/^\-+|\-+$/g, '')
+    .split('-')
+    .map(word => word ? word.charAt(0).toUpperCase() + word.slice(1) : '')
+    .join('-');
+}
+
 const AddCategory = () => {
   const router = useRouter();
   // const { token } = useSelector((store) => store.logininfo);
@@ -59,6 +80,9 @@ const AddCategory = () => {
 
   // Rich text editor state
   const [description, setDescription] = useState("");
+
+  const [slug, setSlug] = useState("");         // Slug input
+  const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
 
 
 
@@ -95,6 +119,24 @@ const AddCategory = () => {
       }
       setChecking(false);
     }, 350);
+  };
+
+  const handleGenerateStandardSlug = () => {
+    const newSlug = standardSlugify(slug);
+    setSlug(newSlug);
+    setSlugMode('standard');
+    setValue("path", newSlug);
+  };
+  const handleGenerateOldSiteSlug = () => {
+    const newSlug = oldSiteSlugify(slug);
+    setSlug(newSlug);
+    setSlugMode('old');
+    setValue("path", newSlug);
+  };
+  const handleSlugInputChange = (e) => {
+    setSlug(e.target.value);
+    setSlugMode('custom');
+    setValue("path", e.target.value);
   };
 
   // Handle description changes from React Quill
@@ -157,6 +199,31 @@ const AddCategory = () => {
                 This category name already exists. Please choose another.
               </span>
             )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Category Path (Slug)</label>
+            <div className="mb-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm me-2" onClick={handleGenerateStandardSlug}>
+                Generate Standard Slug
+              </button>
+              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleGenerateOldSiteSlug}>
+                Generate Old Site Slug
+              </button>
+            </div>
+            <input
+              className="form-control"
+              value={slug}
+              onChange={handleSlugInputChange}
+              placeholder="Enter slug or use generate buttons"
+            />
+            {slugMode === "custom" && (
+              <small className="text-danger mt-1 d-block">
+                Changing the slug will affect Category URLs and SEO. Only modify if you understand the impact.
+              </small>
+            )}
+            {/* Hidden field so the form submits it */}
+            <input type="hidden" {...register("path")} />
           </div>
 
           <div className="mb-3">
