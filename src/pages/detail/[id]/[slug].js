@@ -1229,6 +1229,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     </div>
 
+                    <Link href={`https://arcll.com/3d-visualizer`} target='_blank'>
+                      <button
+                        type="button"
+                        className="btn btn-primary d-flex mx-auto mt-3"
+                      >
+                        <span>3D View</span>
+                      </button>
+                    </Link>
                   </div>
                 </div>
 
