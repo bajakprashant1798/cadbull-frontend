@@ -17,10 +17,10 @@ const BlogDetail = ({ blog }) => {
 
     // DEBUG: Client-side check for API access
     React.useEffect(() => {
-        console.log("🔍 [Debug] Checking API Access for ID:", blog.id);
+        console.log("🔍 [Debug] Checking API Access for Slug:", slug);
         const debugFetch = async () => {
             try {
-                const apiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"}/api/blogs?filters[id][$eq]=${blog.id}&populate=*`;
+                const apiUrl = `${process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337"}/api/blogs?filters[slug][$eq]=${slug}&populate=*`;
                 console.log("🔍 [Debug] Fetching:", apiUrl);
                 const res = await fetch(apiUrl);
                 console.log("🔍 [Debug] Status:", res.status);
@@ -31,7 +31,7 @@ const BlogDetail = ({ blog }) => {
             }
         };
         debugFetch();
-    }, [blog.id]);
+    }, [slug]);
     const imageUrl = getStrapiMedia(featured_image);
     const date = new Date(published_date).toLocaleDateString("en-US", {
         year: "numeric",
@@ -42,7 +42,7 @@ const BlogDetail = ({ blog }) => {
     const seoMeta = seo || {};
     const metaTitle = seoMeta.metaTitle || title;
     const metaDescription = seoMeta.metaDescription || excerpt;
-    const canonicalUrl = seoMeta.canonicalURL || `https://cadbull.com/blog/${blog.id}/${slug}`;
+    const canonicalUrl = seoMeta.canonicalURL || `https://cadbull.com/blog/${slug}`;
 
     const structuredData = {
         "@context": "https://schema.org",
@@ -115,6 +115,7 @@ const BlogDetail = ({ blog }) => {
                                             fill
                                             style={{ objectFit: 'cover' }}
                                             priority
+                                            fetchPriority="high"
                                             sizes="(max-width: 1200px) 100vw, 1200px"
                                         />
                                     </div>
@@ -201,13 +202,13 @@ BlogDetail.getLayout = (page) => <MainLayout>{page}</MainLayout>;
 
 // // Use SSR for easier debugging and to avoid potential build-time fetching issues for now
 export async function getServerSideProps({ params }) {
-    console.log("🔥 [SSR] Fetching blog for ID:", params.id);
+    console.log("🔥 [SSR] Fetching blog for SLUG:", params.slug);
     try {
         // Attempt filtering using shorthand syntax to avoid '$' character issues with WAF/Firewalls
-        // filters[id]=123 instead of filters[id][$eq]=123
+        // filters[slug]=something instead of filters[slug][$eq]=something
         const blogRes = await fetchStrapiAPI("/blogs", {
             filters: {
-                id: params.id
+                slug: params.slug
             },
             populate: {
                 featured_image: true,
@@ -215,12 +216,12 @@ export async function getServerSideProps({ params }) {
             },
         });
 
-        console.log("� [SSR] Strapi Response Length:", blogRes?.data?.length);
+        console.log(" [SSR] Strapi Response Length:", blogRes?.data?.length);
 
         const blog = blogRes?.data?.[0];
 
         if (!blog) {
-            console.warn(`❌ [SSR] Blog not found for id: ${params.id}`);
+            console.warn(`❌ [SSR] Blog not found for slug: ${params.slug}`);
             return { notFound: true };
         }
 

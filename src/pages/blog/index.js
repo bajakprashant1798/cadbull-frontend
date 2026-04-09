@@ -92,7 +92,7 @@ const BlogListing = ({ blogs }) => {
                     {featuredPost && (
                         <div className="mb-5">
                             <h2 className="h4 fw-bold mb-4">Featured Post</h2>
-                            <Link href={`/blog/${featuredPost.id}/${featuredPost.slug}`} className="text-decoration-none">
+                            <Link href={`/blog/${featuredPost.slug}`} className="text-decoration-none">
                                 <div className="card shadow-sm border-0 overflow-hidden hover-shadow transition-all">
                                     <div className="row g-0">
                                         <div className="col-md-7 position-relative" style={{ minHeight: "350px" }}>
@@ -103,6 +103,7 @@ const BlogListing = ({ blogs }) => {
                                                     fill
                                                     style={{ objectFit: "cover" }}
                                                     priority
+                                                    fetchPriority="high"
                                                 />
                                             ) : (
                                                 <div className="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center text-white">
@@ -147,7 +148,7 @@ const BlogListing = ({ blogs }) => {
 
                                     return (
                                         <div key={blog.id} className="col-md-6 col-lg-4">
-                                            <Link href={`/blog/${blog.id}/${blog.slug}`} className="text-decoration-none h-100 d-block">
+                                            <Link href={`/blog/${blog.slug}`} className="text-decoration-none h-100 d-block">
                                                 <div className="card h-100 shadow-sm border-0 rounded-3 overflow-hidden hover-translate-up transition-all">
                                                     <div className="position-relative" style={{ height: "220px" }}>
                                                         {imageUrl ? (
