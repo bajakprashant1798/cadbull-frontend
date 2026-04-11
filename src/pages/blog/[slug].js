@@ -10,9 +10,36 @@ const BlogDetail = ({ blog }) => {
 
     const { title, content, excerpt, featured_image, published_date, seo, slug } = blog;
 
-    // Process content to ensure inline images use the CDN
-    const processedContent = content 
-        ? content.replace(/https?:\/\/strapi\.cadbull\.com\/uploads/g, 'https://strapi-assets.cadbull.com/uploads')
+    // Process content (CMS layout normalization per strict guidelines):
+    const processedContent = content
+        ? content
+            .replace(/https?:\/\/strapi\.cadbull\.com\/uploads/g, 'https://strapi-assets.cadbull.com/uploads')
+            // 1. Sanitize style attributes but safely KEEP layout/alignment properties
+            .replace(/\sstyle=(['"])(.*?)\1/gi, (match, quote, styleContent) => {
+                let newStyle = '';
+                const textAlignMatch = styleContent.match(/text-align:\s*(center|left|right|justify)/i);
+                if (textAlignMatch) newStyle += `${textAlignMatch[0]}; `;
+                
+                const floatMatch = styleContent.match(/float:\s*(left|right|none)/i);
+                if (floatMatch) newStyle += `${floatMatch[0]}; `;
+
+                return newStyle.trim() ? ` style="${newStyle.trim()}"` : '';
+            })
+            // 2. Sanitize class attributes but KEEP image/text alignment classes from Strapi
+            .replace(/\sclass=(['"])(.*?)\1/gi, (match, quote, classContent) => {
+                const safeClasses = classContent.split(/\s+/).filter(cls => 
+                    cls.includes('align') || cls.includes('image') || cls.includes('text-')
+                ).join(' ');
+                return safeClasses ? ` class="${safeClasses}"` : '';
+            })
+            // 3. Remove <span> and <font> tags entirely
+            .replace(/<\/?span[^>]*>/gi, '')
+            .replace(/<\/?font[^>]*>/gi, '')
+            // 4. Normalize &nbsp; and multiple spaces
+            .replace(/&nbsp;/gi, ' ')
+            .replace(/\s{2,}/g, ' ')
+            // 5. Clean up any remaining truly empty spacing paragraphs
+            .replace(/<p>(\s|<br\s*\/?>)*<\/p>/gi, '')
         : null;
 
     // DEBUG: Client-side check for API access
@@ -152,46 +179,124 @@ const BlogDetail = ({ blog }) => {
                     </div>
                 </article>
             </main>
-            <style jsx>{`
-                .blog-content h1, .blog-content h2, .blog-content h3 {
-                    margin-top: 1.5rem;
-                    margin-bottom: 1rem;
-                    font-weight: 700;
-                    color: #212529;
+            <style jsx global>{`
+                .blog-content {
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: #333;
                 }
+
                 .blog-content p {
-                    margin-bottom: 1.5rem;
-                    line-height: 1.8;
+                    margin-top: 0;
+                    margin-bottom: 10px;
+                    line-height: 1.6;
                 }
-                .blog-content ul, .blog-content ol {
-                    margin-bottom: 1.5rem;
-                    padding-left: 2rem;
+
+                .blog-content h1, 
+                .blog-content h2, 
+                .blog-content h3, 
+                .blog-content h4, 
+                .blog-content h5, 
+                .blog-content h6 {
+                    margin-top: 14px;
+                    margin-bottom: 10px;
+                    font-weight: bold;
+                    line-height: 1.3;
+                    color: inherit;
                 }
+
+                .blog-content h1 { font-size: 32px; }
+                .blog-content h2 { font-size: 26px; }
+                .blog-content h3 { font-size: 22px; }
+                .blog-content h4 { font-size: 18px; }
+
+                .blog-content ul, 
+                .blog-content ol {
+                    margin-top: 0;
+                    margin-bottom: 16px;
+                    padding-left: 20px;
+                }
+
                 .blog-content li {
-                    margin-bottom: 0.5rem;
+                    margin-bottom: 8px;
+                    line-height: 1.6;
                 }
+
+                .blog-content a {
+                    color: #0d6efd;
+                    text-decoration: underline;
+                }
+
+                .blog-content a:hover {
+                    color: #0a58ca;
+                }
+
+                .blog-content blockquote {
+                    background: #f8f9fa;
+                    border-left: 4px solid #dee2e6;
+                    margin: 16px 0;
+                    padding: 16px;
+                    font-style: italic;
+                    color: #555;
+                }
+
                 .blog-content figure {
-                    margin: 2rem auto;
+                    margin: 14px auto;
                     max-width: 100%;
                     text-align: center;
                 }
+
                 .blog-content figure.image-style-align-left {
                     float: left;
-                    margin-right: 1.5rem;
+                    margin-right: 14px;
+                    margin-bottom: 10px;
                 }
+
                 .blog-content figure.image-style-align-right {
                     float: right;
-                    margin-left: 1.5rem;
+                    margin-left: 14px;
+                    margin-bottom: 10px;
                 }
+
                 .blog-content figure.image-style-align-center {
                     margin-left: auto;
                     margin-right: auto;
                 }
+
                 .blog-content img {
-                    max-width: 100% !important;
-                    height: auto !important;
-                    border-radius: 0.5rem;
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
                     display: inline-block;
+                }
+
+                .blog-content table {
+                    width: 100%;
+                    margin-bottom: 14px;
+                    border-collapse: collapse;
+                    background-color: #ffffff;
+                    table-layout: fixed;
+                }
+
+                .blog-content th, 
+                .blog-content td {
+                    border: 1px solid #dee2e6;
+                    padding: 12px 16px;
+                    vertical-align: top;
+                    text-align: left;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    white-space: normal;
+                }
+
+                .blog-content th {
+                    background-color: #f8f9fa;
+                    font-weight: bold;
+                    color: inherit;
+                }
+
+                .blog-content tbody tr:nth-of-type(even) {
+                    background-color: #f8f9fa;
                 }
             `}</style>
         </>
