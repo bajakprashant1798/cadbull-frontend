@@ -67,9 +67,9 @@ const BlogDetail = ({ blog }) => {
     });
 
     const seoMeta = seo || {};
-    const metaTitle = seoMeta.metaTitle || title;
-    const metaDescription = seoMeta.metaDescription || excerpt;
-    const canonicalUrl = seoMeta.canonicalURL || `https://cadbull.com/blog/${slug}`;
+    const metaTitle = seoMeta.meta_title || title;
+    const metaDescription = seoMeta.meta_description || excerpt;
+    const canonicalUrl = seoMeta.canonical_url || `https://cadbull.com/blog/${slug}`;
 
     const structuredData = {
         "@context": "https://schema.org",
@@ -90,7 +90,7 @@ const BlogDetail = ({ blog }) => {
                 <title>{metaTitle}</title>
                 <meta name="description" content={metaDescription} />
                 <link rel="canonical" href={canonicalUrl} />
-                {seoMeta.metaImage && <meta property="og:image" content={getStrapiMedia(seoMeta.metaImage)} />}
+                {seoMeta.meta_image && <meta property="og:image" content={getStrapiMedia(seoMeta.meta_image)} />}
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
