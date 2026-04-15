@@ -19,7 +19,7 @@ const BlogDetail = ({ blog }) => {
                 let newStyle = '';
                 const textAlignMatch = styleContent.match(/text-align:\s*(center|left|right|justify)/i);
                 if (textAlignMatch) newStyle += `${textAlignMatch[0]}; `;
-                
+
                 const floatMatch = styleContent.match(/float:\s*(left|right|none)/i);
                 if (floatMatch) newStyle += `${floatMatch[0]}; `;
 
@@ -27,7 +27,7 @@ const BlogDetail = ({ blog }) => {
             })
             // 2. Sanitize class attributes but KEEP image/text alignment classes from Strapi
             .replace(/\sclass=(['"])(.*?)\1/gi, (match, quote, classContent) => {
-                const safeClasses = classContent.split(/\s+/).filter(cls => 
+                const safeClasses = classContent.split(/\s+/).filter(cls =>
                     cls.includes('align') || cls.includes('image') || cls.includes('text-')
                 ).join(' ');
                 return safeClasses ? ` class="${safeClasses}"` : '';
@@ -210,15 +210,35 @@ const BlogDetail = ({ blog }) => {
                 .blog-content h3 { font-size: 22px; }
                 .blog-content h4 { font-size: 18px; }
 
-                .blog-content ul, 
+                .blog-content ul {
+                    margin-top: 0;
+                    margin-bottom: 16px;
+                    padding-left: 24px;
+                    list-style-type: disc;
+                }
+
                 .blog-content ol {
                     margin-top: 0;
                     margin-bottom: 16px;
-                    padding-left: 20px;
+                    padding-left: 24px;
+                    list-style-type: decimal;
                 }
 
                 .blog-content li {
+                    // font-size: 16px;
+                    font: normal normal 500 15px/20px "Inter", sans-serif;
+                    color: #5B5B5B;
                     margin-bottom: 8px;
+                    line-height: 1.6;
+                }
+
+                .blog-content li p {
+                    margin-bottom: 0;
+                    display: inline;
+                }
+
+                .blog-content li::marker {
+                    font-size: 16px;
                     line-height: 1.6;
                 }
 
