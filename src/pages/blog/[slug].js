@@ -133,9 +133,9 @@ const BlogDetail = ({ blog }) => {
                     <div className="row justify-content-center">
                         <div className="col-lg-10 col-xl-9">
                             {/* Featured Image */}
-                            {imageUrl && (
+                                        {imageUrl && (
                                 <div className="card border-0 shadow-sm overflow-hidden mb-5 rounded-4">
-                                    <div className="position-relative w-100" style={{ height: '500px' }}>
+                                    <div className="position-relative w-100 featured-image-container">
                                         <Image
                                             src={imageUrl}
                                             alt={title}
@@ -143,7 +143,7 @@ const BlogDetail = ({ blog }) => {
                                             style={{ objectFit: 'cover' }}
                                             priority
                                             fetchPriority="high"
-                                            sizes="(max-width: 1200px) 100vw, 1200px"
+                                            sizes="(max-width: 480px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                                         />
                                     </div>
                                 </div>
@@ -180,6 +180,23 @@ const BlogDetail = ({ blog }) => {
                 </article>
             </main>
             <style jsx global>{`
+                /* Featured image container - responsive height */
+                .featured-image-container {
+                    height: 500px;
+                }
+
+                @media (max-width: 768px) {
+                    .featured-image-container {
+                        height: 280px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .featured-image-container {
+                        height: 200px;
+                    }
+                }
+
                 .blog-content {
                     font-size: 16px;
                     line-height: 1.6;
@@ -317,6 +334,116 @@ const BlogDetail = ({ blog }) => {
 
                 .blog-content tbody tr:nth-of-type(even) {
                     background-color: #f8f9fa;
+                }
+
+                /* ── Tablet & Mobile (≤768px) ── */
+                @media (max-width: 768px) {
+                    .blog-content {
+                        font-size: 15px;
+                    }
+
+                    .blog-content p {
+                        margin-bottom: 10px;
+                        line-height: 1.6;
+                    }
+
+                    .blog-content h1 { font-size: 24px; }
+                    .blog-content h2 { font-size: 21px; }
+                    .blog-content h3 { font-size: 18px; }
+                    .blog-content h4 { font-size: 16px; }
+
+                    .blog-content h1, 
+                    .blog-content h2, 
+                    .blog-content h3, 
+                    .blog-content h4, 
+                    .blog-content h5, 
+                    .blog-content h6 {
+                        margin-top: 12px;
+                        margin-bottom: 8px;
+                    }
+
+                    .blog-content ul,
+                    .blog-content ol {
+                        padding-left: 18px;
+                        margin-bottom: 12px;
+                    }
+
+                    .blog-content li {
+                        font-size: 15px;
+                        margin-bottom: 6px;
+                    }
+
+                    .blog-content li::marker {
+                        font-size: 15px;
+                    }
+
+                    .blog-content blockquote {
+                        padding: 12px;
+                        margin: 12px 0;
+                    }
+
+                    .blog-content figure {
+                        margin: 12px auto;
+                    }
+
+                    /* On mobile, float images are reset so they stack vertically */
+                    .blog-content figure.image-style-align-left,
+                    .blog-content figure.image-style-align-right {
+                        float: none;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+
+                    .blog-content img {
+                        width: 100%;
+                        border-radius: 6px;
+                    }
+
+                    /* Make tables scrollable on small screens instead of squishing */
+                    .blog-content table {
+                        display: block;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        table-layout: auto;
+                    }
+
+                    .blog-content th,
+                    .blog-content td {
+                        padding: 8px 12px;
+                        font-size: 14px;
+                        white-space: normal;
+                    }
+                }
+
+                /* ── Small phones (≤480px) ── */
+                @media (max-width: 480px) {
+                    .blog-content {
+                        font-size: 14px;
+                    }
+
+                    .blog-content h1 { font-size: 20px; }
+                    .blog-content h2 { font-size: 18px; }
+                    .blog-content h3 { font-size: 16px; }
+                    .blog-content h4 { font-size: 15px; }
+
+                    .blog-content ul,
+                    .blog-content ol {
+                        padding-left: 16px;
+                    }
+
+                    .blog-content li {
+                        font-size: 14px;
+                    }
+
+                    .blog-content li::marker {
+                        font-size: 14px;
+                    }
+
+                    .blog-content th,
+                    .blog-content td {
+                        padding: 6px 10px;
+                        font-size: 13px;
+                    }
                 }
             `}</style>
         </>
