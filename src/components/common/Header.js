@@ -53,11 +53,11 @@ const links = [
     title: "HOUSE PLAN",
     active: false,
   },
-  {
-    url: "/blog",
-    title: "BLOG",
-    active: false,
-  },
+  // {
+  //   url: "/blog",
+  //   title: "BLOG",
+  //   active: false,
+  // },
   {
     url: "/about-us",
     title: "ABOUT US",
