@@ -1,11 +1,12 @@
 // src/components/WhatsAppButton.js
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { assets } from "@/utils/assets";
-// import whatsappImg from "@/assets/images/whatsappImg.png";
-const whatsappImg = assets.image("whatsappImg.png");
 
 const WhatsAppButton = () => {
+  // State to manage fallback from .webp to .png if .webp fails to load
+  const [imgSrc, setImgSrc] = useState(assets.image("whatsappImg.webp"));
+
   // IMPORTANT: Replace with your actual WhatsApp phone number including the country code.
   const whatsappUrl = "https://wa.me/919824011921"; // Example for +91 98765 43210
 
@@ -38,11 +39,15 @@ const WhatsAppButton = () => {
       title="Chat with us on WhatsApp"
     >
       <Image
-        src={whatsappImg} // This image must be in your `public` folder
+        src={imgSrc} // This image must be in your `public` folder or CDN
         alt="WhatsApp Chat"
         width={60}
         height={60}
         quality={100}
+        onError={() => {
+          // If the WebP image isn't found, fallback gracefully to the original PNG
+          setImgSrc(assets.image("whatsappImg.png"));
+        }}
       />
     </div>
   );

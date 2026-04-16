@@ -149,6 +149,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/blog',
+        destination: '/blog/',
+        permanent: true,
+      },
+      {
         source: '/categories/view/:id/:slug',
         destination: '/detail/:id/:slug',
         permanent: true,
