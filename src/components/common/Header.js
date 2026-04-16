@@ -54,7 +54,7 @@ const links = [
     active: false,
   },
   {
-    url: "/blog",
+    url: "/blog/",
     title: "BLOG",
     active: false,
   },
