@@ -420,22 +420,32 @@ const Header = () => {
 
               <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
                 {links.map((link, index) => {
+                  const isExternalProxy = link.url.startsWith("/blog");
                   return (
                     <li className="b-bottom-md" key={index}>
-                      <Link
-                        onClick={() => {
-                          closeHamburgerMenu();
-                          //  if(link.url==='/categories'){
-                          //   dispatch(addNewBreadCrumbPath({path:'Categories',url:link.url}))
-                          //  }
-                        }}
-                        className={`${link.url === Router.asPath ? "active" : ""
-                          } nav-link`}
-                        aria-current="page"
-                        href={link.url}
-                      >
-                        {link.title}
-                      </Link>
+                      {isExternalProxy ? (
+                        <a
+                          onClick={() => {
+                            closeHamburgerMenu();
+                          }}
+                          className={`${link.url === Router.asPath ? "active" : ""} nav-link`}
+                          aria-current="page"
+                          href={link.url}
+                        >
+                          {link.title}
+                        </a>
+                      ) : (
+                        <Link
+                          onClick={() => {
+                            closeHamburgerMenu();
+                          }}
+                          className={`${link.url === Router.asPath ? "active" : ""} nav-link`}
+                          aria-current="page"
+                          href={link.url}
+                        >
+                          {link.title}
+                        </Link>
+                      )}
                     </li>
                   );
                 })}
