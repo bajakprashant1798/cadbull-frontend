@@ -12,7 +12,7 @@ const WhatsAppButton = () => {
 
   const buttonStyle = {
     position: 'fixed',
-    bottom: '25px',
+    bottom: '90px', // Moved up so it sits above the AI Search Assistant pill
     right: '25px',
     zIndex: 1050, // High z-index to be on top of other elements
     cursor: 'pointer',
