@@ -41,7 +41,7 @@ const faqs = [
     question: "How can I upload my AutoCAD files to Cadbull?",
     answer: (
       <span>
-        To upload files, <a href="http://localhost:3000/auth/register">create an account</a>, go to the upload section, add your DWG file with a proper title and description, and submit it for approval.
+        To upload files, <a href="https://cadbull.com/auth/register">create an account</a>, go to the upload section, add your DWG file with a proper title and description, and submit it for approval.
       </span>
     )
   },
