@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
+import SearchBar from "@/components/SearchBar";
 import { useRouter } from "next/router";
 import { getallCategories, getallprojects, getallsubCategories, getFavouriteItems } from "@/service/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,6 +39,7 @@ const Categories = ({
   const [isLoading, startLoading, stopLoading] = useLoading();
   const [catalog, setCatalog] = useState(initialCategories || []);
   const [projects, setProjects] = useState(initialProjects || []);
+  const [fallbackType, setFallbackType] = useState(null);
   const [sortTerm, setSortTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
@@ -109,6 +111,7 @@ const Categories = ({
           timer.mark('api-response-received');
           setProjects(response.data?.products);
           setTotalPages(response.data.totalPages);
+          setFallbackType(response.data?.fallbackType || null);
           timer.mark('state-updated');
           stopLoading();
           
@@ -167,25 +170,44 @@ const Categories = ({
     [router, sortType, sortTerm] // Make sure these are in deps!
   );
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearchSubmit = (val) => {
     debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
     setShowSearchBreadCrumb(true);
+    
+    // Safely extract string value if an event object was passed by accident
+    let finalSearch = searchTerm;
+    if (val && typeof val === 'string') {
+        finalSearch = val;
+    } else if (val && val.target && typeof val.target.value === 'string') {
+        finalSearch = val.target.value;
+    }
+
     router.push({
       pathname: '/categories/1',
       query: buildQuery({
         type: sortType,
         file_type: sortTerm,
-        search: searchTerm,
+        search: finalSearch,
       })
     }, undefined, { shallow: true });
   };
 
+  const handleSearch = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    handleSearchSubmit(searchTerm);
+  };
 
-
-  const handlerSearchInput = (e) => {
-    setSearchTerm(e.target.value);
-    debouncedSearch(e.target.value);
+  const handlerSearchInput = (valueOrEvent) => {
+    // Extremely defensive programming to handle both direct values and event objects
+    let value = "";
+    if (valueOrEvent && valueOrEvent.target !== undefined) {
+        value = valueOrEvent.target.value;
+    } else {
+        value = valueOrEvent || "";
+    }
+    
+    setSearchTerm(value);
+    debouncedSearch(value);
   };
   useEffect(() => {
     if (searchTerm.length === 0) {
@@ -323,28 +345,13 @@ const Categories = ({
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-xl-end justify-content-center flex-column flex-md-row">
                       <form onSubmit={handleSearch}>
-                        <div className="input-group">
-                          <span className="input-group-text bg-white">
-                            <Icons.Search />
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
-                            placeholder="For ex. House Plan"
-                            aria-label="For ex. House Plan"
+                        <SearchBar
                             value={searchTerm}
                             onChange={handlerSearchInput}
-                          />
-                          <span className="input-group-text p-0">
-                            <button
-                              type="submit"
-                              onClick={handleSearch}
-                              className="btn btn-secondary rounded-start-0"
-                            >
-                              SEARCH
-                            </button>
-                          </span>
-                        </div>
+                            onSubmit={handleSearchSubmit}
+                            placeholder="For ex. House Plan"
+                            containerClassName=""
+                        />
                       </form>
                       {/* Sort by : DWG */}
                       <div className="d-none d-xl-flex gap-2">
@@ -410,6 +417,18 @@ const Categories = ({
             </div>
 
             <div className="row g-4 justify-content-center mb-4">
+              
+              {fallbackType === 'partial' && searchTerm && (
+                <div className="alert alert-warning text-center w-100 mb-4" role="alert">
+                  We couldn't find an exact match for <strong>"{searchTerm}"</strong>. Showing files that partially match your words.
+                </div>
+              )}
+              {fallbackType === 'latest' && searchTerm && (
+                <div className="alert alert-info text-center w-100 mb-4" role="alert">
+                  We couldn't find any matches for <strong>"{searchTerm}"</strong>. Here are the latest files.
+                </div>
+              )}
+
               {isLoading ? null : projects.length > 0 ? (
                 <>
                   {projects.map((project) => (
@@ -422,8 +441,27 @@ const Categories = ({
                   ))}
                 </>
               ) : (
-                <div className="col-12 text-center">
-                  <p>Record not found</p>
+                <div className="col-12 py-5 text-center">
+                  <div className="mb-4 d-flex justify-content-center">
+                    <div className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style={{ width: "100px", height: "100px" }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8c8c8c" width={45} height={45}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="fw-bold text-dark mb-3">No Results Found</h3>
+                  <p className="text-muted mx-auto mb-4" style={{ maxWidth: "500px", fontSize: "16px" }}>
+                    Oops! We couldn't find any CAD files matching your search. Try adjusting your filters or searching with different keywords.
+                  </p>
+                  <button 
+                    className="btn btn-primary px-4 py-2 rounded-pill fw-medium"
+                    onClick={() => {
+                        setSearchTerm('');
+                        handleSearchSubmit('');
+                    }}
+                  >
+                    Clear Search
+                  </button>
                 </div>
               )}
             </div>

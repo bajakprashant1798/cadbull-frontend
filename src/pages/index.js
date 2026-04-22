@@ -7,6 +7,7 @@ import Link from "next/link";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
+import SearchBar from "@/components/SearchBar";
 // import { ssrTimeout } from "@/utils/ssrTimeout";
 // import Architecture from "@/assets/images/Architecture.png";
 
@@ -306,27 +307,27 @@ export default function Home({
   //   // Optionally: clear search input after redirect
   //   // setSearchInput('');
   // };
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const trimmedSearch = searchInput.trim();
+  const handleSearchSubmit = (searchValue) => {
+    const trimmedSearch = (searchValue || "").trim();
     if (trimmedSearch) {
-      // Track search with Meta Pixel
       trackSearch(trimmedSearch);
     }
     setSearchTerm(trimmedSearch);
     dispatch(getserachTerm(trimmedSearch));
-    // Now pass the search as a query parameter!
     router.push({
       pathname: '/categories/search',
-      query: trimmedSearch ? { search: trimmedSearch } : {}, // only if not empty
+      query: trimmedSearch ? { search: trimmedSearch } : {},
     });
   };
 
-  const handleProjectSearch = (e) => {
-    e.preventDefault();
-    const trimmed = projectSearchInput.trim();
+  const handleSearch = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    handleSearchSubmit(searchInput);
+  };
+
+  const handleProjectSearchSubmit = (searchValue) => {
+    const trimmed = (searchValue || "").trim();
     if (trimmed) {
-      // Track search with Meta Pixel
       trackSearch(trimmed);
     }
     setSearchTerm(trimmed);
@@ -335,6 +336,11 @@ export default function Home({
       pathname: '/categories/search',
       query: trimmed ? { search: trimmed } : {},
     });
+  };
+
+  const handleProjectSearch = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    handleProjectSearchSubmit(projectSearchInput);
   };
 
 
@@ -438,38 +444,12 @@ export default function Home({
               </div>
               {/* Form  */}
               <form className="mx-auto mb-md-5" onSubmit={handleSearch}>
-                <div className="input-group mb-3">
-                  <span className="input-group-text bg-white">
-                    <Icons.Search />
-                  </span>
-                  {/* <input
-                    type="text"
-                    className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
-                    placeholder="For e.g. House Design"
-                    aria-label="For e.g. House Design"
-                    onChange={(e) => {setSearchTerm(e.target.value.trim())}}
-                  /> */}
-                  <input
-                    type="text"
-                    className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
-                    placeholder="For ex. House Plan"
-                    aria-label="For ex. House Plan"
-                    value={searchInput}
-                    onChange={(e) => {
-                      setSearchInput(e.target.value);
-                      // debouncedSearch(e.target.value.trim());
-                    }}
-                  />
-                  <span className="input-group-text p-0">
-                    <button
-                      type="submit"
-                      className="btn btn-secondary rounded-start-0"
-                      onClick={handleSearch}
-                    >
-                      SEARCH
-                    </button>
-                  </span>
-                </div>
+                <SearchBar
+                  value={searchInput}
+                  onChange={(val) => setSearchInput(val)}
+                  onSubmit={handleSearchSubmit}
+                  placeholder="For ex. House Plan"
+                />
               </form>
               {/* Drawing Type  */}
               <div className="drawing-type-wrapper p-2 p-md-3 rounded row row-cols-12  row-cols-xl-5 row-cols-md-5  justify-content-lg-evenly  ">
@@ -523,32 +503,13 @@ export default function Home({
                 <div className="w-100">
                   <div className="d-flex gap-3 justify-content-end flex-column flex-md-row">
                     <form onSubmit={handleProjectSearch}>
-                      <div className="input-group">
-                        <span className="input-group-text bg-white">
-                          <Icons.Search />
-                        </span>
-                        <input
-                          type="text"
-                          className="form-control  border-start-0 border-end-0 rounded-end-0 ps-0"
-                          placeholder="For ex. House Plan"
-                          aria-label="For ex. House Plan"
-                          // onChange={(e) =>
-                          //  setSearchTerm(e.target.value.trim())
-                          // }
-                          value={projectSearchInput}
-                          onChange={(e) => setProjectSearchInput(e.target.value)}
-                        />
-                        <span className="input-group-text p-0">
-                          <button
-                            type="submit"
-                            className="btn btn-secondary rounded-start-0"
-                            // onClick={handleProjectSearch}
-                            onClick={handleProjectSearch}
-                          >
-                            SEARCH
-                          </button>
-                        </span>
-                      </div>
+                      <SearchBar
+                        value={projectSearchInput}
+                        onChange={(val) => setProjectSearchInput(val)}
+                        onSubmit={handleProjectSearchSubmit}
+                        placeholder="For ex. House Plan"
+                        containerClassName=""
+                      />
                     </form>
                     {/* Sort by : DWG */}
                     <div className="d-flex">

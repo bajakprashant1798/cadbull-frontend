@@ -5,6 +5,7 @@ import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
+import SearchBar from "@/components/SearchBar";
 // import FAQSection from "@/components/FAQSection";
 import { useSelector, useDispatch } from "react-redux";
 import { getSearchResults, getFavouriteItems } from "@/service/api";
@@ -40,6 +41,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
    // Two separate states: one for the raw input and one for the debounced query.
   const [searchInput, setSearchInput] = useState(router.query.search || "");
   const [searchQuery, setSearchQuery] = useState(router.query.search || "");
+  const [fallbackType, setFallbackType] = useState(null);
 
     // When URL changes (user navigates via pagination), update page and (optionally) refetch
   useEffect(() => {
@@ -114,6 +116,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
         setProjects(response.data.projects);
         setTotalResults(response.data.totalResults);
         setTotalPages(response.data.totalPages);
+        setFallbackType(response.data.fallbackType || null);
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
@@ -236,22 +239,16 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                     <div className="d-flex gap-3 justify-content-end flex-column flex-md-row">
                       <form onSubmit={e => { e.preventDefault(); handleFilterChange('search', searchInput); }}>
                         {/* onSubmit={handleFormSubmit} */}
-                        <div className="input-group">
-                          <span className="input-group-text bg-white">
-                            <Icons.Search /> ({totalResults})
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
-                            placeholder="For ex. House Plan"
-                            aria-label="For ex. House Plan"
+                        <SearchBar
                             value={searchInput}
-                            onChange={handleInputChange}
-                          />
-                          <button type="submit" className="btn btn-secondary rounded-start-0">
-                            SEARCH
-                          </button>
-                        </div>
+                            onChange={(val) => {
+                              setSearchInput(val);
+                              debouncedUpdateQuery(val);
+                            }}
+                            onSubmit={(val) => handleFilterChange('search', val)}
+                            placeholder="For ex. House Plan"
+                            containerClassName=""
+                        />
                       </form>
                       {/* File Type and Project Type Filters */}
                       <div className="d-none d-xl-flex gap-2">
@@ -301,13 +298,50 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
               </div>
             </div>
 
+            {fallbackType === 'partial' && (
+              <div className="alert alert-warning text-center" role="alert">
+                We couldn't find an exact match for <strong>"{searchQuery}"</strong>. Showing files that partially match your words.
+              </div>
+            )}
+            {fallbackType === 'latest' && (
+              <div className="alert alert-info text-center" role="alert">
+                We couldn't find any matches for <strong>"{searchQuery}"</strong>. Here are the latest files.
+              </div>
+            )}
+
             {/* Projects Grid */}
             <div className="row g-4 justify-content-center mb-4">
-              {projects.map((project) => (
-                <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
-                  <ProjectCard {...project} favorites={favouriteList} />
+              {projects.length > 0 ? (
+                projects.map((project) => (
+                  <div className="col-md-6 col-lg-4 col-xl-4" key={project.id}>
+                    <ProjectCard {...project} favorites={favouriteList} />
+                  </div>
+                ))
+              ) : (
+                <div className="col-12 py-5 text-center">
+                  <div className="mb-4 d-flex justify-content-center">
+                    <div className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style={{ width: "100px", height: "100px" }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8c8c8c" width={45} height={45}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="fw-bold text-dark mb-3">No Results Found</h3>
+                  <p className="text-muted mx-auto mb-4" style={{ maxWidth: "500px", fontSize: "16px" }}>
+                    Oops! We couldn't find any CAD files matching your search. Try adjusting your filters or searching with different keywords.
+                  </p>
+                  <button 
+                    className="btn btn-primary px-4 py-2 rounded-pill fw-medium"
+                    onClick={() => {
+                        setSearchInput('');
+                        debouncedUpdateQuery('');
+                        router.push('/categories/search');
+                    }}
+                  >
+                    Clear Search
+                  </button>
                 </div>
-              ))}
+              )}
             </div>
 
             {/* AdSense */}
@@ -375,6 +409,7 @@ export async function getServerSideProps({ params, query, res }) {
         initialSearch: search,
         initialFileType: fileType,
         initialType: type,
+        fallbackType: response.data?.fallbackType || null,
       }
     };
   } catch (error) {

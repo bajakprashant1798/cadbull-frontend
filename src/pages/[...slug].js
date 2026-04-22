@@ -5,6 +5,7 @@ import CategoriesLayout, { makeTitle } from "@/layouts/CategoriesLayouts";
 import ProjectCard from "@/components/ProjectCard";
 import Link from "next/link";
 import Icons from "@/components/Icons";
+import SearchBar from "@/components/SearchBar";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/router";
 import { getCategoryBySlug, getFavouriteItems, getSubCategories, getallCategories } from "@/service/api";
@@ -26,7 +27,7 @@ import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories, fallbackType }) => {
     const router = useRouter();
     const { slug: querySlugArray, page: queryPage } = router.query;
 
@@ -139,25 +140,29 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     );
 
 
-    const handleInputChange = (e) => {
-        const value = e.target.value.trim();
-        setSearchText(value);
-        debouncedSearch(value);
+    const handleInputChange = (value) => {
+        const val = value.trim();
+        setSearchText(val);
+        debouncedSearch(val);
     };
 
 
-    const handleSearch = (e) => {
-        e.preventDefault();
+    const handleSearchSubmit = (val) => {
         debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
-        setSearchedText(searchText);
+        setSearchedText(val || searchText);
         router.push({
             pathname: `/${currentPath}/1`, // Use full path logic
             query: buildQuery({
                 type: router.query.type || "",
                 file_type: router.query.file_type || "",
-                search: searchText,
+                search: val || searchText,
             })
         });
+    };
+
+    const handleSearch = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        handleSearchSubmit(searchText);
     };
 
     const loadProjects = (slug, page, type, file_type, search) => {
@@ -364,24 +369,13 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                     <div>
                                         <div className="d-flex gap-2 justify-content-end flex-column flex-md-row">
                                             <form onSubmit={handleSearch}>
-                                                <div className="input-group">
-                                                    <span className="input-group-text bg-white">
-                                                        <Icons.Search />
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-start-0 border-end-0 rounded-end-0 ps-0"
-                                                        placeholder="For ex. House Plan"
-                                                        aria-label="For ex. House Plan"
-                                                        value={searchText}
-                                                        onChange={handleInputChange}
-                                                    />
-                                                    <span className="input-group-text p-0">
-                                                        <button type="submit" className="btn btn-secondary rounded-start-0">
-                                                            SEARCH
-                                                        </button>
-                                                    </span>
-                                                </div>
+                                                <SearchBar
+                                                    value={searchText}
+                                                    onChange={handleInputChange}
+                                                    onSubmit={handleSearchSubmit}
+                                                    placeholder="For ex. House Plan"
+                                                    containerClassName=""
+                                                />
                                             </form>
                                             <div className="d-none d-xl-flex gap-2">
                                                 <div className="d-flex">
@@ -433,6 +427,17 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                             </div>
                         </div>
 
+                        {fallbackType === 'partial' && searchText && (
+                            <div className="alert alert-warning text-center" role="alert">
+                                We couldn't find an exact match for <strong>"{searchText}"</strong>. Showing files that partially match your words.
+                            </div>
+                        )}
+                        {fallbackType === 'latest' && searchText && (
+                            <div className="alert alert-info text-center" role="alert">
+                                We couldn't find any matches for <strong>"{searchText}"</strong>. Here are the latest files.
+                            </div>
+                        )}
+
                         {/* Projects Grid */}
                         <div id="product-grid" ref={productGridRef} className="row g-4 justify-content-center mb-4">
                             {isLoading ? null : subcat && subcat.length > 0 ? (
@@ -442,8 +447,27 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                     </div>
                                 ))
                             ) : (
-                                <div className="col-12 text-center">
-                                    <p>Record not found</p>
+                                <div className="col-12 py-5 text-center">
+                                    <div className="mb-4 d-flex justify-content-center">
+                                        <div className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style={{ width: "100px", height: "100px" }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8c8c8c" width={45} height={45}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                        </div>
+                                    </div>
+                                    <h3 className="fw-bold text-dark mb-3">No Results Found</h3>
+                                    <p className="text-muted mx-auto mb-4" style={{ maxWidth: "500px", fontSize: "16px" }}>
+                                        Oops! We couldn't find any CAD files matching your search. Try adjusting your filters or searching with different keywords.
+                                    </p>
+                                    <button 
+                                        className="btn btn-primary px-4 py-2 rounded-pill fw-medium"
+                                        onClick={() => {
+                                            setSearchText('');
+                                            handleSearchSubmit('');
+                                        }}
+                                    >
+                                        Clear Search
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -858,7 +882,8 @@ export async function getServerSideProps({ params, req, res }) {
                         metaDescription: metaDescription || 'World Largest 2d CAD Library.',
                         description: description || '',
                         title: title || makeTitle(slug),
-                        serverMainCategories: serverMainCategories || []
+                        serverMainCategories: serverMainCategories || [],
+                        fallbackType: data.fallbackType || null
                     }
                 };
             }
@@ -879,7 +904,8 @@ export async function getServerSideProps({ params, req, res }) {
                 description: '',
                 title: makeTitle(slug),
                 serverMainCategories: [],
-                softError: true
+                softError: true,
+                fallbackType: null
             }
         };
 

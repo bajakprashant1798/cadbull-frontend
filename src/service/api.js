@@ -288,6 +288,10 @@ export const getPaginatedProjects = (page, limit = 9) => {
   return api.get("/projects/latest", { params: { page, limit } });
 };
 
+export const getSearchSuggestions = (query) => {
+  return api.get("/projects/suggestions", { params: { query } });
+};
+
 export const getsingleallprojects = (searchTerm = "", id = "") => {
   const params = searchTerm ? { search: searchTerm } : {};
   return api.get(`/projects/${id}`, { params });
