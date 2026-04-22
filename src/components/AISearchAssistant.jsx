@@ -202,10 +202,10 @@ export default function AISearchAssistant() {
                 className="position-fixed shadow-lg d-flex flex-column overflow-hidden text-dark"
                 style={{
                     bottom: '16px', right: '16px',
-                    width: isExpanded ? 'calc(100vw - 32px)' : 'calc(100vw - 32px)',
-                    maxWidth: isExpanded ? '1200px' : '480px',
-                    height: isExpanded ? 'calc(100vh - 32px)' : '750px',
-                    maxHeight: 'calc(100vh - 32px)',
+                    width: isExpanded ? 'calc(100% - 32px)' : '420px',
+                    maxWidth: 'calc(100% - 32px)',
+                    height: isExpanded ? '90vh' : '550px',
+                    maxHeight: '90vh',
                     zIndex: 10000, borderRadius: '20px',
                     backgroundColor: '#f8fafc',
                     border: '1px solid #e2e8f0',
@@ -243,7 +243,7 @@ export default function AISearchAssistant() {
                 </div>
 
                 {/* Scrollable Content Body */}
-                <div className="flex-grow-1 overflow-auto p-4" style={{ backgroundColor: '#ffffff' }}>
+                <div className="flex-grow-1 overflow-y-auto overflow-x-hidden p-4" style={{ backgroundColor: '#ffffff', minHeight: 0 }}>
 
                     {/* Default State (No Search Yet) */}
                     {messages.length === 0 && (
@@ -288,7 +288,7 @@ export default function AISearchAssistant() {
                             {msg.role === 'user' ? (
                                 <div className="d-flex flex-column align-items-end mb-2 w-100">
                                     <div className="rounded-5 py-2 px-3 shadow-sm mb-1" style={{ backgroundColor: '#1d4ed8', borderBottomRightRadius: '4px', maxWidth: '85%' }}>
-                                        <p className="mb-0 fw-medium" style={{ fontSize: '14.5px', color: '#ffffff' }}>{msg.content}</p>
+                                        <p className="mb-0 fw-medium" style={{ fontSize: '14.5px', color: '#ffffff', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{msg.content}</p>
                                     </div>
                                     <small className="text-muted text-end me-1" style={{ fontSize: '10px' }}>{new Date(msg.id).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
                                 </div>
@@ -298,11 +298,11 @@ export default function AISearchAssistant() {
                                         <div className="rounded-3 d-flex justify-content-center align-items-center me-3 flex-shrink-0 shadow-sm overflow-hidden position-relative" style={{ width: '30px', height: '30px', border: '1px solid #e2e8f0', backgroundColor: '#fff' }}>
                                             <Image src="/logo.webp" layout="fill" objectFit="contain" alt="AI" />
                                         </div>
-                                        <div className="flex-grow-1">
+                                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
                                             {msg.explanation && (
                                                 <div className="d-flex flex-column align-items-start mb-3">
                                                     <div className="rounded-4 py-3 px-4 shadow-sm mb-1 bg-white" style={{ borderTopLeftRadius: '4px', border: '1px solid #e2e8f0', maxWidth: '95%' }}>
-                                                        <p className="mb-0 text-dark" style={{ fontSize: '15px', lineHeight: '1.6' }}>{msg.explanation}</p>
+                                                        <p className="mb-0 text-dark" style={{ fontSize: '15px', lineHeight: '1.6', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{msg.explanation}</p>
                                                     </div>
                                                     <small className="text-muted ms-1" style={{ fontSize: '10px' }}><FaMicrophone className="me-1 d-none" /> {new Date(msg.id).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
                                                 </div>
