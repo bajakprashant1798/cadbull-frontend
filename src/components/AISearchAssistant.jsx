@@ -60,12 +60,22 @@ export default function AISearchAssistant() {
 
     // Auto-scroll to bottom of chat
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        // Use smooth scrolling if already open, but instant jump if just opening
+        messagesEndRef.current?.scrollIntoView({ behavior: isOpen ? "smooth" : "auto" });
     };
 
     useEffect(() => {
         scrollToBottom();
     }, [messages, isLoading]);
+
+    // Ensure we scroll to bottom immediately when the modal is reopened
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+            }, 50);
+        }
+    }, [isOpen]);
 
     // Toggle Modal
     const toggleModal = () => {
@@ -91,13 +101,16 @@ export default function AISearchAssistant() {
         setIsLoading(true);
 
         try {
-            const response = await axios.post(`${API_URL}/ai/search-assistant`, { query: currentQuery });
+            const response = await axios.post(`${API_URL}/ai/search-assistant`, { query: currentQuery, page: 1 });
             if (response.data.success) {
                 setMessages(prev => [...prev, {
                     id: Date.now() + 1,
                     role: 'assistant',
                     explanation: response.data.explanation,
-                    results: response.data.results
+                    results: response.data.results,
+                    query: currentQuery,
+                    page: response.data.page,
+                    hasMore: response.data.hasMore
                 }]);
             }
         } catch (error) {
@@ -108,6 +121,34 @@ export default function AISearchAssistant() {
                 explanation: 'Sorry, I experienced a network hiccup or hit a rate limit. Please try again in slightly different words.',
                 results: []
             }]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleLoadMore = async (msgIndex) => {
+        const msg = messages[msgIndex];
+        if (!msg || !msg.query) return;
+
+        const nextPage = (msg.page || 1) + 1;
+        setIsLoading(true);
+
+        try {
+            const response = await axios.post(`${API_URL}/ai/search-assistant`, { query: msg.query, page: nextPage });
+            if (response.data.success) {
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    newMessages[msgIndex] = {
+                        ...newMessages[msgIndex],
+                        results: [...newMessages[msgIndex].results, ...response.data.results],
+                        page: response.data.page,
+                        hasMore: response.data.hasMore
+                    };
+                    return newMessages;
+                });
+            }
+        } catch (error) {
+            console.error("Load More Failed:", error);
         } finally {
             setIsLoading(false);
         }
@@ -330,7 +371,10 @@ export default function AISearchAssistant() {
                                                                     style={{ cursor: 'pointer', border: '1px solid #e2e8f0', borderLeftWidth: '3px', borderLeftColor: '#3b82f6', borderRadius: '12px', transition: 'box-shadow 0.2s' }}
                                                                     onMouseEnter={(e) => e.currentTarget.classList.add('shadow')}
                                                                     onMouseLeave={(e) => e.currentTarget.classList.remove('shadow')}
-                                                                    onClick={() => router.push(`/detail/${product.id}/${slugify(product.title)}`)}>
+                                                                    onClick={() => {
+                                                                        setIsOpen(false);
+                                                                        router.push(`/detail/${product.id}/${slugify(product.title)}`);
+                                                                    }}>
 
                                                                     <div className="position-relative rounded-2 flex-shrink-0 ms-2 my-1 border" style={{ width: '70px', height: '70px', overflow: 'hidden' }}>
                                                                         <Image src={getSafeImageUrl(product.image)} layout="fill" objectFit="cover" alt={product.title} />
@@ -354,6 +398,19 @@ export default function AISearchAssistant() {
                                                             </div>
                                                         ))}
                                                     </div>
+
+                                                    {msg.hasMore && (
+                                                        <div className="w-100 text-center mt-3 mb-2">
+                                                            <button 
+                                                                onClick={() => handleLoadMore(idx)}
+                                                                disabled={isLoading}
+                                                                className="btn btn-outline-primary rounded-pill px-4 py-2"
+                                                                style={{ fontSize: '13px', fontWeight: '600' }}
+                                                            >
+                                                                {isLoading ? 'Loading...' : 'Load More Files ↓'}
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ) : null}
                                         </div>
