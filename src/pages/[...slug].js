@@ -205,8 +205,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
             title: "Search Results",
             description: "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
             mainCategories,
-            subCategories: subcat,
+            subCategories: null, // ✅ Pass null so SearchCategories fetches correctly
             slug,
+            parent_slug: derivedParentSlug, // ✅ Pass parent_slug explicitly
             currentPath,
             type: "Sub Categories",
             pageName: "Search Results",
