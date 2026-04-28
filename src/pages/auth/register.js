@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { useForm, Controller } from "react-hook-form";
-import { signupApiHandler, socialLogin } from "@/service/api";
+import { signupApiHandler, socialLogin, getallprojects } from "@/service/api";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
@@ -18,17 +18,16 @@ import { trackCompleteRegistration } from "@/lib/fbpixel";
 
 const pageTitle = {
   title: "Register A New Account",
-  description: (
-    <>
-      Cadbull is the world’s largest CAD library. Here, you can download over{" "}
-      <span className="text-danger fw-bold">271,030+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
-    </>
-  ),
-  // description:
-  //   "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
 };
 
-const Register = () => {
+const Register = ({ lastProductId }) => {
+  const description = (
+    <>
+      Cadbull is the world’s largest CAD library. Here, you can download over{" "}
+      <span className="text-danger fw-bold">{Number(lastProductId || 271030).toLocaleString("en-US")}+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
+    </>
+  );
+
   //useLoading hook state 
   const [isLoading,startLoading,stopLoading]=useLoading();
   const {
@@ -360,7 +359,7 @@ const Register = () => {
         <title>Create Your Cadbull Account to Access CAD Design Features</title>
         <meta name="description" content="Create your Cadbull account to access and download thousands of free CAD drawings, DWG files, and design resources for architects, engineers, and designers." />
       </Head>
-      <AuthLayout title={pageTitle.title} description={pageTitle.description}>
+      <AuthLayout title={pageTitle.title} description={description}>
         {/* Form  */}
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -589,5 +588,24 @@ const Register = () => {
 Register.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
+
+export async function getStaticProps() {
+  try {
+    const projectRes = await getallprojects(1, 1, "", "");
+    return {
+      props: {
+        lastProductId: projectRes?.data?.lastProductId ?? 271030,
+      },
+      revalidate: 300,
+    };
+  } catch {
+    return {
+      props: {
+        lastProductId: 271030,
+      },
+      revalidate: 300,
+    };
+  }
+}
 
 export default Register;

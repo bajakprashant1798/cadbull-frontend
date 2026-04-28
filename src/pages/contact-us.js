@@ -15,6 +15,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import ReCAPTCHA from "react-google-recaptcha";
 import { trackContact, trackLead } from "@/lib/fbpixel";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -58,14 +59,14 @@ const ContactUs = () => {
   const [productCount, setProductCount] = useState(null);
   const token = useSelector((store) => store.logininfo.token);
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
-  
+
   // State for phone number
   const [phone, setPhone] = useState("");
-  
+
   // State for reCAPTCHA
   const [recaptchaValue, setRecaptchaValue] = useState(null);
   const recaptchaRef = useRef(null);
-  
+
   // State for success modal
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -99,14 +100,14 @@ const ContactUs = () => {
         captcha: recaptchaValue
       };
       await sendContactForm(formDataWithPhone);
-      
+
       // Track contact form submission with Meta Pixel
       trackContact();
       trackLead();
-      
+
       // Show success modal instead of toast
       setShowSuccessModal(true);
-      
+
       // Reset the form
       reset();
       setPhone("");
@@ -174,7 +175,7 @@ const ContactUs = () => {
               />
             </div>
           </div>
-                
+
           <div className="row mx-2 gx-4 gy-3 col-lg-8 mx-auto form-wrapper rounded-xxl align-items-center">
             <div className="col-md-12">
               <div className="mb-3 mb-md-4 p-md-4">
@@ -202,15 +203,14 @@ const ContactUs = () => {
                     </div>
                     <input
                       type="text"
-                     {...register("first_name")}
-                    className={`form-control ${
-                      errors.first_name?.message ? "is-invalid" : ""
-                    }`}
-                    name="first_name"
+                      {...register("first_name")}
+                      className={`form-control ${errors.first_name?.message ? "is-invalid" : ""
+                        }`}
+                      name="first_name"
                       placeholder="Type First Name"
-                      // value=""
+                    // value=""
                     />
-                     {errors.first_name?.message && (
+                    {errors.first_name?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
                         {errors.first_name?.message}{" "}
@@ -224,16 +224,15 @@ const ContactUs = () => {
                       <label>Last Name</label>
                     </div>
                     <input
-                    {...register("last_name")}
-                    className={`form-control ${
-                      errors.last_name?.message ? "is-invalid" : ""
-                    }`}
-                    name="last_name"
-                    type="text"
-                    placeholder="Type Last Name"
+                      {...register("last_name")}
+                      className={`form-control ${errors.last_name?.message ? "is-invalid" : ""
+                        }`}
+                      name="last_name"
+                      type="text"
+                      placeholder="Type Last Name"
                     // value=""
                     />
-                     {errors.last_name?.message && (
+                    {errors.last_name?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
                         {errors.last_name?.message}{" "}
@@ -256,12 +255,12 @@ const ContactUs = () => {
                         required: true,
                         className: `form-control ${errors.phone_no ? "is-invalid" : ""}`,
                       }}
-                      inputStyle={{ 
+                      inputStyle={{
                         width: "100%",
                         borderColor: errors.phone_no ? "#dc3545" : "#ced4da"
                       }}
                       containerStyle={{ width: "100%" }}
-                      // Optional: onlyCountries={['us', 'in', 'ae', ...]}
+                    // Optional: onlyCountries={['us', 'in', 'ae', ...]}
                     />
                     {/* Hidden input for form validation */}
                     <input
@@ -284,12 +283,12 @@ const ContactUs = () => {
                     <input
                       type="email"
                       {...register("email")}
-                        name="email"
-                     className={`form-control  ${errors.email?"is-invalid":""}`}
+                      name="email"
+                      className={`form-control  ${errors.email ? "is-invalid" : ""}`}
                       placeholder="Enter Your Email"
-                      // value=""
+                    // value=""
                     />
-                     {errors.email?.message && (
+                    {errors.email?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
                         {errors.email?.message}{" "}
@@ -303,12 +302,12 @@ const ContactUs = () => {
                       <label className="no-required">Message</label>
                     </div>
                     <textarea
-                     {...register("message")}
-                     name="message"
-                  className={`form-control  ${errors.message?"is-invalid":""}`}
+                      {...register("message")}
+                      name="message"
+                      className={`form-control  ${errors.message ? "is-invalid" : ""}`}
                       placeholder="Write Message"
                     ></textarea>
-                     {errors.message?.message && (
+                    {errors.message?.message && (
                       <div className="invalid-feedback text-danger">
                         {" "}
                         {errors.message?.message}{" "}
@@ -354,11 +353,13 @@ const ContactUs = () => {
           </div>
         </div>
       </section>
-      
+
+      <WhatsAppButton />
+
       {/* Success Modal */}
-      <ContactSuccessModal 
-        isOpen={showSuccessModal} 
-        onClose={() => setShowSuccessModal(false)} 
+      <ContactSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
       />
     </Fragment>
   );

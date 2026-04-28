@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { useRouter } from "next/router";
 import { useForm, Controller } from "react-hook-form";
-import { loginApiHandler } from "@/service/api";
+import { loginApiHandler, getallprojects } from "@/service/api";
 import useLoading from "@/utils/useLoading";
 import { toast } from "react-toastify";
 import { getFavouriteItems } from "@/service/api";
@@ -24,17 +24,16 @@ import { redirectAfterLogin } from "@/utils/redirectHelpers";
 
 const pageTitle = {
   title: "Login to Your Account",
-  description: (
-    <>
-      Cadbull is the world’s largest CAD library. Here, you can download over{" "}
-      <span className="text-danger fw-bold">271,030+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
-    </>
-  ),
-  // description:
-  //   "Choose from 254195+ Free & Premium CAD Files with new additions published every second month",
 };
 
-const Login = () => {
+const Login = ({ lastProductId }) => {
+  const description = (
+    <>
+      Cadbull is the world’s largest CAD library. Here, you can download over{" "}
+      <span className="text-danger fw-bold">{Number(lastProductId || 271030).toLocaleString("en-US")}+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
+    </>
+  );
+
   const router = useRouter();
   const dispatch = useDispatch();
   // const { data: session } = useSession();
@@ -279,7 +278,7 @@ const Login = () => {
         <meta name="description" content="World Largest 2d CAD Library." />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/login`} />
       </Head>
-      <AuthLayout title={pageTitle.title} description={pageTitle.description}>
+      <AuthLayout title={pageTitle.title} description={description}>
         {/* Form  */}
         <form
           className="row g-3 mb-3 mb-md-4"
@@ -418,5 +417,24 @@ const Login = () => {
 Login.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
 };
+
+export async function getStaticProps() {
+  try {
+    const projectRes = await getallprojects(1, 1, "", "");
+    return {
+      props: {
+        lastProductId: projectRes?.data?.lastProductId ?? 271030,
+      },
+      revalidate: 300,
+    };
+  } catch {
+    return {
+      props: {
+        lastProductId: 271030,
+      },
+      revalidate: 300,
+    };
+  }
+}
 
 export default Login;

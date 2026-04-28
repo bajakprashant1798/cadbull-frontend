@@ -16,10 +16,8 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
 import dynamic from "next/dynamic";
-import WhatsAppButton from "@/components/WhatsAppButton";
+// import WhatsAppButton from "@/components/WhatsAppButton";
 import AISearchAssistant from "@/components/AISearchAssistant";
-// const WhatsAppButton = dynamic(() => import("@/components/WhatsAppButton"), { ssr: false });
-// const ToastContainer = dynamic(() => import("react-toastify").then((mod) => mod.ToastContainer), { ssr: false });
 import { GTM_ID, pageview } from '../lib/gtm';
 import { trackPageView } from '../lib/fbpixel';
 // Remove conflicting adsense lib import
@@ -309,7 +307,7 @@ export default function App({ Component, pageProps }) {
 
         <ToastContainer />
         <AISearchAssistant />
-        <WhatsAppButton />
+        {/* <WhatsAppButton /> */}
         {/* </PersistGate> */}
       </Provider>
       {/* </Authprovider> */}
