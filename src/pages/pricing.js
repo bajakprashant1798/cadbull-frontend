@@ -208,7 +208,7 @@ const Pricing = () => {
                       
                       return
                     }
-                       handleSubscription("price_1QLNQAFy6VKViPpJGQCXH5KE", user.id).then((res)=>{
+                       handleSubscription("price_1TS0tzFy6VKViPpJZSEsXSZN", user.id).then((res)=>{
                         // console.log("API Response:", res.data); // Log response
                         window.location.href=res.data.url
                        }).catch((err)=>{
