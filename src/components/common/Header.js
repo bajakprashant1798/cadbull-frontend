@@ -21,6 +21,7 @@ import {
   faUpload,
   faUser,
   faWallet,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { getUserData, logoutApiHandler } from "@/service/api";
@@ -28,46 +29,15 @@ import { resetProjectState } from "../../../redux/app/features/projectsSlice";
 import Image from "next/image";
 
 const links = [
-  {
-    url: "/",
-    title: "HOME",
-    active: true,
-  },
-  {
-    url: "/categories",
-    title: "CATEGORIES",
-    active: false,
-  },
-  {
-    url: "/work/upload",
-    title: "UPLOAD FILE",
-    active: false,
-  },
-  {
-    url: "/pricing",
-    title: "PRICING",
-    active: false,
-  },
-  {
-    url: "/Architecture-House-Plan-CAD-Drawings",
-    title: "HOUSE PLAN",
-    active: false,
-  },
-  {
-    url: "/blog",
-    title: "BLOG",
-    active: false,
-  },
-  {
-    url: "/about-us",
-    title: "ABOUT US",
-    active: false,
-  },
-  {
-    url: "/contact-us",
-    title: "CONTACT US",
-    active: false,
-  },
+  { url: "/", title: "Home", active: true },
+  { url: "/categories", title: "Categories", active: false },
+  { url: "https://ai.cadbull.com", title: "AI Studio", active: false, isExternal: true, isNew: true },
+  { url: "/work/upload", title: "Upload File", active: false },
+  { url: "/pricing", title: "Pricing", active: false },
+  { url: "/Architecture-House-Plan-CAD-Drawings", title: "House Plan", active: false },
+  { url: "/blog", title: "Blog", active: false },
+  { url: "/about-us", title: "About Us", active: false },
+  { url: "/contact-us", title: "Contact Us", active: false },
 ];
 
 const Header = () => {
@@ -138,575 +108,384 @@ const Header = () => {
     setShowHamburgerMenuItem(false);
   };
 
+  const initials = ((status?.user?.firstname?.[0] || "") + (status?.user?.lastname?.[0] || "")).toUpperCase() || "U";
+
+  const renderProfileButton = () => (
+    <button
+      className="dropdown-toggle d-flex align-items-center gap-2 px-2 py-1 rounded-pill"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid #e5e7eb',
+        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+      }}
+    >
+      {status?.user?.profile_pic ? (
+        <Image
+          src={status.user.profile_pic}
+          alt="profile"
+          width={32}
+          height={32}
+          style={{ borderRadius: "50%", objectFit: 'cover' }}
+          onError={e => { e.target.onerror = null; e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+        />
+      ) : null}
+      <div
+        className="align-items-center justify-content-center fw-bold"
+        style={{
+          display: status?.user?.profile_pic ? 'none' : 'flex',
+          width: '32px',
+          height: '32px',
+          backgroundColor: '#f3f4f6',
+          color: '#4b5563',
+          borderRadius: '50%',
+          fontSize: '0.85rem'
+        }}
+      >
+        {initials}
+      </div>
+      <span className="fw-medium text-dark pe-1 d-none d-sm-block" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '120px' }}>
+        {status?.user?.firstname || "User"} {status?.user?.lastname}
+      </span>
+    </button>
+  );
+
+  const renderDropdownMenu = () => (
+    <ul className="dropdown-menu dropdown-menu-end border-0 shadow pt-2 pb-2 mt-2" style={{ borderRadius: '12px', minWidth: '220px' }}>
+      <li>
+        <div className="dropdown-item d-flex flex-column px-4 py-2" style={{ cursor: 'default', backgroundColor: 'transparent' }}>
+          <p className="lh-sm text-dark fw-bold mb-0" style={{ fontSize: '0.95rem' }}>
+            {status?.user?.firstname || status.user?.id} {status?.user?.lastname}
+          </p>
+          <p className="lh-sm text-secondary mb-0" style={{ fontSize: '0.85rem' }}>
+            {status?.user?.email || "email"}
+          </p>
+        </div>
+      </li>
+      <li className="dropdown-divider my-2 opacity-50"></li>
+
+      <li>
+        <a href="https://ai.cadbull.com" target="_blank" rel="noopener noreferrer" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark bg-transparent">
+          <FontAwesomeIcon icon={faWandMagicSparkles} className="text-secondary" style={{ width: '14px' }} />
+          <span className="d-flex align-items-center gap-2" style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+            AI Studio
+            <span className="badge bg-danger rounded-pill px-1" style={{ fontSize: '0.55rem', padding: '0.15em 0.3em' }}>NEW</span>
+          </span>
+        </a>
+      </li>
+
+      {isClient && [1, 5, 6, 7].includes(Number(status?.user?.role)) && (
+        <li>
+          <Link href="/admin/dashboard" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+            <FontAwesomeIcon icon={faUser} className="text-secondary" style={{ width: '14px' }} />
+            <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Dashboard</span>
+          </Link>
+        </li>
+      )}
+
+      <li>
+        <Link href={`/profile/author/${status?.user?.id}`} onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faUser} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>My Profile</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/profile/edit" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faPenToSquare} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Edit Profile</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/profile/billing" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faDollarSign} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Manage Billing</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/favourites" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faHeart} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Favourites</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/project" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faFolder} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>My Projects</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/experiences" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faFolder} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Experiences</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/work/sent" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faFolder} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Sent Work</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/work/upload" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faUpload} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Upload Files</span>
+        </Link>
+      </li>
+
+      <li>
+        <Link href="/withdraw-amount" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark">
+          <FontAwesomeIcon icon={faWallet} className="text-secondary" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>My Wallet</span>
+        </Link>
+      </li>
+
+      <li className="dropdown-divider my-2 opacity-50"></li>
+
+      <li>
+        <button onClick={() => { handleLogout(); closeHamburgerMenu(); }} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-danger">
+          <FontAwesomeIcon icon={faSignOut} className="text-danger" style={{ width: '14px' }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Log out</span>
+        </button>
+      </li>
+    </ul>
+  );
+
   return (
-    <header className="py-1">
-      <div className="container">
-        <nav className="navbar navbar-expand-xl">
-          <div className="container-fluid">
-            <Link href="/">
-              <Image src={logo} width={150} height={36} alt="logo" className="logo" priority />
-            </Link>
-            <button
-              className="navbar-toggler border-0 p-0 shadow-none"
-              type="button"
-              // data-bs-toggle="collapse"
-              // data-bs-target="#navbarSupportedContent"
-              // aria-controls="navbarSupportedContent"
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowHamburgerMenuItem(!showHamburgerMenuItem)
-              }}
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              {!isAuthenticated && <Link
-                href={"/auth/login"}
-                onClick={(e) => {
-                  e.stopPropagation()
-                }}
-                className="btn btn-secondary d-inline-flex d-xl-none gap-1 align-items-center text-white me-2"
-              >
-                <Icons.User /> <span>LOGIN</span>
-              </Link>}
-              <span>
-                <Icons.HamBurger />
-              </span>
-            </button>
-            <div
-              className={` collapse navbar-collapse ${showHamburgerMenuItem ? "show" : ''} `}
-              id="navbarSupportedContent"
-            >
-
-              {/* small screen device resposive */}
-              {isAuthenticated && !isLoggedOut && (
-                <>
-                  <div className="dropdown-center dt-d-none mt-3 mt-xl-0">
-                    <button
-                      className="dropdown-toggle border-0 bg-transparent"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      {status?.user?.profile_pic == null ? (
-                        <Image src={profile_dummy} alt="profile" width={30} height={30} />
-                      ) : (
-                        <Image
-                          src={status?.user?.profile_pic || profile_dummy}
-                          alt="profile"
-                          width={30}
-                          height={30}
-                          style={{ borderRadius: "50%" }}
-                          onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
-                        />
-                      )}
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
-                      <li>
-                        <Link
-                          // href="/profile"
-                          href="/profile/edit"
-                          className="dropdown-item d-flex gap-2 align-items-center"
-                          onClick={closeHamburgerMenu}
-                        >
-                          {status?.user?.profile_pic == null ? (
-                            <Image src={profile_dummy} alt="profile" width={30} height={30} />
-                          ) : (
-                            <Image
-                              src={status?.user?.profile_pic || profile_dummy}
-                              alt="profile"
-                              width={30} height={30}
-                              style={{ borderRadius: "50%" }}
-                              onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
-                            />
-                          )}
-                          <div>
-                            <p className="lh-sm text-black fw-bold h6 mb-0">
-                              <small>
-                                {status?.user?.firstname || status.user?.id} {status?.user?.lastname}
-                              </small>
-                            </p>
-                            <p className="lh-sm">
-                              <small>{status?.user?.email || "email"} </small>
-                            </p>
-                          </div>
-                        </Link>
-                      </li>
-                      <li className="dropdown-divider my-1"></li>
-
-                      {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5, 6, 7) */}
-                      {isClient && [1, 5, 6, 7].includes(Number(status?.user?.role)) ? (
-
-                        <li>
-                          <Link
-                            href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
-                            onClick={closeHamburgerMenu}
-                            className="dropdown-item bg-transparent text-black"
-                          >
-                            <FontAwesomeIcon
-                              icon={faUser}
-                              className="fas fa-check"
-                              style={{ color: "gray", marginRight: ".4rem" }}
-                            ></FontAwesomeIcon>
-                            <small>Dashboard</small>
-                          </Link>
-                        </li>
-                      ) : null}
-
-                      <li>
-                        <Link
-                          href={`/profile/author/${status?.user?.id}`}
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUser}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Profile</small>
-                        </Link>
-                      </li>
-
-                      {/* <li>
-                        <Link
-                          href="/profile"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUser}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Create Architect Profile</small>
-                        </Link>
-                      </li> */}
-
-                      <li>
-                        <Link
-                          href="/profile/edit"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Edit Profile</small>
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          href="/profile/billing"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faDollarSign}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Manage Billing</small>
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          href="/favourites"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Favourites</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/project"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Projects</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/experiences"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Experiences</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/work/sent"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Sent Work</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/work/upload"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUpload}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Upload Files</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/withdraw-amount"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faWallet}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Wallet</small>
-                        </Link>
-                      </li>
-                      {/* <li><Link href="/contact" className="dropdown-item bg-transparent text-black"><small>Contact Us</small></Link></li> */}
-                      <li className="dropdown-divider my-1"></li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            handleLogout()
-                            closeHamburgerMenu()
-                          }}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faSignOut}
-                            className="ml-1"
-                            style={{ color: "red", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-
-                          <small>Logout</small>
-                        </button>
-                      </li>
-                    </ul>
+    <>
+      <header
+        className="sticky-top"
+        style={{
+          padding: '0.75rem 0',
+          backgroundColor: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
+          zIndex: 1040
+        }}
+      >
+        <style>{`
+        .ai-nav-link {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 0.375rem;
+          padding: 0.5rem 0.75rem !important;
+          font-size: 0.875rem !important;
+          font-weight: 500 !important;
+          color: #64748b !important;
+          transition: background-color 0.2s, color 0.2s;
+          text-decoration: none;
+        }
+        .ai-nav-link:hover {
+          background-color: #f1f5f9;
+          color: #0f172a !important;
+          border-radius: calc(0.625rem - 2px);
+        }
+        .ai-nav-link.active {
+          background-color: rgba(241, 245, 249, 0.5);
+          color: #0f172a !important;
+          font-weight: 600 !important
+          border-radius: calc(0.625rem - 2px);;
+        }
+      `}</style>
+        <div className="container">
+          <nav className="navbar navbar-expand-xl">
+            <div className="container-fluid">
+              <Link href="/" className="d-flex align-items-center text-decoration-none" style={{ gap: '10px' }}>
+                <Image src="/logo.webp" width={34} height={34} alt="Cadbull Logo" priority />
+                <span className="fw-bold text-dark m-0 d-none d-sm-block" style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}>Cadbull</span>
+              </Link>
+              <div className="d-flex align-items-center d-xl-none gap-3">
+                {authCheckStatus === "done" && (isAuthenticated && !isLoggedOut ? (
+                  <div className="dropdown">
+                    {renderProfileButton()}
+                    {renderDropdownMenu()}
                   </div>
-                </>
-              )}
-              {/* small screen device responsive */}
+                ) : (
+                  <Link
+                    href={"/auth/login"}
+                    className="btn btn-secondary d-inline-flex gap-1 align-items-center text-white btn-sm"
+                    style={{ fontSize: '0.85rem' }}
+                  >
+                    <Icons.User /> <span>Login</span>
+                  </Link>
+                ))}
+                <button
+                  className="navbar-toggler border-0 p-0 shadow-none"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowHamburgerMenuItem(!showHamburgerMenuItem)
+                  }}
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <span>
+                    <Icons.HamBurger />
+                  </span>
+                </button>
+              </div>
+              <div className="collapse navbar-collapse d-none d-xl-block" id="navbarSupportedContent">
+                <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-3 gap-xl-3 align-items-center">
+                  {links.map((link, index) => {
+                    const isExternalProxy = link.url.startsWith("/blog");
+                    const content = (
+                      <div className="d-flex align-items-center gap-1">
+                        {link.title}
+                        {link.isNew && (
+                          <span className="badge bg-danger rounded-pill px-1" style={{ fontSize: '0.55rem', padding: '0.2em 0.4em', transform: 'translateY(-1px)' }}>
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                    );
+                    return (
+                      <li key={index}>
+                        {link.isExternal || isExternalProxy ? (
+                          <a
+                            onClick={() => {
+                              closeHamburgerMenu();
+                            }}
+                            className={`${link.url === Router.asPath ? "active" : ""} nav-link ai-nav-link`}
+                            aria-current="page"
+                            href={link.url}
+                            target={link.isExternal ? "_blank" : "_self"}
+                            rel={link.isExternal ? "noopener noreferrer" : ""}
+                          >
+                            {content}
+                          </a>
+                        ) : (
+                          <Link
+                            onClick={() => {
+                              closeHamburgerMenu();
+                            }}
+                            className={`${link.url === Router.asPath ? "active" : ""} nav-link ai-nav-link`}
+                            aria-current="page"
+                            href={link.url}
+                          >
+                            {content}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
 
-              <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-4 gap-3">
-                {links.map((link, index) => {
-                  const isExternalProxy = link.url.startsWith("/blog");
-                  return (
-                    <li className="b-bottom-md" key={index}>
-                      {isExternalProxy ? (
-                        <a
-                          onClick={() => {
-                            closeHamburgerMenu();
-                          }}
-                          className={`${link.url === Router.asPath ? "active" : ""} nav-link`}
-                          aria-current="page"
-                          href={link.url}
-                        >
-                          {link.title}
-                        </a>
-                      ) : (
-                        <Link
-                          onClick={() => {
-                            closeHamburgerMenu();
-                          }}
-                          className={`${link.url === Router.asPath ? "active" : ""} nav-link`}
-                          aria-current="page"
-                          href={link.url}
-                        >
-                          {link.title}
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-
-              {/* desktop device responsive */}
-              {/* ✅ Only show auth state AFTER the initial check is done */}
-              {authCheckStatus === "done" && (isAuthenticated && !isLoggedOut ? (
-                <>
+                {/* desktop device responsive */}
+                {authCheckStatus === "done" && (isAuthenticated && !isLoggedOut ? (
                   <div className="dropdown-center mb-d-none mt-3 mt-xl-0">
-                    <button
-                      className="dropdown-toggle border-0 bg-transparent"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      {status?.user?.profile_pic == null ? (
-                        <Image src={profile_dummy} alt="profile" width={30} height={30} />
-                      ) : (
-                        <Image
-                          src={status?.user?.profile_pic || profile_dummy}
-                          alt="profile"
-                          width={30}
-                          height={30}
-                          style={{ borderRadius: "50%" }}
-                          onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
-                        />
-                      )}
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-xl-end border-0 shadow-lg pt-1 mt-2">
-                      <li>
-                        <Link
-                          // href="/profile"
-                          href="/profile/edit"
-                          className="dropdown-item d-flex gap-2 align-items-center"
-                          onClick={closeHamburgerMenu}
-                        >
-                          {status?.user?.profile_pic == null ? (
-                            <Image src={profile_dummy} alt="profile" width={30} height={30} />
-                          ) : (
-                            <Image
-                              src={status?.user?.profile_pic || profile_dummy}
-                              alt="profile"
-                              width={30}
-                              height={30}
-                              style={{ borderRadius: "50%" }}
-                              onError={e => { e.target.onerror = null; e.target.src = profile_dummy }}
-                            />
-                          )}
-                          <div>
-                            <p className="lh-sm text-black fw-bold h6 mb-0">
-                              <small>
-                                {status?.user?.firstname || status.user?.id} {status?.user?.lastname}
-                              </small>
-                            </p>
-                            <p className="lh-sm">
-                              <small>{status?.user?.email || "email"}</small>
-                            </p>
-                          </div>
-                        </Link>
-                      </li>
-                      <li className="dropdown-divider my-1"></li>
-
-                      {/* Show Dashboard Link ONLY if the user is an Admin (role: 1) or Content Creator (role: 5, 6, 7) */}
-                      {isClient && [1, 5, 6, 7].includes(Number(status?.user?.role)) ? (
-
-                        <li>
-                          <Link
-                            href={status?.user?.role === 1 ? "/admin/dashboard" : "/admin/dashboard"}
-                            onClick={closeHamburgerMenu}
-                            className="dropdown-item bg-transparent text-black"
-                          >
-                            <FontAwesomeIcon
-                              icon={faUser}
-                              className="fas fa-check"
-                              style={{ color: "gray", marginRight: ".4rem" }}
-                            ></FontAwesomeIcon>
-                            <small>Dashboard</small>
-                          </Link>
-                        </li>
-                      ) : null}
-
-                      <li>
-                        <Link
-                          href={`/profile/author/${status?.user?.id}`}
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUser}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Profile</small>
-                        </Link>
-                      </li>
-
-                      {/* <li>
-                        <Link
-                          href="/profile"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUser}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Create Architect Profile</small>
-                        </Link>
-                      </li> */}
-
-                      <li>
-                        <Link
-                          href="/profile/edit"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faPenToSquare}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Edit Profile</small>
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          href="/profile/billing"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faDollarSign}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Manage Billing</small>
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          href="/favourites"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faHeart}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Favourites</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/project"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Projects</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/experiences"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Experiences</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/work/sent"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faFolder}
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Sent Work</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/work/upload"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faUpload}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>Upload Files</small>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/withdraw-amount"
-                          onClick={closeHamburgerMenu}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faWallet}
-                            className="fas fa-check"
-                            style={{ color: "gray", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-                          <small>My Wallet</small>
-                        </Link>
-                      </li>
-                      {/* <li><Link href="/contact" className="dropdown-item bg-transparent text-black"><small>Contact Us</small></Link></li> */}
-                      <li className="dropdown-divider my-1"></li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            handleLogout()
-                            closeHamburgerMenu()
-                          }}
-                          className="dropdown-item bg-transparent text-black"
-                        >
-                          <FontAwesomeIcon
-                            icon={faSignOut}
-                            className="ml-1"
-                            style={{ color: "red", marginRight: ".4rem" }}
-                          ></FontAwesomeIcon>
-
-                          <small>Logout</small>
-                        </button>
-                      </li>
-                    </ul>
+                    {renderProfileButton()}
+                    {renderDropdownMenu()}
                   </div>
-                </>
-              ) : (
-                <>
+                ) : (
                   <Link
                     href={"/auth/login"}
                     className="d-none btn btn-secondary d-xl-inline-flex gap-1 align-items-center"
                   >
-                    <Icons.User /> <span>LOGIN</span>
+                    <Icons.User /> <span>Login</span>
                   </Link>
+                ))}
+              </div>
+
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* Mobile menu drawer */}
+      {showHamburgerMenuItem && (
+        <div className="d-xl-none position-fixed top-0 start-0 w-100 h-100" style={{ zIndex: 999999 }}>
+          {/* Backdrop */}
+          <div
+            className="position-absolute top-0 start-0 w-100 h-100 bg-dark"
+            style={{ opacity: 0.5, transition: 'opacity 0.3s ease-in-out' }}
+            onClick={() => setShowHamburgerMenuItem(false)}
+          ></div>
+          {/* Drawer */}
+          <div
+            className="position-absolute top-0 end-0 h-100 bg-white shadow-lg d-flex flex-column"
+            style={{ width: '85%', maxWidth: '380px', transition: 'transform 0.3s ease-in-out', overflowY: 'auto' }}
+          >
+            <div className="d-flex align-items-center justify-content-between px-4 py-3 border-bottom">
+              <div className="d-flex align-items-center gap-2">
+                <Image src="/logo.webp" width={32} height={32} alt="Cadbull Logo" />
+                <span className="fw-bold text-dark m-0" style={{ fontSize: '1.2rem', letterSpacing: '-0.5px' }}>Cadbull</span>
+              </div>
+              <button
+                className="btn border-0 p-1 rounded hover-bg-light"
+                onClick={() => setShowHamburgerMenuItem(false)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            <div className="p-3 flex-grow-1 overflow-y-auto">
+              <div className="px-2 pb-2" style={{ fontSize: '10px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#64748b' }}>Explore</div>
+              <div className="d-flex flex-column gap-1">
+                {links.map((link, index) => {
+                  const isExternalProxy = link.url.startsWith("/blog");
+                  const content = (
+                    <div className="d-flex align-items-center gap-2">
+                      {link.title}
+                      {link.isNew && (
+                        <span className="badge bg-danger rounded-pill px-1" style={{ fontSize: '0.55rem', padding: '0.2em 0.4em', transform: 'translateY(-1px)' }}>
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                  );
+                  return (
+                    <div key={index}>
+                      {link.isExternal || isExternalProxy ? (
+                        <a
+                          href={link.url}
+                          target={link.isExternal ? "_blank" : "_self"}
+                          rel={link.isExternal ? "noopener noreferrer" : ""}
+                          className="d-flex align-items-center gap-2 px-3 py-3 rounded text-decoration-none ai-nav-link"
+                          onClick={() => setShowHamburgerMenuItem(false)}
+                          style={{ backgroundColor: Router.asPath === link.url ? '#f1f5f9' : 'transparent', fontWeight: '500', fontSize: '0.95rem' }}
+                        >
+                          {content}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.url}
+                          className="d-flex align-items-center gap-2 px-3 py-3 rounded text-decoration-none ai-nav-link"
+                          onClick={() => setShowHamburgerMenuItem(false)}
+                          style={{ backgroundColor: Router.asPath === link.url ? '#f1f5f9' : 'transparent', fontWeight: '500', fontSize: '0.95rem' }}
+                        >
+                          {content}
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="p-4 border-top" style={{ backgroundColor: '#f8f9fa' }}>
+              {authCheckStatus === "done" && (isAuthenticated && !isLoggedOut ? (
+                <>
+                  <Link href="/admin/dashboard" className="btn btn-light w-100 mb-2 shadow-sm fw-bold border" onClick={() => setShowHamburgerMenuItem(false)}>Go to Dashboard</Link>
+                  <button className="btn btn-outline-secondary w-100 fw-bold" onClick={() => { handleLogout(); setShowHamburgerMenuItem(false); }}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/register" className="btn btn-primary w-100 mb-2 shadow-sm fw-bold border-0" onClick={() => setShowHamburgerMenuItem(false)}>Get started free</Link>
+                  <Link href="/auth/login" className="btn btn-outline-secondary w-100 fw-bold" onClick={() => setShowHamburgerMenuItem(false)}>Sign in</Link>
                 </>
               ))}
-              {/* desktop device responsive */}
             </div>
           </div>
-        </nav>
-      </div>
-    </header>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -11,26 +11,26 @@ body {
   flex-direction: column;
 }
 
-  .category-item > a span::before,
-  .category-item > div span::before {
-    content: "";
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background-color: #EF4B4C; // #666
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
+.category-item>a span::before,
+.category-item>div span::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #EF4B4C; // #666
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 
 
 .main-mt-0 {
   margin-top: 0 !important;
 }
 
-main {
-  margin-top: 60px;
-}
+// main {
+//   margin-top: 60px;
+// }
 
 header {
   background: $offWhite 0% 0% no-repeat padding-box;
@@ -53,6 +53,7 @@ header {
   .active {
     color: $secondary;
   }
+
   // :hover {
   //   color: $secondary;
   // }
@@ -68,7 +69,8 @@ footer {
 }
 
 // Nav color
-.navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
   color: #20325a;
 }
 
@@ -84,7 +86,7 @@ footer {
   .page-item .page-link {
     border: 0 !important;
 
-    font: normal normal 600 15px/20px 'Inter', sans-serif;  // previous 500
+    font: normal normal 600 15px/20px 'Inter', sans-serif; // previous 500
     color: $black;
   }
 
@@ -93,6 +95,7 @@ footer {
     background-color: $primary;
     border-color: $primary;
   }
+
   :focus {
     box-shadow: none;
   }
@@ -112,6 +115,7 @@ aside {
 .breadcrumb {
   flex-wrap: nowrap;
   gap: 0.3rem;
+
   @media all and (max-width:575px) {
     flex-wrap: wrap;
   }
@@ -125,7 +129,7 @@ aside {
     ;
   }
 
-    @include textTruncate();
+  @include textTruncate();
 
   &.active {
     font-weight: 700;
@@ -144,7 +148,13 @@ aside {
   // padding: 0.5rem 0;
   min-height: 280px;
 }
-@media (max-width: 576px) { .ad-container { min-height: 250px; } }
+
+@media (max-width: 576px) {
+  .ad-container {
+    min-height: 250px;
+  }
+}
+
 // .ad-ins {
 //   padding: 0.5rem 0;
 // }
@@ -165,7 +175,7 @@ aside {
         margin-right: 5px;
         margin-block: auto;
 
-        @media all and (max-width:767px){
+        @media all and (max-width:767px) {
           display: none;
         }
       }
@@ -177,7 +187,8 @@ aside {
 .category-table .description-cell-content {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3; /* Show up to 3 lines */
+  -webkit-line-clamp: 3;
+  /* Show up to 3 lines */
   overflow: hidden;
   text-overflow: ellipsis;
   /* max-width is inherited from the parent td, which is set in globals.scss */
@@ -186,6 +197,7 @@ aside {
 /* Make the description cell clickable */
 .category-table .description-cell {
   cursor: pointer;
+
   &:hover {
     background-color: #f8f9fa; // A light hover effect
   }
@@ -225,6 +237,7 @@ aside {
   .description-modal-body {
     max-height: 60vh;
     overflow-y: auto;
+
     p {
       white-space: pre-wrap; // Preserve newlines from the description
       word-wrap: break-word;

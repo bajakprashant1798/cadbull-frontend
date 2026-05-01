@@ -163,9 +163,48 @@ const Pricing = () => {
     {/* Plans */}
     <section className="">
       <div className="container py-md-4">
-        <div className="row gy-4 align-items-center">
+        <div className="row gy-4 align-items-center justify-content-center">
+          {/* 0 (Free Plan) */}
+          <div className="col-12 col-md-6 col-lg-4 col-xl-4">
+            <div className="pricing-card">
+              <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
+                <div className="d-flex justify-content-between">
+                  <h5 className="text-primary">Free Plan</h5>
+                </div>
+                <div className="my-2 mb-3">
+                  <h4 className="text-primary">
+                    <span className="fw-bold">$0</span>
+                  </h4>
+                </div>
+                <div>
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2" style={{ fontSize: '0.9rem' }}>
+                    <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">0 Premium Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upload Files</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Create Projects Library</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 0 Gold files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1">Upto 10 Free files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1 fw-bold">0 AI Credit</span></li>
+                  </ul>
+                </div>
+                <div>
+                  <button onClick={() => {
+                    if (userData === null) {
+                      router.push(`/auth/login?redirect=${router.asPath}`)
+                      return
+                    }
+                    toast.info("You already have the Free Plan by default!");
+                  }}
+                    type="button" className="btn btn-outline-primary w-100">
+                    CURRENT PLAN
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           {/* 1 */}
-          <div className="col-lg-3 col-md-6">
+          <div className="col-12 col-md-6 col-lg-4 col-xl-4">
             <div className="pricing-card">
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
@@ -174,7 +213,7 @@ const Pricing = () => {
                 </div>
                 <div className="my-2 mb-3">
                   <h4 className="text-primary">
-                    <span className="fw-bold">$13</span>
+                    <span className="fw-bold">$9.99</span>
                     <small className="fs-5">/ 15 Days</small>
                   </h4>
                 </div>
@@ -182,7 +221,7 @@ const Pricing = () => {
                   <p className="text-primary fw-medium">Ideal for individual creators.</p>
                 </div> */}
                 <div>
-                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2" style={{ fontSize: '0.9rem' }}>
                     <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
@@ -191,6 +230,7 @@ const Pricing = () => {
                     {/* <li><Icons.ListBullet /><span className="ms-1">Upto 200 files/day</span></li> */}
                     <li><Icons.ListBullet /><span className="ms-1">Upto 10 Gold files/day</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Upto 10 Free files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1 fw-bold">50 AI Credit</span></li>
                   </ul>
                 </div>
                 <div>
@@ -208,7 +248,7 @@ const Pricing = () => {
 
                       return
                     }
-                    handleSubscription("price_1QLNQAFy6VKViPpJGQCXH5KE", user.id).then((res) => {
+                    handleSubscription("price_1RjwuyFy6VKViPpJHrCcff1Y", user.id).then((res) => {
                       // console.log("API Response:", res.data); // Log response
                       window.location.href = res.data.url
                     }).catch((err) => {
@@ -216,7 +256,7 @@ const Pricing = () => {
                     })
                   }}
                     //  disabled={activeSubscription}
-                    type="button" className="btn btn-primary">
+                    type="button" className="btn btn-primary w-100">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED WEEKLY"} */}
                     BUY NOW
                   </button>
@@ -225,7 +265,7 @@ const Pricing = () => {
             </div>
           </div>
           {/* 2  */}
-          <div className="col-lg-3 col-md-6">
+          <div className="col-12 col-md-6 col-lg-4 col-xl-4">
             <div className="pricing-card">
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
@@ -234,7 +274,7 @@ const Pricing = () => {
                 </div>
                 <div className="my-2 mb-3">
                   <h4 className="text-primary">
-                    <span className="fw-bold">$20</span>
+                    <span className="fw-bold">$14.99</span>
                     <small className="fs-5">/ Month</small>
                   </h4>
                 </div>
@@ -242,7 +282,7 @@ const Pricing = () => {
                   <p className="text-primary fw-medium">Ideal for individual creators.</p>
                 </div> */}
                 <div>
-                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2" style={{ fontSize: '0.9rem' }}>
                     <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
@@ -251,6 +291,7 @@ const Pricing = () => {
                     {/* <li><Icons.ListBullet /><span className="ms-1">Upto 250 files/day</span></li> */}
                     <li><Icons.ListBullet /><span className="ms-1">Upto 20 Gold files/day</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Upto 15 Free files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1 fw-bold">100 AI Credit</span></li>
                   </ul>
                 </div>
                 <div>
@@ -262,7 +303,7 @@ const Pricing = () => {
                         router.push(`/auth/login?redirect=${router.asPath}`)
                         return
                       }
-                      handleSubscription("price_1Q8P4NFy6VKViPpJeRzGAybE", user.id).then((res) => {
+                      handleSubscription("price_1TSAo6Fy6VKViPpJRV0M9OY4", user.id).then((res) => {
 
                         window.location.href = res.data.url
                       }).catch((err) => {
@@ -270,7 +311,7 @@ const Pricing = () => {
                       })
                     }}
                     // disabled={activeSubscription}
-                    type="button" className="btn btn-primary">
+                    type="button" className="btn btn-primary w-100">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
                     BUY NOW
                   </button>
@@ -280,7 +321,7 @@ const Pricing = () => {
           </div>
 
           {/* 3  */}
-          <div className="col-lg-3 col-md-6">
+          <div className="col-12 col-md-6 col-lg-4 col-xl-4">
             <div className="pricing-card">
               <div className="header-wrapper" style={{ background: '#3D6098' }}>
                 <h5 className="text-white">MOST POPULAR</h5>
@@ -292,7 +333,7 @@ const Pricing = () => {
                 </div>
                 <div className="my-2 mb-3">
                   <h4 className="text-white">
-                    <span className="fw-bold">$50</span>
+                    <span className="fw-bold">$39.99</span>
                     <small className="fs-5">/ 3 Months</small>
                   </h4>
                 </div>
@@ -300,7 +341,7 @@ const Pricing = () => {
                   <p className="text-white fw-medium">Ideal for individual creators.</p>
                 </div> */}
                 <div>
-                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2" style={{ fontSize: '0.9rem' }}>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
@@ -309,6 +350,7 @@ const Pricing = () => {
                     {/* <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 300 files/day</span></li> */}
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 30 Gold files/day</span></li>
                     <li className="text-white"><Icons.ListBullet /><span className="ms-1">Upto 25 Free files/day</span></li>
+                    <li className="text-white"><Icons.ListBullet /><span className="ms-1 fw-bold">400 AI Credit</span></li>
                   </ul>
                 </div>
                 <div className="pb-5">
@@ -319,7 +361,7 @@ const Pricing = () => {
                         router.push(`/auth/login?redirect=${router.asPath}`)
                         return
                       }
-                      handleSubscription("price_1Q8H9gFy6VKViPpJwEh4k3c1", user.id).then((res) => {
+                      handleSubscription("price_1TSB3UFy6VKViPpJdcvQYrh2", user.id).then((res) => {
 
                         window.location.href = res.data.url
                       }).catch((err) => {
@@ -327,7 +369,7 @@ const Pricing = () => {
                       })
                     }}
                     // disabled={activeSubscription}
-                    type="button" className="btn btn-light">
+                    type="button" className="btn btn-light w-100">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED MONTHLY"} */}
                     BUY NOW
                   </button>
@@ -336,7 +378,7 @@ const Pricing = () => {
             </div>
           </div>
           {/* 4  */}
-          <div className="col-lg-3 col-md-6">
+          <div className="col-12 col-md-6 col-lg-4 col-xl-4">
             <div className="pricing-card">
               <div className="h-100 inner-wrapper" style={{ borderTopColor: '#3D6098' }}>
                 <div className="d-flex justify-content-between">
@@ -353,7 +395,7 @@ const Pricing = () => {
                   <p className="text-primary fw-medium">Ideal for individual creators.</p>
                 </div> */}
                 <div>
-                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2">
+                  <ul className="list-unstyled mb-4 mb-md-5 d-flex flex-column gap-2" style={{ fontSize: '0.9rem' }}>
                     <li><Icons.ListBullet /><span className="ms-1">All 65000+ Free Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">All 225000+ Premium Files</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Create Library</span></li>
@@ -362,6 +404,7 @@ const Pricing = () => {
                     {/* <li><Icons.ListBullet /><span className="ms-1">Upto 400 files/day</span></li> */}
                     <li><Icons.ListBullet /><span className="ms-1">Upto 40 Gold files/day</span></li>
                     <li><Icons.ListBullet /><span className="ms-1">Upto 50 Free files/day</span></li>
+                    <li><Icons.ListBullet /><span className="ms-1 fw-bold">1500 AI Credit</span></li>
                   </ul>
                 </div>
                 <div>
@@ -381,7 +424,7 @@ const Pricing = () => {
                       })
                     }}
                     // disabled={activeSubscription}
-                    type="button" className="btn btn-primary">
+                    type="button" className="btn btn-primary w-100">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
                     BUY NOW
                   </button>
