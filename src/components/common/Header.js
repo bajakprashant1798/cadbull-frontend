@@ -31,7 +31,7 @@ import Image from "next/image";
 const links = [
   { url: "/", title: "Home", active: true },
   { url: "/categories", title: "Categories", active: false },
-  { url: "https://ai.cadbull.com", title: "AI Studio", active: false, isExternal: true, isNew: true },
+  { url: "https://ai.cadbull.com", title: "AI Studio", active: false, isExternal: false, isNew: true },
   { url: "/work/upload", title: "Upload File", active: false },
   { url: "/pricing", title: "Pricing", active: false },
   { url: "/Architecture-House-Plan-CAD-Drawings", title: "House Plan", active: false },
@@ -167,7 +167,7 @@ const Header = () => {
       <li className="dropdown-divider my-2 opacity-50"></li>
 
       <li>
-        <a href="https://ai.cadbull.com" target="_blank" rel="noopener noreferrer" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark bg-transparent">
+        <a href="https://ai.cadbull.com" rel="noopener noreferrer" onClick={closeHamburgerMenu} className="dropdown-item d-flex align-items-center gap-3 px-4 py-2 text-dark bg-transparent">
           <FontAwesomeIcon icon={faWandMagicSparkles} className="text-secondary" style={{ width: '14px' }} />
           <span className="d-flex align-items-center gap-2" style={{ fontSize: '0.9rem', fontWeight: '500' }}>
             AI Studio
