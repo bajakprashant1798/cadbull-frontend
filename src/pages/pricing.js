@@ -36,7 +36,7 @@ const Pricing = () => {
         }
 
         // console.log(response);
-        
+
 
         setUser(response.data);
         const expDate = new Date(response.data.acc_exp_date);
@@ -67,14 +67,14 @@ const Pricing = () => {
   //     fetchUserDetails();
   //   }
   // }, [token]);
-  
+
 
   const purchasePlan = async (priceId) => {
     if (!userData) {
       router.push(`/auth/login?redirect=${router.asPath}`);
       return;
     }
-    
+
     if (activeSubscription) {
       toast.error("You already have an active subscription. Cancel your current plan first.");
       return;
@@ -110,54 +110,54 @@ const Pricing = () => {
           <div className="col-md-9">
             <div className="text-center">
               <div className="mb-3 mb-md-4 mt-3 mt-md-5">
-              <div>
-                {/* {message && <p className="alert alert-warning text-center">{message}</p>} */}
-                {message && showMessage && (
-                  <div className="position-relative mb-4">
-                    <div 
-                      className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center mb-0`}
-                      style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
-                    >
-                      <p 
-                        className="mb-0" 
-                        style={{ 
-                          color: activeSubscription ? 'black' : 'white' 
-                        }}
+                <div>
+                  {/* {message && <p className="alert alert-warning text-center">{message}</p>} */}
+                  {message && showMessage && (
+                    <div className="position-relative mb-4">
+                      <div
+                        className={`alert ${activeSubscription ? 'alert-success' : 'alert-danger'} text-center mb-0`}
+                        style={!activeSubscription ? { backgroundColor: '#FF6961', color: 'white', borderColor: '#FF6961' } : {}}
                       >
-                        {message}
-                      </p>
+                        <p
+                          className="mb-0"
+                          style={{
+                            color: activeSubscription ? 'black' : 'white'
+                          }}
+                        >
+                          {message}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        className="button btn-light rounded-circle d-flex align-items-center justify-content-center position-absolute"
+                        aria-label="Close"
+                        style={{
+                          width: '30px',
+                          height: '30px',
+                          top: '-10px',
+                          right: '-10px',
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          border: '2px solid white',
+                          zIndex: 10
+                        }}
+                        onClick={() => setShowMessage(false)}
+                      >
+                        ×
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="button btn-light rounded-circle d-flex align-items-center justify-content-center position-absolute"
-                      aria-label="Close"
-                      style={{ 
-                        width: '30px',
-                        height: '30px',
-                        top: '-10px',
-                        right: '-10px',
-                        fontSize: '18px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        border: '2px solid white',
-                        zIndex: 10
-                      }}
-                      onClick={() => setShowMessage(false)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
                 {/* <h1>Choose Your Pricing Plan</h1>
                 <p>Choose the Right plan. No commission</p> */}
                 <h1>New Files Delivered Daily, No Exceptions!</h1>
                 <p className="h5 mt-2">Choose Your Pricing Plan</p>
               </div>
             </div>
-            </div>
           </div>
         </div>
+      </div>
     </section>
 
     {/* Plans */}
@@ -194,7 +194,7 @@ const Pricing = () => {
                   </ul>
                 </div>
                 <div>
-                  <button onClick={()=>{
+                  <button onClick={() => {
                     // checkout({
                     //   lineItems:[
                     //     {
@@ -202,21 +202,21 @@ const Pricing = () => {
                     //     }
                     //   ]
                     // })
-                    if(userData ===null){
+                    if (userData === null) {
                       router.push(`/auth/login?redirect=${router.asPath}`)
                       // toast.error('Login is required');
-                      
+
                       return
                     }
-                       handleSubscription("price_1TS0tzFy6VKViPpJZSEsXSZN", user.id).then((res)=>{
-                        // console.log("API Response:", res.data); // Log response
-                        window.location.href=res.data.url
-                       }).catch((err)=>{
-                        // console.log('error',err)
-                       })
+                    handleSubscription("price_1QLNQAFy6VKViPpJGQCXH5KE", user.id).then((res) => {
+                      // console.log("API Response:", res.data); // Log response
+                      window.location.href = res.data.url
+                    }).catch((err) => {
+                      // console.log('error',err)
+                    })
                   }}
-                  //  disabled={activeSubscription}
-                   type="button" className="btn btn-primary">
+                    //  disabled={activeSubscription}
+                    type="button" className="btn btn-primary">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED WEEKLY"} */}
                     BUY NOW
                   </button>
@@ -255,22 +255,22 @@ const Pricing = () => {
                 </div>
                 <div>
                   <button
-                  
-                  onClick={()=>{
-                    if(userData ===null){
-                      // toast.error('Login is required');
-                      router.push(`/auth/login?redirect=${router.asPath}`)
-                      return
-                    }
-                    handleSubscription("price_1Q8P4NFy6VKViPpJeRzGAybE", user.id).then((res)=>{
-                    
-                      window.location.href=res.data.url
-                     }).catch((err)=>{
-                      // console.log('error',err)
-                     })
-                  }}
-                  // disabled={activeSubscription}
-                  type="button" className="btn btn-primary">
+
+                    onClick={() => {
+                      if (userData === null) {
+                        // toast.error('Login is required');
+                        router.push(`/auth/login?redirect=${router.asPath}`)
+                        return
+                      }
+                      handleSubscription("price_1Q8P4NFy6VKViPpJeRzGAybE", user.id).then((res) => {
+
+                        window.location.href = res.data.url
+                      }).catch((err) => {
+                        // console.log('error',err)
+                      })
+                    }}
+                    // disabled={activeSubscription}
+                    type="button" className="btn btn-primary">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
                     BUY NOW
                   </button>
@@ -278,7 +278,7 @@ const Pricing = () => {
               </div>
             </div>
           </div>
-          
+
           {/* 3  */}
           <div className="col-lg-3 col-md-6">
             <div className="pricing-card">
@@ -313,24 +313,24 @@ const Pricing = () => {
                 </div>
                 <div className="pb-5">
                   <button
-                  onClick={()=>{
-                    if(userData ===null){
-                      // toast.error('Login is required');
-                      router.push(`/auth/login?redirect=${router.asPath}`)
-                      return
-                    }
-                    handleSubscription("price_1Q8H9gFy6VKViPpJwEh4k3c1", user.id).then((res)=>{
-                    
-                      window.location.href=res.data.url
-                     }).catch((err)=>{
-                      // console.log('error',err)
-                     })
-                  }}
-                  // disabled={activeSubscription}
-                  type="button" className="btn btn-light">
+                    onClick={() => {
+                      if (userData === null) {
+                        // toast.error('Login is required');
+                        router.push(`/auth/login?redirect=${router.asPath}`)
+                        return
+                      }
+                      handleSubscription("price_1Q8H9gFy6VKViPpJwEh4k3c1", user.id).then((res) => {
+
+                        window.location.href = res.data.url
+                      }).catch((err) => {
+                        // console.log('error',err)
+                      })
+                    }}
+                    // disabled={activeSubscription}
+                    type="button" className="btn btn-light">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED MONTHLY"} */}
                     BUY NOW
-                    </button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -366,22 +366,22 @@ const Pricing = () => {
                 </div>
                 <div>
                   <button
-                  
-                  onClick={()=>{
-                    if(userData ===null){
-                      // toast.error('Login is required');
-                      router.push(`/auth/login?redirect=${router.asPath}`)
-                      return
-                    }
-                    handleSubscription("price_1Q8PNDFy6VKViPpJSYVg4mvU", user.id).then((res)=>{
-                    
-                      window.location.href=res.data.url
-                     }).catch((err)=>{
-                      // console.log('error',err)
-                     })
-                  }}
-                  // disabled={activeSubscription}
-                  type="button" className="btn btn-primary">
+
+                    onClick={() => {
+                      if (userData === null) {
+                        // toast.error('Login is required');
+                        router.push(`/auth/login?redirect=${router.asPath}`)
+                        return
+                      }
+                      handleSubscription("price_1Q8PNDFy6VKViPpJSYVg4mvU", user.id).then((res) => {
+
+                        window.location.href = res.data.url
+                      }).catch((err) => {
+                        // console.log('error',err)
+                      })
+                    }}
+                    // disabled={activeSubscription}
+                    type="button" className="btn btn-primary">
                     {/* {activeSubscription ? "ALREADY SUBSCRIBED" : "GET STARTED ANNUAL"} */}
                     BUY NOW
                   </button>
