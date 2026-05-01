@@ -54,7 +54,7 @@ import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import Image from "next/image";
 // import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
-import FAQsPage from "./faqs";
+import { FAQSection } from "./faqs";
 // import { performance } from "@/utils/performance";
 
 export const drawings = [
@@ -952,7 +952,7 @@ export default function Home({
       {/* <GetOff /> */}
 
       {/* faqs */}
-      <FAQsPage />
+      <FAQSection />
     </Fragment >
   );
 }

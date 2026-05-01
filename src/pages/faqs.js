@@ -127,6 +127,18 @@ function FAQAccordion({ faqs }) {
   );
 }
 
+// Reusable FAQ section — no Head tag, safe to embed on any page
+export function FAQSection() {
+  return (
+    <section className="py-5">
+      <div className="container">
+        <h1 className="mb-4 text-center">Frequently Asked Questions (FAQs)</h1>
+        <FAQAccordion faqs={faqs} />
+      </div>
+    </section>
+  );
+}
+
 const FAQsPage = () => (
   <Fragment>
     <Head>
@@ -145,12 +157,7 @@ const FAQsPage = () => (
       <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
     </Head>
 
-    <section className="py-5">
-      <div className="container">
-        <h1 className="mb-4 text-center">Frequently Asked Questions (FAQs)</h1>
-        <FAQAccordion faqs={faqs} />
-      </div>
-    </section>
+    <FAQSection />
   </Fragment>
 );
 
