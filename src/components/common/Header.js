@@ -262,17 +262,19 @@ const Header = () => {
   return (
     <>
       <header
-        className="sticky-top"
+        className="fixed-top"
         style={{
           padding: '0.75rem 0',
-          backgroundColor: 'rgba(255, 255, 255, 0.75)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
-          zIndex: 1040
+          zIndex: 1040,
+          transition: 'box-shadow 0.3s ease'
         }}
       >
         <style>{`
+        body { padding-top: 72px; }
         .ai-nav-link {
           display: inline-flex;
           align-items: center;

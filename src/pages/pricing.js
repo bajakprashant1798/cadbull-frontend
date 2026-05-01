@@ -478,7 +478,7 @@ const Pricing = () => {
         <div className="position-absolute w-100 h-100 bg-grid-pattern" style={{ zIndex: 0, opacity: 0.3 }}></div>
 
         {/* Hero */}
-        <section className="pt-5 pb-5 position-relative z-1">
+        <section className="pt-5 pb-3 pb-xl-5 position-relative z-1">
           <div className="container pt-4">
             {message && showMessage && (
               <div className="mx-auto mb-4 p-3 position-relative rounded d-flex justify-content-center align-items-center" style={{
@@ -546,7 +546,7 @@ const Pricing = () => {
 
         {/* Pricing Grid */}
         <section className="position-relative z-1 pb-5">
-          <div className="container-fluid px-5  mx-auto" style={{ maxWidth: '1600px' }}>
+          <div className="container-fluid px-3 px-xl-5 mx-auto" style={{ maxWidth: '1600px' }}>
             <div className="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-3 justify-content-center align-items-stretch">
               {baseFiltered.map((plan) => (
                 <PricingCard key={plan.id} plan={plan} onSubscribe={handleSubscribe} />
