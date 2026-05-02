@@ -139,7 +139,8 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
   // Auto-repair HTML corrupted by the previous admin buggy RegExp
   rawDesc = rawDesc.replace(/\s*style=">/g, '>');
   const description = rawDesc;
-  const metaDescription = description ? description.replace(/<[^>]+>/g, '') : "";
+  const metaDescription = product?.meta_description
+    || (description ? description.replace(/<[^>]+>/g, '').trim().slice(0, 160) : "");
   const imageUrl = product?.image
     ? `https://assets.cadbull.com/product_img/original/${product.image}`
     : "https://cadbull.com/default-img.png";
