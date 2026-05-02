@@ -135,6 +135,7 @@ export async function getServerSideProps(context) {
 
 export default function AmpProductPage({ product, similar, publisher, categoryName, subcategoryName, user }) {
   const title = product?.work_title || "Product";
+  const metaTitle = product?.meta_title || title;
   let rawDesc = product?.description || "";
   // Auto-repair HTML corrupted by the previous admin buggy RegExp
   rawDesc = rawDesc.replace(/\s*style=">/g, '>');
@@ -188,7 +189,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
 
         <meta name="description" content={metaDescription} />
         <meta name="keywords" content={product?.tags || ""} />
-        <meta property="og:title" content={title} />
+        <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={imageUrl} />
@@ -206,11 +207,11 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@cadbull" />
         <meta name="twitter:creator" content="@cadbull" />
-        <meta name="twitter:title" content={title} />
+        <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDescription} />
         <meta name="twitter:image" content={imageUrl} />
         <meta name="twitter:image:alt" content={`${product?.work_title} - CAD Drawing from Cadbull AMP`} />
-        <title>{title}</title>
+        <title>{metaTitle}</title>
         <link rel="canonical" href={canonical} />
         <meta name="theme-color" content="#7d5bd9" />
         {/* Removed all <script> tags from <Head> as Next.js AMP injects them automatically */}
