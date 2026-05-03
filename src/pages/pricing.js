@@ -316,8 +316,10 @@ const PricingCard = ({ plan, onSubscribe }) => {
           <div
             className="badge-overlap"
             style={{
-              backgroundColor: isPopular ? '#f59e0b' : '#1e293b',
-              color: isPopular ? '#0f172a' : '#fff',
+              backgroundColor: isPopular ? '#EF4B4C' : '#1e293b',
+              // f59e0b
+              color: isPopular ? '#fff' : '#fff',
+              // 0f172a
               boxShadow: isPopular ? '0 0 15px rgba(245, 158, 11, 0.3)' : 'none'
             }}
           >
@@ -332,8 +334,10 @@ const PricingCard = ({ plan, onSubscribe }) => {
               className="d-flex align-items-center justify-content-center rounded"
               style={{
                 width: '32px', height: '32px', flexShrink: 0,
-                backgroundColor: isPopular ? '#f59e0b' : '#f1f5f9',
-                color: isPopular ? '#0f172a' : '#1e293b'
+                backgroundColor: isPopular ? '#EF4B4C' : '#f1f5f9',
+                // f59e0b
+                color: isPopular ? '#fff' : '#1e293b'
+                // 0f172a
               }}
             >
               <Icon size={18} strokeWidth={2.5} />
@@ -357,14 +361,15 @@ const PricingCard = ({ plan, onSubscribe }) => {
           <div
             className="ai-pill mb-3"
             style={{
-              backgroundColor: isPopular ? 'rgba(255,255,255,0.08)' : '#fef08a',
-              color: isPopular ? '#fff' : '#854d0e',
+              backgroundColor: isPopular ? 'rgba(255,255,255,0.08)' : 'rgb(255, 107, 107)',
+              color: isPopular ? '#fff' : '#fff',
               border: 'none',
               boxShadow: isPopular ? 'none' : 'inset 0 0 0 1px rgba(0,0,0,0.05)'
             }}
           >
             <Sparkles size={14} />
-            <span className="text-truncate">{plan.aiCredits}</span>
+            {/* text-truncate  fef08a*/}
+            <span className="text-white">{plan.aiCredits}</span>
           </div>
 
           <hr className="mb-3 mt-1" style={{ borderColor: isPopular ? 'rgba(255,255,255,0.15)' : '#e2e8f0' }} />
@@ -377,7 +382,8 @@ const PricingCard = ({ plan, onSubscribe }) => {
                   className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
                   style={{
                     width: '14px', height: '14px',
-                    backgroundColor: isPopular ? '#f59e0b' : '#f1f5f9',
+                    backgroundColor: isPopular ? '#EF4B4C' : '#f1f5f9',
+                    // f59e0b
                     color: isPopular ? '#0f172a' : '#64748b'
                   }}
                 >
@@ -387,7 +393,8 @@ const PricingCard = ({ plan, onSubscribe }) => {
                   {feature.label}
                 </span>
                 {feature.isNew && (
-                  <span className="badge ms-1" style={{ fontSize: '0.45rem', padding: '0.2rem 0.3rem', backgroundColor: isPopular ? '#f59e0b' : '#eff6ff', color: isPopular ? '#0f172a' : '#1e3a8a', border: isPopular ? 'none' : '1px solid #bfdbfe' }}>
+                  <span className="badge ms-1" style={{ fontSize: '0.45rem', padding: '0.2rem 0.3rem', backgroundColor: isPopular ? '#EF4B4C' : '#eff6ff', color: isPopular ? '#fff' : '#1e3a8a', border: isPopular ? 'none' : '1px solid #bfdbfe' }}>
+                    {/* 0f172a */}
                     NEW
                   </span>
                 )}
@@ -400,8 +407,9 @@ const PricingCard = ({ plan, onSubscribe }) => {
             onClick={() => onSubscribe(plan)}
             className="btn btn-pricing w-100 d-flex justify-content-center align-items-center gap-2 shadow-none"
             style={{
-              backgroundColor: isPopular ? '#f59e0b' : '#0f172a',
-              color: isPopular ? '#0f172a' : '#fff',
+              backgroundColor: isPopular ? '#EF4B4C' : '#0f172a',
+              color: isPopular ? '#fff' : '#fff',
+              // 0f172a
               border: 'none',
               marginTop: 'auto' /* Crucial for bottom alignment */
             }}
@@ -475,7 +483,7 @@ const Pricing = () => {
       </Head>
       <style dangerouslySetInnerHTML={{ __html: pricingStyles }} />
       <div className="pricing-root pb-5 position-relative">
-        <div className="position-absolute w-100 h-100 bg-grid-pattern" style={{ zIndex: 0, opacity: 0.3 }}></div>
+        <div className="position-absolute w-100 h-100 bg-grid-pattern" style={{ zIndex: 0, opacity: 0.2 }}></div>
 
         {/* Hero */}
         <section className="pt-5 pb-3 pb-xl-5 position-relative z-1">

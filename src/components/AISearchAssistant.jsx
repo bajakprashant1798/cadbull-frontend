@@ -205,7 +205,7 @@ export default function AISearchAssistant() {
                     bottom: '24px', right: '24px',
                     height: '54px',
                     zIndex: 9999, transition: 'transform 0.2s ease-in-out, background-color 0.2s',
-                    // backgroundColor: '#1d4ed8', 
+                    backgroundColor: '#EF4B4C',
                     color: 'white',
                     borderRadius: '30px',
                     fontWeight: '600', fontSize: '18px', letterSpacing: '0.3px'
@@ -401,7 +401,7 @@ export default function AISearchAssistant() {
 
                                                     {msg.hasMore && (
                                                         <div className="w-100 text-center mt-3 mb-2">
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleLoadMore(idx)}
                                                                 disabled={isLoading}
                                                                 className="btn btn-outline-primary rounded-pill px-4 py-2"
