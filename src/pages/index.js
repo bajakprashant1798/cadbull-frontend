@@ -33,11 +33,11 @@ const category11 = assets.icons("Stucture.png");
 const category12 = assets.icons("Urbandesign.png");
 
 // ✅ Other images
-const principle = assets.image("principal.png");
+const principle = assets.image("principal.webp");
 const indvidual = assets.icons("induvidual.png");
 const visualization = assets.icons("visualization.png");
-const ourSkills = assets.image("our-skills.png");
-const housePlan = assets.image("HOUSE-PLAN.png");
+const ourSkills = assets.image("our-skills.webp");
+const housePlan = assets.image("HOUSE-PLAN.webp");
 const Architecture = assets.image("Architecture.png");
 const logo = assets.image("logo.png");
 
@@ -243,9 +243,10 @@ export default function Home({
 
   // Initial load and page change effect
   useEffect(() => {
-    // Skip fetching if we’re already on the SSG state (page 1, no filters)
-    // const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
-    // if (isInitial && projects?.length) return;
+    // ✅ SPEED OPTIMIZATION: Skip fetching if we’re already on the SSG state (page 1, no filters)
+    // This stops thousands of unnecessary API calls to the backend on homepage load.
+    const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
+    if (isInitial && projects?.length) return;
 
     // Load projects whenever currentPage, searchTerm, or sortTerm change
     if (!router.isReady) return;

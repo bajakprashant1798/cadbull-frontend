@@ -5,6 +5,7 @@ import { assets } from "@/utils/assets";
 // import logo from "@/assets/images/logo.png";
 // import profile_dummy from "@/assets/icons/profile.png";
 const logo = assets.image("logo.png");
+const logoWebp = assets.image("logo.webp");
 const profile_dummy = assets.icons("profile.png");
 
 import { useSelector } from "react-redux";
@@ -303,7 +304,7 @@ const Header = () => {
           <nav className="navbar navbar-expand-xl">
             <div className="container-fluid">
               <Link href="/" className="d-flex align-items-center text-decoration-none" style={{ gap: '10px' }}>
-                <Image src="/logo.webp" width={34} height={34} alt="Cadbull Logo" priority />
+                <Image src={logoWebp} width={34} height={34} alt="Cadbull Logo" priority />
                 <span className="fw-bold text-dark m-0 d-none d-sm-block" style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}>Cadbull</span>
               </Link>
               <div className="d-flex align-items-center d-xl-none gap-3">
@@ -419,7 +420,7 @@ const Header = () => {
           >
             <div className="d-flex align-items-center justify-content-between px-4 py-3 border-bottom">
               <div className="d-flex align-items-center gap-2">
-                <Image src="/logo.webp" width={32} height={32} alt="Cadbull Logo" />
+                <Image src={logoWebp} width={32} height={32} alt="Cadbull Logo" />
                 <span className="fw-bold text-dark m-0" style={{ fontSize: '1.2rem', letterSpacing: '-0.5px' }}>Cadbull</span>
               </div>
               <button
