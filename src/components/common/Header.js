@@ -91,6 +91,7 @@ const Header = () => {
       .then((res) => {
         // If we get user data, it means they have a valid session cookie.
         if (res.data && res.data.user) {
+          localStorage.setItem("userData", JSON.stringify(res.data.user));
           dispatch(loginSuccess({ user: res.data.user, status: "authenticated" }));
         }
       })
