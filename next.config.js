@@ -59,7 +59,7 @@ const nextConfig = {
   },
 
   images: {
-    unoptimized: false, // ✅ RESTORED: Next.js will now use 'sharp' (which is insanely fast) instead of crashing on Node's 'squoosh'
+    unoptimized: true, // ✅ REVERTED: Fixed 30s load time regression by serving directly from CDN
     remotePatterns: [
       {
         protocol: 'https',
