@@ -22,6 +22,7 @@ const ProjectCard = ({
   photo_url,
   type,
   favorites, // Optionally pass favorites list from parent
+  priority = false, // Add priority prop for LCP images
 }) => {
   const router = useRouter();
   // const { token } = useSelector((store) => store.logininfo);
@@ -137,7 +138,7 @@ const ProjectCard = ({
             height={600}
             alt={work_title || "project"}
             className="w-100 img-fluid"
-            loading="lazy"
+            priority={priority}
             sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
             style={{
               width: "100%",

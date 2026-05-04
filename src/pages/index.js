@@ -549,9 +549,9 @@ export default function Home({
             })}
           </div> */}
           <div className="row g-4">
-            {projects.slice(0, 12).map((project) => (
+            {projects.slice(0, 12).map((project, index) => (
               <div className="col-md-6 col-lg-4" key={project.id}>
-                <ProjectCard {...project} favorites={favouriteList} />
+                <ProjectCard {...project} favorites={favouriteList} priority={index < 4} />
               </div>
             ))}
           </div>
