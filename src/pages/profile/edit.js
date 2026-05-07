@@ -252,7 +252,9 @@ const EditProfile = () => {
       })
       .catch((err) => {
         // Display specific error message from backend if available
-        if (err.response && err.response.data && err.response.data.message) {
+        if (err.response && err.response.data && err.response.data.error) {
+          toast.error(err.response.data.error);
+        } else if (err.response && err.response.data && err.response.data.message) {
           toast.error(err.response.data.message);
         } else {
           toast.error("Profile operation failed. Please try again.");
