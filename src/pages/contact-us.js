@@ -176,25 +176,41 @@ const ContactUs = () => {
             </div>
           </div>
 
-          <div className="row mx-2 gx-4 gy-3 col-lg-8 mx-auto form-wrapper rounded-xxl align-items-center">
-            <div className="col-md-12">
-              <div className="mb-3 mb-md-4 p-md-4">
-                <h3 className="mb-1 text-primary">
-                  Get In
-                  <span> Touch!</span>
+          <div className="row mx-2 gx-0 gy-0 col-lg-10 mx-auto form-wrapper rounded-xxl overflow-hidden shadow-sm d-flex flex-column flex-lg-row">
+            
+            {/* Left Column: Contact Info */}
+            <div className="col-lg-5 p-4 p-md-5 d-flex flex-column" style={{ backgroundColor: "#f8f9fa", borderRight: "1px solid #eee" }}>
+              <div className="mb-4 mb-md-5">
+                <h3 className="mb-2 text-primary fw-bold">
+                  Get In Touch!
                 </h3>
-                <div className="d-flex gap-3 align-items-md-center flex-column flex-md-row">
-                  <p className="flex-shrink-0">
-                    Tell us more about yourself and what you're got in mind{" "}
-                  </p>
-                  <div className="divider flex-shrink-0 flex-grow-1 w-xs-100"></div>
+                <p className="text-muted">
+                  Got a question, idea, or just want to chat? We're always happy to hear from you! Tell us more about yourself and what you've got in mind.
+                </p>
+              </div>
+
+              <div className="d-flex flex-column gap-4 mt-auto mb-auto">
+                <div className="d-flex align-items-center gap-3">
+                  <Icons.PhoneRed />
+                  <div>
+                    <h6 className="mb-0 fw-bold text-dark">Phone</h6>
+                    <a href="tel:+919824011921" className="mb-0 text-muted fs-5 text-decoration-none">+91 982 401 1921</a>
+                  </div>
+                </div>
+
+                <div className="d-flex align-items-center gap-3">
+                  <Icons.EmailRed />
+                  <div>
+                    <h6 className="mb-0 fw-bold text-dark">Email</h6>
+                    <a href="mailto:infodibull@gmail.com" className="mb-0 text-muted fs-5 text-decoration-none">infodibull@gmail.com</a>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="col-md-12">
-              <div className="p-lg-4">
-                {/* Form  */}
-                <form onSubmit={handleSubmit(contactSubmitHandler)} className="row g-3 mb-3 mb-md-4">
+
+            {/* Right Column: Form */}
+            <div className="col-lg-7 p-4 p-md-5 bg-white">
+              <form onSubmit={handleSubmit(contactSubmitHandler)} className="row g-3 mb-3 mb-md-4">
                   {/* First Name  */}
                   <div className="col-xl-6">
                     <div className="d-flex gap-2 align-items-center mb-1">
@@ -335,7 +351,6 @@ const ContactUs = () => {
                     </div>
                   </div>
                 </form>
-              </div>
             </div>
             {/* <div className="col-md-7">
               <div className="form-wrapper-map">

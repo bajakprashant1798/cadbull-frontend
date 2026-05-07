@@ -22,7 +22,7 @@ import Image from "next/image";
 const Footer = () => {
   // Get current year dynamically
   const currentYear = new Date().getFullYear();
-  return ( 
+  return (
     <footer className="mt-auto pt-4 pt-sm-5">
       <hr className="border-top-footer opacity-100 d-none d-lg-block" />
       <div className="container">
@@ -35,30 +35,30 @@ const Footer = () => {
             </div>
           </div>
           <div className="row mt-md-4 gy-4">
-            <div className="col-md-6 col-lg-5 col-xl-5">
-             
-                <h6 className="text-white mb-4 h4">Get In Touch</h6>
-                <ul className="list-unstyled d-flex gap-2 gap-md-4 flex-column">
-                  <li>
-                    <div className="d-flex align-items-start gap-2">
-                      <Image src={map} alt="icon" width={32} height={32} />
-                      <p className="text-white">403, Fortune Business Hub, Beside science city, Science City Road Sola, Ahmedabad, Gujarat 380060</p>
-                    </div>
-                  </li>
-                  <li className="d-flex align-items-start gap-3 flex-column flex-xl-row">
-                    <div className="d-flex align-items-center gap-2">
-                      <Image src={phone} alt="icon" width={32} height={32} />
-                      <p className="text-white">+91 982 401 1921</p>
-                    </div>
-                    <div className="d-flex align-items-center gap-2">
-                      <Image src={email} alt="icon" width={32} height={32} />
-                      <p className="text-white">cadbull2014@gmail.com</p>
-                    </div>
-                  </li>
-                </ul>
-            
+            <div className="col-md-6 col-lg-4 col-xl-4">
+
+              <h6 className="text-white mb-4 h4">Get In Touch</h6>
+              <ul className="list-unstyled d-flex gap-2 gap-md-4 flex-column">
+                {/* <li>
+                  <div className="d-flex align-items-start gap-2">
+                    <Image src={map} alt="icon" width={32} height={32} />
+                    <p className="text-white">403, Fortune Business Hub,Beside science city, Science City Road Sola, Ahmedabad, Gujarat 380060</p>
+                  </div>
+                </li> */}
+                <li className="d-flex align-items-start gap-3 flex-column">
+                  <div className="d-flex align-items-center gap-2">
+                    <Image src={phone} alt="icon" width={32} height={32} />
+                    <a href="tel:+919824011921" className="text-white mb-0 text-decoration-none">+91 982 401 1921</a>
+                  </div>
+                  <div className="d-flex align-items-center gap-2">
+                    <Image src={email} alt="icon" width={32} height={32} />
+                    <a href="mailto:infodibull@gmail.com" className="text-white mb-0 text-decoration-none">infodibull@gmail.com</a>
+                  </div>
+                </li>
+              </ul>
+
             </div>
-            <div className="col-md-6 col-lg-4 col-xl-3 ">
+            <div className="col-md-6 col-lg-4 col-xl-4">
               <div className="text-start text-md-center">
                 <Image src={logo} alt="logo" width={200} height={50} className="img-fluid mb-3 d-block d-lg-none mx-md-auto logo" />
                 <h4 className="text-white mb-md-4 d-none d-lg-block opacity-0">info</h4>
@@ -76,7 +76,7 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-md-12 col-lg-3 col-xl-4">
+            <div className="col-md-12 col-lg-4 col-xl-4 d-flex justify-content-lg-end">
               <div>
                 <h6 className="text-white mb-4 h4">Quick Links</h6>
                 <div className="d-flex  gap-5 justify-content-lg-around flex-lg-column gap-lg-2 gap-xl-5 flex-xl-row">
@@ -126,7 +126,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      
+
       <hr className="border-top-footer opacity-100" />
       <div className="container">
         <div className="footer-lower-wrapper text-center">
