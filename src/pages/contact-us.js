@@ -177,7 +177,7 @@ const ContactUs = () => {
           </div>
 
           <div className="row mx-2 gx-0 gy-0 col-lg-10 mx-auto form-wrapper rounded-xxl overflow-hidden shadow-sm d-flex flex-column flex-lg-row">
-            
+
             {/* Left Column: Contact Info */}
             <div className="col-lg-5 p-4 p-md-5 d-flex flex-column" style={{ backgroundColor: "#f8f9fa", borderRight: "1px solid #eee" }}>
               <div className="mb-4 mb-md-5">
@@ -202,7 +202,7 @@ const ContactUs = () => {
                   <Icons.EmailRed />
                   <div>
                     <h6 className="mb-0 fw-bold text-dark">Email</h6>
-                    <a href="mailto:infodibull@gmail.com" className="mb-0 text-muted fs-5 text-decoration-none">infodibull@gmail.com</a>
+                    <a href="mailto: info@dibull.com" className="mb-0 text-muted fs-5 text-decoration-none"> info@dibull.com</a>
                   </div>
                 </div>
               </div>
@@ -211,146 +211,146 @@ const ContactUs = () => {
             {/* Right Column: Form */}
             <div className="col-lg-7 p-4 p-md-5 bg-white">
               <form onSubmit={handleSubmit(contactSubmitHandler)} className="row g-3 mb-3 mb-md-4">
-                  {/* First Name  */}
-                  <div className="col-xl-6">
-                    <div className="d-flex gap-2 align-items-center mb-1">
-                      <Icons.User />
-                      <label>First Name</label>
-                    </div>
-                    <input
-                      type="text"
-                      {...register("first_name")}
-                      className={`form-control ${errors.first_name?.message ? "is-invalid" : ""
-                        }`}
-                      name="first_name"
-                      placeholder="Type First Name"
-                    // value=""
-                    />
-                    {errors.first_name?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.first_name?.message}{" "}
-                      </div>
-                    )}
+                {/* First Name  */}
+                <div className="col-xl-6">
+                  <div className="d-flex gap-2 align-items-center mb-1">
+                    <Icons.User />
+                    <label>First Name</label>
                   </div>
-                  {/* Last Name  */}
-                  <div className="col-xl-6">
-                    <div className="d-flex gap-2 align-items-center mb-1">
-                      <Icons.User />
-                      <label>Last Name</label>
+                  <input
+                    type="text"
+                    {...register("first_name")}
+                    className={`form-control ${errors.first_name?.message ? "is-invalid" : ""
+                      }`}
+                    name="first_name"
+                    placeholder="Type First Name"
+                  // value=""
+                  />
+                  {errors.first_name?.message && (
+                    <div className="invalid-feedback text-danger">
+                      {" "}
+                      {errors.first_name?.message}{" "}
                     </div>
-                    <input
-                      {...register("last_name")}
-                      className={`form-control ${errors.last_name?.message ? "is-invalid" : ""
-                        }`}
-                      name="last_name"
-                      type="text"
-                      placeholder="Type Last Name"
-                    // value=""
-                    />
-                    {errors.last_name?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.last_name?.message}{" "}
-                      </div>
-                    )}
+                  )}
+                </div>
+                {/* Last Name  */}
+                <div className="col-xl-6">
+                  <div className="d-flex gap-2 align-items-center mb-1">
+                    <Icons.User />
+                    <label>Last Name</label>
                   </div>
-                  {/* Phone Number *  */}
-                  <div className="col-lg-12">
-                    <div className="d-flex gap-2 align-items-center mb-1">
-                      <Icons.Phone />
-                      <label>Phone Number</label>
+                  <input
+                    {...register("last_name")}
+                    className={`form-control ${errors.last_name?.message ? "is-invalid" : ""
+                      }`}
+                    name="last_name"
+                    type="text"
+                    placeholder="Type Last Name"
+                  // value=""
+                  />
+                  {errors.last_name?.message && (
+                    <div className="invalid-feedback text-danger">
+                      {" "}
+                      {errors.last_name?.message}{" "}
                     </div>
-                    <PhoneInput
-                      country={'in'} // Default to India
-                      value={phone}
-                      onChange={val => setPhone('+' + val.replace(/^\+/, ''))}
-                      enableSearch
-                      inputProps={{
-                        name: 'phone_no',
-                        required: true,
-                        className: `form-control ${errors.phone_no ? "is-invalid" : ""}`,
-                      }}
-                      inputStyle={{
-                        width: "100%",
-                        borderColor: errors.phone_no ? "#dc3545" : "#ced4da"
-                      }}
-                      containerStyle={{ width: "100%" }}
-                    // Optional: onlyCountries={['us', 'in', 'ae', ...]}
-                    />
-                    {/* Hidden input for form validation */}
-                    <input
-                      type="hidden"
-                      {...register("phone_no")}
-                      value={phone}
-                    />
-                    {errors.phone_no?.message && (
-                      <div className="invalid-feedback text-danger d-block">
-                        {errors.phone_no?.message}
-                      </div>
-                    )}
+                  )}
+                </div>
+                {/* Phone Number *  */}
+                <div className="col-lg-12">
+                  <div className="d-flex gap-2 align-items-center mb-1">
+                    <Icons.Phone />
+                    <label>Phone Number</label>
                   </div>
-                  {/* Email  */}
-                  <div className="col-lg-12">
-                    <div className="d-flex gap-2 align-items-center mb-1">
-                      <Icons.Email />
-                      <label>Email Id</label>
+                  <PhoneInput
+                    country={'in'} // Default to India
+                    value={phone}
+                    onChange={val => setPhone('+' + val.replace(/^\+/, ''))}
+                    enableSearch
+                    inputProps={{
+                      name: 'phone_no',
+                      required: true,
+                      className: `form-control ${errors.phone_no ? "is-invalid" : ""}`,
+                    }}
+                    inputStyle={{
+                      width: "100%",
+                      borderColor: errors.phone_no ? "#dc3545" : "#ced4da"
+                    }}
+                    containerStyle={{ width: "100%" }}
+                  // Optional: onlyCountries={['us', 'in', 'ae', ...]}
+                  />
+                  {/* Hidden input for form validation */}
+                  <input
+                    type="hidden"
+                    {...register("phone_no")}
+                    value={phone}
+                  />
+                  {errors.phone_no?.message && (
+                    <div className="invalid-feedback text-danger d-block">
+                      {errors.phone_no?.message}
                     </div>
-                    <input
-                      type="email"
-                      {...register("email")}
-                      name="email"
-                      className={`form-control  ${errors.email ? "is-invalid" : ""}`}
-                      placeholder="Enter Your Email"
-                    // value=""
-                    />
-                    {errors.email?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.email?.message}{" "}
-                      </div>
-                    )}
+                  )}
+                </div>
+                {/* Email  */}
+                <div className="col-lg-12">
+                  <div className="d-flex gap-2 align-items-center mb-1">
+                    <Icons.Email />
+                    <label>Email Id</label>
                   </div>
-                  {/* Message */}
-                  <div className="col-lg-12">
-                    <div className="d-flex gap-2 align-items-center mb-1">
-                      <Icons.Edit />
-                      <label className="no-required">Message</label>
+                  <input
+                    type="email"
+                    {...register("email")}
+                    name="email"
+                    className={`form-control  ${errors.email ? "is-invalid" : ""}`}
+                    placeholder="Enter Your Email"
+                  // value=""
+                  />
+                  {errors.email?.message && (
+                    <div className="invalid-feedback text-danger">
+                      {" "}
+                      {errors.email?.message}{" "}
                     </div>
-                    <textarea
-                      {...register("message")}
-                      name="message"
-                      className={`form-control  ${errors.message ? "is-invalid" : ""}`}
-                      placeholder="Write Message"
-                    ></textarea>
-                    {errors.message?.message && (
-                      <div className="invalid-feedback text-danger">
-                        {" "}
-                        {errors.message?.message}{" "}
-                      </div>
-                    )}
+                  )}
+                </div>
+                {/* Message */}
+                <div className="col-lg-12">
+                  <div className="d-flex gap-2 align-items-center mb-1">
+                    <Icons.Edit />
+                    <label className="no-required">Message</label>
                   </div>
+                  <textarea
+                    {...register("message")}
+                    name="message"
+                    className={`form-control  ${errors.message ? "is-invalid" : ""}`}
+                    placeholder="Write Message"
+                  ></textarea>
+                  {errors.message?.message && (
+                    <div className="invalid-feedback text-danger">
+                      {" "}
+                      {errors.message?.message}{" "}
+                    </div>
+                  )}
+                </div>
 
-                  {/* reCAPTCHA */}
-                  <div className="col-lg-12">
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                      onChange={handleCaptchaChange}
-                    />
-                  </div>
+                {/* reCAPTCHA */}
+                <div className="col-lg-12">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptchaChange}
+                  />
+                </div>
 
-                  <div className="col-lg-12">
-                    <div className="mt-2 mt-md-3">
-                      <button
-                        type="submit"
-                        className="btn btn-lg btn-secondary w-100"
-                      >
-                        Send Message
-                      </button>
-                    </div>
+                <div className="col-lg-12">
+                  <div className="mt-2 mt-md-3">
+                    <button
+                      type="submit"
+                      className="btn btn-lg btn-secondary w-100"
+                    >
+                      Send Message
+                    </button>
                   </div>
-                </form>
+                </div>
+              </form>
             </div>
             {/* <div className="col-md-7">
               <div className="form-wrapper-map">
