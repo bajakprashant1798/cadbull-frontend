@@ -161,12 +161,12 @@ const pricingStyles = `
 `;
 
 const aiTools = [
-  { label: "Architecture → 3D", full: "AI Architecture Elevation to 3D" },
-  { label: "Interior → 3D", full: "AI Interior Elevation to 3D" },
-  { label: "Sketch → 3D", full: "Sketch to 3D conversion" },
-  { label: "2D → 3D", full: "2D drawing to 3D model" },
-  { label: "3D → 2D", full: "3D model to 2D drawing" },
-  { label: "Image → DWG", full: "Image to DWG conversion" },
+  { label: "AI Architecture → 3D", full: "AI Architecture Elevation to 3D" },
+  { label: "AI Interior → 3D", full: "AI Interior Elevation to 3D" },
+  { label: "AI Sketch → 3D", full: "AI Sketch to 3D conversion" },
+  { label: "AI 2D → 3D", full: "AI 2D drawing to 3D model" },
+  { label: "AI 3D → 2D", full: "AI 3D model to 2D drawing" },
+  { label: "AI Image → DWG", full: "AI Image to DWG conversion" },
   { label: "AI Floor Plan", full: "AI-generated Floor Plans" },
   { label: "PlanForge 2D", full: "PlanForge 2D design tool" },
   { label: "Vastu Analysis", full: "AI Vastu Analysis" },
@@ -174,14 +174,17 @@ const aiTools = [
   { label: "Unit Converter", full: "Unit Converter tool" },
 ];
 
-const baseFeatures = (premium) => [
-  { label: "65K+ Free Files", full: "All 65000+ Free Files", bold: true },
+const baseFeaturesTop = (premium) => [
+  { label: "65000+ Free Files", full: "All 65000+ Free Files", bold: true },
   premium
-    ? { label: "225K+ Premium Files", full: "All 225000+ Premium Files", bold: true }
+    ? { label: "225000+ Premium Files", full: "All 225000+ Premium Files", bold: true }
     : { label: "0 Premium Files", full: "No Premium Files included", muted: true },
-  { label: "Create Library", full: "Create your own Library" },
-  { label: "Upload Files", full: "Upload your own Files" },
-  { label: "Projects Library", full: "Create Projects Library" },
+];
+
+const baseFeaturesBottom = [
+  { label: "Create Library", full: "Create your own Library", bold: true },
+  { label: "Upload Files", full: "Upload your own Files", bold: true },
+  { label: "Projects Library", full: "Create Projects Library", bold: true },
 ];
 
 const plans = [
@@ -194,12 +197,14 @@ const plans = [
     icon: "sparkles",
     stripeId: null,
     features: [
-      ...baseFeatures(false),
-      { label: "0 Gold / day", full: "Upto 0 Gold files/day", muted: true },
-      { label: "10 Free / day", full: "Upto 10 Free files/day" },
+      ...baseFeaturesTop(false),
+      { label: "0 Gold file download / day", full: "Upto 0 Gold files/day", muted: true },
+      { label: "10 Free files download / day", full: "Upto 10 Free files/day", bold: true },
+      { label: "0 AI Credits", full: "Limited AI Credits /month", muted: true, isNew: true },
+      ...baseFeaturesBottom,
       { label: "Unit Converter", full: "Unit Converter tool", isNew: true },
     ],
-    aiCredits: "0 AI Credits",
+    aiCredits: "Limited Access of AI Studio",
     ctaLabel: "CURRENT PLAN",
   },
   {
@@ -211,12 +216,14 @@ const plans = [
     icon: "zap",
     stripeId: "price_1TSAT3Fy6VKViPpJP4SIMcZX",
     features: [
-      ...baseFeatures(true),
-      { label: "10 Gold / day", full: "Upto 10 Gold files/day" },
-      { label: "10 Free / day", full: "Upto 10 Free files/day" },
+      ...baseFeaturesTop(true),
+      { label: "10 Gold files download / day", full: "Upto 10 Gold files/day", bold: true },
+      { label: "10 Free files download / day", full: "Upto 10 Free files/day", bold: true },
+      { label: "50 AI Credits", full: "Limited AI Credits /month", isNew: true, bold: true },
+      ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
     ],
-    aiCredits: "50 AI Credits",
+    aiCredits: "Free Access of AI Studio",
   },
   {
     id: "gold",
@@ -229,12 +236,14 @@ const plans = [
     badge: "MOST POPULAR",
     stripeId: "price_1TSAo6Fy6VKViPpJRV0M9OY4",
     features: [
-      ...baseFeatures(true),
-      { label: "20 Gold / day", full: "Upto 20 Gold files/day" },
-      { label: "15 Free / day", full: "Upto 15 Free files/day" },
+      ...baseFeaturesTop(true),
+      { label: "20 Gold files download / day", full: "Upto 20 Gold files/day", bold: true },
+      { label: "15 Free files download / day", full: "Upto 15 Free files/day", bold: true },
+      { label: "100 AI Credits", full: "100 AI Credits", isNew: true, bold: true },
+      ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
     ],
-    aiCredits: "100 AI Credits",
+    aiCredits: "Free Access of AI Studio",
   },
   {
     id: "platinum",
@@ -245,29 +254,33 @@ const plans = [
     icon: "star",
     stripeId: "price_1TSB3UFy6VKViPpJdcvQYrh2",
     features: [
-      ...baseFeatures(true),
-      { label: "30 Gold / day", full: "Upto 30 Gold files/day" },
-      { label: "25 Free / day", full: "Upto 25 Free files/day" },
+      ...baseFeaturesTop(true),
+      { label: "30 Gold files download / day", full: "Upto 30 Gold files/day", bold: true },
+      { label: "25 Free files download / day", full: "Upto 25 Free files/day", bold: true },
+      { label: "300 AI Credits", full: "300 AI Credits", isNew: true },
+      ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
     ],
-    aiCredits: "400 AI Credits",
+    aiCredits: "Free Access of AI Studio",
   },
   {
     id: "diamond",
     name: "Diamond Plan",
     tagline: "Maximum savings",
-    price: "$99",
+    price: "$99.00",
     period: "/ Year",
     icon: "gem",
     badge: "BEST VALUE",
     stripeId: "price_1Q8PNDFy6VKViPpJSYVg4mvU",
     features: [
-      ...baseFeatures(true),
-      { label: "40 Gold / day", full: "Upto 40 Gold files/day" },
-      { label: "50 Free / day", full: "Upto 50 Free files/day" },
+      ...baseFeaturesTop(true),
+      { label: "40 Gold files download / day", full: "Upto 40 Gold files/day", bold: true },
+      { label: "50 Free files download / day", full: "Upto 50 Free files/day", bold: true },
+      { label: "1500 AI Credits", full: "1500 AI Credits", isNew: true, bold: true },
+      ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
     ],
-    aiCredits: "1500 AI Credits",
+    aiCredits: "Free Access of AI Studio",
   },
 ];
 
@@ -352,7 +365,7 @@ const PricingCard = ({ plan, onSubscribe }) => {
           <div className="mb-3 d-flex align-items-baseline gap-1">
             <div className="d-flex align-items-baseline" style={{ color: isPopular ? '#fff' : '#0f172a' }}>
               <span className="fw-bold" style={{ fontSize: '1.25rem', marginRight: '3px' }}>{plan.price[0]}</span>
-              <span className="fw-bolder" style={{ fontSize: '2.8rem', lineHeight: '1', letterSpacing: '-1.5px' }}>{plan.price.substring(1)}</span>
+              <span className="fw-bolder" style={{ fontSize: '1.8rem', lineHeight: '1', letterSpacing: '-1.5px' }}>{plan.price.substring(1)}</span>
             </div>
             <span className="fw-semibold ms-1" style={{ fontSize: '0.75rem', color: isPopular ? '#94a3b8' : '#64748b' }}>{plan.period}</span>
           </div>
