@@ -203,12 +203,12 @@ export default function AISearchAssistant() {
                 className="btn btn-primary position-fixed shadow-lg d-flex align-items-center justify-content-center border-0 gap-2 px-4"
                 style={{
                     bottom: '24px', right: '24px',
-                    height: '54px',
+                    height: '42px',
                     zIndex: 9999, transition: 'transform 0.2s ease-in-out, background-color 0.2s',
                     backgroundColor: '#EF4B4C',
                     color: 'white',
                     borderRadius: '30px',
-                    fontWeight: '600', fontSize: '18px', letterSpacing: '0.3px'
+                    fontWeight: '600', fontSize: '14px', letterSpacing: '0.3px'
                 }}
                 onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'scale(1.05)';
@@ -220,7 +220,7 @@ export default function AISearchAssistant() {
                 }}
                 title="AI File Finder"
             >
-                <BsStars size={22} className="mb-1" />
+                <BsStars size={18} className="mb-1" />
                 AI File Finder
             </button>
         );
