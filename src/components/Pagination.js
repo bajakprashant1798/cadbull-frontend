@@ -66,23 +66,8 @@ const Pagination = ({
               {currentPage > 1 && (
                 <li className="page-item">
                   <Link
-                    href={getPageHref(1)}
-                    className="page-link text-white"
-                    onClick={e => {
-                      e.preventDefault();
-                      if (currentPage !== 1) { console.log("First button clicked!", 1); onPageChange(1); }
-                    }}
-                    aria-label="First"
-                  >
-                    First
-                  </Link>
-                </li>
-              )}
-              {currentPage > 1 && (
-                <li className="page-item">
-                  <Link
                     href={getPageHref(currentPage - 1)}
-                    className="page-link"
+                    className="page-link text-white"
                     onClick={e => {
                       e.preventDefault();
                       if (currentPage > 1) onPageChange(currentPage - 1);
@@ -92,10 +77,10 @@ const Pagination = ({
                   </Link>
                 </li>
               )}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''} `}>
                 <Link
                   href={getPageHref(currentPage + 1)}
-                  className="page-link"
+                  className="page-link text-white"
                   onClick={e => {
                     e.preventDefault();
                     if (currentPage < totalPages) onPageChange(currentPage + 1);
@@ -103,19 +88,6 @@ const Pagination = ({
                   aria-label="Next"
                 >
                   Next
-                </Link>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <Link
-                  href={getPageHref(totalPages)}
-                  className="page-link text-white"
-                  onClick={e => {
-                    e.preventDefault();
-                    if (currentPage !== totalPages) onPageChange(totalPages);
-                  }}
-                  aria-label="Last"
-                >
-                  Last
                 </Link>
               </li>
             </ul>

@@ -106,7 +106,9 @@ export default function App({ Component, pageProps }) {
           {/* <meta name="viewport" content="initial-scale=1.0, width=device-width" /> */}
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
-
+          {/* Global SEO Language Targeting */}
+          <link rel="alternate" href={`https://cadbull.com${router.asPath.split('?')[0]}`} hrefLang="x-default" />
+          <link rel="alternate" href={`https://cadbull.com${router.asPath.split('?')[0]}`} hrefLang="en" />
         </Head>
 
         {/* <style jsx global>{`
@@ -270,6 +272,9 @@ export default function App({ Component, pageProps }) {
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
+          {/* Global SEO Language Targeting */}
+          <link rel="alternate" href={`https://cadbull.com${router.asPath.split('?')[0]}`} hrefLang="x-default" />
+          <link rel="alternate" href={`https://cadbull.com${router.asPath.split('?')[0]}`} hrefLang="en" />
         </Head>
 
         {/* <style jsx global>{`
