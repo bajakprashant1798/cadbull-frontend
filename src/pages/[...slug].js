@@ -226,6 +226,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     // Pagination handler for router navigation
     const handlePageChange = (newPage) => {
         setPageChanged(true);
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("scrollToSubcategoriesTop", "1");
+        }
         // Use full path for pagination URL
         // If current path already ends with number, we might need to be careful?
         // Actually currentPath should imply "residential/bungalows", so appending /2 works.
@@ -243,16 +246,25 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
     // Ref for the search/filter section — scroll here on every page change
     const searchSectionRef = useRef(null);
+
     useEffect(() => {
-        if (currentPage && searchSectionRef.current) {
-            searchSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (typeof window !== "undefined") {
+            if (sessionStorage.getItem("scrollToSubcategoriesTop") === "1") {
+                if (searchSectionRef.current) {
+                    searchSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                sessionStorage.removeItem("scrollToSubcategoriesTop");
+            }
         }
-    }, [currentPage]);
+    }, [currentPage, type, file_type, search]);
 
     // Keep a ref for the product grid (for other uses if needed)
     const productGridRef = useRef();
 
     const handleTypeChange = (e) => {
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("scrollToSubcategoriesTop", "1");
+        }
         router.push({
             pathname: `/${currentPath}/1`,
             query: buildQuery({
@@ -264,6 +276,9 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     };
 
     const handleSortChange = (e) => {
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("scrollToSubcategoriesTop", "1");
+        }
         router.push({
             pathname: `/${currentPath}/1`,
             query: buildQuery({

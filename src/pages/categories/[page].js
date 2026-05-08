@@ -281,6 +281,9 @@ const Categories = ({
 
     // Pagination handler
     const handlePageChange = (newPage) => {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("scrollToCategoriesTop", "1");
+      }
       router.push({
         pathname: `/categories/${newPage}`,
         query: buildQuery({
@@ -295,10 +298,17 @@ const Categories = ({
   const productSectionRef = useRef(null);
 
   useEffect(() => {
-    if (currentPage && productSectionRef.current) {
-      productSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Only try this on the client side
+    if (typeof window !== "undefined") {
+      if (sessionStorage.getItem("scrollToCategoriesTop") === "1") {
+        // Scroll and remove flag
+        if (productSectionRef.current) {
+          productSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        sessionStorage.removeItem("scrollToCategoriesTop");
+      }
     }
-  }, [currentPage]);
+  }, [currentPage, sortTerm, sortType, searchTerm]);
 
   return (
     <Fragment>
@@ -369,17 +379,13 @@ const Categories = ({
                             Type :
                           </span>
                           <select
-                            // onChange={(e) => {
-                            //   setSortType(e.target.value);
-                            //   if (currentPage !== 1) {
-                            //     router.push('/categories'); // Go to first page on filter change
-                            //   } else {
-                            //     // If already on page 1, just reload data (if needed)
-                            //     loadRecords(1); // Or whatever your data-fetching function is called
-                            //   }
-                            // }}
                             value={sortType}
-                            onChange={handleTypeChange}
+                            onChange={(e) => {
+                              if (typeof window !== "undefined") {
+                                sessionStorage.setItem("scrollToCategoriesTop", "1");
+                              }
+                              handleTypeChange(e);
+                            }}
                             className="form-select border-start-0 rounded-start-0"
                             aria-label=".form-select-sm example"
                           >
@@ -394,16 +400,12 @@ const Categories = ({
                             Sort by :
                           </span>
                           <select
-                            // onChange={(e) => {
-                            //   setSortType(e.target.value);
-                            //   if (currentPage !== 1) {
-                            //     router.push('/categories'); // Go to first page on filter change
-                            //   } else {
-                            //     // If already on page 1, just reload data (if needed)
-                            //     loadRecords(1); // Or whatever your data-fetching function is called
-                            //   }
-                            // }}
-                            onChange={handleSortChange}
+                            onChange={(e) => {
+                              if (typeof window !== "undefined") {
+                                sessionStorage.setItem("scrollToCategoriesTop", "1");
+                              }
+                              handleSortChange(e);
+                            }}
                             className="form-select border-start-0 rounded-start-0"
                             aria-label=".form-select-sm example"
                             value={sortTerm}
