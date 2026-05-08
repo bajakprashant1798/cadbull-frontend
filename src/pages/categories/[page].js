@@ -1,6 +1,6 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import CategoriesLayout from "@/layouts/CategoriesLayouts";
 import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
@@ -291,6 +291,15 @@ const Categories = ({
       }, undefined, { shallow: true });
     };
 
+  // Ref for the product/search section to scroll to on page change
+  const productSectionRef = useRef(null);
+
+  useEffect(() => {
+    if (currentPage && productSectionRef.current) {
+      productSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentPage]);
+
   return (
     <Fragment>
       <Head>
@@ -327,7 +336,7 @@ const Categories = ({
         {isLoading && <Loader />}
         <section>
           <div className="container">
-            <div className="row mb-4 mb-md-5">
+            <div className="row mb-4 mb-md-5" ref={productSectionRef}>
               <div className="col-lg-12">
                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-5">
                   <div>
@@ -469,23 +478,15 @@ const Categories = ({
             <AdSense slot="7739180135" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
-            <div className="row  justify-content-center ">
-              <div className="col-md-6 col-lg-5 col-xl-4">
-                <div className="text-center">
-                  {/* <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    goToPreviousPage={() => handlePageChange(currentPage - 1)}
-                    goToNextPage={() => handlePageChange(currentPage + 1)}
-                    dispatchCurrentPage={handlePageChange}
-                  /> */}
-
+            <div className="row justify-content-center">
+              <div className="col-12">
+                <div className="d-flex justify-content-center" style={{ overflowX: 'auto' }}>
                   <Pagination
                     basePath="/categories"
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
+                    windowSize={10}
                   />
                 </div>
               </div>
@@ -641,14 +642,14 @@ export async function getServerSideProps({ params, query, req, res }) {
   const currentPage = parseInt(params?.page || "1", 10);
   
   // ✅ Early validation to block invalid page numbers and reduce server load
-  if (isNaN(currentPage) || currentPage < 1 || currentPage > 10000) {
+  if (isNaN(currentPage) || currentPage < 1 || currentPage > 100000) {
     return { notFound: true };
   }
 
   // ✅ Block invalid/admin paths early
   const pageStr = params?.page?.toString().toLowerCase();
   const invalidPages = ['admin', 'wp-admin', 'phpmyadmin', 'api', 'null', 'undefined', 'login'];
-  if (invalidPages.includes(pageStr) || /^\d{4,}$/.test(pageStr)) {
+  if (invalidPages.includes(pageStr)) {
     return { notFound: true };
   }
 

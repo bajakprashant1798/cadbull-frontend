@@ -241,31 +241,16 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
         });
     };
 
-    // Scroll to grid after page change
-    const productGridRef = useRef();
+    // Ref for the search/filter section — scroll here on every page change
+    const searchSectionRef = useRef(null);
     useEffect(() => {
-        if (!pageChanged) return;
-        let scrolled = false;
-        function scrollToGrid() {
-            if (productGridRef.current) {
-                const cards = productGridRef.current.querySelectorAll('.col-md-6, .col-lg-4, .col-xl-4');
-                if (cards.length > 0) {
-                    productGridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-                    scrolled = true;
-                    setPageChanged(false);
-                }
-            }
+        if (currentPage && searchSectionRef.current) {
+            searchSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        scrollToGrid();
-        if (!scrolled && productGridRef.current) {
-            const observer = new MutationObserver(() => {
-                scrollToGrid();
-                if (scrolled && observer) observer.disconnect();
-            });
-            observer.observe(productGridRef.current, { childList: true, subtree: true });
-            return () => observer.disconnect();
-        }
-    }, [pageChanged, isLoading]);
+    }, [currentPage]);
+
+    // Keep a ref for the product grid (for other uses if needed)
+    const productGridRef = useRef();
 
     const handleTypeChange = (e) => {
         router.push({
@@ -339,7 +324,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                 {isLoading && <Loader />}
                 <section>
                     <div className="container" id="categories-top">
-                        <div className="row mb-4 mb-md-5">
+                        <div className="row mb-4 mb-md-5" ref={searchSectionRef}>
                             <div className="col-lg-12">
                                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-2">
                                     <div className="col-lg-3">
@@ -478,13 +463,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
                         {/* Pagination Component */}
                         <div className="row justify-content-center">
-                            <div className="col-md-6 col-lg-5 col-xl-4">
-                                <div className="text-center">
+                            <div className="col-12">
+                                <div className="d-flex justify-content-center" style={{ overflowX: 'auto' }}>
                                     <Pagination
                                         basePath={`/${currentPath}`}
                                         currentPage={currentPage}
                                         totalPages={totalPages}
                                         onPageChange={handlePageChange}
+                                        windowSize={10}
                                     />
                                 </div>
                             </div>
@@ -651,7 +637,7 @@ export async function getServerSideProps({ params, req, res }) {
         }
 
         // Block invalid pages
-        if (page < 1 || page > 1000) {
+        if (page < 1 || page > 100000) {
             console.log(`[SSR] ❌ Blocked invalid page: ${page}`);
             return {
                 props: {

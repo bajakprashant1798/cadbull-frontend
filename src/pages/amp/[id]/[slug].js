@@ -164,7 +164,10 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
     ? product.slug
     : slugify(product?.work_title || "");
 
-  const canonical = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(canonicalSlug)}`;
+  // canonical MUST point to the non-AMP detail page, NOT the AMP page itself.
+  // If AMP page is self-canonical, Google flags it as "Referenced AMP URL is self-canonical AMP"
+  // and the AMP pages become invalid and won't be served.
+  const canonical = `https://cadbull.com/detail/${product?.id}/${encodeURIComponent(canonicalSlug)}`;
   const ogUrl = `https://cadbull.com/amp/${product?.id}/${encodeURIComponent(canonicalSlug)}`;
 
 

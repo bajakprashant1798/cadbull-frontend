@@ -1,6 +1,6 @@
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
-import { Fragment, useEffect, useState, useRef, useMemo } from "react";
+import { Fragment, useEffect, useState, useRef, useMemo, useCallback } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import { assets } from "@/utils/assets";
 import Link from "next/link";
@@ -142,6 +142,9 @@ export default function Home({
   // const [lastProductId, setLastProductId] = useState(0);
 
   const projectOfDayRef = useRef(null);
+  // Track if the user has navigated away from the initial SSG page so we
+  // know when it's safe to skip fetching page 1 (first load optimization).
+  const hasNavigated = useRef(false);
 
   const displayCategories = useMemo(() => {
     if (!initialCategories || initialCategories.length === 0) {
@@ -243,13 +246,18 @@ export default function Home({
 
   // Initial load and page change effect
   useEffect(() => {
-    // ✅ SPEED OPTIMIZATION: Skip fetching if we’re already on the SSG state (page 1, no filters)
-    // This stops thousands of unnecessary API calls to the backend on homepage load.
-    const isInitial = (currentPage === 1) && !searchTerm && !sortTerm;
-    if (isInitial && projects?.length) return;
-
-    // Load projects whenever currentPage, searchTerm, or sortTerm change
     if (!router.isReady) return;
+
+    // ✅ SPEED OPTIMIZATION: Skip fetching only on the very first load when we
+    // already have SSG data for page 1 and no filters are active.
+    // Once the user navigates to another page, hasNavigated becomes true and
+    // we ALWAYS fetch — including when they return to page 1 via the First button.
+    const isInitialSSGState = (currentPage === 1) && !searchTerm && !sortTerm;
+    if (isInitialSSGState && projects?.length && !hasNavigated.current) return;
+
+    // Mark that the user has navigated at least once
+    hasNavigated.current = true;
+
     loadProjects(currentPage, 12);
   }, [currentPage, searchTerm, sortTerm]);
 

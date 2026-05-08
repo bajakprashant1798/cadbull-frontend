@@ -7,7 +7,7 @@ const Pagination = ({
   totalPages,
   onPageChange,
   jumpSize = 5,   // number of pages to jump with jump buttons (desktop)
-  windowSize = 11 // maximum number of numbered buttons to display (desktop)
+  windowSize = 10 // maximum number of numbered buttons to display (desktop)
 }) => {
   if (typeof onPageChange !== 'function') {
     throw new Error("Pagination component requires an onPageChange function prop");
@@ -59,22 +59,30 @@ const Pagination = ({
   return (
     <div className="row mt-4 mt-md-5">
       <div className="col-md-12">
-        <div className="text-center">
+        <div className="d-flex justify-content-center" style={{ overflowX: 'auto' }}>
           <nav aria-label="Page navigation">
             {/* Mobile view: only show Previous/Next buttons as specified */}
             <ul className="pagination gap-3 shadow-none d-md-none">
               {currentPage > 1 && (
                 <li className="page-item">
-                  {/* <button
-                    onClick={() => onPageChange(currentPage - 1)}
+                  <Link
+                    href={getPageHref(1)}
                     className="page-link text-white"
-                    aria-label="Previous"
+                    onClick={e => {
+                      e.preventDefault();
+                      if (currentPage !== 1) { console.log("First button clicked!", 1); onPageChange(1); }
+                    }}
+                    aria-label="First"
                   >
-                    Previous
-                  </button> */}
+                    First
+                  </Link>
+                </li>
+              )}
+              {currentPage > 1 && (
+                <li className="page-item">
                   <Link
                     href={getPageHref(currentPage - 1)}
-                    className="page-link text-white"
+                    className="page-link"
                     onClick={e => {
                       e.preventDefault();
                       if (currentPage > 1) onPageChange(currentPage - 1);
@@ -82,23 +90,52 @@ const Pagination = ({
                   >
                     Previous
                   </Link>
-
-
                 </li>
               )}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button
-                  onClick={() => onPageChange(currentPage + 1)}
-                  className="page-link text-white"
+                <Link
+                  href={getPageHref(currentPage + 1)}
+                  className="page-link"
+                  onClick={e => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) onPageChange(currentPage + 1);
+                  }}
                   aria-label="Next"
                 >
                   Next
-                </button>
+                </Link>
+              </li>
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <Link
+                  href={getPageHref(totalPages)}
+                  className="page-link text-white"
+                  onClick={e => {
+                    e.preventDefault();
+                    if (currentPage !== totalPages) onPageChange(totalPages);
+                  }}
+                  aria-label="Last"
+                >
+                  Last
+                </Link>
               </li>
             </ul>
 
             {/* Desktop view: numbered pages with jump buttons */}
             <ul className="pagination d-none d-md-inline-flex">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <Link
+                  href={getPageHref(1)}
+                  scroll={false}
+                  className="page-link text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onPageChange(1);
+                  }}
+                  aria-label="First page"
+                >
+                  First
+                </Link>
+              </li>
               {/* Always render jump-back button */}
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button
@@ -107,7 +144,7 @@ const Pagination = ({
                   aria-label="Jump back"
                   disabled={currentPage === 1}
                 >
-                  <span aria-hidden="true" className='text-white'>&laquo;</span>
+                  <span aria-hidden="true">&laquo;</span>
                 </button>
               </li>
 
@@ -135,8 +172,22 @@ const Pagination = ({
                   aria-label="Jump forward"
                   disabled={currentPage === totalPages}
                 >
-                  <span aria-hidden="true" className='text-white'>&raquo;</span>
+                  <span aria-hidden="true">&raquo;</span>
                 </button>
+              </li>
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <Link
+                  href={getPageHref(totalPages)}
+                  scroll={false}
+                  className="page-link text-white"
+                  onClick={e => {
+                    e.preventDefault();
+                    onPageChange(totalPages);
+                  }}
+                  aria-label="Last page"
+                >
+                  Last
+                </Link>
               </li>
             </ul>
           </nav>
