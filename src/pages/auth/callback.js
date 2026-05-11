@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../redux/app/features/authSlice";
 import { toast } from "react-toastify";
 import { redirectAfterLogin } from "@/utils/redirectHelpers";
+import axios from "axios";
 
 const OAuthCallback = () => {
   const router = useRouter();
@@ -23,6 +24,14 @@ const OAuthCallback = () => {
         localStorage.setItem("userData", JSON.stringify(userData));
         dispatch(loginSuccess({ user: userData, status: "authenticated" }));
         window.dispatchEvent(new Event("userLoggedIn"));
+
+        // Force an XHR request to the backend to ensure cookies are set properly
+        // Some browsers block Set-Cookie on cross-site redirects (Google -> Backend -> Frontend)
+        axios.post(
+          `${process.env.NEXT_PUBLIC_API_MAIN}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        ).catch(e => console.log("Failed to sync cookies on oauth callback", e));
 
         // Check if we're in a popup (for Safari compatibility)
         if (window.opener && !window.opener.closed) {
