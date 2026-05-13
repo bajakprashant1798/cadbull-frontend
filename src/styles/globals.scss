@@ -7,7 +7,8 @@
 @import "overrides.scss";
 
 .sidebar {
-  width: 320px; /* ✅ Fixed Width */
+  width: 320px;
+  /* ✅ Fixed Width */
   min-width: 320px;
   max-width: 320px;
   overflow-y: auto;
@@ -21,6 +22,7 @@
   font: normal normal 700 18px / 24px Inter, sans-serif;
   color: #20325A;
 }
+
 .description-container {
   @media screen and (min-width: 768px) {
     margin-top: 43px;
@@ -28,7 +30,8 @@
 }
 
 .main-content {
-  margin-left: 320px; /* ✅ Ensure Content Doesn't Overlap Sidebar */
+  margin-left: 320px;
+  /* ✅ Ensure Content Doesn't Overlap Sidebar */
   width: calc(100% - 320px);
   overflow-x: hidden;
   padding: 20px;
@@ -43,7 +46,8 @@
 .category-table th {
   white-space: normal;
   word-wrap: break-word;
-  max-width: 200px; /* ✅ Ensures wrapping */
+  max-width: 200px;
+  /* ✅ Ensures wrapping */
 }
 
 .wrap-text {
@@ -57,6 +61,7 @@
     border-bottom: 2px solid $formborder;
   }
 }
+
 @media (min-width: 1400px) {
 
   .container,
@@ -70,8 +75,17 @@
 
 // ******** Utility Classes ********
 
-.ad-slot { display:block; min-height: 280px; }    /* in-article */
-.ad-slot--sidebar { min-height: 600px; }          /* sidebar */
+.ad-slot {
+  display: block;
+  min-height: 280px;
+}
+
+/* in-article */
+.ad-slot--sidebar {
+  min-height: 600px;
+}
+
+/* sidebar */
 
 .text-danger {
   color: $danger !important;
@@ -95,10 +109,11 @@
 
 
 .h7 {
-    font: normal normal 900 30px / 50px "Inter", sans-serif;
-    @media (max-width: 796px) {
-      font: normal normal 900 28px / 50px "Inter", sans-serif;
-    } 
+  font: normal normal 900 30px / 50px "Inter", sans-serif;
+
+  @media (max-width: 796px) {
+    font: normal normal 900 28px / 50px "Inter", sans-serif;
+  }
 }
 
 .text-primary {
@@ -145,6 +160,7 @@
     display: none;
   }
 }
+
 .dt-d-none {
   @media (min-width: 1200px) {
     display: none;
@@ -200,9 +216,12 @@
 .quill-resize .ql-container {
   /* the handle appears only when overflow is not visible */
   overflow: auto;
-  resize: vertical;          /* drag up/down */
-  min-height: 220px;         /* starting height */
-  max-height: 1000px;        /* optional guard */
+  resize: vertical;
+  /* drag up/down */
+  min-height: 220px;
+  /* starting height */
+  max-height: 1000px;
+  /* optional guard */
 }
 
 /* keep a comfy editing area inside */
@@ -212,6 +231,7 @@
 
 .logo {
   max-width: 140px;
+
   @media all and (max-width:767px) {
     // max-width: 115px;
     max-width: 110px;
@@ -256,6 +276,7 @@
         font: normal normal 600 10px/11px 'Inter', sans-serif;
       }
     }
+
     span {
       font: normal normal 600 15px/15px 'Inter', sans-serif !important;
       color: $black;
@@ -276,6 +297,7 @@
         font: normal normal 500 7px/11px 'Inter', sans-serif;
       }
     }
+
     // @media all  and (max-width:575px) {
     //   background: transparent;
     // }
@@ -289,7 +311,7 @@
 
 .project-day-card {
   @include card;
-  padding: 14px;
+  // padding: 14px;
   cursor: pointer;
   transition: all 0.5 ease-in-out;
 
@@ -331,19 +353,26 @@
     // padding: 0.5rem 0;
     min-height: 280px;
   }
-  @media (max-width: 576px) { .ad-container { min-height: 250px; } }
+
+  @media (max-width: 576px) {
+    .ad-container {
+      min-height: 250px;
+    }
+  }
 
   .truncate-description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;  /* Shows 3 lines of text */
+    -webkit-line-clamp: 3;
+    /* Shows 3 lines of text */
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 400px; /* Optional: Constrain the width if needed */
+    max-width: 400px;
+    /* Optional: Constrain the width if needed */
   }
 
   .project-day-card-image {
-    height: 250px;   // enable it if we want to fix the height
+    height: 225px; // enable it if we want to fix the height
     width: 100%;
     position: relative;
     border-radius: $borderRadiusLg;
@@ -366,12 +395,13 @@
       object-fit: cover;
     }
   }
-  
+
 
 
 
   .project-day-card-description {
     border-left: 4px solid $gray;
+
     .work-title {
       min-height: 48px;
       display: -webkit-box;
@@ -449,10 +479,14 @@
 //   position: absolute; inset: 0; z-index: 0;
 // }
 // .heroFrame img { position: relative; z-index: 1; }
-.heroFrame { position: relative; }
+.heroFrame {
+  position: relative;
+}
 
 .hero-fallback {
-  display:flex; align-items:center; justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 220px;
   background: #fafafa;
   border: 1px solid #e5e5e5;
@@ -475,7 +509,10 @@
 }
 
 /* Only if you want a subtle blur behind the loader */
-.loader-container ~ * { filter: blur(2px); pointer-events:none; }
+.loader-container~* {
+  filter: blur(2px);
+  pointer-events: none;
+}
 
 
 
@@ -503,9 +540,11 @@
     h6 {
       color: #20325A; // change to your desired hover color
     }
+
     p {
       color: #3D6098; // change to your desired hover color
     }
+
     h4 {
       color: #20325A; // change to your desired hover color
     }
@@ -642,6 +681,7 @@
 
 .authLayout-login-wrapper {
   width: 50%;
+
   @media screen and (max-width: 991px) {
     width: 100%;
   }
@@ -650,25 +690,34 @@
 // [slug].js
 /* Make nav buttons more visible on light background */
 /* === Embla minimal styles === */
-.heroFrame { position: relative; }
+.heroFrame {
+  position: relative;
+}
+
 .embla {
   position: relative;
   width: 100%;
-  overflow: hidden; /* important */
+  overflow: hidden;
+  /* important */
 }
+
 .embla__container {
   display: flex;
 }
+
 .embla__slide {
   flex: 0 0 100%;
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
+  /* prevents overflow */
 }
+
 .embla__single {
   width: 100%;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
 }
+
 .embla__btn {
   position: absolute;
   top: 50%;
@@ -676,48 +725,82 @@
   border: 0;
   background: none;
   color: #fff;
-  width: 36px; height: 36px; border-radius: 9999px;
-  display: grid; place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
 }
-.embla__btn--prev { left: 10px; }
-.embla__btn--next { right: 10px; }
+
+.embla__btn--prev {
+  left: 10px;
+}
+
+.embla__btn--next {
+  right: 10px;
+}
+
 .embla__dots {
   position: absolute;
-  bottom: 10px; left: 0; right: 0;
-  display: flex; gap: 6px; justify-content: center;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
 }
+
 .embla__btn,
-.embla__dots { z-index: 2; }
-.embla__dot {
-  width: 6px; height: 12px; border-radius: 50%; border: 0;
-  background: rgba(0,0,0,.25); cursor: pointer;
+.embla__dots {
+  z-index: 2;
 }
-.embla__dot--active { background: #ed4d4c; }
+
+.embla__dot {
+  width: 6px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(0, 0, 0, .25);
+  cursor: pointer;
+}
+
+.embla__dot--active {
+  background: #ed4d4c;
+}
+
 /* Each slide has an inner "stage" that sets fixed height via aspect-ratio */
 .embla__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: var(--frame-ratio, 4/3); /* fallback 4:3 */
-  background: #fff;       /* inner canvas so bg never collapses */
+  aspect-ratio: var(--frame-ratio, 4/3);
+  /* fallback 4:3 */
+  background: #fff;
+  /* inner canvas so bg never collapses */
   border-radius: 12px;
   overflow: hidden;
-  display: grid;          /* centers spinners/fallbacks if any */
+  display: grid;
+  /* centers spinners/fallbacks if any */
   place-items: center;
-  box-shadow: inset 0 0 1px rgba(0,0,0,.06);
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, .06);
 }
+
 /* Make Next/Image fill the stage and NEVER shrink */
 .embla__stage :global(img) {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;      /* cover = no shrink; use contain if you want no crop */
+  object-fit: contain;
+  /* cover = no shrink; use contain if you want no crop */
 }
+
 .embla__stage img {
-  object-fit: contain;      /* cover = no shrink; use contain if you want no crop */
+  object-fit: contain;
+  /* cover = no shrink; use contain if you want no crop */
   background-color: #F6F6F6;
 }
+
 .embla__placeholder {
   width: 100%;
   height: 100%;
@@ -731,8 +814,10 @@
 
 /* ensure transform origin works consistently across browsers */
 .embla__btn svg {
-  transform-box: fill-box;         /* modern browsers */
-  -webkit-transform-box: fill-box; /* Safari prefixed */
+  transform-box: fill-box;
+  /* modern browsers */
+  -webkit-transform-box: fill-box;
+  /* Safari prefixed */
   transform-origin: center;
   -webkit-transform-origin: center;
 }
@@ -742,6 +827,7 @@
   transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
 }
+
 // [slug].js
 
 // ******** Dropdown ********
@@ -938,6 +1024,7 @@ table {
 .categories-pcount-font-size {
   font: normal normal 500 12px/20px 'Inter', sans-serif !important;
 }
+
 .categories-name-font-size {
   font: normal normal 400 12px/20px 'Inter', sans-serif !important;
 }
@@ -1130,14 +1217,22 @@ table {
   min-height: clamp(220px, 40vw, 560px);
   border-radius: 8px;
 }
+
 .shimmer::after {
   content: "";
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .6) 50%, rgba(255, 255, 255, 0) 100%);
   animation: shimmer 1.2s infinite;
 }
-@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 // product page
 
 
@@ -1180,6 +1275,7 @@ table {
 .category-drawer {
   --bs-offcanvas-height: 100vh;
 }
+
 ////
 /* Add this to your global CSS file */
 #recaptcha-container {
@@ -1188,7 +1284,7 @@ table {
   margin: 20px 0;
 }
 
-#recaptcha-container > div {
+#recaptcha-container>div {
   margin: 0 auto;
 }
 
@@ -1196,6 +1292,7 @@ table {
 .g-recaptcha {
   margin: 0 auto;
 }
+
 ////
 .copy-link-size {
   background-color: #E4E4E4;
@@ -1212,6 +1309,7 @@ table {
   // max-width: 100%;
   // width: 250px;
 }
+
 // .btn-success-split {
 //   width: 100%;
 // }
@@ -1230,10 +1328,13 @@ table {
   align-items: center;
   position: relative;
 }
+
 .stat-item {
   position: relative;
-  margin-right: -40px; /* Overlapping effect */
+  margin-right: -40px;
+  /* Overlapping effect */
 }
+
 .stat-circle {
   width: 250px;
   height: 250px;
@@ -1247,6 +1348,7 @@ table {
   background: white;
   position: relative;
 }
+
 .stat-circle::before {
   content: "";
   position: absolute;
@@ -1262,29 +1364,36 @@ table {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
+
 .stat-circle h3 {
   margin-bottom: 5px;
 }
+
 @media (max-width: 767px) {
   .statistics-wrapper {
     flex-direction: column;
     align-items: center;
   }
+
   .stat-item {
     margin-top: -30px;
   }
+
   .stat-circle {
     width: 220px;
     height: 220px;
   }
 }
+
 @media (min-width: 768px) {
   .statistics-wrapper {
     flex-direction: row;
     justify-content: center;
   }
+
   .stat-item {
     margin-right: -50px;
   }
 }
+
 // about page css

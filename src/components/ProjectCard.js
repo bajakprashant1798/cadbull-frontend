@@ -2,7 +2,7 @@ import save from "@/assets/icons/save.png";
 import product from "@/assets/images/product.jpg"
 import Icons from "./Icons";
 import Link from "next/link";
-import { addFavouriteItem,  removeFavouriteItem } from "@/service/api";
+import { addFavouriteItem, removeFavouriteItem } from "@/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { addedFavouriteItem, deleteFavouriteItem } from "../../redux/app/features/projectsSlice";
 import { toast } from "react-toastify";
@@ -14,9 +14,9 @@ import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 import { redirectToLogin } from "@/utils/redirectHelpers";
 import { preloadImage } from "@/utils/preloadImage";
 
-const ProjectCard = ({  
-  view_count, 
-  work_title, 
+const ProjectCard = ({
+  view_count,
+  work_title,
   file_type,
   id,
   photo_url,
@@ -59,10 +59,10 @@ const ProjectCard = ({
       event.preventDefault();
       return;
     }
-    
+
   }, [id]);
 
-  
+
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) {
       redirectToLogin(router);
@@ -70,7 +70,7 @@ const ProjectCard = ({
     }
     try {
       if (isFavorited) {
-        await removeFavouriteItem( id);
+        await removeFavouriteItem(id);
         setIsFavorited(false);
         toast.success("Removed from Favorite list", { position: "top-right" });
         // Dispatch action to update Redux store:
@@ -121,16 +121,16 @@ const ProjectCard = ({
 
 
   return (
-    <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)}>
+    <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)} style={{ padding: '14px' }}>
       {/* <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}> */}
-      <Link 
-        onClick={handleviewcount}  
-        className="h-100" 
+      <Link
+        onClick={handleviewcount}
+        className="h-100"
         href={`/detail/${id}/${slugify(work_title)}`}
         onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
       >
-        <div className='project-day-card-image mb-3 position-relative'>
-          
+        <div className='project-day-card-image mb-3 position-relative' style={{ height: "250px" }}>
+
           {/* <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" /> */}
           <Image
             src={getSafeImageUrl(photo_url)}
@@ -150,11 +150,11 @@ const ProjectCard = ({
           />
 
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
-            <button onClick={()=>handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
+            <button onClick={() => handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
               {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}
               {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
             </button>
-            <button onClick={()=>handledownload(id,isAuthenticated,router)} className='border-0 bg-transparent p-0 shadow-none'><img src={save.src} className='border-0' alt='icon' loading="lazy" /></button>
+            <button onClick={() => handledownload(id, isAuthenticated, router)} className='border-0 bg-transparent p-0 shadow-none'><img src={save.src} className='border-0' alt='icon' loading="lazy" /></button>
           </div>
         </div>
         <div className='project-day-card-description d-flex justify-content-between'>
@@ -167,9 +167,9 @@ const ProjectCard = ({
             </div> */}
           </div>
         </div>
-        
+
         <div className='project-day-card-link'>
-          
+
           <p className='pe-2'>MORE DETAILS</p>
 
           <div className='text-end mt-3'>
@@ -202,7 +202,7 @@ const ProjectCard = ({
               </button>
             )}
           </div>
-        
+
         </div>
       </Link>
     </div>

@@ -1056,4 +1056,13 @@ export const getTermsPrivacyAndFaqData = async () => {
   }
 };
 
+export const getProductReviews = (productId) =>
+  api.get(`/reviews/${productId}`);
+
+export const submitProductReview = (productId, data) =>
+  api.post(`/reviews/${productId}`, data);
+
+export const getMyProductReview = (productId) =>
+  api.get(`/reviews/${productId}/mine`);
+
 export default api;

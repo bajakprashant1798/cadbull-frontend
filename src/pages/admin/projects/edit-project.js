@@ -237,6 +237,7 @@ const EditProject = () => {
 
   // Rich text editor state
   const [description, setDescription] = useState("");
+  const [faqs, setFaqs] = useState([]);
 
   // const [storedToken, setStoredToken] = useState(null);
 
@@ -550,6 +551,7 @@ const EditProject = () => {
 
         // setPublishAtIst(mysqlUtcToDatetimeLocalIST(projectRes.data.publish_at));
         setPublishAtIst(projectData.publish_at_ist || "");
+        setFaqs(projectData.faqs || []);
 
         //// ✅ Set Form Data
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
@@ -884,8 +886,8 @@ const EditProject = () => {
       // } else {
       //   // If you want clearing the input to remove the schedule in DB:
       //   // formData.append("publish_at_ist", "");
-      // }
       formData.append("publish_at_ist", publishAtIst || "");
+      formData.append("faqs", JSON.stringify(faqs));
 
       await updateProjectApi(id, formData);
 
@@ -1456,6 +1458,63 @@ const EditProject = () => {
               ))
             )}
           </div>
+
+          {/* FAQs Section */}
+          {userRole !== 2 && (
+            <div className="mb-4 section-card p-4 bg-light border rounded">
+              <h5 className="mb-3">Product FAQs</h5>
+              {faqs.map((faq, index) => (
+                <div key={index} className="mb-3 p-3 bg-white border rounded position-relative">
+                  <div className="mb-2">
+                    <label className="form-label">Question</label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      value={faq.question || ""} 
+                      onChange={(e) => {
+                        const newFaqs = [...faqs];
+                        newFaqs[index].question = e.target.value;
+                        setFaqs(newFaqs);
+                      }} 
+                      placeholder="e.g. Which software opens this DWG file?"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">Answer</label>
+                    <textarea 
+                      className="form-control" 
+                      rows="2"
+                      value={faq.answer || ""} 
+                      onChange={(e) => {
+                        const newFaqs = [...faqs];
+                        newFaqs[index].answer = e.target.value;
+                        setFaqs(newFaqs);
+                      }} 
+                      placeholder="e.g. Compatible with AutoCAD 2018 and later."
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="btn btn-sm btn-outline-danger position-absolute" 
+                    style={{ top: '10px', right: '10px' }}
+                    onClick={() => {
+                      const newFaqs = faqs.filter((_, i) => i !== index);
+                      setFaqs(newFaqs);
+                    }}
+                  >
+                    Delete FAQ
+                  </button>
+                </div>
+              ))}
+              <button 
+                type="button" 
+                className="btn btn-outline-primary btn-sm mt-2" 
+                onClick={() => setFaqs([...faqs, { question: "", answer: "" }])}
+              >
+                + Add FAQ
+              </button>
+            </div>
+          )}
 
           {/* Project Status */}
           <div className="mb-3">

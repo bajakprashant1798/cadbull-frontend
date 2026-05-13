@@ -129,10 +129,10 @@ const Add = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
 </svg>
 
 // ******************* File *******************
-const File = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 21.5 26.5">
+const File = ({ color = "#e9e9eb", className }) => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 21.5 26.5" className={className}>
   <g id="file" transform="translate(0.75 0.75)">
-    <path id="Path_232" data-name="Path 232" d="M17.25,3H8.5A2.5,2.5,0,0,0,6,5.5v20A2.5,2.5,0,0,0,8.5,28h15A2.5,2.5,0,0,0,26,25.5V11.75Z" transform="translate(-6 -3)" fill="none" stroke="#e9e9eb" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-    <path id="Path_233" data-name="Path 233" d="M19.5,3v8.75h8.75" transform="translate(-8.25 -3)" fill="none" stroke="#e9e9eb" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+    <path id="Path_232" data-name="Path 232" d="M17.25,3H8.5A2.5,2.5,0,0,0,6,5.5v20A2.5,2.5,0,0,0,8.5,28h15A2.5,2.5,0,0,0,26,25.5V11.75Z" transform="translate(-6 -3)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+    <path id="Path_233" data-name="Path 233" d="M19.5,3v8.75h8.75" transform="translate(-8.25 -3)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
   </g>
 </svg>
 
@@ -176,10 +176,10 @@ const Close = () => <svg xmlns="http://www.w3.org/2000/svg" width="28" height="2
   </g>
 </svg>
 
-const Tag = () => <svg xmlns="http://www.w3.org/2000/svg" width="25.917" height="25.917" viewBox="0 0 25.917 25.917">
+const Tag = ({ color = "#c6c6c6", className }) => <svg xmlns="http://www.w3.org/2000/svg" width="25.917" height="25.917" viewBox="0 0 25.917 25.917" className={className}>
   <g id="Icon_feather-tag" data-name="Icon feather-tag" transform="translate(29.099 12.905) rotate(135)">
-    <path id="Path_318" data-name="Path 318" d="M19.246,12.971,12.98,19.237a1.748,1.748,0,0,1-2.473,0L3,11.739V3h8.739l7.507,7.507A1.748,1.748,0,0,1,19.246,12.971Z" fill="none" stroke="#c6c6c6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-    <path id="Path_319" data-name="Path 319" d="M10.5,10.5h0" transform="translate(-3.13 -3.13)" fill="none" stroke="#c6c6c6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+    <path id="Path_318" data-name="Path 318" d="M19.246,12.971,12.98,19.237a1.748,1.748,0,0,1-2.473,0L3,11.739V3h8.739l7.507,7.507A1.748,1.748,0,0,1,19.246,12.971Z" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+    <path id="Path_319" data-name="Path 319" d="M10.5,10.5h0" transform="translate(-3.13 -3.13)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
   </g>
 </svg>
 
@@ -335,11 +335,11 @@ const AddOutline = () => <svg xmlns="http://www.w3.org/2000/svg" width="22.625" 
   </g>
 </svg>
 
-const Categories = () => <svg xmlns="http://www.w3.org/2000/svg" width="15.953" height="8.955" viewBox="0 0 15.953 8.955">
+const Categories = ({ color = "#20325a", className }) => <svg xmlns="http://www.w3.org/2000/svg" width="15.953" height="8.955" viewBox="0 0 15.953 8.955" className={className}>
   <g id="Icon_feather-arrow-up" data-name="Icon feather-arrow-up" transform="translate(0.351 -2.45)">
-    <path id="Path_272" data-name="Path 272" d="M0,0V14.753" transform="translate(15.002 3.05) rotate(90)" fill="none" stroke="#20325a" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
-    <path id="Path_274" data-name="Path 274" d="M0,0V10.977" transform="translate(13.114 6.927) rotate(90)" fill="none" stroke="#20325a" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
-    <path id="Path_275" data-name="Path 275" d="M0,0V5.4" transform="translate(10.325 10.804) rotate(90)" fill="none" stroke="#20325a" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
+    <path id="Path_272" data-name="Path 272" d="M0,0V14.753" transform="translate(15.002 3.05) rotate(90)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
+    <path id="Path_274" data-name="Path 274" d="M0,0V10.977" transform="translate(13.114 6.927) rotate(90)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
+    <path id="Path_275" data-name="Path 275" d="M0,0V5.4" transform="translate(10.325 10.804) rotate(90)" fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" />
   </g>
 </svg>
 
