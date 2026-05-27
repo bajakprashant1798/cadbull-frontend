@@ -109,7 +109,7 @@ Sitemap: https://cadbull.com/sitemap.xml
 
 
 # =================================================
-# AI SEARCH CRAWLERS
+# AI SEARCH CRAWLERS & TOOLS
 # =================================================
 
 # OpenAI / ChatGPT crawler
@@ -124,12 +124,51 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
+User-agent: Claude-Web
+Allow: /
+
 # Perplexity AI
 User-agent: PerplexityBot
 Allow: /
 
 # Google AI crawler
 User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI crawler
+User-agent: meta-externalagent
+Allow: /
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+
+# Amazon AI
+User-agent: Amazonbot
+Allow: /
+
+# YouBot search bot
+User-agent: YouBot
+Allow: /
+
+# ByteDance / TikTok crawler
+User-agent: Bytespider
+Allow: /
+
+# Diffbot structured data extractor
+User-agent: Diffbot
+Allow: /
+
+# iAsk AI search bot
+User-agent: iaskspider
+Allow: /
+
+# Omgili AI data miner
+User-agent: Omgilibot
 Allow: /
 
 # Common Crawl dataset

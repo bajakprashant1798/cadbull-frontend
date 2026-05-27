@@ -113,7 +113,8 @@ export default function Document(props) {
                 "@type": "PostalAddress",
                 "streetAddress": "403 Fortune Business Hub Beside Shell Petrol Pump Science City Road, Sola",
                 "addressLocality": "Ahmedabad",
-                "addressCountry": "India"
+                "postalCode": "380060",
+                "addressCountry": "IN"
               },
               "contactPoint": {
                 "@type": "ContactPoint",
