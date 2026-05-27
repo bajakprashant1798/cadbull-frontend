@@ -4,6 +4,69 @@ import Head from "next/head";
 import { Fragment, useState } from "react";
 import logo from "@/assets/images/logo.png";
 
+export const plainFaqs = [
+  {
+    question: "What is Cadbull, and how does it work?",
+    answer: "Cadbull is an online platform where users can download and upload AutoCAD DWG files, including architectural, structural, and interior design drawings. Users can browse categories, download files, or contribute their own designs."
+  },
+  {
+    question: "Where can I download free AutoCAD DWG files?",
+    answer: "You can download free AutoCAD DWG files from Cadbull, which offers a wide collection of CAD blocks, house plans, and design drawings for students, architects, and engineers."
+  },
+  {
+    question: "How many files a premium member can upload?",
+    answer: "Premium members can upload unlimited files."
+  },
+  {
+    question: "Are Cadbull files free or paid?",
+    answer: "Cadbull offers both free and premium CAD files. Some drawings are available for free, while premium content requires a subscription or purchase. If you want to learn more about costs and plans, you can check our pricing plans for detailed information."
+  },
+  {
+    question: "Is Cadbull safe to download CAD files?",
+    answer: "Cadbull provides CAD drawings uploaded by users and reviewed by the platform. Users should always check file details and suitability before using them in professional projects. For more information, you can review our terms and conditions and file usage guidelines."
+  },
+  {
+    question: "How can I upload my AutoCAD files to Cadbull?",
+    answer: "To upload files, create an account, go to the upload section, add your DWG file with a proper title and description, and submit it for approval."
+  },
+  {
+    question: "How long does it take for files to get approved on Cadbull?",
+    answer: "Approval time depends on file quality and the review process. Well-organized and properly described files are usually approved faster."
+  },
+  {
+    question: "Can I earn money by uploading CAD drawings on Cadbull?",
+    answer: "Yes, users can monetize their CAD drawings. Premium members can upload files and earn revenue when other users download their content."
+  },
+  {
+    question: "What file formats are supported on Cadbull?",
+    answer: "Cadbull mainly supports AutoCAD DWG files and related formats used in architecture and engineering design."
+  },
+  {
+    question: "How to use downloaded CAD files in AutoCAD?",
+    answer: "After downloading a DWG file, open it in AutoCAD, adjust layers, scale, and settings as needed, and integrate it into your project. If you are new, you can follow our step-by-step guide to download a CAD file for detailed instructions."
+  },
+  {
+    question: "Can I use Cadbull files for personal or commercial projects?",
+    answer: "Usage depends on the file license. Some files may be used for personal and commercial purposes, but users should always verify licensing terms before use."
+  },
+  {
+    question: "What is Cadbull Premium or gold membership?",
+    answer: "Cadbull premium (gold) membership provides benefits like higher download limits, access to premium files, and earning opportunities through uploads."
+  },
+  {
+    question: "How many files can I download or upload on Cadbull?",
+    answer: "Download and upload limits depend on your membership plan. Free users have limited access, while premium users get higher or extended limits."
+  },
+  {
+    question: "How do payments and pricing work on Cadbull?",
+    answer: "File pricing is usually set based on the platform or uploader. Payments to contributors are processed through supported payment methods after meeting platform requirements."
+  },
+  {
+    question: "How can I cancel my Cadbull premium subscription?",
+    answer: "You can cancel your premium subscription by going to your account settings or contacting Cadbull support for assistance with subscription management."
+  }
+];
+
 const faqs = [
   {
     question: "What is Cadbull, and how does it work?",
@@ -155,6 +218,25 @@ const FAQsPage = () => (
       <meta name="twitter:description" content="Find quick answers to common questions about CADBull downloads, DWG file access, usage rights, account setup, and file compatibility." />
       <meta name="twitter:image" content={logo} />
       <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+
+      {/* Structured FAQ Data for Search Engine & AI crawlers (GEO) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": plainFaqs.map((faq) => ({
+              "@type": "Question",
+              "name": faq.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+              }
+            }))
+          })
+        }}
+      />
     </Head>
 
     <FAQSection />

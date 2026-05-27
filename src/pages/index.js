@@ -54,7 +54,7 @@ import { setFavouriteList } from "../../redux/app/features/projectsSlice";
 import Image from "next/image";
 // import AdSense from "@/components/AdSense";
 import { trackSearch } from "@/lib/fbpixel";
-import { FAQSection } from "./faqs";
+import { FAQSection, plainFaqs } from "./faqs";
 // import { performance } from "@/utils/performance";
 
 export const drawings = [
@@ -422,6 +422,45 @@ export default function Home({
         <meta name="twitter:image" content={projects && projects.length > 0 ? projects[0]?.photo_url || logo : logo} />
         <meta name="twitter:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+
+        {/* WebSite / Sitelinks Searchbox JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Cadbull",
+              "url": "https://cadbull.com/",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://cadbull.com/categories/search?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
+
+        {/* FAQPage JSON-LD Structured Data for Generative AI & Search Engine extractability (GEO) */}
+        {currentPage === 1 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": plainFaqs.map((faq) => ({
+                  "@type": "Question",
+                  "name": faq.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                  }
+                }))
+              })
+            }}
+          />
+        )}
       </Head>
 
       {/* Hero section  */}

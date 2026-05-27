@@ -162,9 +162,12 @@ const AddProject = () => {
   const isAuthenticated = useSelector(
     (store) => store.logininfo.isAuthenticated
   );
+  const user = useSelector((store) => store.logininfo.user);
+  const userRole = user?.role;
   const { register, handleSubmit, setValue, watch, reset } = useForm();
   const router = useRouter();
   const [categories, setCategories] = useState([]);
+  const [faqs, setFaqs] = useState([]);
   const [subcategories, setSubcategories] = useState([]); // ✅ Ensure it starts as an empty array
   const [descriptionCount, setDescriptionCount] = useState(250);
   // const [tags, setTags] = useState([]);
@@ -635,6 +638,7 @@ const AddProject = () => {
       //   // }
       // }
       formData.append("publish_at_ist", publishAtIst || "");
+      formData.append("faqs", JSON.stringify(faqs));
 
       console.log("✅ FormData AFTER Append:", [...formData.entries()]);
 
@@ -642,6 +646,7 @@ const AddProject = () => {
       toast.success("Project added successfully!");
       reset();
       setSelectedUserId(""); // Reset user selection
+      setFaqs([]); // Reset FAQs
       router.push("/admin/projects/view-projects");
     } catch (error) {
       console.error("❌ Error Adding Project:", error.response?.data || error.message, error);
@@ -1049,6 +1054,63 @@ const AddProject = () => {
               Upload an image first, then click this to auto-fill Title, Description, and SEO fields.
             </small>
           </div>
+
+          {/* FAQs Section */}
+          {userRole !== 2 && (
+            <div className="mb-4 section-card p-4 bg-light border rounded">
+              <h5 className="mb-3">Product FAQs</h5>
+              {faqs.map((faq, index) => (
+                <div key={index} className="mb-3 p-3 bg-white border rounded position-relative">
+                  <div className="mb-2">
+                    <label className="form-label">Question</label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      value={faq.question || ""} 
+                      onChange={(e) => {
+                        const newFaqs = [...faqs];
+                        newFaqs[index].question = e.target.value;
+                        setFaqs(newFaqs);
+                      }} 
+                      placeholder="e.g. Which software opens this DWG file?"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="form-label">Answer</label>
+                    <textarea 
+                      className="form-control" 
+                      rows="2"
+                      value={faq.answer || ""} 
+                      onChange={(e) => {
+                        const newFaqs = [...faqs];
+                        newFaqs[index].answer = e.target.value;
+                        setFaqs(newFaqs);
+                      }} 
+                      placeholder="e.g. Compatible with AutoCAD 2018 and later."
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="btn btn-sm btn-outline-danger position-absolute" 
+                    style={{ top: '10px', right: '10px' }}
+                    onClick={() => {
+                      const newFaqs = faqs.filter((_, i) => i !== index);
+                      setFaqs(newFaqs);
+                    }}
+                  >
+                    Delete FAQ
+                  </button>
+                </div>
+              ))}
+              <button 
+                type="button" 
+                className="btn btn-outline-primary btn-sm mt-2" 
+                onClick={() => setFaqs([...faqs, { question: "", answer: "" }])}
+              >
+                + Add FAQ
+              </button>
+            </div>
+          )}
 
           {/* Schedule Publish (IST, optional) */}
           <div className="mb-3">
