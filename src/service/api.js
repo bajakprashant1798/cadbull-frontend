@@ -145,7 +145,7 @@ export const getUserDetails = () => {
 };
 
 export const forgetPassword = (email) => {
-  return api.post("/auth/forgot-password", email);
+  return api.post("/auth/recover-account", email);
 };
 
 export const resetPassword = (token, newPassword) => {
@@ -252,7 +252,7 @@ export const getallsubCategories = async (searchTerm = "", slug = "") => {
     return response;
   } catch (error) {
     timer.error(error);
-    throw error;
+    return { data: { subCategories: [] } };
   }
 };
 
@@ -593,7 +593,7 @@ export const getSubCategories = async ({ slug, currentPage, pageSize, search, fi
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching subcategories:", error, slug);
-    throw error;
+    return { projects: [], totalPages: 1 };
   }
 };
 
