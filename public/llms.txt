@@ -2,33 +2,93 @@
 
 > Cadbull is the world's largest online library offering 270,000+ free and premium 2D/3D AutoCAD drawings, DWG blocks, Revit models, SketchUp (SKP) files, 3D Max, and architectural templates.
 
-This document serves as a structured map and guide for AI agents, crawlers, and LLMs seeking high-quality CAD resources, design solutions, house plans, and engineering assets. Use the following structured links and descriptions to crawl or reference Cadbull's content.
+This document serves as an enterprise-grade structured map and index for AI agents, LLM search engines, and autonomous crawlers seeking high-quality CAD resources, blueprints, design components, and engineering assets.
 
-## Core Navigation
+---
 
-- [Homepage](https://cadbull.com/) - Access the search engine and featured CAD files of the day.
-- [All Categories](https://cadbull.com/categories) - Browse the comprehensive list of cad drawing categories.
-- [Pricing & Subscription](https://cadbull.com/pricing) - Details about free access limits, gold memberships, and premium download plans.
-- [Help Center & FAQs](https://cadbull.com/faqs) - Common questions about downloads, licensing, uploading, and format compatibility.
-- [Contact Us](https://cadbull.com/contact-us) - Get in touch for custom CAD drawing and drafting services.
+## AI Search & Discovery Guide
 
-## Primary Drawing Formats
+Instead of crawling 200,000+ individual products in real-time, AI agents can query the Cadbull database dynamically using our standardized URL routing parameters:
 
-- [DWG Drawings](https://cadbull.com/categories/1?file_type=DWG) - The largest library of native AutoCAD DWG drawings.
-- [3D SketchUp (SKP)](https://cadbull.com/categories/1?file_type=3d%20sketchup) - SketchUp 3D models for interior, building, and landscape design.
-- [3D Max (MAX)](https://cadbull.com/categories/1?file_type=3d%20max) - 3D Studio Max files for realistic visualization and rendering.
-- [Revit Models](https://cadbull.com/categories/1?file_type=Revit) - BIM objects and building information modeling datasets.
-- [DXF Files](https://cadbull.com/categories/1?file_type=DXF) - Drawing Exchange Format files for vector interoperability.
+- **Keywords Search API**: Construct search queries directly using the format:
+  `https://cadbull.com/categories/search?search={search_term}`
+  - *Example (House Plan)*: `https://cadbull.com/categories/search?search=2BHK+house+plan`
+  - *Example (Concrete Detail)*: `https://cadbull.com/categories/search?search=concrete+footing+detail`
+- **File Format Filtering**: Filter the entire database by CAD file type using:
+  `https://cadbull.com/categories/1?file_type={format}`
+  - *Supported formats (`{format}` value)*: `DWG` (AutoCAD), `3d sketchup` (SKP), `3d max` (MAX), `Revit`, `DXF`, `PDF`
 
-## Popular Categories & Collections
+---
 
-- [3D Drawings](https://cadbull.com/3d-Drawings) - Professional 3D models, architectural objects, and components.
-- [CAD Architecture](https://cadbull.com/Cad-Architecture) - Scalable floor plans, sections, elevations, and structural detailing.
-- [CAD Landscape](https://cadbull.com/Cad-Landscaping) - Urban landscape planning, park layouts, garden blocks, and vegetation.
-- [CAD Machinery](https://cadbull.com/Autocad-Machinery-Blocks-&-DWG-Models) - Mechanical components, machine blocks, tool details, and industrial drawings.
-- [DWG Blocks](https://cadbull.com/DWG-Blocks) - Pre-made blocks for doors, windows, trees, vehicles, and standard details.
-- [AutoCAD Furniture Blocks](https://cadbull.com/Autocad-Furniture-Blocks--&-DWG-Models) - Furniture blocks for chairs, tables, beds, and office layouts.
-- [Interior Design](https://cadbull.com/Interior-design) - Room templates, kitchen cabinets, ceiling details, and bathroom fixtures.
-- [Structure Detail](https://cadbull.com/Structure-detail) - Reinforced concrete details, steel joints, foundations, and beams.
-- [Urban Design](https://cadbull.com/Urban-design) - City planning maps, community layouts, road designs, and plot subdivisions.
-- [House Plan CAD Drawings](https://cadbull.com/Architecture-House-Plan-CAD-Drawings) - Architectural house plans and blueprints covering small to luxury designs.
+## Core System Navigation
+
+- [Homepage](https://cadbull.com/) - Live search engine and featured CAD drawings of the day.
+- [All Categories Directory](https://cadbull.com/categories) - High-level landing page for all architectural domains.
+- [Pricing & Plans](https://cadbull.com/pricing) - Gold memberships, daily download allowances, and license conditions.
+- [Help Center & FAQs](https://cadbull.com/faqs) - Structured questions on DWG usage, licensing terms, and upload approvals.
+- [Contact Support](https://cadbull.com/contact-us) - Form for custom design drafting services and custom CAD details.
+
+---
+
+## Primary CAD Categories & Subcategories
+
+Browse the hierarchical structural tree of Cadbull's 50+ specialized engineering and drafting domains:
+
+### 1. [CAD Architecture](https://cadbull.com/Cad-Architecture)
+Comprehensive design layouts for residential, commercial, and public spaces:
+* **[House Plans](https://cadbull.com/Architecture-House-Plan-CAD-Drawings)** - Small plans, multi-story apartments, luxury villas, and elevations.
+* **Sections & Elevations** - Full building vertical cuts, exterior design details, and wall sections.
+* **Openings** - Standard and luxury door drawings, window blocks, and gate details.
+* **Vertical Circulation** - Wooden stairs, steel elevators, spiral staircase blocks, and ramps.
+
+### 2. [Interior Design](https://cadbull.com/Interior-design)
+Detailed drawing blueprints for indoor layouts and room detailing:
+* **Kitchen Layouts** - Modular kitchen blocks, kitchen cabinets, platform setups, and sink details.
+* **Bedroom & Bath** - Wardrobes, washrooms, bathroom accessory layouts, and shower details.
+* **Ceiling & Wall** - Gypsum false ceiling details, wall cladding blocks, and decorative trims.
+* **[AutoCAD Furniture Blocks](https://cadbull.com/Autocad-Furniture-Blocks--&-DWG-Models)** - Sofa blocks, office chairs, dining tables, and beds.
+
+### 3. [Structure Detail](https://cadbull.com/Structure-detail)
+Load-bearing and civil engineering drafting details:
+* **Foundations** - Pile foundations, isolated footings, strip footings, and retaining wall schematics.
+* **Reinforced Concrete** - Column bar schedules, beam details, slab steel grids, and joints.
+* **Steel Construction** - Steel roof trusses, bolted joints, welded joints, and industrial portal frames.
+
+### 4. [DWG Blocks](https://cadbull.com/DWG-Blocks)
+Ready-to-use vector blocks and symbols to speed up design workflows:
+* **Vegetation & Landscaping** - Tree top-views, plants, garden pots, and landscape flowers.
+* **Vehicles & People** - Cars, trucks, bus blocks, bicycle vectors, and human silhouette views.
+* **Symbols & Legends** - North points, drawing title bars, dimension scales, and electrical legends.
+
+### 5. [CAD Landscape](https://cadbull.com/Cad-Landscaping)
+Outdoor planning and civic site design drawings:
+* **Urban Parks** - Public park layouts, kids' play areas, walking track designs, and fountains.
+* **Water Features** - Swimming pool details, drainage details, artificial lakes, and ponds.
+* **Outdoor Hardscape** - Paving block textures, garden benches, street lamps, and fence blocks.
+
+### 6. [CAD Machinery](https://cadbull.com/Autocad-Machinery-Blocks-&-DWG-Models)
+Mechanical CAD assemblies and engineering components:
+* **Power & Transmission** - Gears, engines, pulleys, shaft couplings, and motor blocks.
+* **Valves & Pipes** - Hydraulic details, pipe connections, flanges, and high-pressure valves.
+* **Automotive Design** - Vehicle assemblies, steering mechanisms, and chassis dimensions.
+
+### 7. [Electrical CAD](https://cadbull.com/Electrical-Cad)
+Power grid layouts and domestic schematics:
+* **Power Distribution** - Main panel layouts, DB layouts, wire runs, and conduit details.
+* **Lighting Schematics** - Ceiling light plans, outdoor lightning protection, and switch systems.
+* **Telecommunications** - LAN server layouts, fire alarm systems, and CCTV layouts.
+
+### 8. [Urban Design](https://cadbull.com/Urban-design)
+Large-scale site planning maps and civic layouts:
+* **Subdivisions** - Large plot layout maps, road junctions, and residential townships.
+* **Infrastructure** - Road cross-sections, bridges, flyover details, and rainwater harvesting drawings.
+
+---
+
+## Systematic Indexing & Sitemaps
+
+To index or parse all 200,000+ detailed product description pages and individual download urls programmatically, please refer directly to our XML sitemaps:
+
+- **Static Pages Index**: `https://cadbull.com/api/sitemaps/static`
+- **Categories Sitemap**: `https://cadbull.com/api/sitemaps/categories`
+- **Dynamic Products Sitemap Index**: `https://cadbull.com/sitemap.xml`

@@ -601,14 +601,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
     const renderAITools = () => (
-        <div id="ai-tools" className="mt-4 rounded-4 p-4 border border-dark border-2" style={{ border: '1.5px solid #e2e8f0', background: 'radial-gradient(circle at top right, #fff0f5 0%, #ffffff 50%)' }}>
+        <div id="ai-tools" className="mt-4 rounded-4 p-4 border border-dark border-2" style={{ border: '1.5px solid #e2e8f0', background: 'radial-gradient(circle at top right, rgba(61, 96, 152, 0.1) 0%, #ffffff 50%)' }}>
             <div className="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                    <span className="badge rounded-pill text-white mb-3" style={{ backgroundColor: '#f43f5e', fontSize: '0.75rem', letterSpacing: '0.5px', padding: '6px 12px' }}><FaStar size={10} className="me-1 mb-1" /> JUST LAUNCHED</span>
+                    <span className="badge rounded-pill text-white mb-3" style={{ backgroundColor: '#20325A', fontSize: '0.75rem', letterSpacing: '0.5px', padding: '6px 12px' }}><FaStar size={10} className="me-1 mb-1" /> JUST LAUNCHED</span>
                     <h3 className="fw-bold mb-2" style={{ color: '#0f172a', fontSize: '1.75rem' }}>New AI Tools you haven't tried yet</h3>
                     <p className="text-muted mb-0" style={{ fontSize: '0.95rem' }}>Convert, generate and analyse drawings in seconds — built for architects & designers.</p>
                 </div>
-                <a href="#" className="fw-bold text-decoration-none d-none d-md-block mt-2" style={{ color: '#ef4444' }}>Explore all tools &rarr;</a>
+                <a href="#" className="fw-bold text-decoration-none d-none d-md-block mt-2" style={{ color: '#3D6098' }}>Explore all tools &rarr;</a>
             </div>
             <div className="row g-3">
                 {[
@@ -636,21 +636,21 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
                 ))}
             </div>
-            <a href="#" className="fw-bold text-decoration-none d-block d-md-none mt-4 text-center" style={{ color: '#ef4444' }}>Explore all tools &rarr;</a>
+            <a href="#" className="fw-bold text-decoration-none d-block d-md-none mt-4 text-center" style={{ color: '#3D6098' }}>Explore all tools &rarr;</a>
         </div>
     );
 
     const renderSidebar = () => (
         <>
-            <div id="cta" className="sidebar-cta-card bg-white rounded-4 p-4 shadow-sm mb-4 position-relative" style={{ border: `1.5px solid ${project?.type?.toLowerCase() === 'free' ? '#10b981' : '#ef4444'}` }}>
-                <div className="d-flex align-items-center gap-2 mb-3 fw-bold" style={{ color: project?.type?.toLowerCase() === 'free' ? '#10b981' : '#ef4444', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
+            <div id="cta" className="sidebar-cta-card bg-white rounded-4 p-4 shadow-sm mb-4 position-relative" style={{ border: `1.5px solid ${project?.type?.toLowerCase() === 'free' ? '#10b981' : '#20325A'}` }}>
+                <div className="d-flex align-items-center gap-2 mb-3 fw-bold" style={{ color: project?.type?.toLowerCase() === 'free' ? '#10b981' : '#20325A', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
                     <FaCrown size={16} /> {project?.type === 'Free' ? 'FREE FILE' : 'GOLD FILE'}
                 </div>
                 <button
                     onClick={() => handledownload(project.id, isAuthenticated, router)}
                     type="button"
                     className="btn w-100 py-3 fw-bold text-white d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3 mb-4 transition-all"
-                    style={{ background: project?.type?.toLowerCase() === 'free' ? '#10b981' : 'linear-gradient(to right, #ef4444, #f97316)', border: 'none' }}
+                    style={{ background: project?.type?.toLowerCase() === 'free' ? '#10b981' : 'linear-gradient(to right, #20325A, #3D6098)', border: 'none' }}
                 >
                     <FaDownload size={18} /> Download
                 </button>
@@ -724,114 +724,140 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             </div>
 
             <div className="sidebar-card bg-white rounded-4 border p-4 shadow-sm mb-4">
-                <div className="d-flex align-items-center gap-2 text-muted fw-bold mb-3" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>
+                <div className="d-flex align-items-center gap-2 text-muted fw-bold mb-4" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>
                     <FaLayerGroup size={14} color="#ef4444" /> BROWSE BY CATEGORY
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label fw-medium" style={{ fontSize: '0.75rem', color: '#64748b' }}>Category</label>
-                    <div className="input-group mb-2">
-                        <span className="input-group-text bg-white border-end-0 text-muted"><FaSearch size={12} /></span>
-                        <input type="text" className="form-control border-start-0 ps-0 shadow-none" placeholder="Search category..." style={{ fontSize: '0.85rem' }} value={categorySearchStr} onChange={(e) => setCategorySearchStr(e.target.value)} />
-                    </div>
-
-                    <div className="list-group mb-4" style={{ border: '1px solid #f1f5f9', borderRadius: '0.5rem', overflow: 'hidden', maxHeight: '200px', overflowY: 'auto' }}>
-                        {(categoryAndSubCategory?.filter(c => c.title?.toLowerCase().includes(categorySearchStr.toLowerCase())) || []).map(({ id, title }) => (
-                            <button
-                                key={id}
-                                className="list-group-item list-group-item-action border-0 py-2 text-dark text-start"
-                                style={{ fontSize: '0.85rem', backgroundColor: selectedCategory === title ? '#fff0f5' : 'transparent', fontWeight: selectedCategory === title ? '600' : '400' }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    const matchingCategory = categoriesList?.find((cat) => cat.id == id);
-                                    if (matchingCategory) setSelectedCategory(matchingCategory.slug);
-                                    const selectedCategoryObj = categoryAndSubCategory?.find((item) => item.id == id);
-                                    if (selectedCategoryObj) setSubCategories(selectedCategoryObj.project_sub_categories || []);
-                                    setSelectedSubCategory("");
-                                }}
-                            >
-                                {title}
-                            </button>
-                        ))}
-                    </div>
+                    <label className="form-label fw-semibold mb-2" style={{ fontSize: '0.8rem', color: '#475569' }}>Select Category</label>
+                    <select
+                        className="form-select py-3 px-3 shadow-none"
+                        style={{
+                            fontSize: '0.85rem',
+                            color: '#1e293b',
+                            borderRadius: '0.5rem',
+                            borderColor: '#cbd5e1',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            backgroundColor: '#f8fafc'
+                        }}
+                        value={selectedCategory || ""}
+                        onChange={(e) => {
+                            const slug = e.target.value;
+                            setSelectedCategory(slug);
+                            if (!slug) {
+                                setSubCategories([]);
+                                setSelectedSubCategory("");
+                                return;
+                            }
+                            const matchingCat = categoriesList?.find((cat) => cat.slug === slug);
+                            if (matchingCat) {
+                                const selectedObj = categoryAndSubCategory?.find((c) => c.id == matchingCat.id);
+                                if (selectedObj) {
+                                    setSubCategories(selectedObj.project_sub_categories || []);
+                                }
+                            }
+                            setSelectedSubCategory("");
+                        }}
+                    >
+                        <option value="">Choose category...</option>
+                        {(categoryAndSubCategory || []).map(({ id, title }) => {
+                            const slug = categoriesList?.find((cat) => cat.id == id)?.slug || "";
+                            return (
+                                <option key={id} value={slug}>
+                                    {title}
+                                </option>
+                            );
+                        })}
+                    </select>
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label fw-medium" style={{ fontSize: '0.75rem', color: '#64748b' }}>Subcategory</label>
-                    <div className="input-group mb-2">
-                        <span className="input-group-text bg-white border-end-0 text-muted"><FaSearch size={12} /></span>
-                        <input type="text" className="form-control border-start-0 ps-0 shadow-none" placeholder="Search subcategory..." style={{ fontSize: '0.85rem' }} value={subCategorySearchStr} onChange={(e) => setSubCategorySearchStr(e.target.value)} />
-                    </div>
-
-                    <div className="list-group mb-4 position-relative" style={{ border: '1px solid #f1f5f9', borderRadius: '0.5rem', height: '200px', overflowY: 'auto' }}>
-                        {subCategories?.filter(sc => sc.title?.toLowerCase().includes(subCategorySearchStr.toLowerCase())).length > 0 ? subCategories.filter(sc => sc.title?.toLowerCase().includes(subCategorySearchStr.toLowerCase())).map(({ id, title, slug }) => (
-                            <button
-                                key={id}
-                                className="list-group-item list-group-item-action border-0 py-2 text-dark text-start"
-                                style={{ fontSize: '0.85rem', backgroundColor: selectedSubCategory === slug ? '#fff0f5' : 'transparent', fontWeight: selectedSubCategory === slug ? '600' : '400' }}
-                                onClick={(e) => { e.preventDefault(); setSelectedSubCategory(slug); }}
-                            >
+                <div className="mb-4">
+                    <label className="form-label fw-semibold mb-2" style={{ fontSize: '0.8rem', color: '#475569' }}>Select Subcategory</label>
+                    <select
+                        className="form-select py-3 px-3 shadow-none"
+                        style={{
+                            fontSize: '0.85rem',
+                            color: '#1e293b',
+                            borderRadius: '0.5rem',
+                            borderColor: '#cbd5e1',
+                            fontWeight: '500',
+                            cursor: selectedCategory ? 'pointer' : 'not-allowed',
+                            backgroundColor: selectedCategory ? '#f8fafc' : '#f1f5f9'
+                        }}
+                        disabled={!selectedCategory}
+                        value={selectedSubCategory}
+                        onChange={(e) => setSelectedSubCategory(e.target.value)}
+                    >
+                        <option value="">
+                            {selectedCategory ? "Choose subcategory..." : "Select a category first"}
+                        </option>
+                        {(subCategories || []).map(({ id, title, slug }) => (
+                            <option key={id} value={slug}>
                                 {title}
-                            </button>
-                        )) : (
-                            <div className="p-3 text-muted text-center" style={{ fontSize: '0.8rem' }}>Select a category first</div>
-                        )}
-                    </div>
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <button
                     onClick={onSearchSubmitHandler}
+                    disabled={!selectedCategory}
                     className="btn w-100 py-3 fw-bold text-white shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2 transition-all hover-scale"
-                    style={{ backgroundColor: '#0f172a' }}
+                    style={{
+                        backgroundColor: selectedCategory ? '#20325A' : '#94a3b8',
+                        cursor: selectedCategory ? 'pointer' : 'not-allowed',
+                        border: 'none'
+                    }}
                 >
                     Browse Files <FaChevronRight size={12} />
                 </button>
             </div>
 
             {/* Claim Offer Widget (Moved to bottom) */}
-            <div id="cta-promo" className="rounded-4 p-4 p-md-4 mb-4 position-relative text-white" style={{ backgroundColor: '#1e293b' }}>
+            <div id="cta-promo" className="sidebar-card rounded-4 border p-4 shadow-sm mb-4 position-relative" style={{ border: '1px solid #e2e8f0', borderTop: '3px solid #ef4444', background: 'radial-gradient(circle at top right, rgba(61, 96, 152, 0.08) 0%, #ffffff 80%)' }}>
                 <div className="d-flex align-items-center justify-content-between mb-3">
-                    <div className="d-flex align-items-center gap-2 fw-bold" style={{ color: '#94a3b8', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                    <div className="d-flex align-items-center gap-2 fw-bold" style={{ color: '#64748b', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                         <FaCrown size={14} color="#ef4444" /> STARTING FROM
                     </div>
-                    <span className="badge rounded-pill" style={{ backgroundColor: '#ef4444', fontSize: '0.65rem', padding: '4px 8px' }}>BEST VALUE</span>
+                    <span className="badge rounded-pill text-white" style={{ backgroundColor: '#20325A', fontSize: '0.65rem', padding: '6px 10px' }}>BEST VALUE</span>
                 </div>
 
                 <div className="d-flex align-items-end gap-2 mb-1">
-                    <span className="fw-bold" style={{ fontSize: '2.5rem', lineHeight: '1' }}>$5.99</span>
-                    <span className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: '#94a3b8' }}>USD</span>
-                    <span className="text-decoration-line-through mb-1" style={{ fontSize: '0.9rem', color: '#64748b' }}>$19.99</span>
-                    <span className="badge mb-1 ms-1" style={{ backgroundColor: '#ef4444', fontSize: '0.65rem' }}>-50%</span>
+                    <span className="fw-bold" style={{ fontSize: '2.5rem', lineHeight: '1', color: '#20325A' }}>$5.99</span>
+                    <span className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: '#64748b' }}>USD</span>
+                    <span className="text-decoration-line-through mb-1" style={{ fontSize: '0.9rem', color: '#94a3b8' }}>$19.99</span>
+                    <span className="badge mb-1 ms-1 text-white" style={{ backgroundColor: '#ef4444', fontSize: '0.65rem', padding: '3px 6px' }}>-50%</span>
                 </div>
-                <div className="text-muted small mb-4" style={{ fontSize: '0.8rem' }}>/ Weekly · Cancel anytime</div>
+                <div className="small mb-4" style={{ fontSize: '0.8rem', color: '#64748b' }}>/ Weekly · Cancel anytime</div>
 
                 {/* Timer Box */}
-                <div className="rounded-3 p-3 mb-4" style={{ border: '1px solid rgba(239, 68, 68, 0.3)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
-                    <div className="d-flex align-items-center gap-2 mb-3" style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+                <div className="rounded-3 p-3 mb-4" style={{ border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                    <div className="d-flex align-items-center gap-2 mb-3 fw-bold" style={{ color: '#ef4444', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                         <FaRegClock size={14} /> LIMITED-TIME OFFER ENDS IN
                     </div>
                     <div className="d-flex gap-2 mb-3">
-                        <div className="bg-danger rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill">
+                        <div className="rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill" style={{ backgroundColor: '#20325A' }}>
                             <span className="fw-bold" style={{ fontSize: '1.25rem', lineHeight: '1' }}>23</span>
                             <span style={{ fontSize: '0.6rem' }}>HRS</span>
                         </div>
-                        <span className="text-danger fw-bold d-flex align-items-center">:</span>
-                        <div className="bg-danger rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill">
+                        <span className="fw-bold d-flex align-items-center" style={{ color: '#20325A' }}>:</span>
+                        <div className="rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill" style={{ backgroundColor: '#20325A' }}>
                             <span className="fw-bold" style={{ fontSize: '1.25rem', lineHeight: '1' }}>54</span>
                             <span style={{ fontSize: '0.6rem' }}>MIN</span>
                         </div>
-                        <span className="text-danger fw-bold d-flex align-items-center">:</span>
-                        <div className="bg-danger rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill">
+                        <span className="fw-bold d-flex align-items-center" style={{ color: '#20325A' }}>:</span>
+                        <div className="rounded-2 text-center text-white p-2 d-flex flex-column justify-content-center flex-fill" style={{ backgroundColor: '#20325A' }}>
                             <span className="fw-bold" style={{ fontSize: '1.25rem', lineHeight: '1' }}>43</span>
                             <span style={{ fontSize: '0.6rem' }}>SEC</span>
                         </div>
                     </div>
                     <div className="d-flex align-items-center gap-2 mb-2 mt-1">
                         <FaUsers size={12} color="#ef4444" />
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>162 of 200 claimed</span>
+                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>162 of 200 claimed</span>
                     </div>
-                    <div className="progress" style={{ height: '4px', backgroundColor: '#334155' }}>
-                        <div className="progress-bar bg-danger" role="progressbar" style={{ width: '81%' }} aria-valuenow="81" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div className="progress" style={{ height: '4px', backgroundColor: '#e2e8f0' }}>
+                        <div className="progress-bar" role="progressbar" style={{ width: '81%', backgroundColor: '#ef4444' }} aria-valuenow="81" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
 
@@ -839,13 +865,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     onClick={() => router.push('/pricing')}
                     type="button"
                     className="btn w-100 py-3 fw-bold text-white shadow-sm rounded-3 mb-4 transition-all hover-scale"
-                    style={{ background: '#ef4444', border: 'none' }}
+                    style={{ background: 'linear-gradient(to right, #20325A, #3D6098)', border: 'none' }}
                 >
                     <FaRegClock size={16} className="me-2 mb-1" /> Claim Offer Now
                 </button>
 
-                <h6 className="text-uppercase fw-bold mb-3" style={{ fontSize: '0.7rem', color: '#94a3b8', letterSpacing: '1px' }}>INCLUDES</h6>
-                <ul className="list-unstyled mb-4 small d-flex flex-column gap-2" style={{ fontSize: '0.85rem' }}>
+                <h6 className="text-uppercase fw-bold mb-3" style={{ fontSize: '0.75rem', color: '#334155', letterSpacing: '1px' }}>INCLUDES</h6>
+                <ul className="list-unstyled mb-4 small d-flex flex-column gap-2" style={{ fontSize: '0.85rem', color: '#475569' }}>
                     <li className="d-flex align-items-center gap-2"><FaCheck color="#ef4444" size={12} /> 25 AI Credits</li>
                     <li className="d-flex align-items-center gap-2"><FaCheck color="#ef4444" size={12} /> 65K+ Free Files</li>
                     <li className="d-flex align-items-center gap-2"><FaCheck color="#ef4444" size={12} /> 225K+ Premium Files</li>
@@ -854,19 +880,19 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     <li className="d-flex align-items-center gap-2"><FaCheck color="#ef4444" size={12} /> Projects Library</li>
                 </ul>
 
-                <h6 className="text-uppercase fw-bold mb-3 mt-4" style={{ fontSize: '0.7rem', color: '#94a3b8', letterSpacing: '1px' }}>DAILY DOWNLOADS</h6>
+                <h6 className="text-uppercase fw-bold mb-3 mt-4" style={{ fontSize: '0.75rem', color: '#334155', letterSpacing: '1px' }}>DAILY DOWNLOADS</h6>
                 <div className="d-flex gap-3 mb-4">
-                    <div className="flex-fill rounded-3 p-3 text-center" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                        <div className="text-danger fw-bold fs-5 mb-1">10</div>
-                        <div className="text-uppercase" style={{ fontSize: '0.65rem', color: '#94a3b8', letterSpacing: '0.5px' }}>GOLD / DAY</div>
+                    <div className="flex-fill rounded-3 p-3 text-center" style={{ backgroundColor: 'rgba(61, 96, 152, 0.05)', border: '1px solid rgba(61, 96, 152, 0.15)' }}>
+                        <div className="fw-bold fs-5 mb-1" style={{ color: '#20325A' }}>10</div>
+                        <div className="text-uppercase" style={{ fontSize: '0.65rem', color: '#64748b', letterSpacing: '0.5px' }}>GOLD / DAY</div>
                     </div>
-                    <div className="flex-fill rounded-3 p-3 text-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                        <div className="text-white fw-bold fs-5 mb-1">10</div>
-                        <div className="text-uppercase" style={{ fontSize: '0.65rem', color: '#94a3b8', letterSpacing: '0.5px' }}>FREE / DAY</div>
+                    <div className="flex-fill rounded-3 p-3 text-center" style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
+                        <div className="fw-bold fs-5 mb-1" style={{ color: '#10b981' }}>10</div>
+                        <div className="text-uppercase" style={{ fontSize: '0.65rem', color: '#64748b', letterSpacing: '0.5px' }}>FREE / DAY</div>
                     </div>
                 </div>
 
-                <h6 className="text-uppercase fw-bold mb-3" style={{ fontSize: '0.7rem', color: '#94a3b8', letterSpacing: '1px' }}>AI TOOLS INCLUDED</h6>
+                <h6 className="text-uppercase fw-bold mb-3" style={{ fontSize: '0.75rem', color: '#334155', letterSpacing: '1px' }}>AI TOOLS INCLUDED</h6>
                 <div className="row g-2 mb-4">
                     {[
                         "Architecture → 3D", "Interior → 3D",
@@ -877,15 +903,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         "Unit Converter", "Mood Boards"
                     ].map((tool, idx) => (
                         <div className="col-6" key={idx}>
-                            <div className="rounded border px-2 py-2 d-flex align-items-center justify-content-between" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                                <span style={{ fontSize: '0.65rem', color: '#cbd5e1' }}>{tool}</span>
-                                <span className="text-danger" style={{ fontSize: '0.55rem' }}>NEW</span>
+                            <div className="rounded border px-2 py-2 d-flex align-items-center justify-content-between" style={{ borderColor: '#e2e8f0', backgroundColor: '#f8fafc' }}>
+                                <span style={{ fontSize: '0.65rem', color: '#475569' }}>{tool}</span>
+                                <span className="text-danger fw-semibold" style={{ fontSize: '0.55rem' }}>NEW</span>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="text-center d-flex align-items-center justify-content-center gap-2 mt-4" style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                <div className="text-center d-flex align-items-center justify-content-center gap-2 mt-4" style={{ fontSize: '0.75rem', color: '#64748b' }}>
                     <FaShieldAlt size={12} color="#ef4444" /> Secure checkout · Cancel anytime
                 </div>
             </div>
@@ -896,13 +922,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <div id="related" className="bg-white rounded-4 border py-4 px-4 px-md-4 py-md-5 mt-5 shadow-sm">
             <div className="d-flex justify-content-between align-items-end mb-4">
                 <div>
-                    <div className="d-flex align-items-center gap-2 mb-2 text-uppercase fw-bold" style={{ color: '#ef4444', fontSize: '0.7rem', letterSpacing: '1px' }}>
-                        <FaRegStar size={14} /> FIND LATEST
+                    <div className="d-flex align-items-center gap-2 mb-2 text-uppercase fw-bold" style={{ color: '#20325A', fontSize: '0.7rem', letterSpacing: '1px' }}>
+                        <FaRegStar size={14} color="#ef4444" /> FIND LATEST
                     </div>
                     <h2 className="fw-bold text-dark mb-2" style={{ fontSize: '2rem' }}>Related Files</h2>
                     <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>Hand-picked DWG drawings similar to this layout.</p>
                 </div>
-                <Link href="/categories" className="text-decoration-none fw-bold hover-scale transition-all d-none d-md-block" style={{ color: '#ef4444', fontSize: '0.9rem' }}>
+                <Link href="/categories" className="text-decoration-none fw-bold hover-scale transition-all d-none d-md-block" style={{ color: '#3D6098', fontSize: '0.9rem' }}>
                     View all <FaChevronRight size={10} className="ms-1" />
                 </Link>
             </div>
@@ -1072,11 +1098,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         </div>
 
                         <div className="product-stats-strip align-items-center">
-                            <div className="d-flex align-items-center gap-2">
+                            {/* <div className="d-flex align-items-center gap-2">
                                 <Icons.Eye size={14} />
                                 {project?.views || 0}
-                            </div>
-                            <span className="d-none d-sm-inline" style={{ color: '#e5e7eb' }}>•</span>
+                            </div> */}
+                            {/* <span className="d-none d-sm-inline" style={{ color: '#e5e7eb' }}>•</span> */}
                             <div className="d-flex align-items-center gap-2">
                                 <FaDownload size={14} />
                                 {project?.downloads_count || project?.download || 0}
@@ -1195,8 +1221,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                 <div aria-hidden className="w-100 h-100 position-absolute z-0" style={{ inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,112,243,0.08) 100%)' }}></div>
 
                                 {/* Decorative corner accents */}
-                                <div aria-hidden className="pointer-events-none position-absolute" style={{ top: '-1px', left: '-1px', width: '3rem', height: '3rem', borderTop: '2px solid #ef4444', borderLeft: '2px solid #ef4444', borderTopLeftRadius: '1rem', zIndex: 20 }}></div>
-                                <div aria-hidden className="pointer-events-none position-absolute" style={{ top: '-1px', right: '-1px', width: '3rem', height: '3rem', borderTop: '2px solid #ef4444', borderRight: '2px solid #ef4444', borderTopRightRadius: '1rem', zIndex: 20 }}></div>
+                                <div aria-hidden className="pointer-events-none position-absolute" style={{ top: '-1px', left: '-1px', width: '3rem', height: '3rem', borderTop: '2px solid #20325A', borderLeft: '2px solid #20325A', borderTopLeftRadius: '1rem', zIndex: 20 }}></div>
+                                <div aria-hidden className="pointer-events-none position-absolute" style={{ top: '-1px', right: '-1px', width: '3rem', height: '3rem', borderTop: '2px solid #20325A', borderRight: '2px solid #20325A', borderTopRightRadius: '1rem', zIndex: 20 }}></div>
 
                                 {/* badges */}
                                 <div className="position-absolute top-0 start-0 m-3  d-flex flex-column gap-2" style={{ marginTop: '1.5rem !important', marginLeft: '1.5rem !important', zIndex: 5 }}>
@@ -1262,7 +1288,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                                                 borderRadius: '2px',
                                                                 transition: 'all 0.3s ease',
                                                                 width: i === selectedIndex ? '24px' : '6px',
-                                                                backgroundColor: i === selectedIndex ? '#ef4444' : 'rgba(0,0,0,0.3)',
+                                                                backgroundColor: i === selectedIndex ? '#20325A' : 'rgba(0,0,0,0.3)',
                                                                 boxShadow: '0 0 4px white'
                                                             }}
                                                         />
@@ -1315,7 +1341,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                             <div style={{ pointerEvents: 'auto' }}>
                                                 <div className="fw-bold fs-5 text-dark" style={{ textShadow: '0 0 10px white, 0 0 20px white' }}>Part-1</div>
                                                 <div className="d-flex align-items-center mt-2" style={{ gap: '6px' }}>
-                                                    <span style={{ height: '4px', borderRadius: '2px', width: '24px', backgroundColor: '#ef4444', boxShadow: '0 0 4px white' }} />
+                                                    <span style={{ height: '4px', borderRadius: '2px', width: '24px', backgroundColor: '#20325A', boxShadow: '0 0 4px white' }} />
                                                 </div>
                                             </div>
                                             <div className="d-flex align-items-center gap-2" style={{ pointerEvents: 'auto' }}>
@@ -1337,11 +1363,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                                 style={{
                                                     width: "72px",
                                                     scrollSnapAlign: 'start',
-                                                    border: i === selectedIndex ? "2px solid #ef4444" : "2px solid transparent",
+                                                    border: i === selectedIndex ? "2px solid #20325A" : "2px solid transparent",
                                                     opacity: i === selectedIndex ? 1 : 0.7,
                                                     borderRadius: '8px',
                                                     transform: i === selectedIndex ? 'scale(1.02)' : 'none',
-                                                    boxShadow: i === selectedIndex ? '0 4px 12px rgba(239, 68, 68, 0.2)' : 'none',
+                                                    boxShadow: i === selectedIndex ? '0 4px 12px rgba(32, 50, 90, 0.2)' : 'none',
                                                     padding: 0,
                                                     backgroundColor: 'transparent'
                                                 }}
@@ -1350,7 +1376,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           className="position-absolute z-10 fw-bold font-monospace border shadow-sm"
                           style={{
                             top: '4px', left: '4px', fontSize: '9px', padding: '1px 4px', borderRadius: '4px',
-                            backgroundColor: i === selectedIndex ? '#ef4444' : 'rgba(255,255,255,0.9)',
+                            backgroundColor: i === selectedIndex ? '#20325A' : 'rgba(255,255,255,0.9)',
                             color: i === selectedIndex ? '#fff' : '#64748b'
                           }}
                         >
@@ -1363,7 +1389,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                                 </div>
                                                 <div className="w-100 text-center fw-semibold text-truncate transition-all" style={{
                                                     fontSize: '10px', padding: '4px',
-                                                    backgroundColor: i === selectedIndex ? '#ef4444' : '#fff',
+                                                    backgroundColor: i === selectedIndex ? '#20325A' : '#fff',
                                                     color: i === selectedIndex ? '#fff' : '#64748b'
                                                 }}>
                                                     Part-{i + 1}

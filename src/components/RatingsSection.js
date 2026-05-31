@@ -37,7 +37,7 @@ function ReviewCard({ r }) {
   return (
     <div style={{
       background: "#fff",
-      border: "1px solid #f0f4f8",
+      border: "1px solid rgba(61, 96, 152, 0.12)",
       borderRadius: 14,
       padding: "1rem 1.25rem",
       display: "flex",
@@ -50,7 +50,7 @@ function ReviewCard({ r }) {
       {/* Avatar */}
       <div style={{
         width: 40, height: 40, borderRadius: "50%",
-        background: "linear-gradient(135deg,#ef4444,#f97316)",
+        background: "linear-gradient(135deg,#20325A,#3D6098)",
         color: "#fff", display: "flex", alignItems: "center",
         justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0,
       }}>{initials}</div>
@@ -123,11 +123,11 @@ function EmptyReviews({ onWrite }) {
       <button
         onClick={onWrite}
         style={{
-          background: "linear-gradient(135deg,#ef4444,#dc2626)",
+          background: "linear-gradient(135deg,#20325A,#3D6098)",
           color: "#fff", border: "none", borderRadius: 10,
           padding: "0.55rem 1.4rem", fontWeight: 600, fontSize: "0.85rem",
           cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-          boxShadow: "0 4px 12px rgba(239,68,68,0.3)",
+          boxShadow: "0 4px 12px rgba(32,50,90,0.3)",
         }}
       >
         <FaPenAlt size={12} /> Write the First Review
@@ -224,12 +224,12 @@ function ReviewModal({ onClose, onSubmit, form, setForm, submitting, existing })
             width: "100%", padding: "0.72rem",
             background: form.rating === 0
               ? "#e5e7eb"
-              : "linear-gradient(135deg,#ef4444,#dc2626)",
+              : "linear-gradient(135deg,#20325A,#3D6098)",
             color: form.rating === 0 ? "#9ca3af" : "#fff",
             border: "none", borderRadius: 12, fontWeight: 700,
             fontSize: "0.95rem",
             cursor: form.rating === 0 ? "not-allowed" : "pointer",
-            boxShadow: form.rating > 0 ? "0 4px 14px rgba(239,68,68,0.3)" : "none",
+            boxShadow: form.rating > 0 ? "0 4px 14px rgba(32,50,90,0.3)" : "none",
             transition: "all .2s",
           }}
         >
@@ -320,11 +320,11 @@ export default function RatingsSection({
           <button
             onClick={handleOpenModal}
             style={{
-              background: "linear-gradient(135deg,#ef4444,#dc2626)",
+              background: "linear-gradient(135deg,#20325A,#3D6098)",
               color: "#fff", border: "none", borderRadius: 10,
               padding: "0.48rem 1rem", fontWeight: 600, fontSize: "0.83rem",
               cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-              boxShadow: "0 3px 10px rgba(239,68,68,0.28)",
+              boxShadow: "0 3px 10px rgba(32,50,90,0.25)",
             }}
             onMouseEnter={e => e.currentTarget.style.opacity = 0.88}
             onMouseLeave={e => e.currentTarget.style.opacity = 1}
@@ -338,14 +338,14 @@ export default function RatingsSection({
         {total > 0 && (
           <div style={{
             display: "grid", gridTemplateColumns: "auto 1fr", gap: "1.4rem",
-            alignItems: "center", background: "#fafafa", borderRadius: 14,
-            padding: "1.1rem 1.3rem", marginBottom: "1.4rem", border: "1px solid #f0f0f0",
+            alignItems: "center", background: "rgba(61, 96, 152, 0.03)", borderRadius: 14,
+            padding: "1.1rem 1.3rem", marginBottom: "1.4rem", border: "1px solid rgba(61, 96, 152, 0.1)",
           }}>
             {/* Big number */}
             <div style={{ textAlign: "center", minWidth: 78 }}>
               <div style={{
                 fontSize: "2.8rem", fontWeight: 800, lineHeight: 1,
-                background: "linear-gradient(135deg,#ef4444,#f97316)",
+                background: "linear-gradient(135deg,#20325A,#3D6098)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               }}>
                 {avgRating.toFixed(1)}
@@ -367,7 +367,7 @@ export default function RatingsSection({
                     <div style={{ flex: 1, height: 7, background: "#e5e7eb", borderRadius: 99, overflow: "hidden" }}>
                       <div style={{
                         width: `${pct}%`, height: "100%",
-                        background: pct === 0 ? "transparent" : "linear-gradient(90deg,#f59e0b,#ef4444)",
+                        background: pct === 0 ? "transparent" : "linear-gradient(90deg,#3D6098,#20325A)",
                         borderRadius: 99, transition: "width 0.7s ease",
                       }} />
                     </div>

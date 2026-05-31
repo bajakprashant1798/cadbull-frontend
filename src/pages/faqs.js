@@ -55,7 +55,7 @@ export const plainFaqs = [
   },
   {
     question: "How many files can I download or upload on Cadbull?",
-    answer: "Download and upload limits depend on your membership plan. Free users have limited access, while premium users get higher or extended limits."
+    answer: "Download limits depend on your membership plan: Free Plan: Upto 10 Free files/day (0 Gold files). Silver Plan: Upto 10 Gold files and 10 Free files/day. Gold Plan: Upto 20 Gold files and 15 Free files/day. Platinum Plan: Upto 30 Gold files and 25 Free files/day. Diamond Plan: Upto 40 Gold files and 50 Free files/day. Premium members get unlimited uploads."
   },
   {
     question: "How do payments and pricing work on Cadbull?",
@@ -145,7 +145,19 @@ const faqs = [
   },
   {
     question: "How many files can I download or upload on Cadbull?",
-    answer: 'Download and upload limits depend on your membership plan. Free users have limited access, while premium users get higher or extended limits.'
+    answer: (
+      <span>
+        Download limits depend on your membership plan:
+        <ul className="mt-2 pl-4">
+          <li><strong>Free Plan:</strong> Upto 10 Free files/day (0 Gold files)</li>
+          <li><strong>Silver Plan:</strong> Upto 10 Gold files &amp; 10 Free files/day</li>
+          <li><strong>Gold Plan:</strong> Upto 20 Gold files &amp; 15 Free files/day</li>
+          <li><strong>Platinum Plan:</strong> Upto 30 Gold files &amp; 25 Free files/day</li>
+          <li><strong>Diamond Plan:</strong> Upto 40 Gold files &amp; 50 Free files/day</li>
+        </ul>
+        Premium members can upload unlimited files to Cadbull.
+      </span>
+    )
   },
 
   {

@@ -767,66 +767,67 @@ export async function getServerSideProps({ params, req, res }) {
 
                 // Handle metadata
                 let metaTitle = null, metaKeywords = null, metaDescription = null, description = null, title = null;
+                let cat = null;
+
                 if (metadataResult.status === 'fulfilled' && !metadataResult.value.error) {
-                    const cat = metadataResult.value?.data?.category;
-                    if (cat) {
-                        metaTitle = cat.meta_title || null;
-                        metaKeywords = cat.meta_keywords || null;
-                        metaDescription = cat.meta_description || null;
-                        description = cat.description || null;
-                        title = cat.name || makeTitle(slug);
-                        console.log(`[SSR] ✅ Found category meta for slug: ${slug}, title: ${title}`);
+                    cat = metadataResult.value?.data?.category;
+                }
 
-                        // ✅ SEO: Enforce Canonical URL (301 Redirect)
-                        // Construct the expected path: parent/child or just category
-                        let expectedPath = cat.path;
-                        if (cat.parent_slug) {
-                            expectedPath = `${cat.parent_slug}/${cat.path}`;
-                        }
+                // If no valid category/subcategory metadata is found in DB, return 404 Not Found!
+                if (!cat) {
+                    console.log(`[SSR] ❌ No category/subcategory found for slug: '${slug}'. Returning 404.`);
+                    return { notFound: true };
+                }
 
-                        // Compare with the actual requested path (excluding page number)
-                        console.log(`[SSR] 🔍 Path Check: Requested '${path}' vs Expected '${expectedPath}'`);
-                        console.log(`[SSR] 🔍 Parent Check: URL Parent '${parent_slug}' vs Category Parent '${cat.parent_slug}'`);
+                metaTitle = cat.meta_title || null;
+                metaKeywords = cat.meta_keywords || null;
+                metaDescription = cat.meta_description || null;
+                description = cat.description || null;
+                title = cat.name || makeTitle(slug);
+                console.log(`[SSR] ✅ Found category meta for slug: ${slug}, title: ${title}`);
 
-                        // 🛑 CRITICAL FIX: Don't redirect if we are already on a valid distinct parent path
-                        // If user is at /Cad-Architecture/Bungalows, and cat.parent_slug is 'Cad-Architecture', we are good.
-                        // Even if cat.path says 'Bungalows', expectedPath construction handles the slash.
+                // ✅ SEO: Enforce Canonical URL (301 Redirect)
+                // Construct the expected path: parent/child or just category
+                let expectedPath = cat.path;
+                if (cat.parent_slug) {
+                    expectedPath = `${cat.parent_slug}/${cat.path}`;
+                }
 
-                        const isSame = path === expectedPath;
+                // Compare with the actual requested path (excluding page number)
+                console.log(`[SSR] 🔍 Path Check: Requested '${path}' vs Expected '${expectedPath}'`);
+                console.log(`[SSR] 🔍 Parent Check: URL Parent '${parent_slug}' vs Category Parent '${cat.parent_slug}'`);
 
-                        // If they don't match, we usually redirect. BUT, if we have duplicate slugs, we might have fetched the WRONG category.
-                        // If we fetched "Bungalows (3d-Drawings)" but we are at "Cad-Architecture/Bungalows", 
-                        // AND we explicitly asked for "Cad-Architecture", then the backend returned the wrong data!
-                        // In that case, we should NOT redirect to the wrong category. We should rely on the empty project list or 404 from backend.
+                // 🛑 CRITICAL FIX: Don't redirect if we are already on a valid distinct parent path
+                // If user is at /Cad-Architecture/Bungalows, and cat.parent_slug is 'Cad-Architecture', we are good.
+                // Even if cat.path says 'Bungalows', expectedPath construction handles the slash.
 
-                        if (!isSame) {
-                            if (parent_slug && cat.parent_slug !== parent_slug) {
-                                console.warn(`[SSR] ⚠️ POTENTIAL MISMATCH: Requested parent '${parent_slug}' but got category with parent '${cat.parent_slug}'. NOT REDIRECTING to avoid loops.`);
-                                // We probably got the wrong category from backend (e.g. fallback triggered before we removed it).
-                                // Since we removed fallback, this theoretically shouldn't happen if backend is strict.
-                                // But if it does, we stay here.
-                            } else {
-                                console.log(`[SSR] 🔄 301 Redirecting: /${path} -> /${expectedPath}`);
-                                let destination = `/${expectedPath}`;
-                                if (page > 1) {
-                                    destination += `/${page}`;
-                                }
+                const isSame = path === expectedPath;
 
-                                return {
-                                    redirect: {
-                                        destination,
-                                        permanent: true,
-                                    },
-                                };
-                            }
-                        }
+                // If they don't match, we usually redirect. BUT, if we have duplicate slugs, we might have fetched the WRONG category.
+                // If we fetched "Bungalows (3d-Drawings)" but we are at "Cad-Architecture/Bungalows", 
+                // AND we explicitly asked for "Cad-Architecture", then the backend returned the wrong data!
+                // In that case, we should NOT redirect to the wrong category. We should rely on the empty project list or 404 from backend.
+
+                if (!isSame) {
+                    if (parent_slug && cat.parent_slug !== parent_slug) {
+                        console.warn(`[SSR] ⚠️ POTENTIAL MISMATCH: Requested parent '${parent_slug}' but got category with parent '${cat.parent_slug}'. NOT REDIRECTING to avoid loops.`);
+                        // We probably got the wrong category from backend (e.g. fallback triggered before we removed it).
+                        // Since we removed fallback, this theoretically shouldn't happen if backend is strict.
+                        // But if it does, we stay here.
                     } else {
-                        console.log(`[SSR] ⚠️ No category meta found for slug: ${slug}`);
-                        title = makeTitle(slug); // Fallback title
+                        console.log(`[SSR] 🔄 301 Redirecting: /${path} -> /${expectedPath}`);
+                        let destination = `/${expectedPath}`;
+                        if (page > 1) {
+                            destination += `/${page}`;
+                        }
+
+                        return {
+                            redirect: {
+                                destination,
+                                permanent: true,
+                            },
+                        };
                     }
-                } else {
-                    console.log(`[SSR] ⚠️ Error fetching category meta for slug: ${slug}`);
-                    title = makeTitle(slug); // Fallback title
                 }
 
                 // ✅ Handle main categories to eliminate client-side API calls
