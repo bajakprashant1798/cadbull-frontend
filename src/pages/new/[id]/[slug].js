@@ -1032,6 +1032,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
                 <meta name="keywords" content={project?.tags || ""} />
 
+                {/* 1. CreativeWork / Image Gallery Schema */}
                 {galleryUrls?.length > 0 && (
                     <script
                         type="application/ld+json"
@@ -1040,11 +1041,97 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                 "@context": "https://schema.org",
                                 "@type": "CreativeWork",
                                 "name": project?.work_title,
-                                "description": project?.meta_description || project?.description,
+                                "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
                                 "image": galleryUrls.map((url) => getSafeImageUrl(url)),
                                 "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
                                 "mainEntityOfPage": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`
                             }),
+                        }}
+                    />
+                )}
+
+                {/* 2. Product Schema with dynamic review aggregation and offers */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "Product",
+                            "name": project?.work_title,
+                            "image": galleryUrls.map((url) => getSafeImageUrl(url)),
+                            "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
+                            "sku": project?.id ? String(project.id) : undefined,
+                            "mpn": project?.id ? String(project.id) : undefined,
+                            "brand": {
+                                "@type": "Brand",
+                                "name": "Cadbull"
+                            },
+                            "offers": {
+                                "@type": "Offer",
+                                "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
+                                "priceCurrency": "USD",
+                                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                                "priceValidUntil": "2028-12-31",
+                                "availability": "https://schema.org/InStock",
+                                "itemCondition": "https://schema.org/NewCondition"
+                            },
+                            "aggregateRating": reviewsData?.total > 0 ? {
+                                "@type": "AggregateRating",
+                                "ratingValue": String(reviewsData.avgRating || 5),
+                                "reviewCount": String(reviewsData.total || 1),
+                                "bestRating": "5",
+                                "worstRating": "1"
+                            } : undefined
+                        })
+                    }}
+                />
+
+                {/* 3. SoftwareApplication (CAD Asset) Schema */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "SoftwareApplication",
+                            "name": project?.work_title,
+                            "operatingSystem": "Windows, macOS",
+                            "applicationCategory": "DesignApplication",
+                            "fileFormat": project?.file_type || "DWG",
+                            "fileSize": formatBytes(project?.size) || "Unknown size",
+                            "requirements": {
+                                "@type": "SoftwareApplication",
+                                "name": project?.file_type ? (
+                                    project.file_type.toLowerCase().includes("sketchup") || project.file_type.toLowerCase().includes("skp") ? "Trimble SketchUp" :
+                                    project.file_type.toLowerCase().includes("revit") ? "Autodesk Revit" :
+                                    project.file_type.toLowerCase().includes("max") || project.file_type.toLowerCase().includes("3ds") ? "Autodesk 3ds Max" : "Autodesk AutoCAD"
+                                ) : "Autodesk AutoCAD"
+                            },
+                            "offers": {
+                                "@type": "Offer",
+                                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                                "priceCurrency": "USD"
+                            }
+                        })
+                    }}
+                />
+
+                {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+                {project?.faqs && project.faqs.length > 0 && (
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                "@context": "https://schema.org",
+                                "@type": "FAQPage",
+                                "mainEntity": project.faqs.map((faq) => ({
+                                    "@type": "Question",
+                                    "name": faq.question,
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": faq.answer
+                                    }
+                                }))
+                            })
                         }}
                     />
                 )}
