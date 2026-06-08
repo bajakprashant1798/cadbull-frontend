@@ -219,6 +219,7 @@ const plans = [
       ...baseFeaturesTop(true),
       // { label: "10 Gold files download / day", full: "Upto 10 Gold files/day", bold: true },
       // { label: "10 Free files download / day", full: "Upto 10 Free files/day", bold: true },
+      { label: "No Advertisement", full: "No Advertisement", bold: true },
       { label: "25 AI Credits", full: "Limited AI Credits /month", isNew: true, bold: true },
       ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
@@ -239,6 +240,7 @@ const plans = [
       ...baseFeaturesTop(true),
       // { label: "20 Gold files download / day", full: "Upto 20 Gold files/day", bold: true },
       // { label: "15 Free files download / day", full: "Upto 15 Free files/day", bold: true },
+      { label: "No Advertisement", full: "No Advertisement", bold: true },
       { label: "100 AI Credits", full: "100 AI Credits", isNew: true, bold: true },
       ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
@@ -257,7 +259,8 @@ const plans = [
       ...baseFeaturesTop(true),
       // { label: "30 Gold files download / day", full: "Upto 30 Gold files/day", bold: true },
       // { label: "25 Free files download / day", full: "Upto 25 Free files/day", bold: true },
-      { label: "300 AI Credits", full: "300 AI Credits", isNew: true },
+      { label: "No Advertisement", full: "No Advertisement", bold: true },
+      { label: "300 AI Credits", full: "300 AI Credits", isNew: true, bold: true },
       ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
     ],
@@ -276,6 +279,7 @@ const plans = [
       ...baseFeaturesTop(true),
       // { label: "40 Gold files download / day", full: "Upto 40 Gold files/day", bold: true },
       // { label: "50 Free files download / day", full: "Upto 50 Free files/day", bold: true },
+      { label: "No Advertisement", full: "No Advertisement", bold: true },
       { label: "1500 AI Credits", full: "1500 AI Credits", isNew: true, bold: true },
       ...baseFeaturesBottom,
       ...aiTools.map((t) => ({ ...t, isNew: true })),
@@ -290,8 +294,8 @@ const faqs = [
   { q: "What are AI Credits?", a: "AI Credits power our new AI tools — like Sketch to 3D, Image to DWG and AI Floor Plan. Each generation uses one credit." },
   { q: "Is there a free trial?", a: "Our Free Plan gives you permanent access to 65,000+ free files with no time limit — no credit card required." },
   { q: "Do unused daily downloads roll over?", a: "Daily download limits reset every 24 hours and don't roll over. AI Credits are valid for the entire plan duration." },
-  { 
-    q: "What are the daily download limits for each plan?", 
+  {
+    q: "What are the daily download limits for each plan?",
     a: (
       <span>
         Download limits depend on your membership plan:
