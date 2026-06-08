@@ -474,6 +474,10 @@ export const getSubscriptionDetail = () => {
   return api.get("/subscription/user/plan");
 };
 
+export const getCheckoutSessionDetails = (sessionId) => {
+  return api.get("/subscription/session-details", { params: { sessionId } });
+};
+
 export const cancelSubscriptionRequest = (subscriptionId) => {
   return api.post("/subscription/cancel-subscription", { subscriptionId });
 };

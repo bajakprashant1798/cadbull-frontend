@@ -11,7 +11,7 @@ import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Authprovider from "@/component/Authprovider/Authprovider";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { store } from "../../redux/app/store";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -43,6 +43,81 @@ const inter = Inter({
 //   display: "swap", // ✅ Critical: Prevents font render blocking while keeping all weights
 //   fallback: ["system-ui", "arial"],
 // });
+
+// Dynamic AdSense Scripts Loader based on user subscription status
+function AdSenseScripts() {
+  const user = useSelector((state) => state.logininfo?.user);
+
+  let isSubscribed = false;
+  if (user && user.acc_exp_date) {
+    const expDate = new Date(user.acc_exp_date);
+    const today = new Date();
+    if (expDate > today) {
+      isSubscribed = true;
+    }
+  }
+
+  // If the user is subscribed, do not load any Google AdSense scripts
+  if (isSubscribed) return null;
+
+  return (
+    <>
+      {/* ✅ SINGLE AdSense Script - CRITICAL: Revenue Protection */}
+      <Script
+        id="adsense-script"
+        async
+        strategy="afterInteractive"
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+        crossOrigin="anonymous"
+        onLoad={() => {
+          // console.log('✅ AdSense script loaded successfully');
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.loaded = true;
+        }}
+        onError={(e) => {
+          console.error('❌ AdSense script failed to load:', e);
+        }}
+      />
+
+      {/* ✅ SINGLE AdSense Funding Choices Script */}
+      <Script
+        id="adsense-funding-choices"
+        async
+        strategy="afterInteractive"
+        src={`https://fundingchoicesmessages.google.com/i/${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
+        onLoad={() => {
+          // console.log('✅ AdSense Funding Choices loaded');
+        }}
+      />
+
+      {/* ✅ AdSense Signal Script for Ad Blocking Recovery */}
+      <Script
+        id="adsense-signal-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+          (function() {
+            function signalGooglefcPresent() {
+              if (!window.frames['googlefcPresent']) {
+                if (document.body) {
+                  const iframe = document.createElement('iframe');
+                  iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;';
+                  iframe.style.display = 'none';
+                  iframe.name = 'googlefcPresent';
+                  document.body.appendChild(iframe);
+                } else {
+                  setTimeout(signalGooglefcPresent, 0);
+                }
+              }
+            }
+            signalGooglefcPresent();
+          })();
+        `,
+        }}
+      />
+    </>
+  );
+}
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -211,34 +286,6 @@ export default function App({ Component, pageProps }) {
         }}
       />
 
-      {/* ✅ SINGLE AdSense Script - CRITICAL: Revenue Protection */}
-      <Script
-        id="adsense-script"
-        async
-        strategy="afterInteractive"
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-        crossOrigin="anonymous"
-        onLoad={() => {
-          // console.log('✅ AdSense script loaded successfully');
-          window.adsbygoogle = window.adsbygoogle || [];
-          window.adsbygoogle.loaded = true;
-        }}
-        onError={(e) => {
-          console.error('❌ AdSense script failed to load:', e);
-        }}
-      />
-
-      {/* ✅ SINGLE AdSense Funding Choices Script */}
-      <Script
-        id="adsense-funding-choices"
-        async
-        strategy="afterInteractive"
-        // src="https://fundingchoicesmessages.google.com/i/pub-2488270605722778?ers=1"
-        src={`https://fundingchoicesmessages.google.com/i/${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
-        onLoad={() => {
-          // console.log('✅ AdSense Funding Choices loaded');
-        }}
-      />
       {/* ✅ END: ADD GOOGLE ANALYTICS SCRIPTS */}
 
       {/* ✅ PushAlert Script (NON-AMP ONLY, Revenue Safe) */}
@@ -267,6 +314,8 @@ export default function App({ Component, pageProps }) {
 
       {/* <Authprovider> */}
       <Provider store={store}>
+        {/* Load AdSense scripts conditionally under Redux Provider context */}
+        <AdSenseScripts />
 
         <Head>
           <link rel="icon" href="/favicon.ico" />
@@ -284,32 +333,6 @@ export default function App({ Component, pageProps }) {
         }
       `}</style> */}
         {getLayout(<Component {...pageProps} />)}
-
-        {/* ✅ AdSense Signal Script for Ad Blocking Recovery */}
-        <Script
-          id="adsense-signal-script"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-            (function() {
-              function signalGooglefcPresent() {
-                if (!window.frames['googlefcPresent']) {
-                  if (document.body) {
-                    const iframe = document.createElement('iframe');
-                    iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;';
-                    iframe.style.display = 'none';
-                    iframe.name = 'googlefcPresent';
-                    document.body.appendChild(iframe);
-                  } else {
-                    setTimeout(signalGooglefcPresent, 0);
-                  }
-                }
-              }
-              signalGooglefcPresent();
-            })();
-          `,
-          }}
-        />
 
         <ToastContainer />
         <AISearchAssistant />

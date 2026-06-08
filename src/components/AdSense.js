@@ -160,6 +160,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const AdSense = ({
   style,
@@ -176,6 +177,21 @@ const AdSense = ({
   const pushedRef = useRef(false);
   const [mounted, setMounted] = useState(!lazy); // render <ins> immediately only if not lazy
   const [keyBump, setKeyBump] = useState(0);
+
+  const user = useSelector((state) => state.logininfo?.user);
+
+  let isSubscribed = false;
+  if (user && user.acc_exp_date) {
+    const expDate = new Date(user.acc_exp_date);
+    const today = new Date();
+    if (expDate > today) {
+      isSubscribed = true;
+    }
+  }
+
+  if (isSubscribed) {
+    return null;
+  }
 
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
   const baseStyle = { display: "block", textAlign: "center" };

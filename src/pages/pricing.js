@@ -485,6 +485,7 @@ const Pricing = () => {
     if (isAuthenticated) fetchUserDetails();
   }, [isAuthenticated]);
 
+
   const handleSubscribe = async (plan) => {
     if (!userData) {
       router.push(`/auth/login?redirect=${router.asPath}`);
