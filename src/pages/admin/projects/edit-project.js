@@ -8,6 +8,15 @@ import { toast } from "react-toastify";
 import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi, generateAIContent } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
+import { 
+  FaShieldAlt, 
+  FaGlobe, 
+  FaCode, 
+  FaChevronDown, 
+  FaPlus, 
+  FaTrash, 
+  FaCheckCircle 
+} from "react-icons/fa";
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), {
@@ -228,6 +237,101 @@ const EditProject = () => {
   // const [tags, setTags] = useState([]);
   const [tagsCsv, setTagsCsv] = useState("");   // comma-separated tags as-is
   const [submitting, setSubmitting] = useState(false); // lock UI while saving
+
+  // --- E-E-A-T & SEO Preview States ---
+  const [eeatData, setEeatData] = useState({
+    tldr: "",
+    experience: "",
+    reviewedBy: "Cadbull",
+    lastReviewed: ""
+  });
+  const [previewTab, setPreviewTab] = useState("json-ld");
+
+  useEffect(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (id && typeof window !== "undefined") {
+      const saved = localStorage.getItem(`eeat_${id}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setEeatData({
+            tldr: parsed.tldr || "",
+            experience: parsed.experience || "",
+            reviewedBy: parsed.reviewedBy || "Cadbull",
+            lastReviewed: parsed.lastReviewed || todayStr
+          });
+        } catch (e) {
+          console.error("Failed to parse saved E-E-A-T data", e);
+          setEeatData(prev => ({ ...prev, lastReviewed: todayStr }));
+        }
+      } else {
+        setEeatData({
+          tldr: "",
+          experience: "",
+          reviewedBy: "Cadbull",
+          lastReviewed: todayStr
+        });
+      }
+    }
+  }, [id]);
+
+  const handleSaveEeat = () => {
+    if (id) {
+      localStorage.setItem(`eeat_${id}`, JSON.stringify(eeatData));
+      toast.success("E-E-A-T settings saved locally!");
+    }
+  };
+
+  const generateJsonLd = () => {
+    const canonicalUrl = `https://cadbull.com/detail/${id || "temp"}/${slug || "project-slug"}`;
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": workTitle || "Project Title",
+      "description": watchMetaDescription || "Project description meta tags for search engines.",
+      "image": "https://cadbull.com/placeholder-cover.jpg",
+      "url": canonicalUrl,
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    };
+    
+    if (eeatData.reviewedBy) {
+      schema.reviewedBy = {
+        "@type": "Person",
+        "name": eeatData.reviewedBy
+      };
+    }
+    if (eeatData.lastReviewed) {
+      schema.dateReviewed = eeatData.lastReviewed;
+    }
+    if (eeatData.tldr) {
+      schema.abstract = eeatData.tldr;
+    }
+    if (eeatData.experience) {
+      schema.author = {
+        "@type": "Person",
+        "name": "Expert Contributor",
+        "knowsAbout": eeatData.experience
+      };
+    }
+
+    return JSON.stringify(schema, null, 2);
+  };
+
+  const generateHeadTags = () => {
+    const canonicalUrl = `https://cadbull.com/detail/${id || "temp"}/${slug || "project-slug"}`;
+    return `<title>${watchMetaTitle || workTitle || "Project Title"}</title>\n` +
+           `<meta name="description" content="${watchMetaDescription}" />\n` +
+           `<link rel="canonical" href="${canonicalUrl}" />\n` +
+           `<meta property="og:title" content="${watchMetaTitle || workTitle || "Project Title"}" />\n` +
+           `<meta property="og:description" content="${watchMetaDescription}" />\n` +
+           `<meta property="og:url" content="${canonicalUrl}" />\n` +
+           `<meta name="robots" content="index, follow" />\n`;
+  };
 
   const [projectDetails, setProjectDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -553,6 +657,14 @@ const EditProject = () => {
         setPublishAtIst(projectData.publish_at_ist || "");
         setFaqs(projectData.faqs || []);
 
+        const todayStr = new Date().toISOString().split('T')[0];
+        setEeatData(prev => ({
+          tldr: prev.tldr || projectData.tldr || "",
+          experience: prev.experience || projectData.experience || "",
+          reviewedBy: prev.reviewedBy || projectData.reviewed_by || "Cadbull",
+          lastReviewed: prev.lastReviewed || (projectData.last_reviewed ? projectData.last_reviewed.split('T')[0] : todayStr)
+        }));
+
         //// ✅ Set Form Data
         // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
         // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
@@ -826,6 +938,10 @@ const EditProject = () => {
         popular: data.popular !== undefined && data.popular !== "" ? Number(data.popular) : 0,
         credit_days: data.credit_days,
         slug: slug, // Use slug from state
+        tldr: eeatData.tldr || "",
+        experience: eeatData.experience || "",
+        reviewed_by: eeatData.reviewedBy || "Cadbull",
+        last_reviewed: eeatData.lastReviewed || "",
       };
 
       // ✅ Append files if they exist
@@ -921,6 +1037,38 @@ const EditProject = () => {
       </AdminLayout>
     );
   }
+
+  const metaTitleVal = watchMetaTitle || "";
+  const metaDescVal = watchMetaDescription || "";
+  const titleVal = workTitle || "";
+  
+  const openGraphScore = 100;
+  
+  let aeoScore = 0;
+  if (description && description.replace(/<[^>]*>/g, '').trim().length > 0) aeoScore += 40;
+  if (faqs && faqs.length > 0) aeoScore += 20;
+  if (eeatData.reviewedBy && eeatData.reviewedBy.trim().length > 0) aeoScore += 20;
+  if (eeatData.lastReviewed) aeoScore += 20;
+  
+  let geoScore = 0;
+  if (eeatData.experience && eeatData.experience.trim().length > 0) geoScore += 50;
+  if (eeatData.tldr && eeatData.tldr.trim().length > 0) geoScore += 50;
+  
+  let sxoScore = 0;
+  const mtLength = metaTitleVal.length;
+  const mdLength = metaDescVal.length;
+  if (mtLength >= 50 && mtLength <= 60) sxoScore += 50;
+  else if (mtLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mtLength - 55) * 2);
+  if (mdLength >= 150 && mdLength <= 160) sxoScore += 50;
+  else if (mdLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mdLength - 155) * 1);
+  
+  let aioScore = 0;
+  const tldrLen = eeatData.tldr.length;
+  if (tldrLen >= 200 && tldrLen <= 400) aioScore += 50;
+  else if (tldrLen > 0) aioScore += Math.max(10, 50 - Math.abs(tldrLen - 300) * 0.15);
+  if (eeatData.experience && eeatData.experience.trim().length > 0) aioScore += 50;
+  
+  const overallScore = Math.round((openGraphScore + aeoScore + geoScore + sxoScore + aioScore) / 5);
 
   return (
     <AdminLayout>
@@ -1039,6 +1187,8 @@ const EditProject = () => {
           </button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+          <div className="row">
+            <div className="col-lg-7">
           {/* Work Title */}
           <div className="mb-3">
             <label className="form-label">Work Title *</label>
@@ -1612,7 +1762,318 @@ const EditProject = () => {
               </small>
             </div>
           )}
+            </div>
 
+            <div className="col-lg-5">
+              <div className="p-4 rounded-4 shadow-sm mb-4 bg-white border border-light-subtle">
+                
+                {/* 1. E-E-A-T & AI Overviews Section */}
+                <div className="mb-4 p-3 rounded-3" style={{ backgroundColor: "#f8f9fa", border: "1px solid #dee2e6" }}>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style={{ fontSize: "1rem" }}>
+                      <FaShieldAlt className="text-primary" /> E-E-A-T & AI Overviews
+                    </h5>
+                    <button
+                      type="button"
+                      onClick={handleSaveEeat}
+                      className="btn btn-sm btn-outline-primary px-3 py-1 fw-bold rounded-pill"
+                      style={{ fontSize: "0.8rem" }}
+                    >
+                      Save Settings
+                    </button>
+                  </div>
+                  
+                  {/* TL;DR Textarea */}
+                  <div className="mb-3">
+                    <label className="form-label text-secondary mb-1" style={{ fontSize: "0.8rem", fontWeight: "600" }}>
+                      📝 TL;DR (SHOWN ON TOP FOR AI OVERVIEWS)
+                    </label>
+                    <textarea
+                      className="form-control bg-white border-light-subtle text-dark"
+                      rows="3"
+                      value={eeatData.tldr}
+                      onChange={(e) => setEeatData(prev => ({ ...prev, tldr: e.target.value }))}
+                      placeholder="Summarize the core elements of the CAD file in a concise overview..."
+                      style={{ fontSize: "0.85rem" }}
+                    />
+                    <small className="text-muted d-block mt-1" style={{ fontSize: "0.75rem" }}>
+                      {eeatData.tldr.length} chars · Aim for 200-400 chars
+                    </small>
+                  </div>
+                  
+                  {/* First-hand Experience Textarea */}
+                  <div className="mb-3">
+                    <label className="form-label text-secondary mb-1" style={{ fontSize: "0.8rem", fontWeight: "600" }}>
+                      💡 FIRST-HAND EXPERIENCE
+                    </label>
+                    <textarea
+                      className="form-control bg-white border-light-subtle text-dark"
+                      rows="3"
+                      value={eeatData.experience}
+                      onChange={(e) => setEeatData(prev => ({ ...prev, experience: e.target.value }))}
+                      placeholder="Add expert tips, observations, or how you verified this design in practice..."
+                      style={{ fontSize: "0.85rem" }}
+                    />
+                  </div>
+                  
+                  {/* Reviewed By & Date */}
+                  <div className="row g-2 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label text-secondary mb-1" style={{ fontSize: "0.8rem", fontWeight: "600" }}>
+                        REVIEWED BY
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control bg-white border-light-subtle text-dark"
+                        value={eeatData.reviewedBy}
+                        onChange={(e) => setEeatData(prev => ({ ...prev, reviewedBy: e.target.value }))}
+                        placeholder="Dr. Jane Smith"
+                        style={{ fontSize: "0.85rem" }}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label text-secondary mb-1" style={{ fontSize: "0.8rem", fontWeight: "600" }}>
+                        LAST REVIEWED
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control bg-white border-light-subtle text-dark"
+                        value={eeatData.lastReviewed}
+                        onChange={(e) => setEeatData(prev => ({ ...prev, lastReviewed: e.target.value }))}
+                        style={{ fontSize: "0.85rem" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Live Preview of E-E-A-T Card on product page */}
+                  <div className="mt-4 pt-3 border-top border-secondary-subtle">
+                    <label className="form-label text-uppercase text-secondary fw-bold mb-2" style={{ fontSize: "0.75rem" }}>
+                      👀 Product Page Preview (E-E-A-T Quality Card)
+                    </label>
+                    {(eeatData.tldr || eeatData.experience) ? (
+                      <div className="bg-white p-3 rounded-3 border border-light-subtle shadow-sm text-start" style={{ borderLeft: "4px solid #0d6efd" }}>
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <FaShieldAlt className="text-primary" size={16} />
+                          <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: "0.95rem" }}>E-E-A-T & Quality Verification</h6>
+                        </div>
+
+                        {eeatData.tldr && (
+                          <div className="mb-2">
+                            <small className="fw-semibold text-dark d-block mb-1" style={{ fontSize: "0.8rem" }}>📝 AI Overview (TL;DR)</small>
+                            <p className="mb-0 text-muted" style={{ fontSize: "0.75rem", lineHeight: "1.5" }}>
+                              {eeatData.tldr}
+                            </p>
+                          </div>
+                        )}
+
+                        {eeatData.experience && (
+                          <div className="mb-2">
+                            <small className="fw-semibold text-dark d-block mb-1" style={{ fontSize: "0.8rem" }}>💡 First-hand Experience</small>
+                            <p className="mb-0 text-muted" style={{ fontSize: "0.75rem", lineHeight: "1.5" }}>
+                              {eeatData.experience}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-top border-light-subtle d-flex flex-wrap justify-content-between align-items-center gap-2" style={{ fontSize: "0.7rem" }}>
+                          <span className="text-muted">
+                            Reviewed by: <strong className="text-dark">{eeatData.reviewedBy || "Cadbull"}</strong>
+                          </span>
+                          <span className="text-muted">
+                            Last reviewed: <strong className="text-dark">
+                              {(() => {
+                                const dateStr = eeatData.lastReviewed || new Date();
+                                try {
+                                  const d = new Date(dateStr);
+                                  if (isNaN(d.getTime())) return String(dateStr);
+                                  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                                } catch (e) {
+                                  return String(dateStr);
+                                }
+                              })()}
+                            </strong>
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-muted text-center py-3 border border-dashed rounded-3 bg-white" style={{ fontSize: "0.8rem" }}>
+                        (E-E-A-T card will appear here when TL;DR or Experience is entered)
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+                
+                {/* 2. Google Search Preview Section */}
+                <div className="mb-4 p-3 rounded-3" style={{ backgroundColor: "#f8f9fa", border: "1px solid #dee2e6" }}>
+                  <h5 className="mb-3 fw-bold text-dark d-flex align-items-center gap-2" style={{ fontSize: "1rem" }}>
+                    <FaGlobe className="text-primary" /> Google Preview
+                  </h5>
+                  <div className="p-3 rounded-3 text-start bg-white border border-light-subtle shadow-sm">
+                    <div className="text-truncate" style={{ fontSize: "0.75rem", color: "#202124" }}>
+                      cadbull.com <span className="text-muted">› detail › {id || "temp"} › {slug || "project-slug"}</span>
+                    </div>
+                    <h6 className="mt-1 mb-1 text-truncate" style={{ fontSize: "1.1rem", color: "#1a0dab", fontWeight: "400", cursor: "pointer" }}>
+                      {metaTitleVal || titleVal || "Enter Title..."}
+                    </h6>
+                    <p className="mb-0 text-muted" style={{ fontSize: "0.8rem", lineHeight: "1.4", color: "#4d5156" }}>
+                      {metaDescVal || "Explore this professional CAD drawing detail including 2D layouts, dimensions, and specifications..."}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* 3. Metadata Preview Section */}
+                <div className="mb-4 p-3 rounded-3" style={{ backgroundColor: "#f8f9fa", border: "1px solid #dee2e6" }}>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style={{ fontSize: "1rem" }}>
+                      <FaCode className="text-success" /> Metadata Preview
+                    </h5>
+                    <span className="badge bg-success text-white px-2 py-1" style={{ fontSize: "0.7rem" }}>Live</span>
+                  </div>
+                  
+                  {/* Canonical, OG:URL, Robots tags */}
+                  <div className="mb-3" style={{ fontSize: "0.8rem" }}>
+                    <div className="mb-2 p-2 rounded bg-white border border-light-subtle d-flex justify-content-between align-items-center shadow-sm">
+                      <div className="text-truncate" style={{ maxWidth: "80%" }}>
+                        <span className="text-secondary text-uppercase me-2 fw-semibold" style={{ fontSize: "0.65rem" }}>Canonical:</span>
+                        <span className="text-dark" style={{ fontSize: "0.75rem" }}>https://cadbull.com/detail/{id || "temp"}/{slug || "project-slug"}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://cadbull.com/detail/${id || "temp"}/${slug}`);
+                          toast.success("Canonical copied!");
+                        }}
+                        className="btn btn-link p-0 text-primary text-decoration-none"
+                        style={{ fontSize: "0.75rem" }}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="mb-2 p-2 rounded bg-white border border-light-subtle d-flex justify-content-between align-items-center shadow-sm">
+                      <div className="text-truncate" style={{ maxWidth: "80%" }}>
+                        <span className="text-secondary text-uppercase me-2 fw-semibold" style={{ fontSize: "0.65rem" }}>OG:URL:</span>
+                        <span className="text-dark" style={{ fontSize: "0.75rem" }}>https://cadbull.com/detail/{id || "temp"}/{slug || "project-slug"}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://cadbull.com/detail/${id || "temp"}/${slug}`);
+                          toast.success("OG:URL copied!");
+                        }}
+                        className="btn btn-link p-0 text-primary text-decoration-none"
+                        style={{ fontSize: "0.75rem" }}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="p-2 rounded bg-white border border-light-subtle d-flex justify-content-between align-items-center shadow-sm">
+                      <div>
+                        <span className="text-secondary text-uppercase me-2 fw-semibold" style={{ fontSize: "0.65rem" }}>Robots:</span>
+                        <span className="text-dark" style={{ fontSize: "0.75rem" }}>index, follow</span>
+                      </div>
+                      <span className="badge bg-success text-white" style={{ fontSize: "0.65rem" }}>OK</span>
+                    </div>
+                  </div>
+                  
+                  {/* Schema / Head Tabbed Code Block */}
+                  <div className="d-flex mb-2" style={{ borderBottom: "1px solid #dee2e6" }}>
+                    <button
+                      type="button"
+                      className={`btn btn-sm px-3 py-1 ${previewTab === "json-ld" ? "bg-secondary text-white fw-bold" : "text-muted"}`}
+                      onClick={() => setPreviewTab("json-ld")}
+                      style={{ fontSize: "0.8rem", border: "1px solid #dee2e6", borderBottom: "none", borderTopLeftRadius: "4px", borderTopRightRadius: "4px" }}
+                    >
+                      JSON-LD
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm px-3 py-1 ${previewTab === "head" ? "bg-secondary text-white fw-bold" : "text-muted"}`}
+                      onClick={() => setPreviewTab("head")}
+                      style={{ fontSize: "0.8rem", border: "1px solid #dee2e6", borderBottom: "none", borderTopLeftRadius: "4px", borderTopRightRadius: "4px", marginLeft: "2px" }}
+                    >
+                      &lt;head&gt;
+                    </button>
+                  </div>
+                  
+                  <div className="p-2 rounded bg-dark" style={{ position: "relative", border: "1px solid #dee2e6" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const content = previewTab === "json-ld" ? generateJsonLd() : generateHeadTags();
+                        navigator.clipboard.writeText(content);
+                        toast.success("Copied to clipboard!");
+                      }}
+                      className="btn btn-sm btn-outline-info"
+                      style={{ position: "absolute", top: "8px", right: "8px", fontSize: "0.7rem" }}
+                    >
+                      Copy
+                    </button>
+                    <pre className="text-info mb-0" style={{ fontSize: "0.7rem", maxHeight: "200px", overflowY: "auto", whiteSpace: "pre-wrap" }}>
+                      <code>
+                        {previewTab === "json-ld" ? generateJsonLd() : generateHeadTags()}
+                      </code>
+                    </pre>
+                  </div>
+                </div>
+                
+                {/* 4. Advanced SEO Panel Checklist Scorecard */}
+                <div className="p-3 rounded-3" style={{ backgroundColor: "#f8f9fa", border: "1px solid #dee2e6" }}>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2" style={{ fontSize: "1rem" }}>
+                      Advanced SEO Panel
+                    </h5>
+                    <span className="badge bg-primary px-2 py-1" style={{ fontSize: "0.85rem" }}>
+                      Score: {overallScore}%
+                    </span>
+                  </div>
+                  
+                  <div className="progress mb-3" style={{ height: "10px", backgroundColor: "#e9ecef" }}>
+                    <div
+                      className="progress-bar bg-success"
+                      role="progressbar"
+                      style={{ width: `${overallScore}%` }}
+                      aria-valuenow={overallScore}
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    />
+                  </div>
+                  
+                  <div className="text-dark" style={{ fontSize: "0.8rem" }}>
+                    <div className="d-flex justify-content-between align-items-center py-2 border-bottom border-light-subtle">
+                      <span>🌐 Open Graph Score</span>
+                      <span className="text-success fw-bold">{openGraphScore}%</span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center py-2 border-bottom border-light-subtle">
+                      <span>🤖 AEO (Answer Engine) Score</span>
+                      <span className={aeoScore >= 80 ? "text-success fw-bold" : aeoScore >= 50 ? "text-warning fw-bold" : "text-danger fw-bold"}>
+                        {aeoScore}%
+                      </span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center py-2 border-bottom border-light-subtle">
+                      <span>🌍 GEO (Generative Engine) Score</span>
+                      <span className={geoScore >= 80 ? "text-success fw-bold" : geoScore >= 50 ? "text-warning fw-bold" : "text-danger fw-bold"}>
+                        {geoScore}%
+                      </span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center py-2 border-bottom border-light-subtle">
+                      <span>⚡ SXO (Search Experience) Score</span>
+                      <span className={sxoScore >= 80 ? "text-success fw-bold" : sxoScore >= 50 ? "text-warning fw-bold" : "text-danger fw-bold"}>
+                        {sxoScore}%
+                      </span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center py-2">
+                      <span>🤖 AIO (AI Overview) Score</span>
+                      <span className={aioScore >= 80 ? "text-success fw-bold" : aioScore >= 50 ? "text-warning fw-bold" : "text-danger fw-bold"}>
+                        {aioScore}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </AdminLayout>

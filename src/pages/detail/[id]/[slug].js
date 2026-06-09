@@ -75,7 +75,7 @@ const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.Whatsap
 });
 const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton), { ssr: false });
 
-import { FaLink } from 'react-icons/fa';
+import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt } from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
@@ -84,6 +84,7 @@ import { getSafeImageUrl, handleImageError, getSmallVersion } from "@/utils/imag
 
 import parse from "html-react-parser";
 import AdSense from "@/components/AdSense";
+import RatingsSection from "@/components/RatingsSection";
 // ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
 import Image from 'next/image';
 
@@ -161,6 +162,14 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [profileImageError, setProfileImageError] = useState(false);
 
   const [showRelated, setShowRelated] = useState(false);
+
+  // ── Reviews state ────────────────────────────────────────────────────────
+  const [reviewsData, setReviewsData] = useState({ reviews: [], avgRating: 0, total: 0, distribution: [] });
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [myReview, setMyReview] = useState(null);      // existing user review
+  const [reviewForm, setReviewForm] = useState({ rating: 0, hoverRating: 0, title: '', review: '' });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
 
   //---- GALLERY STATE ----
   const [galleryUrls, setGalleryUrls] = useState([]); // array of URLs (strings)
@@ -638,6 +647,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta name="keywords" content={project?.tags || ""} />
 
+        {/* 1. CreativeWork / Image Gallery Schema */}
         {galleryUrls?.length > 0 && (
           <script
             type="application/ld+json"
@@ -646,11 +656,111 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 "@context": "https://schema.org",
                 "@type": "CreativeWork",
                 "name": project?.work_title,
-                "description": project?.meta_description || project?.description,
+                "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
                 "image": galleryUrls.map((url) => getSafeImageUrl(url)),
                 "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
                 "mainEntityOfPage": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`
               }),
+            }}
+          />
+        )}
+
+        {/* 2. Product Schema with dynamic review aggregation and offers */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": project?.work_title,
+              "image": galleryUrls.map((url) => getSafeImageUrl(url)),
+              "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
+              "sku": project?.id ? String(project.id) : undefined,
+              "mpn": project?.id ? String(project.id) : undefined,
+              "brand": {
+                "@type": "Brand",
+                "name": "Brand"
+              },
+              "reviewedBy": project?.reviewed_by ? {
+                "@type": "Person",
+                "name": project.reviewed_by
+              } : {
+                "@type": "Person",
+                "name": "Cadbull"
+              },
+              "dateReviewed": project?.last_reviewed ? project.last_reviewed.split('T')[0] : new Date().toISOString().split('T')[0],
+              "abstract": project?.tldr || undefined,
+              "author": project?.experience ? {
+                "@type": "Person",
+                "name": "Expert Contributor",
+                "knowsAbout": project.experience
+              } : undefined,
+              "offers": {
+                "@type": "Offer",
+                "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
+                "priceCurrency": "USD",
+                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                "priceValidUntil": "2028-12-31",
+                "availability": "https://schema.org/InStock",
+                "itemCondition": "https://schema.org/NewCondition"
+              },
+              "aggregateRating": reviewsData?.total > 0 ? {
+                "@type": "AggregateRating",
+                "ratingValue": String(reviewsData.avgRating || 5),
+                "reviewCount": String(reviewsData.total || 1),
+                "bestRating": "5",
+                "worstRating": "1"
+              } : undefined
+            })
+          }}
+        />
+
+        {/* 3. SoftwareApplication (CAD Asset) Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": project?.work_title,
+              "operatingSystem": "Windows, macOS",
+              "applicationCategory": "DesignApplication",
+              "fileFormat": project?.file_type || "DWG",
+              "fileSize": formatBytes(project?.size) || "Unknown size",
+              "requirements": {
+                "@type": "SoftwareApplication",
+                "name": project?.file_type ? (
+                  project.file_type.toLowerCase().includes("sketchup") || project.file_type.toLowerCase().includes("skp") ? "Trimble SketchUp" :
+                    project.file_type.toLowerCase().includes("revit") ? "Autodesk Revit" :
+                      project.file_type.toLowerCase().includes("max") || project.file_type.toLowerCase().includes("3ds") ? "Autodesk 3ds Max" : "Autodesk AutoCAD"
+                ) : "Autodesk AutoCAD"
+              },
+              "offers": {
+                "@type": "Offer",
+                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                "priceCurrency": "USD"
+              }
+            })
+          }}
+        />
+
+        {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+        {project?.faqs && project.faqs.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": project.faqs.map((faq) => ({
+                  "@type": "Question",
+                  "name": faq.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                  }
+                }))
+              })
             }}
           />
         )}
@@ -954,7 +1064,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               <div className="row my-3 d-lg-block d-none">
                 <div className="col-md-12">
-                  <div className="bg-white profile_shadow p-2 p-md-4">
+                  <div className="bg-white profile_shadow p-2 p-md-4 rounded-4">
                     <div className="row justify-content-between align-items-center">
                       <div className="col-md-5">
                         <div className="d-flex align-items-center gap-md-3 gap-2">
@@ -1025,6 +1135,58 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
 
+              {/* Classic styled FAQ and Reviews for Desktop */}
+              {project?.faqs && project.faqs.length > 0 && (
+                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3" id="faq">
+                  <h3 className="fw-bold text-dark border-bottom pb-2 mb-3" style={{ fontSize: "1.25rem" }}>
+                    Frequently Asked Questions
+                  </h3>
+                  <div className="faq-accordion">
+                    {project.faqs.map((faq, index) => (
+                      <div key={faq.id || index} className={`py-3 ${index === project.faqs.length - 1 ? '' : 'border-bottom'}`}>
+                        <button
+                          onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+                          className="d-flex justify-content-between align-items-center w-100 bg-transparent border-0 p-0 text-start"
+                          style={{ cursor: 'pointer', outline: 'none' }}
+                        >
+                          <span className="fw-semibold text-dark" style={{ fontSize: '0.95rem' }}>
+                            Q. {faq.question}
+                          </span>
+                          <span className="text-muted ms-3 flex-shrink-0 d-flex align-items-center">
+                            {openFaq === index ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+                          </span>
+                        </button>
+                        {openFaq === index && (
+                          <div className="pt-3 pe-4">
+                            <p className="mb-0 text-muted" style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                              {faq.answer}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Dynamic Ratings & Reviews section inside a matching classic card */}
+              <div className="bg-white pb-3 mt-3" id="reviews">
+                <RatingsSection
+                  productId={project?.id}
+                  isAuthenticated={isAuthenticated}
+                  reviewsData={reviewsData}
+                  setReviewsData={setReviewsData}
+                  myReview={myReview}
+                  setMyReview={setMyReview}
+                  showReviewModal={showReviewModal}
+                  setShowReviewModal={setShowReviewModal}
+                  reviewForm={reviewForm}
+                  setReviewForm={setReviewForm}
+                  reviewSubmitting={reviewSubmitting}
+                  setReviewSubmitting={setReviewSubmitting}
+                />
+              </div>
+
 
               {/* <div className="border-top border-bottom py-2 mt-4"> */}
               <div className="d-none d-lg-block">
@@ -1038,6 +1200,54 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
             <div className="col-lg-4">
               <div className="d-flex flex-column gap-3">
+
+                {/* E-E-A-T Quality verification card */}
+                {(project?.tldr || project?.experience) && (
+                  <div className="bg-white profile_shadow p-3 p-md-4 rounded-4 mb-1" style={{ borderLeft: "4px solid #0d6efd" }}>
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                      <FaShieldAlt className="text-primary" size={18} />
+                      <h4 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.1rem" }}>E-E-A-T & Quality Verification</h4>
+                    </div>
+
+                    {project?.tldr && (
+                      <div className="mb-3">
+                        <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.9rem" }}>📝 AI Overview (TL;DR)</h5>
+                        <p className="mb-0 text-muted" style={{ fontSize: "0.85rem", lineHeight: "1.6" }}>
+                          {project.tldr}
+                        </p>
+                      </div>
+                    )}
+
+                    {project?.experience && (
+                      <div className="mb-3">
+                        <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.9rem" }}>💡 First-hand Experience</h5>
+                        <p className="mb-0 text-muted" style={{ fontSize: "0.85rem", lineHeight: "1.6" }}>
+                          {project.experience}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="pt-2 border-top border-light-subtle d-flex flex-wrap justify-content-between align-items-center gap-2" style={{ fontSize: "0.75rem" }}>
+                      <span className="text-muted">
+                        Reviewed by: <strong className="text-dark">{project.reviewed_by || "Cadbull"}</strong>
+                      </span>
+                      <span className="text-muted">
+                        Last reviewed: <strong className="text-dark">
+                          {(() => {
+                            const dateStr = project.last_reviewed || new Date();
+                            try {
+                              const d = new Date(dateStr);
+                              if (isNaN(d.getTime())) return String(dateStr);
+                              return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                            } catch (e) {
+                              return String(dateStr);
+                            }
+                          })()}
+                        </strong>
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Project Description */}
                 <div className="py-3 py-md-4 description-container">
@@ -1117,6 +1327,20 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     </div>
 
+                    {/* Tags Card */}
+                    {project?.tags && (
+                      <div className="bg-white profile_shadow p-3 p-md-4 rounded-4 mt-3 mb-4">
+                        <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
+                        <div className="d-flex flex-wrap gap-2">
+                          {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
+                            <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="row my-3 d-block d-lg-none">
                       <div className="col-12">
                         <div className="bg-white profile_shadow p-2 p-md-4">
@@ -1186,6 +1410,65 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               drawing file.
                             </p> */}
                           </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Classic FAQ and Reviews for Mobile viewports */}
+                    {project?.faqs && project.faqs.length > 0 && (
+                      <div className="row my-3 d-block d-lg-none">
+                        <div className="col-12">
+                          <div className="bg-white profile_shadow p-3 p-md-4 mt-3" id="faq-mobile">
+                            <h3 className="fw-bold text-dark border-bottom pb-2 mb-3" style={{ fontSize: "1.25rem" }}>
+                              Frequently Asked Questions
+                            </h3>
+                            <div className="faq-accordion">
+                              {project.faqs.map((faq, index) => (
+                                <div key={faq.id || index} className={`py-3 ${index === project.faqs.length - 1 ? '' : 'border-bottom'}`}>
+                                  <button
+                                    onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+                                    className="d-flex justify-content-between align-items-center w-100 bg-transparent border-0 p-0 text-start"
+                                    style={{ cursor: 'pointer', outline: 'none' }}
+                                  >
+                                    <span className="fw-semibold text-dark" style={{ fontSize: '0.95rem' }}>
+                                      Q. {faq.question}
+                                    </span>
+                                    <span className="text-muted ms-3 flex-shrink-0 d-flex align-items-center">
+                                      {openFaq === index ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+                                    </span>
+                                  </button>
+                                  {openFaq === index && (
+                                    <div className="pt-3 pe-4">
+                                      <p className="mb-0 text-muted" style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                                        {faq.answer}
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="row my-3 d-block d-lg-none">
+                      <div className="col-12">
+                        <div className="bg-white profile_shadow p-3 p-md-4 mt-3" id="reviews-mobile">
+                          <RatingsSection
+                            productId={project?.id}
+                            isAuthenticated={isAuthenticated}
+                            reviewsData={reviewsData}
+                            setReviewsData={setReviewsData}
+                            myReview={myReview}
+                            setMyReview={setMyReview}
+                            showReviewModal={showReviewModal}
+                            setShowReviewModal={setShowReviewModal}
+                            reviewForm={reviewForm}
+                            setReviewForm={setReviewForm}
+                            reviewSubmitting={reviewSubmitting}
+                            setReviewSubmitting={setReviewSubmitting}
+                          />
                         </div>
                       </div>
                     </div>
