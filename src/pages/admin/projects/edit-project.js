@@ -1178,13 +1178,23 @@ const EditProject = () => {
       <div className="container ">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2>Edit Project</h2>
-          <button
-            type="button"
-            className="btn btn-success"
-            onClick={() => handledownload(id, isAuthenticated, router)}
-          >
-            📥 Download Project
-          </button>
+          <div className="d-flex gap-2">
+            <a
+              href={`/detail/${id}/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-info text-white"
+            >
+              👁️ View Product Page
+            </a>
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={() => handledownload(id, isAuthenticated, router)}
+            >
+              📥 Download Project
+            </button>
+          </div>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
           <div className="row">

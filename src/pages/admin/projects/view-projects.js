@@ -7,6 +7,14 @@ import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
 import { useMemo } from "react";
 
+const slugify = (text) => {
+  if (!text) return "";
+  return text
+    .replace(/\s+/g, "-")
+    .replace(/\-+/g, "-")
+    .replace(/^\-+|\-+$/g, "");
+};
+
 /** Returns { ok: boolean, issues: string[] } */
 const useSeoCheck = (project) => {
   return useMemo(() => {
@@ -367,6 +375,14 @@ const ViewProjects = () => {
                                         
                                         <td>
                                             <button className="btn btn-primary btn-sm" onClick={() => router.push(`/admin/projects/edit-project?id=${project.id}`)}>Edit</button>
+                                            <a
+                                                href={`/detail/${project.id}/${project.slug || slugify(project.work_title)}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="btn btn-sm btn-info ms-2 text-white"
+                                            >
+                                                View
+                                            </a>
                                             {/* <a href={`${process.env.NEXT_PUBLIC_API_MAIN_NO_API}/uploads/project_files/${project.file}`} className="btn btn-sm btn-success ms-2" download>Download</a> */}
                                             <button
                                                 className="btn btn-sm btn-success ms-2"
