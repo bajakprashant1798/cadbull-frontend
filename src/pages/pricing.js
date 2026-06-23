@@ -2,7 +2,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
-import { handleSubscription, getUserDetails } from "@/service/api";
+import { handleSubscription, getUserDetails, getSubscriptionDetail } from "@/service/api";
 import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { useRouter } from "next/router";
@@ -334,9 +334,20 @@ const FaqItem = ({ q, a }) => {
 
 const iconMap = { sparkles: Sparkles, zap: Zap, crown: Crown, gem: Gem, star: Star };
 
-const PricingCard = ({ plan, onSubscribe }) => {
+const PricingCard = ({ plan, onSubscribe, activeSubscription, activePlanId }) => {
   const isPopular = plan.popular;
   const Icon = iconMap[plan.icon];
+  
+  // Check if this plan is the user's active plan (including legacy stripe price IDs)
+  const isCurrentPlan = 
+    (plan.id === "free" && !activeSubscription) || 
+    (plan.stripeId && activePlanId && (
+      plan.stripeId === activePlanId ||
+      (plan.id === "silver" && ["price_1QLNQAFy6VKViPpJGQCXH5KE", "price_1TSAT3Fy6VKViPpJP4SIMcZX", "price_1TVxFsFy6VKViPpJCRGnLEYH"].includes(activePlanId)) ||
+      (plan.id === "gold" && ["price_1Q8P4NFy6VKViPpJeRzGAybE", "price_1TSAo6Fy6VKViPpJRV0M9OY4"].includes(activePlanId)) ||
+      (plan.id === "platinum" && ["price_1Q8H9gFy6VKViPpJwEh4k3c1", "price_1TSB3UFy6VKViPpJdcvQYrh2"].includes(activePlanId)) ||
+      (plan.id === "diamond" && ["price_1Q8PNDFy6VKViPpJSYVg4mvU"].includes(activePlanId))
+    ));
 
   return (
     <div className={`col d-flex position-relative mt-4 mt-lg-0 ${isPopular ? 'popular-card-wrapper' : 'pt-3'}`}>
@@ -437,17 +448,19 @@ const PricingCard = ({ plan, onSubscribe }) => {
           {/* CTA Button */}
           <button
             onClick={() => onSubscribe(plan)}
+            disabled={activeSubscription && !isCurrentPlan}
             className="btn btn-pricing w-100 d-flex justify-content-center align-items-center gap-2 shadow-none"
             style={{
-              backgroundColor: isPopular ? '#EF4B4C' : '#0f172a',
-              color: isPopular ? '#fff' : '#fff',
-              // 0f172a
+              backgroundColor: isCurrentPlan ? '#16a34a' : (isPopular ? '#EF4B4C' : '#0f172a'),
+              color: '#fff',
               border: 'none',
-              marginTop: 'auto' /* Crucial for bottom alignment */
+              marginTop: 'auto', /* Crucial for bottom alignment */
+              opacity: activeSubscription && !isCurrentPlan ? 0.6 : 1,
+              cursor: activeSubscription && !isCurrentPlan ? 'not-allowed' : 'pointer'
             }}
           >
-            <span className="text-truncate">{plan.ctaLabel || "BUY NOW"}</span>
-            <ArrowRight size={14} strokeWidth={3} />
+            <span className="text-truncate">{isCurrentPlan ? "CURRENT PLAN" : (plan.ctaLabel || "BUY NOW")}</span>
+            {!isCurrentPlan && <ArrowRight size={14} strokeWidth={3} />}
           </button>
         </div>
       </div>
@@ -462,6 +475,7 @@ const Pricing = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [activeSubscription, setActiveSubscription] = useState(false);
+  const [activePlanId, setActivePlanId] = useState(null);
   const [showMessage, setShowMessage] = useState(true);
   const [billing, setBilling] = useState("all");
 
@@ -476,10 +490,22 @@ const Pricing = () => {
         const today = new Date();
         if (response.data.acc_exp_date && expDate > today) {
           setActiveSubscription(true);
-          const planName = response.data.subscription_plan ? response.data.subscription_plan.charAt(0).toUpperCase() + response.data.subscription_plan.slice(1) : "Premium";
-          setMessage(`✅ Your ${planName} account expires on ${expDate.toDateString()}`);
+          try {
+            const subRes = await getSubscriptionDetail();
+            if (subRes && subRes.data?.plan) {
+              const subPlan = subRes.data.plan;
+              setActivePlanId(subPlan.stripe_price_id);
+              const planName = subPlan.plan_name || "Premium";
+              setMessage(`✅ Your ${planName} expires on ${expDate.toDateString()}`);
+            } else {
+              setMessage(`✅ Your Premium account expires on ${expDate.toDateString()}`);
+            }
+          } catch (subErr) {
+            setMessage(`✅ Your Premium account expires on ${expDate.toDateString()}`);
+          }
         } else {
           setActiveSubscription(false);
+          setActivePlanId(null);
           setMessage("✖ Oops! Looks like you're not on an active subscription yet. But no worries – you're just one click away from accessing our entire CAD library! Subscribe today and explore without limits!");
         }
       } catch (error) {
@@ -497,6 +523,10 @@ const Pricing = () => {
     }
     if (!plan.stripeId) {
       toast.info("You already have the Free Plan by default!");
+      return;
+    }
+    if (activeSubscription) {
+      toast.error("You already have an active subscription. Cancel your current plan first.");
       return;
     }
     try {
@@ -590,7 +620,13 @@ const Pricing = () => {
           <div className="container-fluid px-3 px-xl-5 mx-auto" style={{ maxWidth: '1600px' }}>
             <div className="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-3 justify-content-center align-items-stretch">
               {baseFiltered.map((plan) => (
-                <PricingCard key={plan.id} plan={plan} onSubscribe={handleSubscribe} />
+                <PricingCard 
+                  key={plan.id} 
+                  plan={plan} 
+                  onSubscribe={handleSubscribe} 
+                  activeSubscription={activeSubscription}
+                  activePlanId={activePlanId}
+                />
               ))}
             </div>
           </div>
