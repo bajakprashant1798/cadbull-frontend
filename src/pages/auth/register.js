@@ -24,12 +24,15 @@ const Register = ({ lastProductId }) => {
   const description = (
     <>
       Cadbull is the world’s largest CAD library. Here, you can download over{" "}
-      <span className="text-danger fw-bold">{Number(lastProductId || 271030).toLocaleString("en-US")}+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
+      <span className="text-danger fw-bold">
+        {/* {Number(lastProductId || 271030).toLocaleString("en-US")}+ */}
+        300,000+
+      </span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
     </>
   );
 
   //useLoading hook state 
-  const [isLoading,startLoading,stopLoading]=useLoading();
+  const [isLoading, startLoading, stopLoading] = useLoading();
   const {
     register,
     handleSubmit,
@@ -42,7 +45,7 @@ const Register = ({ lastProductId }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [captchaValue, setCaptchaValue] = useState(null);
   const [captchaKey, setCaptchaKey] = useState(0);
 
@@ -105,7 +108,7 @@ const Register = ({ lastProductId }) => {
   const handleCaptchaChange = (value) => {
     setCaptchaValue(value);
   };
-  
+
   // -------------------------------
   // Normal Registration Flow
   // -------------------------------
@@ -118,21 +121,21 @@ const Register = ({ lastProductId }) => {
 
     startLoading();
     const { confirmPassword, ...formData } = data;
-  
+
     signupApiHandler(formData)
       .then((res) => {
         stopLoading();
-        
+
         // ✅ Log the response to check the structure
         // console.log("🔄 Signup Response:", res.data);
-  
+
         // // ✅ Handle email already exists but not verified case
         // if (res.data.message.includes("not verified")) {
         //   toast.warning(res.data.message);
         //   return;
         // }
         // Handle all cases by backend code
-       const code = res.data.code;
+        const code = res.data.code;
         const message = res.data.message;
         if (code === "EMAIL_NOT_VERIFIED") {
           toast.warning(message);
@@ -160,10 +163,10 @@ const Register = ({ lastProductId }) => {
         //   toast.error("Unexpected response from server.");
         //   return;
         // }
-  
+
         // const { accessToken, refreshToken, user } = res.data;
-  
-        
+
+
         // // ✅ Store tokens and user data ONLY IF email is verified
         // if (user.is_email_verify === 1) {
         //   // Since tokens are stored in HTTP‑only cookies, we do not store them in localStorage.
@@ -207,16 +210,16 @@ const Register = ({ lastProductId }) => {
         console.error("Registration Error:", err);
       });
   };
-  
-  
+
+
 
   const handleGoogleSignIn = async () => {
     try {
       const redirectUrl = router.query.redirect;
-      const googleAuthUrl = redirectUrl 
+      const googleAuthUrl = redirectUrl
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
-      
+
       window.location.href = googleAuthUrl;
     } catch (error) {
       console.error("❌ Google Login Error:", error);
@@ -228,32 +231,32 @@ const Register = ({ lastProductId }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const errorParam = urlParams.get("error");
-    
+
     if (errorParam) {
       // Decode the error message
       const errorMessage = decodeURIComponent(errorParam);
       toast.error(errorMessage);
-      
+
       // Clean up the URL
       const url = new URL(window.location);
       url.searchParams.delete('error');
       window.history.replaceState({}, document.title, url.pathname);
     }
   }, []);
-  
+
   const handleFacebookSignIn = async () => {
     try {
       const redirectUrl = router.query.redirect;
-      const facebookAuthUrl = redirectUrl 
+      const facebookAuthUrl = redirectUrl
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
-      
+
       // For Safari compatibility, use a popup approach instead of direct redirect
       const width = 600;
       const height = 600;
       const left = window.screen.width / 2 - width / 2;
       const top = window.screen.height / 2 - height / 2;
-      
+
       const popup = window.open(
         facebookAuthUrl,
         'facebook-login',
@@ -270,18 +273,18 @@ const Register = ({ lastProductId }) => {
       // Listen for messages from popup
       const handleMessage = (event) => {
         if (event.origin !== window.location.origin) return;
-        
+
         if (event.data.type === 'SOCIAL_LOGIN_SUCCESS') {
           const userData = event.data.userData;
-          
+
           // Store user data
           localStorage.setItem("userData", JSON.stringify(userData));
           dispatch(loginSuccess({ user: userData, status: "authenticated" }));
           window.dispatchEvent(new Event("userLoggedIn"));
-          
+
           // Use redirect helper for consistent redirect logic
           redirectAfterLogin(router, userData);
-          
+
           window.removeEventListener('message', handleMessage);
         } else if (event.data.type === 'SOCIAL_LOGIN_ERROR') {
           toast.error("Facebook registration failed. Please try again.");
@@ -403,9 +406,8 @@ const Register = ({ lastProductId }) => {
                 <input
                   {...field}
                   type="text"
-                  className={`form-control ${
-                    errors.firstname ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.firstname ? "is-invalid" : ""
+                    }`}
                   placeholder="Type First Name"
                 />
               )}
@@ -429,9 +431,8 @@ const Register = ({ lastProductId }) => {
                 <input
                   {...field}
                   type="text"
-                  className={`form-control ${
-                    errors.lastname ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.lastname ? "is-invalid" : ""
+                    }`}
                   placeholder="Type Last Name"
                 />
               )}
@@ -453,9 +454,8 @@ const Register = ({ lastProductId }) => {
                 <input
                   {...field}
                   type={showPassword ? "text" : "password"}
-                  className={`form-control ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.password ? "is-invalid" : ""
+                    }`}
                   placeholder="Password"
                 />
               )}
@@ -495,9 +495,8 @@ const Register = ({ lastProductId }) => {
                 <input
                   {...field}
                   type={showConfirmPassword ? "text" : "password"}
-                  className={`form-control ${
-                    errors.confirmPassword ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.confirmPassword ? "is-invalid" : ""
+                    }`}
                   placeholder="Confirm Password"
                 />
               )}
@@ -534,9 +533,9 @@ const Register = ({ lastProductId }) => {
 
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">
-              <button 
-               disabled={isLoading?true:false}
-              type="submit" className="btn btn-lg btn-secondary w-100">
+              <button
+                disabled={isLoading ? true : false}
+                type="submit" className="btn btn-lg btn-secondary w-100">
                 Register to Your Account
               </button>
             </div>

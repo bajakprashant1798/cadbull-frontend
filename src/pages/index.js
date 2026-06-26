@@ -482,7 +482,11 @@ export default function Home({
 
                 <p className="mb-4 mb-md-5">
                   {/* User */}
-                  <span className="text-danger">{Number(lastId).toLocaleString("en-US")}+</span> <span className="fw-light"> Free & Premium
+                  <span className="text-danger">
+                    {/* {Number(lastId).toLocaleString("en-US")}+ */}
+                    300,000+
+                  </span>
+                  <span className="fw-light"> Free & Premium
                     CADFiles
                   </span>
                 </p>

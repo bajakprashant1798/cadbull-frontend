@@ -30,14 +30,17 @@ const Login = ({ lastProductId }) => {
   const description = (
     <>
       Cadbull is the world’s largest CAD library. Here, you can download over{" "}
-      <span className="text-danger fw-bold">{Number(lastProductId || 271030).toLocaleString("en-US")}+</span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
+      <span className="text-danger fw-bold">
+        {/* {Number(lastProductId || 271030).toLocaleString("en-US")}+ */}
+        300,000+
+      </span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
     </>
   );
 
   const router = useRouter();
   const dispatch = useDispatch();
   // const { data: session } = useSession();
-  const [isLoading,startLoading,stopLoading]=useLoading();
+  const [isLoading, startLoading, stopLoading] = useLoading();
   // const isAuthenticated=useSessionStorageData('userData')
 
   //// Get isAuthenticated from Redux:
@@ -72,12 +75,12 @@ const Login = ({ lastProductId }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const errorParam = urlParams.get("error");
-    
+
     if (errorParam) {
       // Decode the error message
       const errorMessage = decodeURIComponent(errorParam);
       toast.error(errorMessage);
-      
+
       // Clean up the URL
       const url = new URL(window.location);
       url.searchParams.delete('error');
@@ -97,11 +100,11 @@ const Login = ({ lastProductId }) => {
       toast.error("Please verify that you are not a robot.");
       return;
     }
-    
+
     // console.log('📝 Form Login - Router Query:', router.query);
     // console.log('📝 Form Login - Redirect URL:', router.query.redirect);
     // console.log('📝 Form Login - Full URL:', window.location.href);
-    
+
     // Handle form submission here
     startLoading()
     // loginApiHandler(data)
@@ -120,7 +123,7 @@ const Login = ({ lastProductId }) => {
         }
 
         // console.log("user: login ", user);
-        
+
         //// ✅ Store tokens in localStorage
         // localStorage.setItem("accessToken", accessToken);
         // localStorage.setItem("refreshToken", refreshToken);
@@ -132,15 +135,15 @@ const Login = ({ lastProductId }) => {
 
         // Fetch and dispatch favorites after successful login:
         // if (accessToken) {
-          getFavouriteItems()
-            .then((favRes) => {
-              dispatch(setFavouriteList(favRes.data.favorites || []));
-              // console.log("res from getfav", favRes);
-              
-            })
-            .catch((error) => {
-              console.error("Error fetching favorites:", error);
-            });
+        getFavouriteItems()
+          .then((favRes) => {
+            dispatch(setFavouriteList(favRes.data.favorites || []));
+            // console.log("res from getfav", favRes);
+
+          })
+          .catch((error) => {
+            console.error("Error fetching favorites:", error);
+          });
         // }
 
         // ✅ Trigger storage event to sync across tabs
@@ -163,7 +166,7 @@ const Login = ({ lastProductId }) => {
           toast.warning(errorMessage);
           return;
         }
-    
+
         toast.error("Please check your email or password ")
         // console.log("login error: ", err);
       });
@@ -177,11 +180,11 @@ const Login = ({ lastProductId }) => {
       // console.log('🔗 Google Login - Router Query:', router.query);
       // console.log('🔗 Google Login - Redirect URL:', redirectUrl);
       // console.log('🔗 Google Login - Full URL:', window.location.href);
-      
-      const googleAuthUrl = redirectUrl 
+
+      const googleAuthUrl = redirectUrl
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/google`;
-      
+
       // console.log('🔗 Google Auth URL:', googleAuthUrl);
       window.location.href = googleAuthUrl;
     } catch (error) {
@@ -189,7 +192,7 @@ const Login = ({ lastProductId }) => {
       toast.error("Google login failed. Please try again.");
     }
   };
-  
+
 
 
   const handleFacebookSignIn = async () => {
@@ -198,19 +201,19 @@ const Login = ({ lastProductId }) => {
       // console.log('📘 Facebook Login - Router Query:', router.query);
       // console.log('📘 Facebook Login - Redirect URL:', redirectUrl);
       // console.log('📘 Facebook Login - Full URL:', window.location.href);
-      
-      const facebookAuthUrl = redirectUrl 
+
+      const facebookAuthUrl = redirectUrl
         ? `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`
         : `${process.env.NEXT_PUBLIC_API_MAIN}/auth/facebook`;
-      
+
       // console.log('📘 Facebook Auth URL:', facebookAuthUrl);
-      
+
       // For Safari compatibility, use a popup approach instead of direct redirect
       const width = 600;
       const height = 600;
       const left = window.screen.width / 2 - width / 2;
       const top = window.screen.height / 2 - height / 2;
-      
+
       const popup = window.open(
         facebookAuthUrl,
         'facebook-login',
@@ -227,18 +230,18 @@ const Login = ({ lastProductId }) => {
       // Listen for messages from popup
       const handleMessage = (event) => {
         if (event.origin !== window.location.origin) return;
-        
+
         if (event.data.type === 'SOCIAL_LOGIN_SUCCESS') {
           const userData = event.data.userData;
-          
+
           // Store user data
           localStorage.setItem("userData", JSON.stringify(userData));
           dispatch(loginSuccess({ user: userData, status: "authenticated" }));
           window.dispatchEvent(new Event("userLoggedIn"));
-          
+
           // Use helper function for redirect
           redirectAfterLogin(router, userData);
-          
+
           window.removeEventListener('message', handleMessage);
         } else if (event.data.type === 'SOCIAL_LOGIN_ERROR') {
           toast.error("Facebook login failed. Please try again.");
@@ -361,7 +364,7 @@ const Login = ({ lastProductId }) => {
 
           <div className="col-lg-12">
             <div className="mt-2 mt-md-3">
-              <button disabled={isLoading?true:false} type="submit" className="btn btn-lg btn-secondary w-100">
+              <button disabled={isLoading ? true : false} type="submit" className="btn btn-lg btn-secondary w-100">
                 Login to Your Account
               </button>
             </div>
@@ -374,7 +377,7 @@ const Login = ({ lastProductId }) => {
               handleGoogleSignIn();
               // router.push("/");
             }}
-              
+
             type="button"
             className="btn btn-default d-flex gap-1 align-items-center justify-content-center"
           >
@@ -391,7 +394,7 @@ const Login = ({ lastProductId }) => {
             <Icons.Facebook />
             <span>Login in with Facebook</span>
           </button>
-         
+
           {/* <Link href={`/auth/registerPhone${router.query.redirect ? `?redirect=${encodeURIComponent(router.query.redirect)}` : ''}`}
             className="btn btn-success d-flex gap-1 align-items-center justify-content-center"
             
@@ -399,7 +402,7 @@ const Login = ({ lastProductId }) => {
             <Icons.Phone />
             <span>Login in with Mobile</span>
           </Link> */}
-          
+
         </div>
         <div className="text-center">
           <p>
