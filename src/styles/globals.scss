@@ -218,15 +218,15 @@
   overflow: auto;
   resize: vertical;
   /* drag up/down */
-  min-height: 220px;
+  min-height: 400px;
   /* starting height */
-  max-height: 1000px;
+  max-height: 2000px;
   /* optional guard */
 }
 
 /* keep a comfy editing area inside */
 .quill-resize .ql-editor {
-  min-height: 200px;
+  min-height: 380px;
 }
 
 .logo {

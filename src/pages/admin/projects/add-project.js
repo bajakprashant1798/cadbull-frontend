@@ -878,8 +878,8 @@ const AddProject = () => {
                 onChange={handleQuillDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
+                className="quill-resize"
                 style={{
-                  minHeight: '200px',
                   backgroundColor: '#fff'
                 }}
                 placeholder="Enter project description with rich text formatting..."
