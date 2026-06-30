@@ -31,8 +31,8 @@ const Login = ({ lastProductId }) => {
     <>
       Cadbull is the world’s largest CAD library. Here, you can download over{" "}
       <span className="text-danger fw-bold">
-        {/* {Number(lastProductId || 271030).toLocaleString("en-US")}+ */}
-        300,000+
+        {Number(lastProductId || 271030).toLocaleString("en-US")}+
+        {/* 300,000+ */}
       </span> premium and free CAD files. Create a free account and download 5 files per day for free. If you need to download more files, you can upgrade to our Gold Account plan and purchase additional access.
     </>
   );

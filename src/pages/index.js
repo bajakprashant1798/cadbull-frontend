@@ -483,8 +483,8 @@ export default function Home({
                 <p className="mb-4 mb-md-5">
                   {/* User */}
                   <span className="text-danger">
-                    {/* {Number(lastId).toLocaleString("en-US")}+ */}
-                    300,000+
+                    {Number(lastId).toLocaleString("en-US")}+
+                    {/* 300,000+ */}
                   </span>
                   <span className="fw-light"> Free & Premium
                     CADFiles
