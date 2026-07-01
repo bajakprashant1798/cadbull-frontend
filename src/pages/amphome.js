@@ -51,11 +51,12 @@ export default function AmpHome({ goldFiles, freeFiles, user }) {
         <title>Cadbull - 2D Cad Library, Cad Blocks, Autocad Blocks Furniture</title>
         <meta name="theme-color" content="#7d5bd9" />
         <link rel="shortcut icon" href="/favicon.ico" />
-
-        <link
-          rel="shortcut icon"
-          href="/favicon.ico"
-        />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
         {/* AMP Boilerplate */}
         <style amp-boilerplate>{`body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}`}</style>

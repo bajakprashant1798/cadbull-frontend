@@ -178,7 +178,13 @@ export default function App({ Component, pageProps }) {
     return (
       <Fragment>
         <Head>
-          <link rel="icon" href="/favicon.ico" />
+          <link rel="shortcut icon" href="/favicon.ico" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+          <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+          <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+          <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
           {/* <meta name="viewport" content="initial-scale=1.0, width=device-width" /> */}
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
@@ -318,7 +324,13 @@ export default function App({ Component, pageProps }) {
         <AdSenseScripts />
 
         <Head>
-          <link rel="icon" href="/favicon.ico" />
+          <link rel="shortcut icon" href="/favicon.ico" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+          <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+          <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+          <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           <title>Cadbull</title>
           <meta name="description" content="World Largest 2d CAD Library." />
