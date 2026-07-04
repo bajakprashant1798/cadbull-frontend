@@ -1062,6 +1062,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 )}
               </div>
 
+              <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
+
+              {/* view profile */}
               <div className="row my-3 d-lg-block d-none">
                 <div className="col-md-12">
                   <div className="bg-white profile_shadow p-2 p-md-4 rounded-4">
@@ -1531,7 +1534,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
                     {/* <div className="border-top border-bottom py-2 mt-4"> */}
-                    {/* <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" /> */}
+                    {/* <AdSense slot="9473550740" ≠ layout="in-article" className="ad-slot" /> */}
                     {/* </div> */}
 
                     <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
