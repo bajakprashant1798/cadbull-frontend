@@ -1140,7 +1140,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               {/* Classic styled FAQ and Reviews for Desktop */}
               {project?.faqs && project.faqs.length > 0 && (
-                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3" id="faq">
+                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3 d-none d-lg-block" id="faq">
                   <h3 className="fw-bold text-dark border-bottom pb-2 mb-3" style={{ fontSize: "1.25rem" }}>
                     Frequently Asked Questions
                   </h3>
@@ -1174,7 +1174,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               {/* E-E-A-T Quality verification card */}
               {(project?.tldr || project?.experience) && (
-                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3" id="eeat-quality">
+                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3 d-none d-lg-block" id="eeat-quality">
                   <div className="d-flex align-items-center gap-2 mb-3">
                     <FaShieldAlt className="text-primary" size={18} />
                     <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
@@ -1223,7 +1223,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               )}
 
               {/* Dynamic Ratings & Reviews section inside a matching classic card */}
-              <div className="bg-white pb-3 mt-3" id="reviews">
+              <div className="bg-white pb-3 mt-3 d-none d-lg-block" id="reviews">
                 <RatingsSection
                   productId={project?.id}
                   isAuthenticated={isAuthenticated}
