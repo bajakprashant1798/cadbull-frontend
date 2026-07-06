@@ -10,6 +10,7 @@ const cancel = "/assets/icons/cancel.svg";
 // const uploadFiles = assets.icons("upload-files.svg");
 // const secure = assets.icons("secure.svg");
 // const cancel = assets.icons("cancel.svg");
+
 // import uploadFiles from "@/assets/icons/upload-files.svg";
 // import secure from "@/assets/icons/secure.svg";
 // import cancel from "@/assets/icons/cancel.svg";
