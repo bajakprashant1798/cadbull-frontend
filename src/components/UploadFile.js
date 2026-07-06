@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { assets } from "@/utils/assets";
-const uploadFiles = assets.icons("upload-files.svg");
-const secure = assets.icons("secure.svg");
-const cancel = assets.icons("cancel.svg");
+
+// Local public path icons (loaded from same-origin public folder to bypass Cloudflare challenges)
+const uploadFiles = "/assets/icons/upload-files.svg";
+const secure = "/assets/icons/secure.svg";
+const cancel = "/assets/icons/cancel.svg";
+
+// CDN path icons (commented out)
+// const uploadFiles = assets.icons("upload-files.svg");
+// const secure = assets.icons("secure.svg");
+// const cancel = assets.icons("cancel.svg");
 // import uploadFiles from "@/assets/icons/upload-files.svg";
 // import secure from "@/assets/icons/secure.svg";
 // import cancel from "@/assets/icons/cancel.svg";
@@ -11,7 +18,7 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
   const [progressWidth, setProgressWidth] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [currentFile, setCurrentFile] = useState(null);
- // Initial time in seconds
+  // Initial time in seconds
 
   const cancelUpload = () => {
     setProgressWidth(0);
@@ -75,8 +82,8 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
           {progressWidth >= 100
             ? "Uploaded"
             : progressWidth === 0
-            ? "Upload"
-            : "Uploading"}
+              ? "Upload"
+              : "Uploading"}
         </h5>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <p className="text-gray opacity-50">{`${progressWidth}% - ${timeLeft} seconds left`}</p>
