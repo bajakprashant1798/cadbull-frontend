@@ -15,6 +15,14 @@ import { useRouter } from "next/router";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
+const slugify = (text) => {
+    if (!text) return "";
+    return text
+        .replace(/\s+/g, "-")
+        .replace(/\-+/g, "-")
+        .replace(/^\-+|\-+$/g, "");
+};
+
 const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPages, initialPage}) => {
     const router = useRouter();
   // Get the search term from Redux (if needed)
@@ -212,6 +220,109 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
         <meta name="twitter:description" content={currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more."} />
         {/* <meta name="twitter:image" content={project?.photo_url} /> */}
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad" />
+
+        {/* 1. BreadcrumbList Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Categories",
+                  "item": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/categories`
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "Search Results",
+                  "item": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/categories/search`
+                }
+              ]
+            })
+          }}
+        />
+
+        {/* 2. CollectionPage Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              "name": currentPage > 1 ? `Find Your Perfect Design | Cadbull AutoCAD File Search - Page ${currentPage}` : 'Find Your Perfect Design | Cadbull AutoCAD File Search',
+              "description": currentPage > 1 ? `Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more. Page ${currentPage}.` : "Discover a vast collection of high-quality AutoCAD DWG files. Search Cadbull for house plans, building layouts, kitchen designs, and more.",
+              "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/categories/search`
+            })
+          }}
+        />
+
+        {/* 3. ItemList Schema */}
+        {projects?.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "name": "Searched CAD Drawings",
+                "numberOfItems": projects.length,
+                "itemListElement": projects.map((project, idx) => ({
+                  "@type": "ListItem",
+                  "position": idx + 1,
+                  "name": project.work_title,
+                  "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/detail/${project.id}/${slugify(project.work_title)}`
+                }))
+              })
+            }}
+          />
+        )}
+
+        {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How do I search for specific CAD drawings on Cadbull?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can use the search bar at the top of the categories or search page. Enter keywords like 'house plan', 'sofa block', or 'elevation' to find relevant AutoCAD DWG files."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are the search results drawings free to download?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Search results show both free and premium Gold CAD drawings. Free files can be downloaded by registered users, whereas Gold files require an active subscription."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I filter CAD search results by format or drawing type?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, you can filter your search results using the type selector (All, Free, Gold) and sort by drawing type or file formats such as DWG, SketchUp (SKP), and 3D drawings."
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </Head>
       <CategoriesLayout 
         title="Search Results" 

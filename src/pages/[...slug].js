@@ -27,6 +27,14 @@ import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
+const slugify = (text) => {
+    if (!text) return "";
+    return text
+        .replace(/\s+/g, "-")
+        .replace(/\-+/g, "-")
+        .replace(/^\-+|\-+$/g, "");
+};
+
 const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories, fallbackType }) => {
     const router = useRouter();
     const { slug: querySlugArray, page: queryPage } = router.query;
@@ -299,6 +307,53 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     // Canonical URL should reflect the full path structure
     const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${currentPath}`;
 
+    // Dynamic breadcrumb generation for JSON-LD and SEO
+    const frontUrl = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
+    const breadcrumbItems = [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": frontUrl
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Categories",
+            "item": `${frontUrl}/categories`
+        }
+    ];
+
+    if (initialParentSlug) {
+        const parentCategory = (mainCategories || []).find(
+            (c) => c.slug === initialParentSlug || c.path === initialParentSlug
+        );
+        const parentName = parentCategory ? parentCategory.name : makeTitle(initialParentSlug);
+
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": parentName,
+            "item": `${frontUrl}/${initialParentSlug}`
+        });
+
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 4,
+            "name": title || makeTitle(slug),
+            "item": `${frontUrl}/${currentPath}`
+        });
+    } else {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": title || makeTitle(slug),
+            "item": `${frontUrl}/${currentPath}`
+        });
+    }
+
+    const currentProjects = subcat || initialProjects || [];
+
     return (
         <Fragment>
             <Head>
@@ -334,6 +389,94 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                 <meta name="twitter:description" content={currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library.")} />
                 {/* <meta name="twitter:image" content={project?.photo_url} /> */}
                 <link rel="canonical" href={canonicalUrl} />
+
+                {/* 1. BreadcrumbList Schema */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "BreadcrumbList",
+                            "itemListElement": breadcrumbItems
+                        })
+                    }}
+                />
+
+                {/* 2. CollectionPage Schema */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "CollectionPage",
+                            "name": currentPage > 1 ? `${title || makeTitle(slug)} - Page ${currentPage} | Cadbull` : `${title || makeTitle(slug)} | Cadbull`,
+                            "description": currentPage > 1 ? `${metaDescription || "World Largest 2d CAD Library."} Page ${currentPage}.` : (metaDescription || "World Largest 2d CAD Library."),
+                            "url": canonicalUrl,
+                            "about": {
+                                "@type": "Thing",
+                                "name": title || makeTitle(slug)
+                            }
+                        })
+                    }}
+                />
+
+                {/* 3. ItemList Schema */}
+                {currentProjects?.length > 0 && (
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({
+                                "@context": "https://schema.org",
+                                "@type": "ItemList",
+                                "name": `${title || makeTitle(slug)} CAD Drawings List`,
+                                "numberOfItems": currentProjects.length,
+                                "itemListElement": currentProjects.map((project, idx) => ({
+                                    "@type": "ListItem",
+                                    "position": idx + 1,
+                                    "name": project.work_title,
+                                    "url": `${frontUrl}/detail/${project.id}/${slugify(project.work_title)}`
+                                }))
+                            })
+                        }}
+                    />
+                )}
+
+                {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "FAQPage",
+                            "mainEntity": [
+                                {
+                                    "@type": "Question",
+                                    "name": `What types of CAD files are available for ${title || makeTitle(slug)}?`,
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": `In the ${title || makeTitle(slug)} category, you can find various high-quality CAD drawings, including 2D & 3D designs, DWG files, and AutoCAD blocks for your projects.`
+                                    }
+                                },
+                                {
+                                    "@type": "Question",
+                                    "name": `Are the ${title || makeTitle(slug)} drawings on Cadbull free to download?`,
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": `Yes, Cadbull offers both free and premium CAD drawings in the ${title || makeTitle(slug)} category. Registered users can download free DWG files, while Gold members get access to premium design resources.`
+                                    }
+                                },
+                                {
+                                    "@type": "Question",
+                                    "name": `Which file formats are supported for ${title || makeTitle(slug)} drawings on Cadbull?`,
+                                    "acceptedAnswer": {
+                                        "@type": "Answer",
+                                        "text": `The drawings in the ${title || makeTitle(slug)} category are primarily in DWG format, compatible with AutoCAD. Some designs also support SketchUp (SKP), 3ds Max, Revit, and other design software.`
+                                    }
+                                }
+                            ]
+                        })
+                    }}
+                />
             </Head>
             <CategoriesLayout {...CategoriesProps}>
                 {isLoading && <Loader />}

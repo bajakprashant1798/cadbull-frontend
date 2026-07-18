@@ -341,6 +341,107 @@ const Categories = ({
         <meta name="twitter:description" content={currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More."} />
         <meta name="twitter:image" content={logo} />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
+
+        {/* 1. BreadcrumbList Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Categories",
+                  "item": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/categories`
+                }
+              ]
+            })
+          }}
+        />
+
+        {/* 2. CollectionPage Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              "name": currentPage > 1 ? `Cadbull Categories | Free & Premium AutoCAD DWG Files - Page ${currentPage}` : 'Cadbull Categories | Free & Premium AutoCAD DWG Files',
+              "description": currentPage > 1 ? `Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More. Page ${currentPage}.` : "Discover CAD Drawing Categories with free and premium DWG Files by Architecture, Structure, Interior & More.",
+              "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/categories`,
+              "about": {
+                "@type": "Thing",
+                "name": "AutoCAD DWG Categories"
+              }
+            })
+          }}
+        />
+
+        {/* 3. ItemList Schema */}
+        {catalog?.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "name": "CAD Drawing Categories",
+                "numberOfItems": catalog.length,
+                "itemListElement": catalog.map((category, idx) => ({
+                  "@type": "ListItem",
+                  "position": idx + 1,
+                  "name": category.name,
+                  "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/${category.slug}`
+                }))
+              })
+            }}
+          />
+        )}
+
+        {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "What CAD drawing categories are available on Cadbull?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Cadbull offers a wide range of CAD drawing categories, including Architecture, House Plans, Landscaping, Interior Design, Structural Details, Mechanical Drawings, Electrical Blocks, 3D Drawings, and more."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Are there free CAD files available in all categories?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, almost every category on Cadbull includes both free and premium (Gold) CAD drawings. Users can register for a free account to download free DWG files, or subscribe to a gold plan for premium files."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What software can I use to open Cadbull files?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most Cadbull files are in DWG format, which can be opened with Autodesk AutoCAD. Some drawings are in SKP (SketchUp), MAX (3ds Max), or RVT (Revit) formats, compatible with their respective software."
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </Head>
       <CategoriesLayout {...CategoriesProps}>
         {isLoading && <Loader />}
