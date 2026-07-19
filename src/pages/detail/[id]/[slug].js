@@ -975,6 +975,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div> */}
 
+
               {/* E9E9EB */}
               <div className="p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2" style={{ background: "#FDFDFD" }}>
                 {galleryUrls.length > 1 ? (
