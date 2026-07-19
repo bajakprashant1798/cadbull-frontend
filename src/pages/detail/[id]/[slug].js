@@ -975,7 +975,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div> */}
 
-              <div className="bg-light p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2">
+              {/* E9E9EB */}
+              <div className="p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2" style={{ background: "#FBFBFC" }}>
                 {galleryUrls.length > 1 ? (
                   /* MULTI-IMAGE MODE (with ratio, but only 1–2 images loaded at a time) */
                   <div className="embla" ref={emblaRef}>
@@ -1064,77 +1065,84 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
 
-              {/* view profile */}
+              {/* Tags Card */}
+              {project?.tags && (
+                <div className="d-none d-lg-block bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4">
+                  <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
+                  <div className="d-flex flex-wrap gap-2">
+                    {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
+                      <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Cadbull AI Generator Card - Desktop */}
               <div className="row my-3 d-lg-block d-none">
                 <div className="col-md-12">
-                  <div className="bg-white profile_shadow p-2 p-md-4 rounded-4">
-                    <div className="row justify-content-between align-items-center">
-                      <div className="col-md-5">
-                        <div className="d-flex align-items-center gap-md-3 gap-2">
-                          <div className="flex-shrink-0">
-                            {(project?.profile_pic && !profileImageError) ? (
-                              <Image
-                                src={getSafeImageUrl(project.profile_pic)}
-                                alt="Profile"
-                                width={80}
-                                height={80}
-                                className="rounded-circle"
-                                style={{ objectFit: "cover" }}
-                                loading="lazy"
-                                // priority={false}
-                                decoding="async"
-                                // quality={75}
-                                sizes="80px"
-                                onError={() => setProfileImageError(true)}
-                              />
-                            ) : (
-                              <Image
-                                src={profile_dummy}
-                                alt="Profile"
-                                width={80}
-                                height={80}
-                                className="rounded-circle"
-                                style={{ objectFit: "cover" }}
-                                // priority={false}
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            )}
-                          </div>
-                          <div>
-                            <p className='fst-italic fs-12'>Uploaded by:</p>
-                            <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                              <span>{project?.firstname} </span>
+                  <a
+                    href="https://ai.cadbull.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-decoration-none"
+                  >
+                    <div
+                      className="p-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
+                      style={{
+                        background: "linear-gradient(135deg, #20325A 0%, #3D6098 100%)",
+                        transition: "all 0.3s ease",
+                        cursor: "pointer"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      {/* Decorative background glow bubble */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "-20%",
+                          right: "-20%",
+                          width: "150px",
+                          height: "150px",
+                          background: "rgba(255, 255, 255, 0.12)",
+                          borderRadius: "50%",
+                          filter: "blur(40px)",
+                          pointerEvents: "none"
+                        }}
+                      />
 
-                            </h6>
-                            <p>
-                              {project?.lastname}
-                            </p>
-
-                            <div className=" mt-1 d-md-none text-start text-md-end">
-                              <Link
-                                href={`/profile/author/${project?.user_id}`}
-                                className="btn btn-primary"
-                              >
-                                View Profile
-                              </Link>
-                            </div>
-                          </div>
+                      <div className="d-flex align-items-center gap-3">
+                        <div className="flex-grow-1">
+                          <h4 className="fw-bold mb-2 text-white" style={{ fontSize: "1.1rem", letterSpacing: "0.2px" }}>
+                            Turn floor plans into photoreal 3D in minutes.
+                          </h4>
+                          <p className="mb-0 text-white-50" style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
+                            Upload your drawings, describe the vision, and generate four cinematic 3D views. Built for working architects and interior designers.
+                          </p>
                         </div>
                       </div>
-                      <div className="d-none d-md-block col-md-5 text-start text-md-end">
-                        <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
-                          View Profile
-                        </Link>
+
+                      <div className="mt-3 d-flex align-items-center justify-content-end">
+                        <span
+                          className="btn btn-sm fw-semibold rounded-pill px-3 py-1.5 shadow-sm text-primary"
+                          style={{
+                            fontSize: "0.8rem",
+                            border: "none",
+                            background: "#ffffff",
+                            color: "#20325A"
+                          }}
+                        >
+                          Try AI Now &rarr;
+                        </span>
                       </div>
-                      {/* <p className="d-md-none mt-3">
-                        This architectural drawing is a 2D block of garden
-                        benches in AutoCAD drawing, CAD file, and dwg file.
-                        For more details and information download the
-                        drawing file.
-                      </p> */}
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
 
@@ -1257,7 +1265,131 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 {/* Project Description */}
                 <div className="py-3 py-md-2 description-container">
                   <div className="container">
-                    <div className="row justify-content-center mb-3">
+                    <div className="row">
+                      <div className="col-md-12">
+                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#F4F4F5" }}>
+                          <div className="" style={{ paddingLeft: '25px' }}>
+
+                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
+                              <div>
+                                <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
+                                <h2 className="product-description-title mb-2">Description</h2>
+                              </div>
+                            </div>
+                            <div>{parse(`${(project.description || "").replace(/\s*style=">/g, '>')}`)}</div>
+                            {/* <DescriptionRenderer 
+                              description={project?.description} 
+                              className="mt-2"
+                            /> */}
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cadbull AI Generator Card moved below tags */}
+
+                    {/* <div className="d-none d-lg-block"> */}
+                    <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
+                    {/* </div> */}
+
+                    <div className="row gy-3 mb-md-3 mb-4">
+                      <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#20325A"}
+                          image={autoCad}
+                          type={"File Type:"}
+                          title={project?.file_type}
+                        />
+                      </Link>
+
+                      {/* NEW: File Size card */}
+                      {/* <div className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#21447f"}
+                          image={file_size}
+                          type={"File Size:"}
+                          title={formatBytes(project?.size) || "—"}
+                        // className={"text-dark"}
+                        />
+                      </div> */}
+
+                      <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#3D6098"}
+                          image={cad_category}
+                          type={"Category::"}
+                          title={project?.product_category_title}
+                        />
+                      </Link>
+                      <Link href={`/${project?.category_path}/${project?.subcategory_path}/1`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#5B5B5B"}
+                          image={cad}
+                          type={"Sub Category::"}
+                          title={project?.product_subcategory_title}
+                        />
+                      </Link>
+                      <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#E9E9EB"}
+                          image={goldblocks}
+                          type={"type:"}
+                          title={project?.type}
+                          className={"text-primary"}
+                        />
+                      </Link>
+
+                    </div>
+
+                    {/* Uploaded By Profile Card */}
+                    <div className="bg-white profile_shadow p-3 rounded-2 border border-light-subtle mb-3">
+                      <div className="d-flex align-items-center justify-content-between gap-3">
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="flex-shrink-0">
+                            {(project?.profile_pic && !profileImageError) ? (
+                              <Image
+                                src={getSafeImageUrl(project.profile_pic)}
+                                alt="Profile"
+                                width={60}
+                                height={60}
+                                className="rounded-circle"
+                                style={{ objectFit: "cover" }}
+                                loading="lazy"
+                                decoding="async"
+                                sizes="60px"
+                                onError={() => setProfileImageError(true)}
+                              />
+                            ) : (
+                              <Image
+                                src={profile_dummy}
+                                alt="Profile"
+                                width={60}
+                                height={60}
+                                className="rounded-circle"
+                                style={{ objectFit: "cover" }}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <p className='fst-italic mb-0 text-muted' style={{ fontSize: '0.75rem' }}>Uploaded by:</p>
+                            <h6 className="text-primary fw-semibold mb-0" style={{ fontSize: '0.9rem' }}>
+                              {project?.firstname} {project?.lastname}
+                            </h6>
+                          </div>
+                        </div>
+                        <div>
+                          <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary btn-sm py-1.5 px-3 rounded-pill fw-semibold" style={{ fontSize: '0.8rem' }}>
+                            View Profile
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Download & Library Buttons placed below Uploaded By Card */}
+                    <div className="row justify-content-center mb-3 mt-3">
                       <div className="col-md-12 col-12 text-center">
                         <div className="download-btn-sm text-center d-inline-flex flex-column flex-sm-row gap-2 gap-md-3">
                           <button
@@ -1287,30 +1419,23 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         </div>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-12">
-                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
-                          <div className="" style={{ paddingLeft: '25px' }}>
 
-                            <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
-                              <div>
-                                <h4 className="d-inline-block mb-3 h6" style={{ minHeight: 6 }}></h4>
-                                <h2 className="product-description-title mb-2">Description</h2>
-                              </div>
-                            </div>
-                            <div>{parse(`${(project.description || "").replace(/\s*style=">/g, '>')}`)}</div>
-                            {/* <DescriptionRenderer 
-                              description={project?.description} 
-                              className="mt-2"
-                            /> */}
-
-                          </div>
+                    {/* Tags Card */}
+                    {project?.tags && (
+                      <div className="d-block d-lg-none bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4">
+                        <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
+                        <div className="d-flex flex-wrap gap-2">
+                          {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
+                            <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
+                              #{tag}
+                            </span>
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Cadbull AI Generator Promo Card */}
-                    <div className="row mb-4">
+                    {/* Cadbull AI Generator Card - Mobile */}
+                    <div className="row my-3 d-block d-lg-none">
                       <div className="col-12">
                         <a
                           href="https://ai.cadbull.com"
@@ -1373,146 +1498,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             </div>
                           </div>
                         </a>
-                      </div>
-                    </div>
-
-                    {/* <div className="d-none d-lg-block"> */}
-                    <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
-                    {/* </div> */}
-
-                    <div className="row gy-3 mb-md-3 mb-4">
-                      <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#20325A"}
-                          image={autoCad}
-                          type={"File Type:"}
-                          title={project?.file_type}
-                        />
-                      </Link>
-
-                      {/* NEW: File Size card */}
-                      <div className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#21447f"}
-                          image={file_size}
-                          type={"File Size:"}
-                          title={formatBytes(project?.size) || "—"}
-                        // className={"text-dark"}
-                        />
-                      </div>
-
-                      <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#3D6098"}
-                          image={cad_category}
-                          type={"Category::"}
-                          title={project?.product_category_title}
-                        />
-                      </Link>
-                      <Link href={`/${project?.category_path}/${project?.subcategory_path}/1`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#5B5B5B"}
-                          image={cad}
-                          type={"Sub Category::"}
-                          title={project?.product_subcategory_title}
-                        />
-                      </Link>
-                      <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#E9E9EB"}
-                          image={goldblocks}
-                          type={"type:"}
-                          title={project?.type}
-                          className={"text-primary"}
-                        />
-                      </Link>
-
-                    </div>
-
-                    {/* Tags Card */}
-                    {project?.tags && (
-                      <div className="bg-white profile_shadow p-3 p-md-4 rounded-4 mt-3 mb-4">
-                        <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
-                        <div className="d-flex flex-wrap gap-2">
-                          {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
-                            <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="row my-3 d-block d-lg-none">
-                      <div className="col-12">
-                        <div className="bg-white profile_shadow p-2 p-md-4">
-                          <div className="row justify-content-between align-items-center">
-                            <div className="col-7">
-                              <div className="d-flex align-items-center gap-md-3 gap-2">
-                                <div className="flex-shrink-0">
-                                  {(project?.profile_pic && !profileImageError) ? (
-                                    <Image
-                                      src={getSafeImageUrl(project.profile_pic)}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      loading="lazy"
-                                      // priority={false}
-                                      decoding="async"
-                                      // quality={75}
-                                      sizes="80px"
-                                      onError={() => setProfileImageError(true)}
-                                    />
-                                  ) : (
-                                    <Image
-                                      src={profile_dummy}
-                                      alt="Profile"
-                                      width={80}
-                                      height={80}
-                                      className="rounded-circle"
-                                      style={{ objectFit: "cover" }}
-                                      // priority={false}
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                  )}
-                                </div>
-                                <div>
-                                  <p className='fst-italic fs-12'>Uploaded by:</p>
-                                  <h6 className="text-primary fw-semibold d-flex gap-1 align-items-center">
-                                    <span>{project?.firstname} </span>
-
-                                  </h6>
-                                  <p>
-                                    {project?.lastname}
-                                  </p>
-
-                                  {/* <div className=" mt-1 d-md-none text-start text-md-end">
-                                    <Link
-                                      href={`/profile/author/${project?.user_id}`} 
-                                      className="btn btn-primary"
-                                    >
-                                      View Profile
-                                    </Link>
-                                  </div> */}
-                                </div>
-                              </div>
-                            </div>
-                            <div className=" col-5 text-start text-md-end">
-                              <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary">
-                                View Profile
-                              </Link>
-                            </div>
-                            {/* <p className="d-md-none mt-3">
-                              This architectural drawing is a 2D block of garden
-                              benches in AutoCAD drawing, CAD file, and dwg file.
-                              For more details and information download the
-                              drawing file.
-                            </p> */}
-                          </div>
-                        </div>
                       </div>
                     </div>
 
@@ -1742,7 +1727,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 <div className="mb-4 mb-md-5 ps-5">
                   <SectionHeading
                     subHeading={"find Latest"}
-                    mainHeading={"Related"}
+                    mainHeading={"Similar"}
                     mainHeadingBold={"Files"}
                   />
                 </div>
