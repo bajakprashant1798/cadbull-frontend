@@ -976,7 +976,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div> */}
 
               {/* E9E9EB */}
-              <div className="p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2" style={{ background: "#FBFBFC" }}>
+              <div className="p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2" style={{ background: "#FDFDFD" }}>
                 {galleryUrls.length > 1 ? (
                   /* MULTI-IMAGE MODE (with ratio, but only 1–2 images loaded at a time) */
                   <div className="embla" ref={emblaRef}>
@@ -1267,7 +1267,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   <div className="container">
                     <div className="row">
                       <div className="col-md-12">
-                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#F4F4F5" }}>
+                        <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#FAFAFC" }}>
                           <div className="" style={{ paddingLeft: '25px' }}>
 
                             <div className={`position-relative d-inline-flex main-heading-wrapper-product `}>
