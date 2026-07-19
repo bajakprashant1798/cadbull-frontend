@@ -1255,8 +1255,38 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               <div className="d-flex flex-column gap-3">
 
                 {/* Project Description */}
-                <div className="py-3 py-md-4 description-container">
+                <div className="py-3 py-md-2 description-container">
                   <div className="container">
+                    <div className="row justify-content-center mb-3">
+                      <div className="col-md-12 col-12 text-center">
+                        <div className="download-btn-sm text-center d-inline-flex flex-column flex-sm-row gap-2 gap-md-3">
+                          <button
+                            onClick={() =>
+                              handledownload(project.id, isAuthenticated, router)
+                            }
+                            type="button"
+                            className="btn-success-split "
+                          >
+                            <span>
+                              <Icons.Download />
+                            </span>
+                            <span>Download</span>
+                          </button>
+
+                          {/* add to fevorite btn */}
+                          <button
+                            onClick={() => handleAddToLibrary()}
+                            type="button"
+                            className="btn-primary-split"
+                          >
+                            <span>
+                              <Icons.Add />
+                            </span>
+                            <span>Add to libary</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                     <div className="row">
                       <div className="col-md-12">
                         <div className="mb-md-3 mb-4 shadow-sm px-3 pb-3 pt-2 rounded-1" style={{ background: "#E9E9EB" }}>
@@ -1276,6 +1306,73 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                           </div>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Cadbull AI Generator Promo Card */}
+                    <div className="row mb-4">
+                      <div className="col-12">
+                        <a
+                          href="https://ai.cadbull.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-decoration-none"
+                        >
+                          <div
+                            className="p-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
+                            style={{
+                              background: "linear-gradient(135deg, #20325A 0%, #3D6098 100%)",
+                              transition: "all 0.3s ease",
+                              cursor: "pointer"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform = "translateY(-4px)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = "translateY(0)";
+                            }}
+                          >
+                            {/* Decorative background glow bubble */}
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "-20%",
+                                right: "-20%",
+                                width: "150px",
+                                height: "150px",
+                                background: "rgba(255, 255, 255, 0.12)",
+                                borderRadius: "50%",
+                                filter: "blur(40px)",
+                                pointerEvents: "none"
+                              }}
+                            />
+
+                            <div className="d-flex align-items-center gap-3">
+                              <div className="flex-grow-1">
+                                <h4 className="fw-bold mb-2 text-white" style={{ fontSize: "1.1rem", letterSpacing: "0.2px" }}>
+                                  Turn floor plans into photoreal 3D in minutes.
+                                </h4>
+                                <p className="mb-0 text-white-50" style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
+                                  Upload your drawings, describe the vision, and generate four cinematic 3D views. Built for working architects and interior designers.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-3 d-flex align-items-center justify-content-end">
+                              <span
+                                className="btn btn-sm fw-semibold rounded-pill px-3 py-1.5 shadow-sm text-primary"
+                                style={{
+                                  fontSize: "0.8rem",
+                                  border: "none",
+                                  background: "#ffffff",
+                                  color: "#20325A"
+                                }}
+                              >
+                                Try AI Now &rarr;
+                              </span>
+                            </div>
+                          </div>
+                        </a>
                       </div>
                     </div>
 
@@ -1539,37 +1636,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
 
-                    <div className="row justify-content-center">
-                      <div className="col-md-12 col-12 text-center">
-                        <div className="download-btn-sm text-center mt-4 mt-md-5 d-inline-flex flex-column  flex-sm-row gap-2 gap-md-3">
-                          <button
-                            onClick={() =>
-                              handledownload(project.id, isAuthenticated, router)
-                            }
-                            type="button"
-                            className="btn-success-split "
-                          >
-                            <span>
-                              <Icons.Download />
-                            </span>
-                            <span>Download</span>
-                          </button>
-
-                          {/* add to fevorite btn */}
-                          <button
-                            onClick={() => handleAddToLibrary()}
-                            type="button"
-                            className="btn-primary-split"
-                          >
-                            <span>
-                              <Icons.Add />
-                            </span>
-                            <span>Add to libary</span>
-                          </button>
-
-                        </div>
-                      </div>
-                    </div>
+                    {/* Buttons moved above description */}
 
                     {/* <Link href={`https://arcll.com/3d-visualizer`} target='_blank'>
                       <button
