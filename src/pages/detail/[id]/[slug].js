@@ -1064,7 +1064,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 )}
               </div>
 
-              <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
+
 
               {/* Tags Card */}
               {project?.tags && (
@@ -1090,9 +1090,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     className="text-decoration-none"
                   >
                     <div
-                      className="p-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
+                      className="p-3 px-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
                       style={{
-                        background: "linear-gradient(135deg, #20325A 0%, #3D6098 100%)",
+                        background: "#1C2E57",
                         transition: "all 0.3s ease",
                         cursor: "pointer"
                       }}
@@ -1118,33 +1118,38 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         }}
                       />
 
-                      <div className="d-flex align-items-center gap-3">
+                      <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 position-relative" style={{ zIndex: 1 }}>
                         <div className="flex-grow-1">
-                          <h4 className="fw-bold mb-2 text-white" style={{ fontSize: "1.1rem", letterSpacing: "0.2px" }}>
+                          <h4 className="fw-bold mb-1 text-white" style={{ fontSize: "1.05rem", letterSpacing: "0.2px" }}>
                             Turn floor plans into photoreal 3D in minutes.
                           </h4>
-                          <p className="mb-0 text-white-50" style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
-                            Upload your drawings, describe the vision, and generate four cinematic 3D views. Built for working architects and interior designers.
+                          <p className="mb-0 text-white-50" style={{ fontSize: "0.8rem", lineHeight: "1.4" }}>
+                            Upload your drawings, describe the vision, and generate four cinematic 3D views.
                           </p>
                         </div>
-                      </div>
-
-                      <div className="mt-3 d-flex align-items-center justify-content-end">
-                        <span
-                          className="btn btn-sm fw-semibold rounded-pill px-3 py-1.5 shadow-sm text-primary"
-                          style={{
-                            fontSize: "0.8rem",
-                            border: "none",
-                            background: "#ffffff",
-                            color: "#20325A"
-                          }}
-                        >
-                          Try AI Now &rarr;
-                        </span>
+                        <div className="flex-shrink-0 text-end">
+                          <span
+                            className="btn btn-sm fw-bold rounded-pill px-4 py-2 shadow-sm"
+                            style={{
+                              fontSize: "0.82rem",
+                              border: "none",
+                              background: "#ffffff",
+                              color: "#1C2E57",
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            Try AI Now &rarr;
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </a>
                 </div>
+              </div>
+
+              {/* AdSense slot 1862351352 for Desktop */}
+              <div className="d-none d-lg-block">
+                <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
               </div>
 
               {/* Classic styled FAQ and Reviews for Desktop */}
@@ -1297,8 +1302,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
                         <FileDescription
-                          bgColor={"#20325A"}
-                          image={autoCad}
+                          bgColor={"#1C2E57"}
+                          // image={autoCad}
                           type={"File Type:"}
                           title={project?.file_type}
                         />
@@ -1317,30 +1322,43 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                       <Link href={`/${project?.category_path}/1`} className="text-decoration-none">
                         <FileDescription
-                          bgColor={"#3D6098"}
-                          image={cad_category}
+                          bgColor={"#305AAD"}
+                          // image={cad_category}
                           type={"Category::"}
                           title={project?.product_category_title}
                         />
                       </Link>
                       <Link href={`/${project?.category_path}/${project?.subcategory_path}/1`} className="text-decoration-none">
                         <FileDescription
-                          bgColor={"#5B5B5B"}
-                          image={cad}
+                          bgColor={"#3A3F4B"}
+                          // image={cad}
                           type={"Sub Category::"}
                           title={project?.product_subcategory_title}
                         />
                       </Link>
                       <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
                         <FileDescription
-                          bgColor={"#E9E9EB"}
-                          image={goldblocks}
+                          bgColor={"#F4F5F7"}
+                          // image={goldblocks}
                           type={"type:"}
                           title={project?.type}
                           className={"text-primary"}
                         />
                       </Link>
 
+                    </div>
+
+                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+
+                    <div className="row gy-3 mb-md-3 mb-4 pt-3">
+                      <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
+                        <FileDescription
+                          bgColor={"#20325A"}
+                          // image={autoCad}
+                          type={"File Id:"}
+                          title={project?.id}
+                        />
+                      </Link>
                     </div>
 
                     {/* Uploaded By Profile Card */}
@@ -1390,32 +1408,28 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     </div>
 
                     {/* Download & Library Buttons placed below Uploaded By Card */}
-                    <div className="row justify-content-center mb-3 mt-3">
-                      <div className="col-md-12 col-12 text-center">
-                        <div className="download-btn-sm text-center d-inline-flex flex-column flex-sm-row gap-2 gap-md-3">
+                    <div className="row justify-content-center mb-4 mt-5">
+                      <div className="col-md-12 col-12">
+                        <div className="d-flex flex-row gap-2 gap-md-3 w-100 justify-content-center">
                           <button
                             onClick={() =>
                               handledownload(project.id, isAuthenticated, router)
                             }
                             type="button"
-                            className="btn-success-split "
+                            className="btn-download-premium"
+                            style={{ flex: 1 }}
                           >
-                            <span>
-                              <Icons.Download />
-                            </span>
-                            <span>Download</span>
+                            ⬇ DOWNLOAD
                           </button>
 
                           {/* add to fevorite btn */}
                           <button
                             onClick={() => handleAddToLibrary()}
                             type="button"
-                            className="btn-primary-split"
+                            className="btn-library-premium"
+                            style={{ flex: 1 }}
                           >
-                            <span>
-                              <Icons.Add />
-                            </span>
-                            <span>Add to libary</span>
+                            + ADD TO LIBRARY
                           </button>
                         </div>
                       </div>
@@ -1445,9 +1459,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           className="text-decoration-none"
                         >
                           <div
-                            className="p-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
+                            className="p-3 px-4 profile_shadow rounded-2 border border-light-subtle position-relative overflow-hidden"
                             style={{
-                              background: "linear-gradient(135deg, #20325A 0%, #3D6098 100%)",
+                              background: "#1C2E57",
                               transition: "all 0.3s ease",
                               cursor: "pointer"
                             }}
@@ -1473,29 +1487,29 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               }}
                             />
 
-                            <div className="d-flex align-items-center gap-3">
+                            <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 position-relative" style={{ zIndex: 1 }}>
                               <div className="flex-grow-1">
-                                <h4 className="fw-bold mb-2 text-white" style={{ fontSize: "1.1rem", letterSpacing: "0.2px" }}>
+                                <h4 className="fw-bold mb-1 text-white" style={{ fontSize: "1.05rem", letterSpacing: "0.2px" }}>
                                   Turn floor plans into photoreal 3D in minutes.
                                 </h4>
-                                <p className="mb-0 text-white-50" style={{ fontSize: "0.85rem", lineHeight: "1.5" }}>
-                                  Upload your drawings, describe the vision, and generate four cinematic 3D views. Built for working architects and interior designers.
+                                <p className="mb-0 text-white-50" style={{ fontSize: "0.85rem", lineHeight: "1.4" }}>
+                                  Upload your drawings, describe the vision, and generate four cinematic 3D views.
                                 </p>
                               </div>
-                            </div>
-
-                            <div className="mt-3 d-flex align-items-center justify-content-end">
-                              <span
-                                className="btn btn-sm fw-semibold rounded-pill px-3 py-1.5 shadow-sm text-primary"
-                                style={{
-                                  fontSize: "0.8rem",
-                                  border: "none",
-                                  background: "#ffffff",
-                                  color: "#20325A"
-                                }}
-                              >
-                                Try AI Now &rarr;
-                              </span>
+                              <div className="flex-shrink-0 text-end">
+                                <span
+                                  className="btn btn-sm fw-bold rounded-pill px-4 py-2 shadow-sm"
+                                  style={{
+                                    fontSize: "0.82rem",
+                                    border: "none",
+                                    background: "#ffffff",
+                                    color: "#1C2E57",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  Try AI Now &rarr;
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </a>
@@ -1539,6 +1553,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         </div>
                       </div>
                     )}
+
+                    {/* AdSense slot 1862351352 for Mobile - placed below FAQ */}
+                    <div className="row my-3 d-block d-lg-none">
+                      <div className="col-12">
+                        <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
+                      </div>
+                    </div>
 
                     {/* E-E-A-T Quality verification card for Mobile viewports */}
                     {(project?.tldr || project?.experience) && (
@@ -1620,7 +1641,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     {/* <AdSense slot="9473550740" ≠ layout="in-article" className="ad-slot" /> */}
                     {/* </div> */}
 
-                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+                    {/* <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} /> */}
 
                     {/* Buttons moved above description */}
 
