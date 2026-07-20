@@ -76,7 +76,7 @@
 // ******** Utility Classes ********
 
 .ad-slot {
-  display: block;
+  // display: block;
   min-height: 280px;
 }
 
@@ -157,13 +157,13 @@
 
 .mb-d-none {
   @media all and (max-width:1199px) {
-    display: none;
+    display: none !important;
   }
 }
 
 .dt-d-none {
   @media (min-width: 1200px) {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -798,7 +798,8 @@
 .embla__stage img {
   object-fit: contain;
   /* cover = no shrink; use contain if you want no crop */
-  background-color: #F6F6F6;
+  // background-color: #F6F6F6;
+  background-color: #fff;
 }
 
 .embla__placeholder {
@@ -1397,3 +1398,64 @@ table {
 }
 
 // about page css
+
+// Premium Download and Library Buttons
+.btn-download-premium {
+  background-color: #28a745;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #218838;
+    color: #ffffff;
+    opacity: 0.95;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btn-library-premium {
+  background-color: #1c2e57;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #142240;
+    color: #ffffff;
+    opacity: 0.95;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
