@@ -189,9 +189,10 @@ const AdSense = ({
     }
   }
 
-  if (isSubscribed) {
-    return null;
-  }
+  // Commented out so that paid/subscribed users will also see ads
+  // if (isSubscribed) {
+  //   return null;
+  // }
 
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
   const baseStyle = { display: "block", textAlign: "center" };

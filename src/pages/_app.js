@@ -58,7 +58,8 @@ function AdSenseScripts() {
   }
 
   // If the user is subscribed, do not load any Google AdSense scripts
-  if (isSubscribed) return null;
+  // Commented out so that paid/subscribed users will also see ads
+  // if (isSubscribed) return null;
 
   return (
     <>
