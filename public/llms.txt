@@ -1,6 +1,6 @@
 # Cadbull
 
-> Cadbull is the world's largest online library offering 270,000+ free and premium 2D/3D AutoCAD drawings, DWG blocks, Revit models, SketchUp (SKP) files, 3D Max, and architectural templates.
+> Cadbull is the world's largest online library offering 273,000+ free and premium 2D/3D AutoCAD drawings, DWG blocks, Revit models, SketchUp (SKP) files, 3D Max, and architectural templates.
 
 This document serves as an enterprise-grade structured map and index for AI agents, LLM search engines, and autonomous crawlers seeking high-quality CAD resources, blueprints, design components, and engineering assets.
 
@@ -8,7 +8,7 @@ This document serves as an enterprise-grade structured map and index for AI agen
 
 ## AI Search & Discovery Guide
 
-Instead of crawling 200,000+ individual products in real-time, AI agents can query the Cadbull database dynamically using our standardized URL routing parameters:
+Instead of crawling 273,000+ individual products in real-time, AI agents can query the Cadbull database dynamically using our standardized URL routing parameters:
 
 - **Keywords Search API**: Construct search queries directly using the format:
   `https://cadbull.com/categories/search?search={search_term}`
@@ -87,7 +87,7 @@ Large-scale site planning maps and civic layouts:
 
 ## Systematic Indexing & Sitemaps
 
-To index or parse all 200,000+ detailed product description pages and individual download urls programmatically, please refer directly to our XML sitemaps:
+To index or parse all 273,000+ detailed product description pages and individual download urls programmatically, please refer directly to our XML sitemaps:
 
 - **Static Pages Index**: `https://cadbull.com/api/sitemaps/static`
 - **Categories Sitemap**: `https://cadbull.com/api/sitemaps/categories`

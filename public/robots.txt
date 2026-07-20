@@ -1,65 +1,32 @@
+# ==================================================================
+# CADBULL.COM — MASTER ROBOTS.TXT
+# Strategy: Maximum AI visibility (open posture) — training + search
+# bots dono allow, sirf malicious/junk scrapers block
+# Updated: 2026
+# ==================================================================
+
+
+# ------------------------------------------------
+# CONTENT SIGNAL — usage preference (non-blocking, informational)
+# ------------------------------------------------
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
 # ------------------------------------------------
 # GLOBAL RULES
+# Allow important SEO sections
 # ------------------------------------------------
 User-agent: *
 Allow: /
 Allow: /ads.txt
+Allow: /detail/
+Allow: /category/
+Allow: /categories/
 
 # Block old download URLs that no longer exist
 Disallow: /products/download/
 Disallow: /products/ampdownload/
 
 # Block old author profile URLs (now redirected to new format)
-Disallow: /author-profile/
-
-# Block old URL patterns
-Disallow: /gold?
-Disallow: /1.CAD?
-
-Disallow: /categories/sub/
-
-# Block invalid detail URLs (those without proper slug format)
-Disallow: /detail/*/*?*
-
-# ✅ BLOCK SPECIFIC PROBLEMATIC PRODUCT URLs (rejected/pending products)
-Disallow: /detail/71588/
-Disallow: /amp/71588/
-
-# ✅ BLOCK PATTERN FOR POTENTIAL REJECTED PRODUCTS
-# Add more specific product IDs as needed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Master configuration for SEO + AI crawlers + crawl efficiency
-# Updated 2026
-
-
-# Allow important SEO sections
-Allow: /detail/
-Allow: /category/
-Allow: /categories/
-
-# ------------------------------------------------
-# Block obsolete download systems
-# ------------------------------------------------
-Disallow: /products/download/
-Disallow: /products/ampdownload/
-
-# ------------------------------------------------
-# Block outdated author pages
-# ------------------------------------------------
 Disallow: /author-profile/
 
 # ------------------------------------------------
@@ -82,25 +49,17 @@ Disallow: /*?filter=
 Disallow: /*?page=
 Disallow: /*?sessionid=
 
-# ------------------------------------------------
-# Block invalid detail URLs
-# ------------------------------------------------
+# Block invalid detail URLs (those without proper slug format)
 Disallow: /detail/*?*
 Disallow: /detail/*/*?*
 
-# ------------------------------------------------
-# Block rejected or unpublished CAD drawings
-# ------------------------------------------------
+# ✅ BLOCK SPECIFIC PROBLEMATIC PRODUCT URLs (rejected/pending products)
 Disallow: /detail/71588/
 Disallow: /amp/71588/
 
-# Add additional rejected IDs if needed
-# Disallow: /detail/XXXXX/
+# ✅ BLOCK PATTERN FOR POTENTIAL REJECTED PRODUCTS
+# Add more specific product IDs as needed
 
-# ------------------------------------------------
-# Reduce crawl pressure
-# ------------------------------------------------
-Crawl-delay: 5
 
 # ------------------------------------------------
 # SITEMAP
@@ -108,81 +67,83 @@ Crawl-delay: 5
 Sitemap: https://cadbull.com/sitemap.xml
 
 
-# =================================================
-# AI SEARCH CRAWLERS & TOOLS
-# =================================================
 
-# OpenAI / ChatGPT crawler
+# ==================================================================
+# AI SEARCH & ANSWER-ENGINE CRAWLERS
+# Each vendor now runs separate bots for training / search / on-demand.
+# All three types allowed here for maximum citation surface.
+# ==================================================================
+
+# ---------- OpenAI / ChatGPT ----------
 User-agent: GPTBot
 Allow: /
 
-# OpenAI search crawler
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: ChatGPT-User
 Allow: /
 
-# Anthropic Claude
+# ---------- Anthropic / Claude ----------
 User-agent: ClaudeBot
 Allow: /
 
-User-agent: Claude-Web
+User-agent: Claude-SearchBot
 Allow: /
 
-# Perplexity AI
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: claude-web
+Allow: /
+
+# ---------- Perplexity ----------
 User-agent: PerplexityBot
 Allow: /
 
-# Google AI crawler
+User-agent: Perplexity-User
+Allow: /
+
+# ---------- Google AI (Gemini / AI Overviews) ----------
 User-agent: Google-Extended
 Allow: /
 
-# Apple Intelligence
+User-agent: GoogleOther
+Allow: /
+
+# ---------- Apple Intelligence ----------
 User-agent: Applebot-Extended
 Allow: /
 
-# Meta AI crawler
-User-agent: meta-externalagent
-Allow: /
-
-# Cohere AI
-User-agent: cohere-ai
-Allow: /
-
-# Amazon AI
+# ---------- Amazon (Alexa / shopping AI) ----------
 User-agent: Amazonbot
 Allow: /
 
-# YouBot search bot
-User-agent: YouBot
+# ---------- Meta AI ----------
+User-agent: meta-externalagent
 Allow: /
 
-# ByteDance / TikTok crawler
-User-agent: Bytespider
-Allow: /
-
-# Diffbot structured data extractor
-User-agent: Diffbot
-Allow: /
-
-# iAsk AI search bot
-User-agent: iaskspider
-Allow: /
-
-# Omgili AI data miner
-User-agent: Omgilibot
-Allow: /
-
-# Common Crawl dataset
-User-agent: CCBot
-Allow: /
-
-# Facebook AI crawler
 User-agent: FacebookBot
 Allow: /
 
+# ---------- ByteDance / TikTok AI ----------
+User-agent: Bytespider
+Allow: /
 
-# =================================================
-# SEARCH ENGINE BOTS
-# =================================================
+# ---------- Common Crawl (feeds many open + closed LLMs) ----------
+User-agent: CCBot
+Allow: /
+
+# ---------- Cloudflare AI rendering crawler ----------
+User-agent: CloudflareBrowserRenderingCrawler
+Allow: /
+
+# ==================================================================
+# STANDARD SEARCH ENGINE BOTS
+# ==================================================================
 
 User-agent: Googlebot
 Allow: /
@@ -199,10 +160,9 @@ Allow: /
 User-agent: Baiduspider
 Allow: /
 
-
-# =================================================
+# ==================================================================
 # IMAGE SEARCH BOTS
-# =================================================
+# ==================================================================
 
 User-agent: Googlebot-Image
 Allow: /
@@ -210,10 +170,10 @@ Allow: /
 User-agent: Bingbot-Image
 Allow: /
 
-
-# =================================================
-# BLOCK BAD SCRAPER BOTS
-# =================================================
+# ==================================================================
+# BLOCK JUNK / COMPETITIVE-INTEL SCRAPERS
+# (These don't affect AI citation — safe to keep blocked)
+# ==================================================================
 
 User-agent: MJ12bot
 Disallow: /

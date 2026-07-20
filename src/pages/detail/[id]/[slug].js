@@ -784,7 +784,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <link rel="amphtml" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/amp/${project?.id}/${encodeURIComponent(project?.slug || project?.work_title || '')}`} />
 
       </Head>
-      <section className="bg-light py-md-5 py-4 category-page category-page-border-bottom">
+      <section className="bg-light pt-4 pt-md-5 pb-3 pb-md-3 category-page category-page-border-bottom">
         <div className="container">
           <div className="row">
             <div className="col-md-12">

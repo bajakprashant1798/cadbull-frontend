@@ -168,6 +168,7 @@ const aiTools = [
   { label: "AI 3D → 2D", full: "AI 3D model to 2D drawing" },
   { label: "AI Image → DWG", full: "AI Image to DWG conversion" },
   { label: "AI Floor Plan", full: "AI-generated Floor Plans" },
+  { label: "AI Mood Board", full: "AI-generated Mood Boards" },
   { label: "PlanForge 2D", full: "PlanForge 2D design tool" },
   { label: "Vastu Analysis", full: "AI Vastu Analysis" },
   { label: "Projects Thesis", full: "AI Projects Thesis generator" },
@@ -337,10 +338,10 @@ const iconMap = { sparkles: Sparkles, zap: Zap, crown: Crown, gem: Gem, star: St
 const PricingCard = ({ plan, onSubscribe, activeSubscription, activePlanId }) => {
   const isPopular = plan.popular;
   const Icon = iconMap[plan.icon];
-  
+
   // Check if this plan is the user's active plan (including legacy stripe price IDs)
-  const isCurrentPlan = 
-    (plan.id === "free" && !activeSubscription) || 
+  const isCurrentPlan =
+    (plan.id === "free" && !activeSubscription) ||
     (plan.stripeId && activePlanId && (
       plan.stripeId === activePlanId ||
       (plan.id === "silver" && ["price_1QLNQAFy6VKViPpJGQCXH5KE", "price_1TSAT3Fy6VKViPpJP4SIMcZX", "price_1TVxFsFy6VKViPpJCRGnLEYH"].includes(activePlanId)) ||
@@ -620,10 +621,10 @@ const Pricing = () => {
           <div className="container-fluid px-3 px-xl-5 mx-auto" style={{ maxWidth: '1600px' }}>
             <div className="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-3 justify-content-center align-items-stretch">
               {baseFiltered.map((plan) => (
-                <PricingCard 
-                  key={plan.id} 
-                  plan={plan} 
-                  onSubscribe={handleSubscribe} 
+                <PricingCard
+                  key={plan.id}
+                  plan={plan}
+                  onSubscribe={handleSubscribe}
                   activeSubscription={activeSubscription}
                   activePlanId={activePlanId}
                 />
