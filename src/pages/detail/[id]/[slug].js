@@ -1419,7 +1419,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             className="btn-download-premium"
                             style={{ flex: 1 }}
                           >
-                            ⬇ DOWNLOAD
+                            <span style={{ fontSize: "18px", lineHeight: "1" }}>⬇</span> DOWNLOAD
                           </button>
 
                           {/* add to fevorite btn */}
@@ -1429,7 +1429,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                             className="btn-library-premium"
                             style={{ flex: 1 }}
                           >
-                            + ADD TO LIBRARY
+                            <span style={{ fontSize: "26px", lineHeight: "1", fontWeight: "bold" }}>+</span> ADD TO LIBRARY
                           </button>
                         </div>
                       </div>
@@ -1657,18 +1657,20 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
 
                 <div>
-                  <aside>
-                    <h5 className="bg-secondary text-white px-3 py-2">
+                  <aside className="p-4 rounded-3 text-white mb-4 shadow-sm" style={{ background: "#1C2E57" }}>
+                    <h3 className="fw-bold mb-3 text-white" style={{ fontSize: "1.25rem" }}>
                       Search
-                    </h5>
-                    <div className="p-3">
+                    </h3>
+                    <div>
                       <form className="d-flex gap-3 flex-column">
-                        Category
                         <div>
-
+                          <label className="text-white-50 small mb-1" style={{ fontSize: "0.85rem", display: "block" }}>
+                            Category
+                          </label>
                           <select
                             defaultValue=""
-                            className="form-select"
+                            className="form-select border-0 py-2.5 shadow-sm text-dark fw-semibold"
+                            style={{ fontSize: "0.95rem", cursor: "pointer" }}
                             aria-label="Category"
                             onChange={(e) => {
                               const selectedCategoryId = e.target.value;
@@ -1697,13 +1699,16 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                               </option>
                             ))}
                           </select>
-
                         </div>
-                        Select Sub Category
+
                         <div>
+                          <label className="text-white-50 small mb-1" style={{ fontSize: "0.85rem", display: "block" }}>
+                            Select Sub Category
+                          </label>
                           <select
                             defaultValue=""
-                            className="form-select"
+                            className="form-select border-0 py-2.5 shadow-sm text-dark fw-semibold"
+                            style={{ fontSize: "0.95rem", cursor: "pointer" }}
                             aria-label="Sub Category"
                             onChange={(e) => {
                               setSelectedSubCategory(e.target.value);
@@ -1720,16 +1725,29 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           </select>
                         </div>
 
-                        <div className="mt-2obbs">
+                        <div className="mt-2">
                           <button
                             onClick={onSearchSubmitHandler}
-                            className="btn btn-secondary w-100"
+                            type="button"
+                            className="btn w-100 fw-bold border-0"
+                            style={{
+                              background: "#ffffff",
+                              color: "#1C2E57",
+                              height: "44px",
+                              fontSize: "0.95rem",
+                              transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.opacity = "0.9";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.opacity = "1";
+                            }}
                           >
                             Search
                           </button>
                         </div>
                       </form>
-                      <div></div>
                     </div>
                   </aside>
                 </div>
