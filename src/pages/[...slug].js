@@ -24,7 +24,7 @@ import { drawings } from "@/pages";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
-import AdSense from "@/components/AdSense";
+// import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
 const slugify = (text) => {
@@ -594,16 +594,16 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                 <div className="col-12 py-5 text-center">
                                     <div className="mb-4 d-flex justify-content-center">
                                         <div className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style={{ width: "100px", height: "100px" }}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8c8c8c" width={45} height={45}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                                        </svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#8c8c8c" width={45} height={45}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                            </svg>
                                         </div>
                                     </div>
                                     <h3 className="fw-bold text-dark mb-3">No Results Found</h3>
                                     <p className="text-muted mx-auto mb-4" style={{ maxWidth: "500px", fontSize: "16px" }}>
                                         Oops! We couldn't find any CAD files matching your search. Try adjusting your filters or searching with different keywords.
                                     </p>
-                                    <button 
+                                    <button
                                         className="btn btn-primary px-4 py-2 rounded-pill fw-medium"
                                         onClick={() => {
                                             setSearchText('');
@@ -617,7 +617,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                         </div>
 
                         {/* AdSense */}
-                        <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} />
+                        {/* <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} /> */}
 
                         {/* Pagination Component */}
                         <div className="row justify-content-center">

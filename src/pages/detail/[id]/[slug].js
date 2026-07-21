@@ -83,7 +83,7 @@ import product from "@/assets/images/product.jpg"
 import { getSafeImageUrl, handleImageError, getSmallVersion } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
-import AdSense from "@/components/AdSense";
+// import AdSense from "@/components/AdSense";
 import RatingsSection from "@/components/RatingsSection";
 // ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
 import Image from 'next/image';
@@ -827,11 +827,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           </div>
         </div>
 
-        {/* mobile/tablet only */}
-        {/* <div className="d-block d-lg-none">
-          <AdSense slot="4597678336" format="fluid" layout="in-article" lazy={false} />
-        </div> */}
-
       </section>
 
       {/* Categories  */}
@@ -1148,9 +1143,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
               {/* AdSense slot 1862351352 for Desktop */}
-              <div className="d-none d-lg-block">
+              {/* <div className="d-none d-lg-block">
                 <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
-              </div>
+              </div> */}
 
               {/* Classic styled FAQ and Reviews for Desktop */}
               {project?.faqs && project.faqs.length > 0 && (
@@ -1255,11 +1250,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
 
-              {/* <div className="border-top border-bottom py-2 mt-4"> */}
-              <div className="d-none d-lg-block">
+              {/* <div className="d-none d-lg-block">
                 <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
-              </div>
-              {/* </div> */}
+              </div> */}
 
 
             </div>
@@ -1295,9 +1288,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     {/* Cadbull AI Generator Card moved below tags */}
 
-                    {/* <div className="d-none d-lg-block"> */}
-                    <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
-                    {/* </div> */}
+                    {/* <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} /> */}
 
                     <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
@@ -1337,20 +1328,28 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         />
                       </Link>
                       <Link href={`/categories/1?type=${slugify(project?.type)}`} className="text-decoration-none">
-                        <FileDescription
-                          bgColor={"#F4F5F7"}
-                          // image={goldblocks}
-                          type={"type:"}
-                          title={project?.type}
-                          className={"text-primary"}
-                        />
+                        {(() => {
+                          const typeLower = (project?.type || "").toLowerCase();
+                          const isGold = typeLower === "gold";
+                          const isFree = typeLower === "free";
+                          const cardBg = isGold ? "#AB8001" : isFree ? "#008001" : "#F4F5F7";
+                          const cardTextClass = (isGold || isFree) ? "text-white" : "text-primary";
+                          return (
+                            <FileDescription
+                              bgColor={cardBg}
+                              type={"type:"}
+                              title={project?.type}
+                              className={cardTextClass}
+                            />
+                          );
+                        })()}
                       </Link>
 
                     </div>
 
-                    <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+                    {/* <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} /> */}
 
-                    <div className="row gy-3 mb-md-3 mb-4 pt-3">
+                    <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
                         <FileDescription
                           bgColor={"#20325A"}
@@ -1555,11 +1554,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     )}
 
                     {/* AdSense slot 1862351352 for Mobile - placed below FAQ */}
-                    <div className="row my-3 d-block d-lg-none">
+                    {/* <div className="row my-3 d-block d-lg-none">
                       <div className="col-12">
                         <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* E-E-A-T Quality verification card for Mobile viewports */}
                     {(project?.tldr || project?.experience) && (

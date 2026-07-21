@@ -6,7 +6,7 @@ import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import SectionHeading from "@/components/SectionHeading";
 import { getallprojects } from "@/service/api";
-import AdSense from "@/components/AdSense";
+// import AdSense from "@/components/AdSense";
 import { drawings } from "../../index";
 
 // ✅ COST OPTIMIZATION: Handle pagination with ISR instead of SSR
@@ -41,16 +41,16 @@ export default function ProjectsPage({
         <title>{`Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull`}</title>
         <meta name="robots" content="noindex, nofollow" />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}`} />
-        <meta 
-          name="description" 
-          content={`Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.`} 
+        <meta
+          name="description"
+          content={`Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.`}
         />
 
         {/* Pagination SEO */}
         {currentPage > 1 && (
-          <link 
-            rel="prev" 
-            href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/projects/page/${currentPage - 1}`} 
+          <link
+            rel="prev"
+            href={currentPage === 2 ? `${process.env.NEXT_PUBLIC_FRONT_URL}` : `${process.env.NEXT_PUBLIC_FRONT_URL}/projects/page/${currentPage - 1}`}
           />
         )}
         {currentPage < totalPages && (
@@ -111,7 +111,7 @@ export default function ProjectsPage({
         </div>
       </section>
 
-      <AdSense slot="8339598320" format="fluid" layout="in-article" />
+      {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
     </Fragment>
   );
 }
@@ -119,10 +119,10 @@ export default function ProjectsPage({
 // ✅ COST OPTIMIZATION: Use ISR for pagination pages
 export async function getStaticProps({ params }) {
   const page = parseInt(params.page) || 1;
-  
+
   try {
     const response = await getallprojects(page, 9, "", "");
-    
+
     return {
       props: {
         projects: response.data.products || [],

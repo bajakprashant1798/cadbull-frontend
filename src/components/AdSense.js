@@ -172,6 +172,10 @@ const AdSense = ({
   lazy = true,          // 👈 default: lazy mount; set lazy={false} for the first ad
   className
 }) => {
+  // TEMPORARY: Return null to disable all manual ad slots (requested by Google AdSense support).
+  // Auto ads loaded via _app.js script will remain active.
+  return null;
+
   const router = useRouter();
   const containerRef = useRef(null);
   const pushedRef = useRef(false);

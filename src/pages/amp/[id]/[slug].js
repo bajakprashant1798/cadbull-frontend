@@ -355,7 +355,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <section className="features1 align-center ads-style">
         Sponsored Links
         <hr className="thickhr" />
-        <amp-ad
+        {/* <amp-ad
           width="100vw"
           height="320"
           type="adsense"
@@ -365,7 +365,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
           data-full-width=""
         >
           <div overflow></div>
-        </amp-ad>
+        </amp-ad> */}
       </section>
 
       {/* File Details */}
@@ -468,7 +468,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <section className="features1 align-center ads-style">
         Sponsered Links
         <hr className="thickhr" />
-        <amp-ad
+        {/* <amp-ad
           width="100vw"
           height="320"
           type="adsense"
@@ -478,7 +478,7 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
           data-full-width=""
         >
           <div overflow></div>
-        </amp-ad>
+        </amp-ad> */}
       </section>
 
       {/* Publisher Info */}
