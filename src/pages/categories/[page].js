@@ -22,7 +22,7 @@ import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
-// import AdSense from "@/components/AdSense";
+import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 import { useComponentTimer } from "@/utils/apiTiming";
 
@@ -578,7 +578,7 @@ const Categories = ({
               )}
             </div>
 
-            {/* <AdSense slot="7739180135" format="fluid" layout="in-article" /> */}
+            <AdSense slot="7739180135" format="fluid" layout="in-article" />
 
             {/* Pagination Component */}
             <div className="row justify-content-center">

@@ -61,6 +61,11 @@ function AdSenseScripts() {
   // Commented out so that paid/subscribed users will also see ads
   // if (isSubscribed) return null;
 
+  const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  if (!adsenseClientId) return null;
+
+  const publisherId = adsenseClientId.replace('ca-', '');
+
   return (
     <>
       {/* ✅ SINGLE AdSense Script - CRITICAL: Revenue Protection */}
@@ -68,7 +73,7 @@ function AdSenseScripts() {
         id="adsense-script"
         async
         strategy="afterInteractive"
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
         crossOrigin="anonymous"
         onLoad={() => {
           // console.log('✅ AdSense script loaded successfully');
@@ -85,7 +90,7 @@ function AdSenseScripts() {
         id="adsense-funding-choices"
         async
         strategy="afterInteractive"
-        src={`https://fundingchoicesmessages.google.com/i/${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID.replace('ca-', '')}?ers=1`}
+        src={`https://fundingchoicesmessages.google.com/i/${publisherId}?ers=1`}
         onLoad={() => {
           // console.log('✅ AdSense Funding Choices loaded');
         }}

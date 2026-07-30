@@ -24,7 +24,7 @@ import { drawings } from "@/pages";
 import useLoading from "@/utils/useLoading";
 import Loader from "@/components/Loader";
 import { debounce } from "lodash";
-// import AdSense from "@/components/AdSense";
+import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
 
 const slugify = (text) => {
@@ -617,7 +617,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                         </div>
 
                         {/* AdSense */}
-                        {/* <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} /> */}
+                        <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} />
 
                         {/* Pagination Component */}
                         <div className="row justify-content-center">

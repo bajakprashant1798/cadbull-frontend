@@ -355,17 +355,18 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <section className="features1 align-center ads-style">
         Sponsored Links
         <hr className="thickhr" />
-        {/* <amp-ad
+        <amp-ad
           width="100vw"
           height="320"
           type="adsense"
           data-ad-client="ca-pub-2488270605722778"
-          data-ad-slot="4998271502"
+          // data-ad-slot="4998271502"
+          data-ad-slot="4412795758"
           data-auto-format="rspv"
           data-full-width=""
         >
           <div overflow></div>
-        </amp-ad> */}
+        </amp-ad>
       </section>
 
       {/* File Details */}
@@ -468,17 +469,18 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
       <section className="features1 align-center ads-style">
         Sponsered Links
         <hr className="thickhr" />
-        {/* <amp-ad
+        <amp-ad
           width="100vw"
           height="320"
           type="adsense"
           data-ad-client="ca-pub-2488270605722778"
-          data-ad-slot="1984323214"
+          // data-ad-slot="1984323214"
+          data-ad-slot="9473550740"
           data-auto-format="rspv"
           data-full-width=""
         >
           <div overflow></div>
-        </amp-ad> */}
+        </amp-ad>
       </section>
 
       {/* Publisher Info */}

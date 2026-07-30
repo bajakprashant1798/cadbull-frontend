@@ -83,7 +83,7 @@ import product from "@/assets/images/product.jpg"
 import { getSafeImageUrl, handleImageError, getSmallVersion } from "@/utils/imageUtils";
 
 import parse from "html-react-parser";
-// import AdSense from "@/components/AdSense";
+import AdSense from "@/components/AdSense";
 import RatingsSection from "@/components/RatingsSection";
 // ✅ PERFORMANCE OPTIMIZATION: Use native Next.js Image for maximum speed
 import Image from 'next/image';
@@ -1142,10 +1142,10 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               </div>
 
-              {/* AdSense slot 1862351352 for Desktop */}
-              {/* <div className="d-none d-lg-block">
-                <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
-              </div> */}
+              {/* AdSense slot 2091281415 for Desktop */}
+              <div className="d-none d-lg-block">
+                <AdSense slot="2091281415" format="auto" className="ad-slot" lazy={false} />
+              </div>
 
               {/* Classic styled FAQ and Reviews for Desktop */}
               {project?.faqs && project.faqs.length > 0 && (
@@ -1288,7 +1288,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     {/* Cadbull AI Generator Card moved below tags */}
 
-                    {/* <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} /> */}
+                    <AdSense slot="4412795758" sidebar className="ad-slot mb-3" lazy={false} />
 
                     <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
@@ -1347,7 +1347,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     </div>
 
-                    {/* <AdSense slot="2091281415" format="fluid" layout="in-article" className="ad-slot" lazy={false} /> */}
 
                     <div className="row gy-3 mb-md-3 mb-4">
                       <Link href={`/categories/1?file_type=${project?.file_type}`} className="text-decoration-none">
@@ -1360,8 +1359,11 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </Link>
                     </div>
 
+                    <AdSense slot="9473550740" format="fluid" layout="in-article" className="ad-slot" lazy={false} />
+
+
                     {/* Uploaded By Profile Card */}
-                    <div className="bg-white profile_shadow p-3 rounded-2 border border-light-subtle mb-3">
+                    <div className="bg-white profile_shadow p-3 rounded-2 border border-light-subtle my-3">
                       <div className="d-flex align-items-center justify-content-between gap-3">
                         <div className="d-flex align-items-center gap-3">
                           <div className="flex-shrink-0">
@@ -1515,6 +1517,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     </div>
 
+                    {/* AdSense slot 2091281415 for Mobile - placed below FAQ */}
+                    <div className="row my-3 d-block d-lg-none">
+                      <div className="col-12">
+                        <AdSense slot="2091281415" format="auto" className="ad-slot" lazy={false} />
+                      </div>
+                    </div>
+
                     {/* Classic FAQ and Reviews for Mobile viewports */}
                     {project?.faqs && project.faqs.length > 0 && (
                       <div className="row my-3 d-block d-lg-none">
@@ -1553,12 +1562,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     )}
 
-                    {/* AdSense slot 1862351352 for Mobile - placed below FAQ */}
-                    {/* <div className="row my-3 d-block d-lg-none">
-                      <div className="col-12">
-                        <AdSense slot="1862351352" format="auto" className="ad-slot" lazy={false} />
-                      </div>
-                    </div> */}
+
 
                     {/* E-E-A-T Quality verification card for Mobile viewports */}
                     {(project?.tldr || project?.experience) && (
@@ -1815,7 +1819,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         </div>
 
         {/* <div className="border-top border-bottom py-2"> */}
-        {/* <AdSense slot="8612944968" format="fluid" layout="in-article" className="ad-slot" /> */}
+        <AdSense slot="5436877511" format="fluid" layout="in-article" className="ad-slot" />
         {/* </div> */}
       </section>
     </Fragment>

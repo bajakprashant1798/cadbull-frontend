@@ -6,7 +6,7 @@ import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import SectionHeading from "@/components/SectionHeading";
 import { getallprojects } from "@/service/api";
-// import AdSense from "@/components/AdSense";
+import AdSense from "@/components/AdSense";
 import { drawings } from "../../index";
 
 // ✅ COST OPTIMIZATION: Handle pagination with ISR instead of SSR
@@ -111,7 +111,7 @@ export default function ProjectsPage({
         </div>
       </section>
 
-      {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
+      <AdSense slot="8339598320" format="fluid" layout="in-article" />
     </Fragment>
   );
 }

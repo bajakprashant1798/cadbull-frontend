@@ -174,7 +174,7 @@ const AdSense = ({
 }) => {
   // TEMPORARY: Return null to disable all manual ad slots (requested by Google AdSense support).
   // Auto ads loaded via _app.js script will remain active.
-  return null;
+  // return null;
 
   const router = useRouter();
   const containerRef = useRef(null);
