@@ -1143,9 +1143,9 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
               {/* AdSense slot 2091281415 for Desktop */}
-              <div className="d-none d-lg-block">
+              {/* <div className="d-none d-lg-block">
                 <AdSense slot="2091281415" format="auto" className="ad-slot" lazy={false} />
-              </div>
+              </div> */}
 
               {/* Classic styled FAQ and Reviews for Desktop */}
               {project?.faqs && project.faqs.length > 0 && (
