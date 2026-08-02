@@ -469,6 +469,118 @@ const PricingCard = ({ plan, onSubscribe, activeSubscription, activePlanId }) =>
   );
 };
 
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Cadbull CAD Library Subscription Plans",
+  "image": "https://cadbull.com/logo.webp",
+  "description": "Choose the membership plan that fits your workflow. Get access to 225,000+ premium CAD drawings, 3D models, vector files, and AI design tools with daily updates.",
+  "brand": {
+    "@type": "Brand",
+    "name": "Cadbull"
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "USD",
+    "lowPrice": "5.99",
+    "highPrice": "99.00",
+    "offerCount": "4",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Silver Plan (Weekly Subscription)",
+        "price": "5.99",
+        "priceCurrency": "USD",
+        "url": "https://cadbull.com/pricing",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2027-12-31"
+      },
+      {
+        "@type": "Offer",
+        "name": "Gold Plan (Monthly Subscription)",
+        "price": "14.99",
+        "priceCurrency": "USD",
+        "url": "https://cadbull.com/pricing",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2027-12-31"
+      },
+      {
+        "@type": "Offer",
+        "name": "Platinum Plan (3-Month Subscription)",
+        "price": "39.99",
+        "priceCurrency": "USD",
+        "url": "https://cadbull.com/pricing",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2027-12-31"
+      },
+      {
+        "@type": "Offer",
+        "name": "Diamond Plan (Yearly Subscription)",
+        "price": "99.00",
+        "priceCurrency": "USD",
+        "url": "https://cadbull.com/pricing",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2027-12-31"
+      }
+    ]
+  }
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I switch plans later?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can upgrade or downgrade your plan anytime from your dashboard. Prorated billing applies."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What payment methods do you accept?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We accept all major credit cards, debit cards, PayPal, and UPI for Indian customers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are AI Credits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AI Credits power our new AI tools — like Sketch to 3D, Image to DWG and AI Floor Plan. Each generation uses one credit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free trial?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our Free Plan gives you permanent access to 65,000+ free files with no time limit — no credit card required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do unused daily downloads roll over?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Daily download limits reset every 24 hours and don't roll over. AI Credits are valid for the entire plan duration."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the daily download limits for each plan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Download limits depend on your membership plan: Free Plan: Upto 10 Free files/day (0 Gold files); Silver Plan: Upto 10 Gold & 10 Free files/day; Gold Plan: Upto 20 Gold & 15 Free files/day; Platinum Plan: Upto 30 Gold & 25 Free files/day; Diamond Plan: Upto 40 Gold & 50 Free files/day."
+      }
+    }
+  ]
+};
+
 const Pricing = () => {
   const router = useRouter();
   const userData = useSessionStorageData("userData");
@@ -544,6 +656,14 @@ const Pricing = () => {
     <Fragment>
       <Head>
         <title>Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture</title>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </Head>
       <style dangerouslySetInnerHTML={{ __html: pricingStyles }} />
       <div className="pricing-root pb-5 position-relative">
