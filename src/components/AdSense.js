@@ -271,20 +271,39 @@ const AdSense = ({
   if (process.env.NODE_ENV === "development") {
     return (
       <div
-        ref={containerRef}
-        className={`ad-container ${className || ""}`}
-        style={{
-          ...styleFinal,
-          background: "#f0f0f0",
-          color: "#999",
-          border: "1px dashed #ccc",
-          borderRadius: 4,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
-        }}
+        className={`shadow-sm px-3 pb-3 pt-2 rounded-1 mb-md-3 mb-4 ${className || ""}`}
+        style={{ background: "#FAFAFC" }}
       >
-        🟦 Ad Placeholder (Slot: {slot})
+        {/* Advertisement Header Line */}
+        <div className="d-flex align-items-center justify-content-center gap-3 mb-3">
+          <div style={{ height: '1px', backgroundColor: '#e9e9eb', flex: '1', maxWidth: '80px' }}></div>
+          <span style={{ fontSize: '0.65rem', color: '#9b9b9b', letterSpacing: '2px', fontWeight: '600', textTransform: 'uppercase' }}>Advertisement</span>
+          <div style={{ height: '1px', backgroundColor: '#e9e9eb', flex: '1', maxWidth: '80px' }}></div>
+        </div>
+
+        {/* Ad Body */}
+        <div
+          ref={containerRef}
+          style={{
+            ...styleFinal,
+            background: "#fdfdfd",
+            color: "#b5b5b5",
+            border: "1px dashed #d6d6d6",
+            borderRadius: 8,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "250px",
+            padding: "20px"
+          }}
+        >
+          🟦 Dev Ad Placeholder (Slot: {slot})
+        </div>
+
+        {/* Advertisement Footer Line */}
+        <div className="d-flex justify-content-center mt-3">
+          <div style={{ height: '1.5px', backgroundColor: '#e9e9eb', width: '120px' }}></div>
+        </div>
       </div>
     );
   }
@@ -296,18 +315,36 @@ const AdSense = ({
     : { "data-ad-format": format, ...(layout ? { "data-ad-layout": layout } : {}) };
 
   return (
-    <div ref={containerRef} className={`ad-container ${className || ""}`}>
-      {mounted && (
-        <ins
-          key={`adsense-${slot}-${keyBump}`}
-          className="adsbygoogle"
-          style={styleFinal}
-          data-ad-client={clientId}
-          data-ad-slot={slot}
-          data-full-width-responsive={responsive}
-          {...dataProps}
-        />
-      )}
+    <div
+      className={`shadow-sm px-3 pb-3 pt-2 rounded-1 mb-md-3 mb-4 ${className || ""}`}
+      style={{ background: "#FAFAFC" }}
+    >
+      {/* Advertisement Header Line */}
+      <div className="d-flex align-items-center justify-content-center gap-3 mb-3">
+        <div style={{ height: '1px', backgroundColor: '#e9e9eb', flex: '1', maxWidth: '80px' }}></div>
+        <span style={{ fontSize: '0.65rem', color: '#9b9b9b', letterSpacing: '2px', fontWeight: '600', textTransform: 'uppercase' }}>Advertisement</span>
+        <div style={{ height: '1px', backgroundColor: '#e9e9eb', flex: '1', maxWidth: '80px' }}></div>
+      </div>
+
+      {/* Ad Body */}
+      <div ref={containerRef} className={`ad-container`}>
+        {mounted && (
+          <ins
+            key={`adsense-${slot}-${keyBump}`}
+            className="adsbygoogle"
+            style={styleFinal}
+            data-ad-client={clientId}
+            data-ad-slot={slot}
+            data-full-width-responsive={responsive}
+            {...dataProps}
+          />
+        )}
+      </div>
+
+      {/* Advertisement Footer Line */}
+      <div className="d-flex justify-content-center mt-3">
+        <div style={{ height: '1.5px', backgroundColor: '#e9e9eb', width: '120px' }}></div>
+      </div>
     </div>
   );
 };

@@ -1060,6 +1060,55 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               </div>
 
 
+              {/* E-E-A-T Quality verification card */}
+              {(project?.tldr || project?.experience) && (
+                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3 mb-4" id="eeat-quality">
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <FaShieldAlt className="text-primary" size={18} />
+                    <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
+                      E-E-A-T & Quality Verification
+                    </h3>
+                  </div>
+
+                  {project?.tldr && (
+                    <div className="mb-3">
+                      <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>📝 AI Overview (TL;DR)</h5>
+                      <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
+                        {project.tldr}
+                      </p>
+                    </div>
+                  )}
+
+                  {project?.experience && (
+                    <div className="mb-3">
+                      <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>💡 First-hand Experience</h5>
+                      <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
+                        {project.experience}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-top border-light-subtle d-flex flex-wrap justify-content-between align-items-center gap-2" style={{ fontSize: "0.8rem" }}>
+                    <span className="text-muted">
+                      Reviewed by: <strong className="text-dark">{project.reviewed_by || "Cadbull"}</strong>
+                    </span>
+                    <span className="text-muted">
+                      Last reviewed: <strong className="text-dark">
+                        {(() => {
+                          const dateStr = project.last_reviewed || new Date();
+                          try {
+                            const d = new Date(dateStr);
+                            if (isNaN(d.getTime())) return String(dateStr);
+                            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                          } catch (e) {
+                            return String(dateStr);
+                          }
+                        })()}
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Tags Card */}
               {project?.tags && (
@@ -1181,55 +1230,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 </div>
               )}
 
-              {/* E-E-A-T Quality verification card */}
-              {(project?.tldr || project?.experience) && (
-                <div className="bg-white profile_shadow rounded-4 border border-1 p-3 p-md-4 mt-3 d-none d-lg-block" id="eeat-quality">
-                  <div className="d-flex align-items-center gap-2 mb-3">
-                    <FaShieldAlt className="text-primary" size={18} />
-                    <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
-                      E-E-A-T & Quality Verification
-                    </h3>
-                  </div>
 
-                  {project?.tldr && (
-                    <div className="mb-3">
-                      <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>📝 AI Overview (TL;DR)</h5>
-                      <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
-                        {project.tldr}
-                      </p>
-                    </div>
-                  )}
-
-                  {project?.experience && (
-                    <div className="mb-3">
-                      <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>💡 First-hand Experience</h5>
-                      <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
-                        {project.experience}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="pt-2 border-top border-light-subtle d-flex flex-wrap justify-content-between align-items-center gap-2" style={{ fontSize: "0.8rem" }}>
-                    <span className="text-muted">
-                      Reviewed by: <strong className="text-dark">{project.reviewed_by || "Cadbull"}</strong>
-                    </span>
-                    <span className="text-muted">
-                      Last reviewed: <strong className="text-dark">
-                        {(() => {
-                          const dateStr = project.last_reviewed || new Date();
-                          try {
-                            const d = new Date(dateStr);
-                            if (isNaN(d.getTime())) return String(dateStr);
-                            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                          } catch (e) {
-                            return String(dateStr);
-                          }
-                        })()}
-                      </strong>
-                    </span>
-                  </div>
-                </div>
-              )}
 
               {/* Dynamic Ratings & Reviews section inside a matching classic card */}
               <div className="bg-white pb-3 mt-3 d-none d-lg-block" id="reviews">
@@ -1562,61 +1563,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       </div>
                     )}
 
-
-
-                    {/* E-E-A-T Quality verification card for Mobile viewports */}
-                    {(project?.tldr || project?.experience) && (
-                      <div className="row my-3 d-block d-lg-none">
-                        <div className="col-12">
-                          <div className="bg-white profile_shadow p-3 p-md-4 mt-3" id="eeat-quality-mobile">
-                            <div className="d-flex align-items-center gap-2 mb-3">
-                              <FaShieldAlt className="text-primary" size={18} />
-                              <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
-                                E-E-A-T & Quality Verification
-                              </h3>
-                            </div>
-
-                            {project?.tldr && (
-                              <div className="mb-3">
-                                <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>📝 AI Overview (TL;DR)</h5>
-                                <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
-                                  {project.tldr}
-                                </p>
-                              </div>
-                            )}
-
-                            {project?.experience && (
-                              <div className="mb-3">
-                                <h5 className="fw-semibold text-dark mb-1" style={{ fontSize: "0.95rem" }}>💡 First-hand Experience</h5>
-                                <p className="mb-0 text-muted" style={{ fontSize: "0.9rem", lineHeight: "1.6" }}>
-                                  {project.experience}
-                                </p>
-                              </div>
-                            )}
-
-                            <div className="pt-2 border-top border-light-subtle d-flex flex-wrap justify-content-between align-items-center gap-2" style={{ fontSize: "0.8rem" }}>
-                              <span className="text-muted">
-                                Reviewed by: <strong className="text-dark">{project.reviewed_by || "Cadbull"}</strong>
-                              </span>
-                              <span className="text-muted">
-                                Last reviewed: <strong className="text-dark">
-                                  {(() => {
-                                    const dateStr = project.last_reviewed || new Date();
-                                    try {
-                                      const d = new Date(dateStr);
-                                      if (isNaN(d.getTime())) return String(dateStr);
-                                      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                                    } catch (e) {
-                                      return String(dateStr);
-                                    }
-                                  })()}
-                                </strong>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     <div className="row my-3 d-block d-lg-none">
                       <div className="col-12">
