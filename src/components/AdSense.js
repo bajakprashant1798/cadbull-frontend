@@ -181,6 +181,7 @@ const AdSense = ({
   const pushedRef = useRef(false);
   const [mounted, setMounted] = useState(!lazy); // render <ins> immediately only if not lazy
   const [keyBump, setKeyBump] = useState(0);
+  const [unfilled, setUnfilled] = useState(false);
 
   const user = useSelector((state) => state.logininfo?.user);
 
@@ -233,8 +234,55 @@ const AdSense = ({
   // Re-key on route change so <ins> is fresh on new pages
   useEffect(() => {
     pushedRef.current = false;
+    setUnfilled(false);
     setKeyBump(x => x + 1);
   }, [router.asPath, slot]);
+
+  // Detect unfilled / blocked ads to hide the wrapper card
+  useEffect(() => {
+    if (!mounted || typeof window === "undefined" || process.env.NODE_ENV === "development") return;
+
+    let timeoutId;
+    const ins = containerRef.current?.querySelector(".adsbygoogle");
+    if (!ins) return;
+
+    const checkStatus = () => {
+      const status = ins.getAttribute("data-ad-status");
+      if (status === "unfilled") {
+        setUnfilled(true);
+      }
+    };
+
+    // Initial check
+    checkStatus();
+
+    // Observe changes to data-ad-status attribute
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "attributes" && mutation.attributeName === "data-ad-status") {
+          checkStatus();
+        }
+      });
+    });
+
+    observer.observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
+
+    // Fallback: If after 6 seconds it has no status and height is 0 (or display is none), assume blocked/unfilled
+    timeoutId = setTimeout(() => {
+      const status = ins.getAttribute("data-ad-status");
+      if (!status) {
+        const rect = ins.getBoundingClientRect();
+        if (rect.height === 0) {
+          setUnfilled(true);
+        }
+      }
+    }, 6000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeoutId);
+    };
+  }, [mounted, keyBump]);
 
   // Push ad request after <ins> is in the DOM
   useEffect(() => {
@@ -307,6 +355,8 @@ const AdSense = ({
       </div>
     );
   }
+
+  if (unfilled) return null;
 
   if (!clientId) return null;
 
