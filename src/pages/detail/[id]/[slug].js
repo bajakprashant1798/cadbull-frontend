@@ -163,17 +163,107 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const [showRelated, setShowRelated] = useState(false);
 
-  // Lightbox State for Click-to-Zoom
+  // Lightbox State for Click-to-Zoom and Drag-to-Pan
   const [lightboxImg, setLightboxImg] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const startCoords = useRef({ x: 0, y: 0 });
+  const hasMouseDown = useRef(false);
+  const hasTouchStart = useRef(false);
 
   const openLightbox = (url) => {
     setLightboxImg(url);
     setIsZoomed(false);
+    setPosition({ x: 0, y: 0 });
+    setIsDragging(false);
+    hasMouseDown.current = false;
+    hasTouchStart.current = false;
   };
   const closeLightbox = () => {
     setLightboxImg(null);
     setIsZoomed(false);
+    setPosition({ x: 0, y: 0 });
+    setIsDragging(false);
+    hasMouseDown.current = false;
+    hasTouchStart.current = false;
+  };
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    hasMouseDown.current = true;
+    startCoords.current = { x: e.clientX, y: e.clientY };
+    if (!isZoomed) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !isZoomed) return;
+    e.preventDefault();
+    const limitX = window.innerWidth;
+    const limitY = window.innerHeight;
+    const newX = Math.max(-limitX, Math.min(limitX, e.clientX - dragStart.current.x));
+    const newY = Math.max(-limitY, Math.min(limitY, e.clientY - dragStart.current.y));
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleMouseUp = (e) => {
+    if (!hasMouseDown.current) return;
+    hasMouseDown.current = false;
+    
+    setIsDragging(false);
+    const dx = Math.abs(e.clientX - startCoords.current.x);
+    const dy = Math.abs(e.clientY - startCoords.current.y);
+    if (dx < 5 && dy < 5) {
+      const nextZoomed = !isZoomed;
+      setIsZoomed(nextZoomed);
+      setPosition({ x: 0, y: 0 });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    hasMouseDown.current = false;
+    if (isDragging) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleTouchStart = (e) => {
+    hasTouchStart.current = true;
+    const touch = e.touches[0];
+    startCoords.current = { x: touch.clientX, y: touch.clientY };
+    if (!isZoomed) return;
+    setIsDragging(true);
+    dragStart.current = { x: touch.clientX - position.x, y: touch.clientY - position.y };
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !isZoomed) return;
+    const touch = e.touches[0];
+    const limitX = window.innerWidth;
+    const limitY = window.innerHeight;
+    const newX = Math.max(-limitX, Math.min(limitX, touch.clientX - dragStart.current.x));
+    const newY = Math.max(-limitY, Math.min(limitY, touch.clientY - dragStart.current.y));
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!hasTouchStart.current) return;
+    hasTouchStart.current = false;
+    
+    setIsDragging(false);
+    const touch = e.changedTouches[0];
+    if (touch) {
+      const dx = Math.abs(touch.clientX - startCoords.current.x);
+      const dy = Math.abs(touch.clientY - startCoords.current.y);
+      if (dx < 8 && dy < 8) {
+        const nextZoomed = !isZoomed;
+        setIsZoomed(nextZoomed);
+        setPosition({ x: 0, y: 0 });
+      }
+    }
   };
 
   useEffect(() => {
@@ -1848,7 +1938,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         {/* </div> */}
       </section>
 
-      {/* Premium Lightbox Overlay for Click-to-Zoom */}
+      {/* Premium Lightbox Overlay for Click-to-Zoom & Drag-to-Pan */}
       {lightboxImg && (
         <div 
           className="lightbox-overlay"
@@ -1865,7 +1955,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
           {/* Zoom hint badge */}
           <div className="lightbox-hint">
-            {isZoomed ? "Click image to zoom out" : "Click image to zoom in"}
+            {isZoomed ? (isDragging ? "Panning..." : "Drag to pan / Click to zoom out") : "Click to zoom in"}
           </div>
 
           <div 
@@ -1876,7 +1966,19 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               src={lightboxImg} 
               alt="Zoomed CAD Drawing Preview" 
               className={`lightbox-img ${isZoomed ? 'zoomed' : ''}`}
-              onClick={() => setIsZoomed(!isZoomed)}
+              style={{
+                transform: isZoomed ? `translate(${position.x}px, ${position.y}px) scale(2.5)` : 'none',
+                cursor: isZoomed ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+                transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              draggable={false}
             />
           </div>
         </div>
