@@ -231,6 +231,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   };
 
   const handleTouchStart = (e) => {
+    if (e.cancelable) e.preventDefault();
     hasTouchStart.current = true;
     const touch = e.touches[0];
     startCoords.current = { x: touch.clientX, y: touch.clientY };
@@ -241,6 +242,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const handleTouchMove = (e) => {
     if (!isDragging || !isZoomed) return;
+    if (e.cancelable) e.preventDefault();
     const touch = e.touches[0];
     const limitX = window.innerWidth;
     const limitY = window.innerHeight;
@@ -250,6 +252,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   };
 
   const handleTouchEnd = (e) => {
+    if (e.cancelable) e.preventDefault();
     if (!hasTouchStart.current) return;
     hasTouchStart.current = false;
     
