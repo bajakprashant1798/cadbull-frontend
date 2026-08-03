@@ -75,7 +75,7 @@ const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.Whatsap
 });
 const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton), { ssr: false });
 
-import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt } from 'react-icons/fa';
+import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt, FaTimes } from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
@@ -162,6 +162,31 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [profileImageError, setProfileImageError] = useState(false);
 
   const [showRelated, setShowRelated] = useState(false);
+
+  // Lightbox State for Click-to-Zoom
+  const [lightboxImg, setLightboxImg] = useState(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const openLightbox = (url) => {
+    setLightboxImg(url);
+    setIsZoomed(false);
+  };
+  const closeLightbox = () => {
+    setLightboxImg(null);
+    setIsZoomed(false);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeLightbox();
+      }
+    };
+    if (lightboxImg) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxImg]);
 
   // ── Reviews state ────────────────────────────────────────────────────────
   const [reviewsData, setReviewsData] = useState({ reviews: [], avgRating: 0, total: 0, distribution: [] });
@@ -945,7 +970,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       quality={85}
                       placeholder="empty"
                       sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                      style={{ objectFit: "contain", width: "100%", height: "auto" }}
+                      style={{ objectFit: "contain", width: "100%", height: "auto", cursor: "zoom-in" }}
+                      onClick={() => openLightbox(getSafeImageUrl(project?.photo_url))}
                       onError={() => setImgError(true)}
                     />
                   ) : (
@@ -996,6 +1022,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                   decoding={isFirst ? "auto" : "async"}
                                   quality={85}
                                   sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                                  onClick={() => openLightbox(getSafeImageUrl(url))}
+                                  style={{ cursor: "zoom-in" }}
                                 />
                               ) : (
                                 // Lightweight placeholder instead of loading full image
@@ -1052,7 +1080,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       quality={85}
                       placeholder="empty"
                       sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                      style={{ objectFit: "contain", width: "100%", height: "auto" }}
+                      style={{ objectFit: "contain", width: "100%", height: "auto", cursor: "zoom-in" }}
+                      onClick={() => openLightbox(getSafeImageUrl(project?.photo_url))}
                       onError={() => setImgError(true)}
                     />
                   </div>
@@ -1818,6 +1847,40 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <AdSense slot="5436877511" format="fluid" layout="in-article" className="ad-slot" />
         {/* </div> */}
       </section>
+
+      {/* Premium Lightbox Overlay for Click-to-Zoom */}
+      {lightboxImg && (
+        <div 
+          className="lightbox-overlay"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button 
+            className="lightbox-close" 
+            onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+            aria-label="Close lightbox"
+          >
+            <FaTimes size={20} />
+          </button>
+
+          {/* Zoom hint badge */}
+          <div className="lightbox-hint">
+            {isZoomed ? "Click image to zoom out" : "Click image to zoom in"}
+          </div>
+
+          <div 
+            className="lightbox-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={lightboxImg} 
+              alt="Zoomed CAD Drawing Preview" 
+              className={`lightbox-img ${isZoomed ? 'zoomed' : ''}`}
+              onClick={() => setIsZoomed(!isZoomed)}
+            />
+          </div>
+        </div>
+      )}
     </Fragment>
   );
 };
