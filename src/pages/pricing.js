@@ -657,6 +657,15 @@ const Pricing = () => {
     <Fragment>
       <Head>
         <title>Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture</title>
+        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/pricing`} />
+        <meta name="description" content="Choose the best Cadbull pricing plan for your workflow. Get access to 225,000+ premium AutoCAD DWG drawings, 3D models, and AI design tools." />
+        <meta property="og:title" content="Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture" />
+        <meta property="og:description" content="Choose the best Cadbull pricing plan for your workflow. Get access to 225,000+ premium AutoCAD DWG drawings, 3D models, and AI design tools." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}/pricing`} />
+        <meta name="twitter:title" content="Cadbull Pricing Plans | Affordable AutoCAD Files for Architecture" />
+        <meta name="twitter:description" content="Choose the best Cadbull pricing plan for your workflow. Get access to 225,000+ premium AutoCAD DWG drawings, 3D models, and AI design tools." />
+        <meta name="keywords" content="cadbull pricing, AutoCAD subscription, DWG files price, premium CAD drawings, 3D models cost, AI design credits, architectural design library" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
