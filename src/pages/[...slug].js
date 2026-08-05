@@ -487,14 +487,14 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-2">
                                     <div className="col-lg-3">
                                         {searchedText.length ? (
-                                            <h5 className="text-nowrap">
+                                            <h2 className="h5 text-nowrap">
                                                 <span className="fw-semibold text-primary">
                                                     {searchedText}
                                                 </span>{" "}
                                                 <small className="text-grey fs-12">
                                                     ({subcat?.length || 0} RESULTS)
                                                 </small>
-                                            </h5>
+                                            </h2>
                                         ) : (
                                             <nav aria-label="breadcrumb">
                                                 <ol className="breadcrumb mt-2 mt-md-0 mb-md-0">

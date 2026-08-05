@@ -40,7 +40,7 @@ const About = () => {
           <div className="row mx-1 mb-5 shadow-sm p-3 p-md-5 rounded-5 justify-content-center border position-relative bg-white">
             <div className="col-md-10">
               <div className="text-center">
-                <h4 className="text-secondary fw-semibold mb-2">Join us to make the <span className="text-danger">world</span> a better and more <span className="text-danger">beautiful</span> place.</h4>
+                <h2 className="h4 text-secondary fw-semibold mb-2">Join us to make the <span className="text-danger">world</span> a better and more <span className="text-danger">beautiful</span> place.</h2>
                 <p className="fw-medium mb-3">Imagination and technological prowess to create something radical so that an idea is worth executing. Welcome to creative world of cadbull.com, a complete forum to keep you up-date with the prompt cad solution. Cadbull is platform to bring together cad community to work, showcase and explore new boundaries in architectural design world. Upload your projects and get gold account credits*.</p>
               </div>
             </div>
@@ -89,7 +89,7 @@ const About = () => {
           <div className="row">
             <div className="col-md-12">
               <div>
-                <h5 className="mb-3 text-black fw-medium text-uppercase">Interact with online 2D and 3D artist community.</h5>
+                <h2 className="h5 mb-3 text-black fw-medium text-uppercase">Interact with online 2D and 3D artist community.</h2>
                 <p className="mb-3 fw-medium">Sign-up for free and create your account, start showcasing your work. You can also subscribe all the files by choosing different flexible subscription package. Create your account and start fast and easy access to thousand cad files.
                 </p>
                 <p className="mb-3 fw-medium"> Cadbull help people create profile, interact with creative auto cad designer communities and passion. The curiosity all things happening around so that they can happen too with the crafting touch of creative mad Cadbull. Cadbull creative community interact with auto cad, 3d drawing, architecture, blocks, electrical, furniture, interior design, machinery, blocks, landscaping, structure detail, urban design and more.</p>

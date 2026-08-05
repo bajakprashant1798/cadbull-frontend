@@ -336,7 +336,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
               <div className="col-lg-12">
                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-3">
                   <div>
-                    <h5>
+                    <h2 className="h5">
                       Showing results for:{" "}
                       <span className="text-primary">
                         {searchQuery || "All Projects"}
@@ -344,7 +344,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                       <small className="text-grey fs-12">
                         ({totalResults} RESULTS)
                       </small>
-                    </h5>
+                    </h2>
                   </div>
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-end flex-column flex-md-row">

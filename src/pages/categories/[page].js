@@ -453,14 +453,16 @@ const Categories = ({
                   <div>
                     {searchedText.length ? (
                       <>
-                        <h5 className="text-nowrap">
+                        <h2 className="h5 text-nowrap">
                           <span className="fw-semibold text-primary">
                             {searchedText}
                           </span>{" "}
                           <small className="text-grey fs-12">{`(${projects.length} RESULTS)`}</small>
-                        </h5>
+                        </h2>
                       </>
-                    ) : `All Files`}
+                    ) : (
+                      <h2 className="fs-6 fw-normal m-0 d-inline-block">All Files</h2>
+                    )}
                   </div>
                   <div className="w-100">
                     <div className="d-flex gap-3 justify-content-xl-end justify-content-center flex-column flex-md-row">

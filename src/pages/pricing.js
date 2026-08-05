@@ -108,7 +108,7 @@ const pricingStyles = `
 
 .feature-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -176,9 +176,9 @@ const aiTools = [
 ];
 
 const baseFeaturesTop = (premium) => [
-  { label: "65000+ Free Files", full: "All 65000+ Free Files", bold: true },
+  { label: "All 65000+ Free Files", full: "All 65000+ Free Files", bold: true },
   premium
-    ? { label: "225000+ Premium Files", full: "All 225000+ Premium Files", bold: true }
+    ? { label: "All 225000+ Premium Files", full: "All 225000+ Premium Files", bold: true }
     : { label: "0 Premium Files", full: "No Premium Files included", muted: true },
 ];
 
@@ -428,12 +428,13 @@ const PricingCard = ({ plan, onSubscribe, activeSubscription, activePlanId }) =>
                     width: '14px', height: '14px',
                     backgroundColor: isPopular ? '#EF4B4C' : '#f1f5f9',
                     // f59e0b
-                    color: isPopular ? '#0f172a' : '#64748b'
+                    color: isPopular ? '#0f172a' : '#64748b',
+                    // marginTop: '2px'
                   }}
                 >
                   <Check size={9} strokeWidth={4} />
                 </div>
-                <span title={feature.full} className={`flex-grow-1 text-truncate ${feature.bold ? 'fw-bold' : ''}`} style={{ fontSize: '0.72rem', color: isPopular ? '#f8fafc' : '#334155' }}>
+                <span title={feature.full} className={`flex-grow-1 ${feature.bold ? 'fw-bold' : ''}`} style={{ fontSize: '0.82rem', color: isPopular ? '#f8fafc' : '#334155' }}>
                   {feature.label}
                 </span>
                 {feature.isNew && (

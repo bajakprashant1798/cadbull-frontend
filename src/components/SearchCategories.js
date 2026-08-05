@@ -177,7 +177,7 @@ const SearchCategories = ({ categories, type, slug: propSlug, fetchSlug, current
         <SubCategoriesDrawer />
       </div>
       <aside className="d-none d-xl-block">
-        <h5 className="bg-secondary text-white px-3 py-2">{type}</h5>
+        <h2 className="h5 bg-secondary text-white px-3 py-2">{type}</h2>
         <div className="p-3">
           <form className="mx-auto mb-3 mb-md-4">
             <div className="input-group mb-3">
