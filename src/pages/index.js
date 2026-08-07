@@ -423,20 +423,44 @@ export default function Home({
         <meta name="twitter:image:alt" content="CAD Blocks & Models Library - Free & Premium AutoCAD Files" />
         <meta name="keywords" content="autocad,autocad file,dwg file,dwg.,autocad files dwg,architecture plan,home plan, modern building,plan,hotel plan,architecture blocks,interior design blocks, autocad blocks,dwg blocks, modern architecture plan in dwg , modern architecture plan dwg, dwg files, architecture projects in autocad, dwg file download, download free dwg, 3ds, autocad, dwg, block, cad, 2d cad library, cad library dwg, cad model library, cad detail library, online cad library, cad symbol library, cad symbol library, cad parts library, cad furniture" />
 
-        {/* WebSite / Sitelinks Searchbox JSON-LD Structured Data */}
+        {/* Home Page JSON-LD Structured Data (@graph linking WebSite, WebPage & SearchAction to Organization) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Cadbull",
-              "url": "https://cadbull.com/",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://cadbull.com/categories/search?search={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://cadbull.com/#website",
+                  "name": "Cadbull",
+                  "url": "https://cadbull.com/",
+                  "description": "World's largest 2D & 3D CAD blocks, DWG files and AutoCAD drawings library.",
+                  "inLanguage": "en",
+                  "publisher": {
+                    "@id": "https://cadbull.com/#organization"
+                  },
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://cadbull.com/categories/search?search={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "WebPage",
+                  "@id": "https://cadbull.com/#webpage",
+                  "url": "https://cadbull.com/",
+                  "name": currentPage > 1 ? `Autocad 2D and 3D CAD Blocks & Models Library - Page ${currentPage} | Cadbull` : 'Autocad 2D and 3D CAD Blocks & Models Library | Cadbull',
+                  "description": currentPage > 1 ? `Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more. Page ${currentPage}.` : "Discover 269,000+ free & premium CAD files at Cadbull, 2D & 3D drawings, CAD blocks, & models across architecture, engineering & more.",
+                  "inLanguage": "en",
+                  "isPartOf": {
+                    "@id": "https://cadbull.com/#website"
+                  },
+                  "about": {
+                    "@id": "https://cadbull.com/#organization"
+                  }
+                }
+              ]
             })
           }}
         />

@@ -86,19 +86,16 @@ export default function Document(props) {
               // "contactPoint": {
               //   "@type": "ContactPoint",
               //   "telephone": "+91-989-874-8697",
-              //   "contactType": "customer service",
-              //   "email": "support@cadbull.com"
-              // },
-              // "sameAs": [
-              //   "https://www.facebook.com/cadbull/"
-              // ],
-              // "keywords": ["CAD files", "DWG files", "AutoCAD blocks", "Architecture plans", "Interior design", "Engineering drawings", "Free CAD downloads", "Premium CAD files"]
               "@context": "https://schema.org",
-              "@type": "Corporation",
+              "@type": "Organization",
+              "@id": "https://cadbull.com/#organization",
               "name": "Cadbull",
               "alternateName": "Cadbull",
               "url": "https://cadbull.com/",
-              "logo": "https://assets.cadbull.com/assets/images/logo.png",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://assets.cadbull.com/assets/images/logo.png"
+              },
               "description": "Download Free & Premium CAD Files, DWG Files, and AutoCAD Blocks for Architecture, Interior Design, and Engineering Projects. Access 1000+ high-quality CAD drawings and design resources.",
               "foundingDate": "2014",
               "knowsAbout": [
