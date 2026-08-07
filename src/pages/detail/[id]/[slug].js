@@ -1188,7 +1188,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   <div className="d-flex align-items-center gap-2 mb-3">
                     <FaShieldAlt className="text-primary" size={18} />
                     <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
-                      E-E-A-T & Quality Verification
+                      Expert Review & Quality Verification
                     </h3>
                   </div>
 
@@ -1565,7 +1565,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                         <div className="d-flex align-items-center gap-2 mb-3">
                           <FaShieldAlt className="text-primary" size={18} />
                           <h3 className="fw-bold mb-0 text-dark" style={{ fontSize: "1.25rem" }}>
-                            E-E-A-T & Quality Verification
+                            Expert Review & Quality Verification
                           </h3>
                         </div>
 

@@ -499,10 +499,14 @@ export default function Home({
                   <span className="fw-bold">CAD Library.</span>
                 </p> */}
 
-                <h1 className="h2 mb-0 fw-light text-primary">
-                  World Largest 2d & 3d <br />
+                <h1 className="text-primary mb-2">
+                  <span className="h2 mb-0 fw-light d-block">
+                    World Largest 2d &amp; 3d
+                  </span>
+                  <span className="h7 fw-bold fw-light d-block">
+                    CAD Library.
+                  </span>
                 </h1>
-                <h2 className="mb-2 h7 fw-bold fw-light text-primary">CAD Library.</h2>
 
                 <p className="mb-4 mb-md-5">
                   {/* User */}
@@ -697,7 +701,7 @@ export default function Home({
                         loading="lazy"
                       />
                       <div>
-                        <h4 className="mb-1 h6">{category.title}</h4>
+                        <h3 className="mb-1 h6">{category.title}</h3>
                         <p>{category.count}</p>
                       </div>
                     </div>
@@ -767,9 +771,9 @@ export default function Home({
                         />
                       </div>
                       <div>
-                        <h4 className="fw-bold text-primary text-capitalize h6">
+                        <h3 className="fw-bold text-primary text-capitalize h6">
                           Cad Visualization
-                        </h4>
+                        </h3>
                         <p className="mb-2">
                           High-quality CAD drawings for precise interior and architectural design.
                         </p>
@@ -795,9 +799,9 @@ export default function Home({
                         />
                       </div>
                       <div>
-                        <h4 className="fw-bold text-primary text-capitalize h6">
+                        <h3 className="fw-bold text-primary text-capitalize h6">
                           Customized Projects
-                        </h4>
+                        </h3>
                         <p className="mb-2">
                           Editable CAD files tailored for all types of design projects.
                         </p>
@@ -822,10 +826,10 @@ export default function Home({
           <div className="row rounded-xl bg-primary p-4 p-md-5">
             <div className="col-md-12">
               <div className="text-center">
-                <h3 className="text-white mb-2 mb-md-3">
+                <h2 className="h3 text-white mb-2 mb-md-3">
                   {/* Get Incredible Files Right Now! */}
                   Custom CAD Drawing Services for Your Project Needs
-                </h3>
+                </h2>
                 <p className="mb-4 mb-md-5 text-white">
                   {/* At every stage, we could supervise your project – controlling
                   all the details and consulting the builders. */}
@@ -866,10 +870,10 @@ export default function Home({
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <h4 className="text-gray h5 mb-0">CAD Planning & Drafting</h4>
+                      <h3 className="text-gray h5 mb-0">CAD Planning & Drafting</h3>
                       <p>Complete sets of architectural, civil, and structural planning files to <br /> suit all building types.</p>
                     </div>
-                    <h4 className="text-gray h5 mb-0">98%</h4>
+                    <span className="text-gray h5 mb-0">98%</span>
                   </div>
                   <div
                     className="progress"
@@ -889,10 +893,10 @@ export default function Home({
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <h4 className="text-gray h5 mb-0">3D Modeling & Visualization</h4>
+                      <h3 className="text-gray h5 mb-0">3D Modeling & Visualization</h3>
                       <p>Explore a wide range of 3D blocks and designs for realistic modeling and presentation.</p>
                     </div>
-                    <h4 className="text-gray h5 mb-0">95%</h4>
+                    <span className="text-gray h5 mb-0">95%</span>
                   </div>
                   <div
                     className="progress"
@@ -912,10 +916,10 @@ export default function Home({
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <h4 className="text-gray h5 mb-0">2D Floor Plans & Layout Design</h4>
+                      <h3 className="text-gray h5 mb-0">2D Floor Plans & Layout Design</h3>
                       <p>Accurate, scalable 2D drawings ready for residential, commercial,<br /> and industrial projects.</p>
                     </div>
-                    <h4 className="text-gray h5 mb-0">90%</h4>
+                    <span className="text-gray h5 mb-0">90%</span>
                   </div>
                   <div
                     className="progress"
@@ -998,16 +1002,12 @@ export default function Home({
             </div>
             <div className="col-lg-4">
               <div className="text-center">
-                <h4 className="text-white mb-2 fw-normal">
-                  Architecture House Plan CAD Drawings CAD Blocks &
-                </h4>
-                <h4 className="text-white">
-                  {/* <b>{Number(housePlanFiles).toLocaleString()} Files</b> */}
-                  <b>
-                    {/* {Number(housePlanFiles).toLocaleString("en-US")} */}
-                    30000+ Files
-                  </b>
-                </h4>
+                <h2 className="h4 text-white mb-2 fw-normal">
+                  Architecture House Plan CAD Drawings CAD Blocks &amp; <br />
+                  <span className="fw-bold text-white d-block mt-1">
+                    {Number(lastId).toLocaleString("en-US")}+
+                  </span>
+                </h2>
               </div>
             </div>
             <div className="col-lg-3">
