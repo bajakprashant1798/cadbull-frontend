@@ -280,29 +280,28 @@ const Header = () => {
         .ai-nav-link {
           display: inline-flex;
           align-items: center;
-          border-radius: 0.375rem;
-          padding: 0.5rem 0.75rem !important;
-          font-size: 0.875rem !important;
+          border-radius: 0.5rem;
+          padding: 0.4rem 0.65rem !important;
+          font-size: 0.85rem !important;
           font-weight: 500 !important;
           color: #64748b !important;
-          transition: background-color 0.2s, color 0.2s;
+          transition: all 0.2s ease-in-out;
           text-decoration: none;
+          white-space: nowrap;
         }
         .ai-nav-link:hover {
           background-color: #f1f5f9;
           color: #0f172a !important;
-          border-radius: calc(0.625rem - 2px);
         }
         .ai-nav-link.active {
-          background-color: rgba(241, 245, 249, 0.5);
+          background-color: #f1f5f9;
           color: #0f172a !important;
-          font-weight: 600 !important
-          border-radius: calc(0.625rem - 2px);;
+          font-weight: 600 !important;
         }
       `}</style>
-        <div className="container">
-          <nav className="navbar navbar-expand-xl">
-            <div className="container-fluid">
+        <div className="container-fluid px-3 px-xl-5">
+          <nav className="navbar navbar-expand-xl p-0">
+            <div className="container-fluid p-0 d-flex align-items-center justify-content-between">
               <Link href="/" className="d-flex align-items-center text-decoration-none" style={{ gap: '10px' }}>
                 <Image src={logoWebp} width={34} height={34} alt="Cadbull Logo" priority />
                 <span className="fw-bold text-dark m-0 d-none d-sm-block" style={{ fontSize: '1.4rem', letterSpacing: '-0.5px' }}>Cadbull</span>
@@ -338,9 +337,10 @@ const Header = () => {
                 </button>
               </div>
               <div className="collapse navbar-collapse d-none d-xl-block" id="navbarSupportedContent">
-                <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-lg-3 gap-xl-3 align-items-center">
+                <ul className="navbar-nav mt-3 mt-xl-0 me-auto mb-2 mb-lg-0 mx-auto d-flex gap-1 gap-xl-2 align-items-center">
                   {links.map((link, index) => {
                     const isExternalProxy = link.url.startsWith("/blog");
+                    const isActive = link.url === "/" ? Router.pathname === "/" : Router.asPath.startsWith(link.url);
                     const content = (
                       <div className="d-flex align-items-center gap-1">
                         {link.title}
@@ -358,7 +358,7 @@ const Header = () => {
                             onClick={() => {
                               closeHamburgerMenu();
                             }}
-                            className={`${link.url === Router.asPath ? "active" : ""} nav-link ai-nav-link`}
+                            className={`${isActive ? "active" : ""} nav-link ai-nav-link`}
                             aria-current="page"
                             href={link.url}
                             target={link.isExternal ? "_blank" : "_self"}
@@ -371,7 +371,7 @@ const Header = () => {
                             onClick={() => {
                               closeHamburgerMenu();
                             }}
-                            className={`${link.url === Router.asPath ? "active" : ""} nav-link ai-nav-link`}
+                            className={`${isActive ? "active" : ""} nav-link ai-nav-link`}
                             aria-current="page"
                             href={link.url}
                           >

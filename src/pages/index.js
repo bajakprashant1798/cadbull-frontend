@@ -501,10 +501,10 @@ export default function Home({
 
                 <h1 className="text-primary mb-2">
                   <span className="h2 mb-0 fw-light d-block">
-                    World Largest 2d &amp; 3d
+                    World's Largest 2D &amp; 3D
                   </span>
                   <span className="h7 fw-bold fw-light d-block">
-                    CAD Library.
+                    CAD Blocks & Models Library.
                   </span>
                 </h1>
 

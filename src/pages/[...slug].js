@@ -26,6 +26,8 @@ import Loader from "@/components/Loader";
 import { debounce } from "lodash";
 import AdSense from "@/components/AdSense";
 import { performance } from "@/utils/performance";
+import CategoryTrustSection from "@/components/CategoryTrustSection";
+import CategoryFaqSection from "@/components/CategoryFaqSection";
 
 const slugify = (text) => {
     if (!text) return "";
@@ -35,9 +37,15 @@ const slugify = (text) => {
         .replace(/^\-+|\-+$/g, "");
 };
 
-const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories, fallbackType }) => {
+const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initialPath, initialParentSlug, page: initialPage, metaTitle, metaKeywords, metaDescription, description, title, serverMainCategories, fallbackType, categoryMeta }) => {
     const router = useRouter();
     const { slug: querySlugArray, page: queryPage } = router.query;
+
+    const [currentCategoryMeta, setCurrentCategoryMeta] = useState(categoryMeta || null);
+
+    useEffect(() => {
+        setCurrentCategoryMeta(categoryMeta);
+    }, [categoryMeta]);
 
 
     // Derive current slug and page from query if not provided by SSR (client-side nav)
@@ -448,32 +456,41 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                         __html: JSON.stringify({
                             "@context": "https://schema.org",
                             "@type": "FAQPage",
-                            "mainEntity": [
-                                {
+                            "mainEntity": (currentCategoryMeta?.faqs && Array.isArray(currentCategoryMeta.faqs) && currentCategoryMeta.faqs.length > 0)
+                                ? currentCategoryMeta.faqs.map((faq) => ({
                                     "@type": "Question",
-                                    "name": `What types of CAD files are available for ${title || makeTitle(slug)}?`,
+                                    "name": faq.question,
                                     "acceptedAnswer": {
                                         "@type": "Answer",
-                                        "text": `In the ${title || makeTitle(slug)} category, you can find various high-quality CAD drawings, including 2D & 3D designs, DWG files, and AutoCAD blocks for your projects.`
+                                        "text": faq.answer
                                     }
-                                },
-                                {
-                                    "@type": "Question",
-                                    "name": `Are the ${title || makeTitle(slug)} drawings on Cadbull free to download?`,
-                                    "acceptedAnswer": {
-                                        "@type": "Answer",
-                                        "text": `Yes, Cadbull offers both free and premium CAD drawings in the ${title || makeTitle(slug)} category. Registered users can download free DWG files, while Gold members get access to premium design resources.`
+                                }))
+                                : [
+                                    {
+                                        "@type": "Question",
+                                        "name": `What types of CAD files are available for ${title || makeTitle(slug)}?`,
+                                        "acceptedAnswer": {
+                                            "@type": "Answer",
+                                            "text": `In the ${title || makeTitle(slug)} category, you can find various high-quality CAD drawings, including 2D & 3D designs, DWG files, and AutoCAD blocks for your projects.`
+                                        }
+                                    },
+                                    {
+                                        "@type": "Question",
+                                        "name": `Are the ${title || makeTitle(slug)} drawings on Cadbull free to download?`,
+                                        "acceptedAnswer": {
+                                            "@type": "Answer",
+                                            "text": `Yes, Cadbull offers both free and premium CAD drawings in the ${title || makeTitle(slug)} category. Registered users can download free DWG files, while Gold members get access to premium design resources.`
+                                        }
+                                    },
+                                    {
+                                        "@type": "Question",
+                                        "name": `Which file formats are supported for ${title || makeTitle(slug)} drawings on Cadbull?`,
+                                        "acceptedAnswer": {
+                                            "@type": "Answer",
+                                            "text": `The drawings in the ${title || makeTitle(slug)} category are primarily in DWG format, compatible with AutoCAD. Some designs also support SketchUp (SKP), 3ds Max, Revit, and other design software.`
+                                        }
                                     }
-                                },
-                                {
-                                    "@type": "Question",
-                                    "name": `Which file formats are supported for ${title || makeTitle(slug)} drawings on Cadbull?`,
-                                    "acceptedAnswer": {
-                                        "@type": "Answer",
-                                        "text": `The drawings in the ${title || makeTitle(slug)} category are primarily in DWG format, compatible with AutoCAD. Some designs also support SketchUp (SKP), 3ds Max, Revit, and other design software.`
-                                    }
-                                }
-                            ]
+                                ]
                         })
                     }}
                 />
@@ -616,9 +633,6 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                             )}
                         </div>
 
-                        {/* AdSense */}
-                        <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} />
-
                         {/* Pagination Component */}
                         <div className="row justify-content-center">
                             <div className="col-12">
@@ -632,6 +646,24 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Quality Verification & Trust Section (Below Pagination) */}
+                        <CategoryTrustSection
+                            quality_title={currentCategoryMeta?.quality_title}
+                            quality_description={currentCategoryMeta?.quality_description}
+                            quality_items={currentCategoryMeta?.quality_items}
+                        />
+
+                        {/* Category FAQs Section (Below Quality Verification) */}
+                        <CategoryFaqSection
+                            faqs={currentCategoryMeta?.faqs}
+                            categoryName={title || makeTitle(slug)}
+                        />
+
+                        {/* AdSense (Below FAQs) */}
+                        <div className="mt-4 mb-2">
+                            <AdSense slot="2694403875" format="fluid" layout="in-article" lazy={false} />
                         </div>
                     </div>
                 </section>
@@ -1029,7 +1061,13 @@ export async function getServerSideProps({ params, req, res }) {
                         description: description || '',
                         title: title || makeTitle(slug),
                         serverMainCategories: serverMainCategories || [],
-                        fallbackType: data.fallbackType || null
+                        fallbackType: data.fallbackType || null,
+                        categoryMeta: {
+                            quality_title: cat.quality_title || null,
+                            quality_description: cat.quality_description || null,
+                            quality_items: cat.quality_items || null,
+                            faqs: cat.faqs || null,
+                        }
                     }
                 };
             }

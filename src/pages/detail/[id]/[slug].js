@@ -75,7 +75,7 @@ const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.Whatsap
 });
 const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton), { ssr: false });
 
-import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt, FaTimes } from 'react-icons/fa';
+import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
@@ -164,7 +164,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [showRelated, setShowRelated] = useState(false);
 
   // Lightbox State for Click-to-Zoom and Drag-to-Pan
-  const [lightboxImg, setLightboxImg] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -173,8 +173,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const hasMouseDown = useRef(false);
   const hasTouchStart = useRef(false);
 
-  const openLightbox = (url) => {
-    setLightboxImg(url);
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
     setIsZoomed(false);
     setPosition({ x: 0, y: 0 });
     setIsDragging(false);
@@ -182,12 +182,38 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     hasTouchStart.current = false;
   };
   const closeLightbox = () => {
-    setLightboxImg(null);
+    setLightboxIndex(null);
     setIsZoomed(false);
     setPosition({ x: 0, y: 0 });
     setIsDragging(false);
     hasMouseDown.current = false;
     hasTouchStart.current = false;
+  };
+
+  const showPrevImage = (e) => {
+    if (e) e.stopPropagation();
+    if (galleryUrls.length <= 1 || lightboxIndex === null) return;
+    const newIdx = (lightboxIndex - 1 + galleryUrls.length) % galleryUrls.length;
+    setLightboxIndex(newIdx);
+    setIsZoomed(false);
+    setPosition({ x: 0, y: 0 });
+    setIsDragging(false);
+    if (emblaApi) {
+      emblaApi.scrollTo(newIdx);
+    }
+  };
+
+  const showNextImage = (e) => {
+    if (e) e.stopPropagation();
+    if (galleryUrls.length <= 1 || lightboxIndex === null) return;
+    const newIdx = (lightboxIndex + 1) % galleryUrls.length;
+    setLightboxIndex(newIdx);
+    setIsZoomed(false);
+    setPosition({ x: 0, y: 0 });
+    setIsDragging(false);
+    if (emblaApi) {
+      emblaApi.scrollTo(newIdx);
+    }
   };
 
   const handleMouseDown = (e) => {
@@ -273,13 +299,17 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         closeLightbox();
+      } else if (e.key === "ArrowLeft") {
+        showPrevImage();
+      } else if (e.key === "ArrowRight") {
+        showNextImage();
       }
     };
-    if (lightboxImg) {
+    if (lightboxIndex !== null) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxImg]);
+  }, [lightboxIndex, galleryUrls, emblaApi]);
 
   // ── Reviews state ────────────────────────────────────────────────────────
   const [reviewsData, setReviewsData] = useState({ reviews: [], avgRating: 0, total: 0, distribution: [] });
@@ -1115,7 +1145,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                                   decoding={isFirst ? "auto" : "async"}
                                   quality={85}
                                   sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                                  onClick={() => openLightbox(getSafeImageUrl(url))}
+                                  onClick={() => openLightbox(idx)}
                                   style={{ cursor: "zoom-in" }}
                                 />
                               ) : (
@@ -1174,7 +1204,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       placeholder="empty"
                       sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
                       style={{ objectFit: "contain", width: "100%", height: "auto", cursor: "zoom-in" }}
-                      onClick={() => openLightbox(getSafeImageUrl(project?.photo_url))}
+                      onClick={() => openLightbox(0)}
                       onError={() => setImgError(true)}
                     />
                   </div>
@@ -1942,7 +1972,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       </section>
 
       {/* Premium Lightbox Overlay for Click-to-Zoom & Drag-to-Pan */}
-      {lightboxImg && (
+      {lightboxIndex !== null && galleryUrls[lightboxIndex] && (
         <div 
           className="lightbox-overlay"
           onClick={closeLightbox}
@@ -1956,9 +1986,31 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             <FaTimes size={20} />
           </button>
 
-          {/* Zoom hint badge */}
+          {/* Next / Prev navigation buttons inside lightbox */}
+          {galleryUrls.length > 1 && (
+            <>
+              <button 
+                className="lightbox-nav-btn prev"
+                onClick={showPrevImage}
+                aria-label="Previous image"
+              >
+                <FaChevronLeft size={24} />
+              </button>
+              <button 
+                className="lightbox-nav-btn next"
+                onClick={showNextImage}
+                aria-label="Next image"
+              >
+                <FaChevronRight size={24} />
+              </button>
+            </>
+          )}
+
+          {/* Zoom hint badge / Counter */}
           <div className="lightbox-hint">
-            {isZoomed ? (isDragging ? "Panning..." : "Drag to pan / Click to zoom out") : "Click to zoom in"}
+            {isZoomed 
+              ? (isDragging ? "Panning..." : "Drag to pan / Click to zoom out") 
+              : `Click to zoom in ${galleryUrls.length > 1 ? `• Image ${lightboxIndex + 1} of ${galleryUrls.length}` : ''}`}
           </div>
 
           <div 
@@ -1966,8 +2018,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <img 
-              src={lightboxImg} 
-              alt="Zoomed CAD Drawing Preview" 
+              src={getSafeImageUrl(galleryUrls[lightboxIndex])} 
+              alt={`Zoomed CAD Drawing Preview - Image ${lightboxIndex + 1}`} 
               className={`lightbox-img ${isZoomed ? 'zoomed' : ''}`}
               style={{
                 transform: isZoomed ? `translate(${position.x}px, ${position.y}px) scale(2.5)` : 'none',

@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { addCategoryApi, getCategoriesApi } from "@/service/api";
+import { addCategoryApi, getCategoriesApi, checkCategoryNameApi } from "@/service/api";
+import CategoryContentEditor from "@/components/admin/CategoryContentEditor";
 import AdminLayout from "@/layouts/AdminLayout";
-import { checkCategoryNameApi } from "@/service/api";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
@@ -84,6 +84,12 @@ const AddCategory = () => {
   const [slug, setSlug] = useState("");         // Slug input
   const [slugMode, setSlugMode] = useState("standard"); // "standard", "old", or "custom"
 
+  // Quality Verification & FAQs state
+  const [qualityTitle, setQualityTitle] = useState("");
+  const [qualityDescription, setQualityDescription] = useState("");
+  const [qualityItems, setQualityItems] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+
 
 
   useEffect(() => {
@@ -151,10 +157,14 @@ const AddCategory = () => {
       return;
     }
     try {
-      // Include rich text description in submission
+      // Include rich text description, quality verification & FAQs in submission
       const categoryData = {
         ...data,
-        description: description
+        description: description,
+        quality_title: qualityTitle,
+        quality_description: qualityDescription,
+        quality_items: qualityItems,
+        faqs: faqs
       };
       await addCategoryApi(categoryData);
       toast.success("Category added successfully!");
@@ -252,6 +262,18 @@ const AddCategory = () => {
               • Code blocks and quotes
             </small>
           </div>
+
+          {/* Quality Verification & FAQs Editor */}
+          <CategoryContentEditor
+            qualityTitle={qualityTitle}
+            setQualityTitle={setQualityTitle}
+            qualityDescription={qualityDescription}
+            setQualityDescription={setQualityDescription}
+            qualityItems={qualityItems}
+            setQualityItems={setQualityItems}
+            faqs={faqs}
+            setFaqs={setFaqs}
+          />
 
           <div className="mb-3">
             <label className="form-label">Meta Title</label>
