@@ -49,7 +49,17 @@ const getFirebaseConfig = () => {
   };
 };
 
-const app = getApps().length ? getApps()[0] : initializeApp(getFirebaseConfig());
+let app = null;
+let auth = null;
 
-export const auth = getAuth(app);
+if (typeof window !== 'undefined' || process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+  try {
+    app = getApps().length ? getApps()[0] : initializeApp(getFirebaseConfig());
+    auth = getAuth(app);
+  } catch (err) {
+    console.error('Firebase initialization error:', err);
+  }
+}
+
+export { app, auth };
 export default app;
