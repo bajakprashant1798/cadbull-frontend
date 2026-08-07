@@ -1864,7 +1864,7 @@ const EditProject = () => {
                       <div className="bg-white p-3 rounded-3 border border-light-subtle shadow-sm text-start" style={{ borderLeft: "4px solid #0d6efd" }}>
                         <div className="d-flex align-items-center gap-2 mb-2">
                           <FaShieldAlt className="text-primary" size={16} />
-                          <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: "0.95rem" }}>E-E-A-T & Quality Verification</h6>
+                          <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: "0.95rem" }}>Expert Review & Quality Verification</h6>
                         </div>
 
                         {eeatData.tldr && (
