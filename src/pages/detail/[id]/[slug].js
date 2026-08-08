@@ -163,6 +163,31 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const [showRelated, setShowRelated] = useState(false);
 
+  //---- GALLERY STATE ----
+  const [galleryUrls, setGalleryUrls] = useState([]); // array of URLs (strings)
+  const [showGallery, setShowGallery] = useState(false); // mount Swiper only when needed
+
+  // Build gallery once project is loaded
+  useEffect(() => {
+    // Prefer backend-provided gallery; fallback to single cover
+    const urls = Array.isArray(project?.gallery_urls) && project.gallery_urls.length
+      ? project.gallery_urls
+      : (project?.photo_url ? [project.photo_url] : []);
+    setGalleryUrls(urls);
+  }, [project?.id, project?.photo_url, project?.gallery_urls]);
+
+  useEffect(() => {
+    if (galleryUrls?.length > 1) {
+      const run = () => setShowGallery(true);
+      if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
+      else setTimeout(run, 800);
+    }
+  }, [galleryUrls]);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: galleryUrls.length > 1,
+  });
+
   // Lightbox State for Click-to-Zoom and Drag-to-Pan
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -319,30 +344,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
 
-  //---- GALLERY STATE ----
-  const [galleryUrls, setGalleryUrls] = useState([]); // array of URLs (strings)
-  const [showGallery, setShowGallery] = useState(false); // mount Swiper only when needed
 
-  // Build gallery once project is loaded
-  useEffect(() => {
-    // Prefer backend-provided gallery; fallback to single cover
-    const urls = Array.isArray(project?.gallery_urls) && project.gallery_urls.length
-      ? project.gallery_urls
-      : (project?.photo_url ? [project.photo_url] : []);
-    setGalleryUrls(urls);
-  }, [project?.id, project?.photo_url, project?.gallery_urls]);
-
-  useEffect(() => {
-    if (galleryUrls?.length > 1) {
-      const run = () => setShowGallery(true);
-      if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1500 });
-      else setTimeout(run, 800);
-    }
-  }, [galleryUrls]);
-
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: galleryUrls.length > 1,
-  });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState([]);
 
