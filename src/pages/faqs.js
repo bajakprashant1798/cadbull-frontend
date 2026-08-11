@@ -23,7 +23,7 @@ export const plainFaqs = [
   },
   {
     question: "Is Cadbull safe to download CAD files?",
-    answer: "Cadbull provides CAD drawings uploaded by users and reviewed by the platform. Users should always check file details and suitability before using them in professional projects. For more information, you can review our terms and conditions and file usage guidelines."
+    answer: "Yes, Cadbull is safe to use. Every file is uploaded by users and reviewed by the platform before being listed. For more information, see our terms and conditions and file usage guidelines."
   },
   {
     question: "How can I upload my AutoCAD files to Cadbull?",
@@ -39,7 +39,7 @@ export const plainFaqs = [
   },
   {
     question: "What file formats are supported on Cadbull?",
-    answer: "Cadbull mainly supports AutoCAD DWG files and related formats used in architecture and engineering design."
+    answer: "Cadbull supports DWG, SKP, MAX, Revit, PDF, DXF, JPEG, and Photoshop files, along with other formats used in architecture and engineering design, DWG being the most common."
   },
   {
     question: "How to use downloaded CAD files in AutoCAD?",
@@ -55,7 +55,19 @@ export const plainFaqs = [
   },
   {
     question: "How many files can I download or upload on Cadbull?",
-    answer: "Download limits depend on your membership plan: Free Plan: Upto 10 Free files/day (0 Gold files). Silver Plan: Upto 10 Gold files and 10 Free files/day. Gold Plan: Upto 20 Gold files and 15 Free files/day. Platinum Plan: Upto 30 Gold files and 25 Free files/day. Diamond Plan: Upto 40 Gold files and 50 Free files/day. Premium members get unlimited uploads."
+    answer: (
+      <span>
+        Download limits range from 10 free files/day on the Free Plan up to 40 gold + 50 free files/day on the Diamond Plan, depending on your membership. Premium members can upload unlimited files. Full breakdown:
+        <ul className="mt-2 pl-4">
+          <li><strong>Free Plan:</strong> Upto 10 Free files/day (0 Gold files)</li>
+          <li><strong>Silver Plan:</strong> Upto 10 Gold files &amp; 10 Free files/day</li>
+          <li><strong>Gold Plan:</strong> Upto 20 Gold files &amp; 15 Free files/day</li>
+          <li><strong>Platinum Plan:</strong> Upto 30 Gold files &amp; 25 Free files/day</li>
+          <li><strong>Diamond Plan:</strong> Upto 40 Gold files &amp; 50 Free files/day</li>
+        </ul>
+        Premium members can upload unlimited files to Cadbull.
+      </span>
+    )
   },
   {
     question: "How do payments and pricing work on Cadbull?",
@@ -96,7 +108,7 @@ const faqs = [
     question: "Is Cadbull safe to download CAD files?",
     answer: (
       <span>
-        Cadbull provides CAD drawings uploaded by users and reviewed by the platform. Users should always check file details and suitability before using them in professional projects. For more information, you can review our <a href="https://cadbull.com/terms-conditions">terms and conditions</a> and <strong>file usage guidelines.</strong>
+        Yes, Cadbull is safe to use. Every file is uploaded by users and reviewed by the platform before being listed. For more information, see our <a href="https://cadbull.com/terms-conditions">terms and conditions</a> and <a href="">file usage guidelines</a>.
       </span>
     )
   },
@@ -125,7 +137,7 @@ const faqs = [
   },
   {
     question: "What file formats are supported on Cadbull?",
-    answer: "Cadbull mainly supports AutoCAD DWG files and related formats used in architecture and engineering design."
+    answer: "Cadbull supports DWG, SKP, MAX, Revit, PDF, DXF, JPEG, and Photoshop files, along with other formats used in architecture and engineering design, DWG being the most common."
   },
   {
     question: "How to use downloaded CAD files in AutoCAD?",
@@ -147,7 +159,7 @@ const faqs = [
     question: "How many files can I download or upload on Cadbull?",
     answer: (
       <span>
-        Download limits depend on your membership plan:
+        Download limits range from 10 free files/day on the Free Plan up to 40 gold + 50 free files/day on the Diamond Plan, depending on your membership. Premium members can upload unlimited files. Full breakdown:
         <ul className="mt-2 pl-4">
           <li><strong>Free Plan:</strong> Upto 10 Free files/day (0 Gold files)</li>
           <li><strong>Silver Plan:</strong> Upto 10 Gold files &amp; 10 Free files/day</li>
