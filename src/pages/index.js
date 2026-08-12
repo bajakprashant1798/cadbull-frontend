@@ -515,7 +515,7 @@ export default function Home({
                     {/* 300,000+ */}
                   </span>
                   <span className="fw-light"> Free & Premium
-                    CADFiles
+                    Files
                   </span>
                 </p>
                 <Link href="/categories" className="btn btn-primary">

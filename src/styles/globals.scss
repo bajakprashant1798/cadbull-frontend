@@ -212,21 +212,23 @@
   color: #20325A !important;
 }
 
-/* Make ReactQuill vertically resizable via drag */
+/* Make ReactQuill vertically resizable via drag without scrollbar flickering */
 .quill-resize .ql-container {
-  /* the handle appears only when overflow is not visible */
-  overflow: auto;
+  overflow: hidden !important; /* CRITICAL: Prevent container level scrollbars */
   resize: vertical;
-  /* drag up/down */
-  min-height: 400px;
-  /* starting height */
-  max-height: 2000px;
-  /* optional guard */
+  min-height: 350px;
+  max-height: 1200px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* keep a comfy editing area inside */
 .quill-resize .ql-editor {
-  min-height: 380px;
+  flex: 1;
+  min-height: 330px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important; /* CRITICAL: Prevent horizontal scrollbar */
+  scrollbar-gutter: stable; /* Reserve space for scrollbar */
 }
 
 .logo {

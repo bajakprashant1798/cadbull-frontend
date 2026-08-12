@@ -3,12 +3,38 @@
 /* Import Quill Snow theme */
 @import 'react-quill/dist/quill.snow.css';
 
-/* Custom overrides for better integration */
+/* Custom overrides for better integration & smooth scrollbar behavior */
+.admin-editor-container {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
 .ql-editor {
-  /* min-height: 150px; */
   font-size: 14px;
   line-height: 1.5;
   padding: 12px 15px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important; /* CRITICAL: Prevent horizontal scrollbar flickering */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  scrollbar-gutter: stable; /* CRITICAL: Reserve scrollbar width to prevent layout shift */
+  box-sizing: border-box;
+}
+
+.ql-editor img,
+.ql-editor iframe,
+.ql-editor video,
+.ql-editor table,
+.ql-editor pre,
+.ql-editor code {
+  max-width: 100% !important;
+  height: auto;
+  box-sizing: border-box;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 
 /* Fix link color inside editor */
@@ -25,6 +51,8 @@
   border-right: 1px solid #ddd;
   border-bottom: none;
   background-color: #f8f9fa;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
 
 .ql-container {
@@ -33,6 +61,11 @@
   border-right: 1px solid #ddd;
   border-top: none;
   font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden !important; /* Prevents outer container scrollbar conflicts */
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 /* Focus styles */

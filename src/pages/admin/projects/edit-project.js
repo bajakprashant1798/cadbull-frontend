@@ -1244,7 +1244,7 @@ const EditProject = () => {
 
           {/* Description with Rich Text Editor */}
           <div className="mb-3">
-            <label className="form-label">Description</label>
+            <label className="form-label">Description *</label>
             <div className="admin-editor-container" style={{ backgroundColor: '#fff' }}>
               <ReactQuill
                 theme="snow"
