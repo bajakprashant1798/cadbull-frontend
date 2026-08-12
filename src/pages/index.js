@@ -504,7 +504,7 @@ export default function Home({
                     World's Largest 2D &amp; 3D
                   </span>
                   <span className="h7 fw-bold fw-light d-block">
-                    CAD Blocks & Models Library.
+                    CAD Blocks-DWG Files & Models Library.
                   </span>
                 </h1>
 
