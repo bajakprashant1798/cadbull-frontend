@@ -739,20 +739,20 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta property="og:title" content={project?.meta_title || project?.work_title} />
         <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
-        {/* <meta property="og:image" content={project?.photo_url || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
+        <meta property="og:url" content={canonicalUrl || `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
 
-        {/* {galleryUrls.map((url, i) => (
-          <meta property="og:image" content={getSafeImageUrl(url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} key={i} />
-        ))} */}
-        {/* <meta property="og:image" content={getSafeImageUrl(project?.photo_url) || `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`} /> */}
-
-        {/* PRIMARY OG IMAGE (MANDATORY) */}
+        {/* PRIMARY OG IMAGE (MANDATORY FOR FACEBOOK & WHATSAPP) */}
         {previewImage && (
-          <meta
-            property="og:image"
-            content={getSafeImageUrl(previewImage)}
-          />
+          <>
+            <meta
+              property="og:image"
+              content={getSafeImageUrl(previewImage)}
+            />
+            <meta
+              property="og:image:secure_url"
+              content={getSafeImageUrl(previewImage)}
+            />
+          </>
         )}
 
         <meta property="og:image:width" content="1200" />
@@ -763,13 +763,17 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         />
 
         {/* OPTIONAL: additional gallery images */}
-        {/* {galleryUrls.slice(1, 4).map((url, i) => ( */}
         {galleryUrls.slice(1).map((url, i) => (
-          <meta
-            property="og:image"
-            content={getSafeImageUrl(url)}
-            key={`og-extra-${i}`}
-          />
+          <Fragment key={`og-extra-${i}`}>
+            <meta
+              property="og:image"
+              content={getSafeImageUrl(url)}
+            />
+            <meta
+              property="og:image:secure_url"
+              content={getSafeImageUrl(url)}
+            />
+          </Fragment>
         ))}
         <meta property="og:site_name" content="Cadbull" />
         <meta property="fb:app_id" content="1018457459282520" />

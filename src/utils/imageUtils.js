@@ -9,29 +9,43 @@ import product from "@/assets/images/product.jpg";
  * @returns {string} - Safe image URL or fallback
  */
 export const getSafeImageUrl = (imageUrl, fallbackUrl = product) => {
+  const defaultFallback = typeof fallbackUrl === 'object' && fallbackUrl?.src
+    ? fallbackUrl.src
+    : (fallbackUrl || `${process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com'}/default-img.png`);
+
   // Check if imageUrl exists and is not empty/null/undefined
   if (!imageUrl || typeof imageUrl !== 'string' || imageUrl.trim() === '') {
-    return fallbackUrl;
+    return defaultFallback;
   }
 
   // Check for common invalid values that might be in the database
-  const invalidValues = ['null', 'undefined', 'none', '', 'N/A', 'n/a'];
-  const trimmedUrl = imageUrl.trim().toLowerCase();
+  const invalidValues = ['null', 'undefined', 'none', '', 'n/a'];
+  const trimmedUrl = imageUrl.trim();
   
-  if (invalidValues.includes(trimmedUrl)) {
-    return fallbackUrl;
+  if (invalidValues.includes(trimmedUrl.toLowerCase())) {
+    return defaultFallback;
   }
 
-  // Additional check for malformed URLs (optional)
   try {
-    // Check if it's a valid URL structure
-    if (imageUrl.includes('http') || imageUrl.includes('/')) {
-      return imageUrl.trim();
+    let finalUrl = trimmedUrl;
+
+    // Convert http protocol to https for secure Facebook OG crawling
+    if (/^http:\/\//i.test(finalUrl)) {
+      finalUrl = finalUrl.replace(/^http:\/\//i, 'https://');
     }
-    // If it's just a filename without path, return fallback
-    return fallbackUrl;
+
+    // Convert relative paths to absolute URLs
+    if (!/^https?:\/\//i.test(finalUrl)) {
+      const baseUrl = process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com';
+      const cleanBase = baseUrl.replace(/\/+$/, '');
+      const cleanPath = finalUrl.replace(/^\/+/, '');
+      finalUrl = `${cleanBase}/${cleanPath}`;
+    }
+
+    // Safely encode spaces and unescaped special characters
+    return encodeURI(finalUrl);
   } catch (error) {
-    return fallbackUrl;
+    return defaultFallback;
   }
 };
 
