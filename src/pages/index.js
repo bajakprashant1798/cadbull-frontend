@@ -456,6 +456,9 @@ export default function Home({
                   "isPartOf": {
                     "@id": "https://cadbull.com/#website"
                   },
+                  "publisher": {
+                    "@id": "https://cadbull.com/#organization"
+                  },
                   "about": {
                     "@id": "https://cadbull.com/#organization"
                   }
