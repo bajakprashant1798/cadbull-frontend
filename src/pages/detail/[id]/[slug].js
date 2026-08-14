@@ -2132,12 +2132,14 @@ export async function getServerSideProps(ctx) {
     // 2) otherwise fallback to old-site slugify (no lowercase)
     const canonicalSlug = dbSlug || slugify(project?.work_title || '');
 
-    // 3) case-SENSITIVE compare; only redirect when different
+    // 3) case-SENSITIVE compare; preserve query string (like UTM parameters) on redirect
     const incomingSlug = decodeURIComponent(params.slug || "");
     if (incomingSlug !== canonicalSlug) {
+      const reqUrl = ctx.req?.url || '';
+      const queryString = reqUrl.includes('?') ? reqUrl.slice(reqUrl.indexOf('?')) : '';
       return {
         redirect: {
-          destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
+          destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}${queryString}`,
           permanent: true,
         },
       };
