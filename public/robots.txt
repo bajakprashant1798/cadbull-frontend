@@ -49,13 +49,13 @@ Disallow: /*?filter=
 Disallow: /*?page=
 Disallow: /*?sessionid=
 
-# Block invalid detail URLs (those without proper slug format)
-Disallow: /detail/*?*
-Disallow: /detail/*/*?*
-
 # ✅ BLOCK SPECIFIC PROBLEMATIC PRODUCT URLs (rejected/pending products)
 Disallow: /detail/71588/
 Disallow: /amp/71588/
+
+# Block invalid detail URLs (those without proper slug format)
+#Disallow: /detail/*?*
+#Disallow: /detail/*/*?*
 
 # ✅ BLOCK PATTERN FOR POTENTIAL REJECTED PRODUCTS
 # Add more specific product IDs as needed
@@ -122,11 +122,17 @@ Allow: /
 User-agent: Amazonbot
 Allow: /
 
-# ---------- Meta AI ----------
+# ---------- Meta AI & Social Crawlers ----------
 User-agent: meta-externalagent
 Allow: /
 
 User-agent: FacebookBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: WhatsApp
 Allow: /
 
 # ---------- ByteDance / TikTok AI ----------
