@@ -1270,11 +1270,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
               {/* Tags Card */}
               {project?.tags && (
-                <div className="d-none d-lg-block bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4">
+                <div className="d-none d-lg-block bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4 overflow-hidden">
                   <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
                   <div className="d-flex flex-wrap gap-2">
                     {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
-                      <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
+                      <span
+                        key={idx}
+                        className="badge bg-light text-secondary border px-2.5 py-2 rounded-pill fw-normal text-wrap text-start mw-100"
+                        style={{ fontSize: '0.75rem', whiteSpace: 'normal', wordBreak: 'break-word', maxWidth: '100%', lineHeight: '1.4' }}
+                      >
                         #{tag}
                       </span>
                     ))}
@@ -1647,11 +1651,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
                     {/* Tags Card */}
                     {project?.tags && (
-                      <div className="d-block d-lg-none bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4">
+                      <div className="d-block d-lg-none bg-white profile_shadow p-3 p-md-4 rounded-2 mt-3 mb-4 overflow-hidden">
                         <h4 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>Tags</h4>
                         <div className="d-flex flex-wrap gap-2">
                           {project.tags.split(',').map((t) => t.trim()).filter(Boolean).map((tag, idx) => (
-                            <span key={idx} className="badge bg-light text-secondary border px-2 py-2 rounded-pill fw-normal" style={{ fontSize: '0.75rem' }}>
+                            <span
+                              key={idx}
+                              className="badge bg-light text-secondary border px-2.5 py-2 rounded-pill fw-normal text-wrap text-start mw-100"
+                              style={{ fontSize: '0.75rem', whiteSpace: 'normal', wordBreak: 'break-word', maxWidth: '100%', lineHeight: '1.4' }}
+                            >
                               #{tag}
                             </span>
                           ))}
