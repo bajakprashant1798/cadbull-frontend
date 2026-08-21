@@ -15,7 +15,7 @@ const cancel = "/assets/icons/cancel.svg";
 // import secure from "@/assets/icons/secure.svg";
 // import cancel from "@/assets/icons/cancel.svg";
 
-const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
+const UploadFiles = ({ acceptedFiles = "ZIP, RAR, 7Z or TAR archive files only.", acceptTypes = ".zip,.rar,.7z,.tar,.gz,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/x-7z-compressed", callback }) => {
   const [progressWidth, setProgressWidth] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [currentFile, setCurrentFile] = useState(null);
@@ -55,14 +55,14 @@ const UploadFiles = ({ acceptedFiles = "jpg and png only.", callback }) => {
           <img src={uploadFiles} className="img-fluid" alt="icon" />
           <h5 className="mt-2 d-block btn btn-primary px-3 py-2 w-50 m-auto ">
             {/* <span className="text-primary">Drap your file(s) or</span> */}
-            <span className="text-white">Upload zip file or</span>{" "}
+            <span className="text-white">Upload ZIP/RAR file or</span>{" "}
             <span className="text-warning">browse</span>
           </h5>
         </div>
         <input
           onChange={handleFileChange}
           type="file"
-          accept="all files"
+          accept={acceptTypes}
           className="position-absolute w-100 h-100 start-0 top-0 opacity-0"
         />
       </div>

@@ -86,7 +86,14 @@ const UploadWork = () => {
     event.preventDefault();
   
     if (!formData.file) {
-      toast.error("Please upload both a project file.");
+      toast.error("Please select a ZIP or RAR archive file to upload.");
+      return;
+    }
+
+    const fileName = formData.file.name.toLowerCase();
+    const allowedExtensions = [".zip", ".rar", ".7z", ".tar", ".gz", ".tgz"];
+    if (!allowedExtensions.some((ext) => fileName.endsWith(ext))) {
+      toast.error("Invalid file format! Please upload a ZIP or RAR archive containing your CAD files. Direct image files (JPG, PNG) are not allowed.");
       return;
     }
   
@@ -99,16 +106,26 @@ const UploadWork = () => {
       stopLoading();
       router.push("/work/sent"); // Redirect to user projects page
     } catch (err) {
-      toast.error("Upload failed. Please try again.");
+      toast.error(err?.message || "Upload failed. Please try again.");
       stopLoading();
     }
   };
 
 
-  const handleUploadfile = (file) => {
-    // setFormData({ ...formData, file: file[0] });
-    setFormData({ file: file[0] });
-    toast.success("Zip file uploaded!");
+  const handleUploadfile = (files) => {
+    if (!files || files.length === 0) return;
+    const selectedFile = files[0];
+    const fileName = selectedFile.name.toLowerCase();
+    const allowedExtensions = [".zip", ".rar", ".7z", ".tar", ".gz", ".tgz"];
+    const isArchive = allowedExtensions.some((ext) => fileName.endsWith(ext));
+
+    if (!isArchive) {
+      toast.error("Invalid file format! Please upload a ZIP or RAR archive containing your CAD files. Direct image files (JPG, PNG) are not allowed.");
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, file: selectedFile }));
+    toast.success("Archive file attached successfully!");
   };
 
   // const handleUploadImage = (file) => {  
@@ -332,8 +349,9 @@ const UploadWork = () => {
                     <label className="mb-2">Upload File</label>
                   </div>
                   <UploadFiles
-                    acceptedFiles={` ZIP file containing AutoCAD / 3ds Max / Revit / SketchUp files`}
-                  callback={handleUploadfile}
+                    acceptedFiles="ZIP, RAR, 7Z or TAR archive containing AutoCAD / 3ds Max / Revit / SketchUp files (Direct JPG/PNG images not allowed)"
+                    acceptTypes=".zip,.rar,.7z,.tar,.gz,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/x-7z-compressed"
+                    callback={handleUploadfile}
                   />
                 </div>
                 <div className="text-end">
