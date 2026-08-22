@@ -590,7 +590,13 @@ const EditProject = () => {
 
   // ✅ Fetch Categories & Project Data
   useEffect(() => {
-    if (!id || !isAuthenticated) return;
+    if (!router.isReady || !isAuthenticated) return;
+
+    if (!id) {
+      toast.error("No project ID provided.");
+      setLoading(false);
+      return;
+    }
 
     const fetchProjectData = async () => {
       try {
@@ -685,7 +691,7 @@ const EditProject = () => {
     };
 
     fetchProjectData();
-  }, [id, isAuthenticated]);
+  }, [router.isReady, id, isAuthenticated]);
 
   // ✅ Watch meta title changes for SEO validation
   useEffect(() => {
