@@ -114,11 +114,13 @@ const Sidebar = () => {
               </button>
               {projectMenuOpen && (
                 <ul className="nav flex-column ms-3">
-                  <li>
-                    <Link href="/admin/projects/add-project" className="nav-link text-white">
-                      <span className="me-2"><PlusCircle size={18} className="me-2" />Add Project</span>
-                    </Link>
-                  </li>
+                  {userRole !== 5 && (
+                    <li>
+                      <Link href="/admin/projects/add-project" className="nav-link text-white">
+                        <span className="me-2"><PlusCircle size={18} className="me-2" />Add Project</span>
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link href="/admin/projects/view-projects" className="nav-link text-white">
                       <span className="me-2"><List size={18} className="me-2" />View Files</span>

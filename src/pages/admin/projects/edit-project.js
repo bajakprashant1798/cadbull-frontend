@@ -394,6 +394,11 @@ const EditProject = () => {
 
   // Pick files
   const handleSelectNewImages = (e) => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not allowed to select or upload images.");
+      e.target.value = "";
+      return;
+    }
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
 
@@ -442,6 +447,10 @@ const EditProject = () => {
 
   // Upload selected images
   const uploadNewImages = async () => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not allowed to upload images.");
+      return;
+    }
     if (!newImages.length) return;
     if (!projectDetails?.id) {
       toast.error("Project not loaded yet.");
@@ -730,6 +739,10 @@ const EditProject = () => {
 
   // 🟢 Move Up
   const handleMoveUp = async (imageId) => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not allowed to reorder images.");
+      return;
+    }
     try {
       const imgs = [...(projectDetails?.images ?? [])];
       const i = imgs.findIndex((x) => x.id === imageId);
@@ -747,6 +760,10 @@ const EditProject = () => {
 
   // 🟢 Move Down
   const handleMoveDown = async (imageId) => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not allowed to reorder images.");
+      return;
+    }
     try {
       const imgs = [...(projectDetails?.images ?? [])];
       const i = imgs.findIndex((x) => x.id === imageId);
@@ -764,6 +781,10 @@ const EditProject = () => {
 
   // 🗑️ Delete
   const handleDelete = async (imageId) => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not allowed to delete images.");
+      return;
+    }
     try {
       if (!confirm("Delete this image?")) return;
 
@@ -944,30 +965,36 @@ const EditProject = () => {
         last_reviewed: eeatData.lastReviewed || "",
       };
 
-      // ✅ Append files if they exist
-      if (data.file && data.file.length > 0) {
-        const file = data.file[0];
+      // ✅ Append files & status if they exist (only for non-role 5)
+      if (userRole === 5) {
+        delete updatedData.file;
+        delete updatedData.image;
+        delete updatedData.status;
+      } else {
+        if (data.file && data.file.length > 0) {
+          const file = data.file[0];
 
-        // Check file size (1GB limit)
-        if (file.size > 1024 * 1024 * 1024) {
-          toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
-          setSubmitting(false);
-          return;
+          // Check file size (1GB limit)
+          if (file.size > 1024 * 1024 * 1024) {
+            toast.error("File too large! Maximum size is 1GB. Please compress or reduce file size.");
+            setSubmitting(false);
+            return;
+          }
+
+          updatedData.file = data.file;
         }
+        if (data.image && data.image.length > 0) {
+          const image = data.image[0];
 
-        updatedData.file = data.file;
-      }
-      if (data.image && data.image.length > 0) {
-        const image = data.image[0];
+          // Check image size (10MB limit)
+          if (image.size > 10 * 1024 * 1024) {
+            toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
+            setSubmitting(false);
+            return;
+          }
 
-        // Check image size (10MB limit)
-        if (image.size > 10 * 1024 * 1024) {
-          toast.error("Image too large! Maximum size is 10MB. Please compress the image.");
-          setSubmitting(false);
-          return;
+          updatedData.image = data.image;
         }
-
-        updatedData.image = data.image;
       }
       // If credit_days is blank, don’t send it (prevents "" → INT issues)
       if (updatedData.credit_days === "" || updatedData.credit_days == null) {
@@ -978,20 +1005,11 @@ const EditProject = () => {
 
       const formData = new FormData();
 
-      // for (const key in updatedData) {
-      //   if (key === "file" || key === "image") {
-      //     if (updatedData[key] && updatedData[key].length > 0) {
-      //       formData.append(key, updatedData[key][0]); // Append file directly
-      //     }
-      //   } else {
-      //     formData.append(key, updatedData[key]);
-      //   }
-      // }
       for (const key in updatedData) {
         const val = updatedData[key];
         if (val === null || val === undefined) continue; // don't append nulls (backend will treat as NULL)
         if (key === "file" || key === "image") {
-          if (val && val.length > 0) formData.append(key, val[0]);
+          if (userRole !== 5 && val && val.length > 0) formData.append(key, val[0]);
         } else {
           formData.append(key, val);
         }
@@ -1422,54 +1440,53 @@ const EditProject = () => {
           {/* Upload New Zip File */}
           <div className="mb-3">
             <label className="form-label">Upload New Zip File</label>
-            <input
-              type="file"
-              className="form-control"
-              {...register("file")}
-              disabled={userRole === 5}
-              accept=".zip,.rar,.tar,.gz"
-            />
-            <small className="form-text text-muted">
-              📁 Maximum file size: 1GB. Leave empty to keep current file. Supported formats: ZIP, RAR, TAR, GZ
-            </small>
+            {userRole === 5 ? (
+              <div className="alert alert-secondary py-2 small">
+                🔒 File uploads are disabled for Content Creator role.
+              </div>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  className="form-control"
+                  {...register("file")}
+                  accept=".zip,.rar,.tar,.gz"
+                />
+                <small className="form-text text-muted">
+                  📁 Maximum file size: 1GB. Leave empty to keep current file. Supported formats: ZIP, RAR, TAR, GZ
+                </small>
+              </>
+            )}
           </div>
-
-          {/* Upload New Image */}
-          {/* <div className="mb-3">
-            <label className="form-label">Upload New Image</label>
-            <input 
-              type="file" 
-              className="form-control" 
-              {...register("image")} 
-              accept="image/*"
-            />
-            <small className="form-text text-muted">
-              🖼️ Maximum file size: 10MB. Leave empty to keep current image. Supported formats: JPG, PNG, GIF, WEBP
-            </small>
-          </div> */}
 
           {/* Add More Images */}
           <div className="mb-3">
             <label className="form-label">Project Gallery Images</label>
 
-            <div className="d-flex gap-2 align-items-center mb-2">
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleSelectNewImages}
-                className="form-control"
-                style={{ maxWidth: 360 }}
-              />
-              <button
-                type="button"
-                className="btn btn-outline-primary"
-                onClick={uploadNewImages}
-                disabled={!newImages.length || uploadingImages}
-              >
-                {uploadingImages ? "Uploading..." : `Upload ${newImages.length || ""} ${newImages.length === 1 ? "image" : "images"}`}
-              </button>
-            </div>
+            {userRole !== 5 ? (
+              <div className="d-flex gap-2 align-items-center mb-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleSelectNewImages}
+                  className="form-control"
+                  style={{ maxWidth: 360 }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-primary"
+                  onClick={uploadNewImages}
+                  disabled={!newImages.length || uploadingImages}
+                >
+                  {uploadingImages ? "Uploading..." : `Upload ${newImages.length || ""} ${newImages.length === 1 ? "image" : "images"}`}
+                </button>
+              </div>
+            ) : (
+              <div className="alert alert-secondary py-2 small mb-2">
+                🔒 Image uploads and modifications are disabled for Content Creator role.
+              </div>
+            )}
 
             {/* ✅ AI Generation Button */}
             <div className="mb-3 mt-3">
@@ -1494,7 +1511,7 @@ const EditProject = () => {
             </div>
 
             {/* Pre-upload previews */}
-            {newImages.length > 0 && (
+            {userRole !== 5 && newImages.length > 0 && (
               <div className="d-flex flex-wrap gap-3 mb-3">
                 {newImages.map((file, idx) => {
                   const url = URL.createObjectURL(file);
@@ -1580,39 +1597,41 @@ const EditProject = () => {
 
                   <div className="d-flex flex-column gap-2">
                     <span className="fw-bold">Image #{index + 1}</span>
-                    <div className="d-flex gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={(e) => { e.preventDefault(); handleMoveUp(img.id); }}
-                        disabled={index === 0}
-                        aria-label="Move up"
-                        title="Move Up"
-                      >
-                        ↑
-                      </button>
+                    {userRole !== 5 && (
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={(e) => { e.preventDefault(); handleMoveUp(img.id); }}
+                          disabled={index === 0}
+                          aria-label="Move up"
+                          title="Move Up"
+                        >
+                          ↑
+                        </button>
 
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={(e) => { e.preventDefault(); handleMoveDown(img.id); }}
-                        disabled={index === (projectDetails.images.length - 1)}
-                        aria-label="Move down"
-                        title="Move Down"
-                      >
-                        ↓
-                      </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={(e) => { e.preventDefault(); handleMoveDown(img.id); }}
+                          disabled={index === (projectDetails.images.length - 1)}
+                          aria-label="Move down"
+                          title="Move Down"
+                        >
+                          ↓
+                        </button>
 
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={(e) => { e.preventDefault(); handleDelete(img.id); }}
-                        aria-label="Delete"
-                        title="Delete Image"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={(e) => { e.preventDefault(); handleDelete(img.id); }}
+                          aria-label="Delete"
+                          title="Delete Image"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
@@ -1679,10 +1698,16 @@ const EditProject = () => {
           {/* Project Status */}
           <div className="mb-3">
             <label className="form-label">Status</label>
-            <select className="form-control" {...register("status")}>
+            <select className="form-control" {...register("status")} disabled={userRole === 5}>
+              <option value="0">Pending</option>
               <option value="1">Approved</option>
               <option value="2">Rejected</option>
             </select>
+            {userRole === 5 && (
+              <small className="text-muted d-block mt-1">
+                🔒 Approving or rejecting user files is disabled for Content Creator role.
+              </small>
+            )}
           </div>
 
           <div className="mb-3">

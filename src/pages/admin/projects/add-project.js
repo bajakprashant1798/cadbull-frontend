@@ -178,6 +178,14 @@ const AddProject = () => {
   const [categories, setCategories] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [subcategories, setSubcategories] = useState([]); // ✅ Ensure it starts as an empty array
+
+  // ✅ Content Creator (Role 5) restriction
+  useEffect(() => {
+    if (userRole === 5) {
+      toast.error("Content Creators (Role 5) are not permitted to upload files or images to add new projects.");
+      router.push("/admin/projects/view-projects");
+    }
+  }, [userRole, router]);
   const [descriptionCount, setDescriptionCount] = useState(250);
   // const [tags, setTags] = useState([]);
   const [tagsCsv, setTagsCsv] = useState("");    // CSV tags as-is
