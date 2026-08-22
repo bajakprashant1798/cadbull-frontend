@@ -590,27 +590,17 @@ const EditProject = () => {
 
   // ✅ Fetch Categories & Project Data
   useEffect(() => {
-    if (!id) return;
+    if (!id || !isAuthenticated) return;
 
     const fetchProjectData = async () => {
       try {
         setLoading(true);
-        // const authToken = token || storedToken;
-        if (!isAuthenticated) {
-          toast.error("Token is missing, please login again.");
-          return router.push("/auth/login");
-        }
-
-        // console.log("Fetching project with token:", authToken);
 
         // ✅ Fetch categories and project details simultaneously
         const [categoriesRes, projectRes] = await Promise.all([
           api.getAdminCategoriesWithSubcategories(),
           api.getProjectByIdApi(id),
         ]);
-
-        // console.log("✅ Categories Response:", categoriesRes.data);
-        // console.log("✅ Project Response:", projectRes.data);
 
         if (!categoriesRes.data || !Array.isArray(categoriesRes.data)) {
           throw new Error("Invalid categories response");
@@ -622,15 +612,6 @@ const EditProject = () => {
           throw new Error("Invalid project details response");
         }
 
-        // Set Form Data from projectRes.data
-        // Object.keys(projectRes.data).forEach((key) => {
-        //   // ✅ ADD THIS CONDITION to skip setting the credit_days value
-        //   console.log(projectRes.data, "product data log");
-
-        //   if (key !== 'credit_days') {
-        //     setValue(key, projectRes.data[key] || "");
-        //   }
-        // });
         Object.keys(projectData).forEach((key) => {
           if (key === 'credit_days') return;          // keep your special handling
           setValue(key, projectData[key] ?? "");  // preserves 0
@@ -648,8 +629,6 @@ const EditProject = () => {
         // ✅ Set Categories
         setCategories(categoriesRes.data);
 
-        // setSlug(projectRes.data.slug || ""); // set initial slug
-        // setSlugMode("custom"); // Or infer from slug format
         let initialSlug = "";
         let initialSlugMode = "standard";
         if (projectData.slug && projectData.slug.trim() !== "") {
@@ -662,7 +641,6 @@ const EditProject = () => {
         setSlug(initialSlug);
         setSlugMode(initialSlugMode);
 
-        // setPublishAtIst(mysqlUtcToDatetimeLocalIST(projectRes.data.publish_at));
         setPublishAtIst(projectData.publish_at_ist || "");
         setFaqs(projectData.faqs || []);
 
@@ -674,9 +652,6 @@ const EditProject = () => {
           lastReviewed: prev.lastReviewed || (projectData.last_reviewed ? projectData.last_reviewed.split('T')[0] : todayStr)
         }));
 
-        //// ✅ Set Form Data
-        // Object.keys(projectRes.data).forEach((key) => setValue(key, projectRes.data[key] || ""));
-        // setTags(projectRes.data.tags ? projectRes.data.tags.split(",") : []);
         setTagsCsv(projectData.tags || "");
 
         // Set description for React Quill
@@ -695,18 +670,16 @@ const EditProject = () => {
         setSeoMetaTitleValidation(validateSEOMetaTitle(projectData.meta_title || ""));
         setSeoMetaDescriptionValidation(validateSEOMetaDescription(projectData.meta_description || ""));
 
-
         // ✅ Set Category & Subcategory
         if (projectData.category_id) {
           const selectedCategory = categoriesRes.data.find((cat) => cat.id === Number(projectData.category_id));
           setSubcategories(selectedCategory?.project_sub_categories || []);
           setValue("subcategory_id", projectData.subcategory_id || ""); // ✅ Handle null subcategory
         }
-
-        setLoading(false);
       } catch (error) {
         console.error("❌ Error fetching project details:", error.message);
         toast.error("Error fetching project details or categories.");
+      } finally {
         setLoading(false);
       }
     };
