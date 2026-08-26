@@ -1006,8 +1006,9 @@ select:-webkit-autofill:focus {
   inset: 0;
   width: 0%;
   height: 0%;
-  background-color: rgba(25, 25, 25, 0.7882352941);
+  background-color: rgba(32, 50, 90, 0.3);
   transition: all 0.3s ease-in-out;
+  pointer-events: none;
 }
 
 .project-day-card .project-day-card-image img {
