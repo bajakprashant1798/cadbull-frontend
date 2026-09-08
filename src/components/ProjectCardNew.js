@@ -55,13 +55,7 @@ const ProjectCardNew = ({
         }
     }, [favorites, id]);
 
-    const handleviewcount = useCallback((event) => {
-        if (event.target.tagName === "IMG") {
-            event.preventDefault();
-            return;
-        }
 
-    }, [id]);
 
 
     const handleLike = useCallback(async () => {
@@ -149,7 +143,6 @@ const ProjectCardNew = ({
       `}</style>
             <div ref={ref} className='custom-card-hover project-day-card card h-100 shadow-sm rounded-4 position-relative overflow-hidden' onMouseEnter={() => preloadImage(heroUrl)}>
                 <Link
-                    onClick={handleviewcount}
                     className="h-100 text-decoration-none d-flex flex-column"
                     href={`/detail/${id}/${slugify(work_title)}`}
                     onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
@@ -169,7 +162,8 @@ const ProjectCardNew = ({
 
                         {/* Top Right Save Icon */}
                         <button
-                            onClick={(e) => { e.preventDefault(); handleLike(); }}
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLike(); }}
                             className="btn position-absolute top-0 end-0 m-3 rounded-circle p-0 shadow-sm d-flex align-items-center justify-content-center transition-all hover-scale"
                             style={{ width: '36px', height: '36px', zIndex: 10, border: '1px solid #e2e8f0', backgroundColor: '#fff' }}
                         >

@@ -25,7 +25,6 @@ const ProjectCard = ({
   priority = false, // Add priority prop for LCP images
 }) => {
   const router = useRouter();
-  // const { token } = useSelector((store) => store.logininfo);
   const isAuthenticated = useSelector((state) => state.logininfo.isAuthenticated);
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -53,15 +52,6 @@ const ProjectCard = ({
       setIsFavorited(favorites.some((fav) => fav.id === projectId));
     }
   }, [favorites, id]);
-
-  const handleviewcount = useCallback((event) => {
-    if (event.target.tagName === "IMG") {
-      event.preventDefault();
-      return;
-    }
-
-  }, [id]);
-
 
   const handleLike = useCallback(async () => {
     if (!isAuthenticated) {
@@ -96,19 +86,6 @@ const ProjectCard = ({
     }
   }, [isAuthenticated, id, isFavorited, router, dispatch, work_title, file_type, photo_url, type]);
 
-
-  // function slugify(text) {
-  //   if (!text) return "";
-  // return text
-  //   .toString()
-  //   // .toLowerCase()
-  //   .replace(/\s+/g, '-')           // Replace spaces with -
-  //   .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-  //   .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-  //   .replace(/^-+/, '')             // Trim - from start of text
-  //   .replace(/-+$/, '');            // Trim - from end of text
-  // }
-
   // components/ProjectCard.js
   function slugify(text) {
     if (!text) return "";
@@ -118,20 +95,14 @@ const ProjectCard = ({
       .replace(/^\-+|\-+$/g, "");
   }
 
-
-
   return (
     <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)} style={{ padding: '14px' }}>
-      {/* <Link onClick={handleviewcount}  className="h-100" href={`/categories/view/${id}`}> */}
       <Link
-        onClick={handleviewcount}
-        className="h-100"
+        className="h-100 d-flex flex-column text-decoration-none"
         href={`/detail/${id}/${slugify(work_title)}`}
         onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
       >
         <div className='project-day-card-image mb-3 position-relative' style={{ height: "250px" }}>
-
-          {/* <img src={photo_url || product.src} alt="project" className='w-100 img-fluid' onError={(e) => (e.target.src = product.src)} loading="lazy" /> */}
           <Image
             src={getSafeImageUrl(photo_url)}
             width={800}
@@ -150,36 +121,49 @@ const ProjectCard = ({
           />
 
           <div className='action-buttons-wrapper position-absolute bottom-0 end-0 d-inline-flex flex-column gap-1 pe-2 pb-2'>
-            <button onClick={() => handleLike()} className='border-0 bg-transparent p-0 shadow-none d-in'>
-              {/* <img src={isFavorited ? heart_like.src : heart.src} className='border-0' alt="heart icon" /> */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLike();
+              }}
+              className='border-0 bg-transparent p-0 shadow-none d-in'
+            >
               {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
             </button>
-            <button onClick={() => handledownload(id, isAuthenticated, router)} className='border-0 bg-transparent p-0 shadow-none'><img src={save.src} className='border-0' alt='icon' loading="lazy" /></button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handledownload(id, isAuthenticated, router);
+              }}
+              className='border-0 bg-transparent p-0 shadow-none'
+            >
+              <img src={save.src} className='border-0' alt='icon' loading="lazy" />
+            </button>
           </div>
         </div>
+
         <div className='project-day-card-description d-flex justify-content-between'>
           <p className='ps-3 work-title'>{work_title}</p>
           <div>
             <span className='badge bg-secondary text-white'>{file_type}</span>
-            {/* <div className='d-flex gap-1 mt-2 align-items-center'>
-              <span><Icons.Eye /></span>
-              <span className="text-grey">{view_count}</span>
-            </div> */}
           </div>
         </div>
 
-        <div className='project-day-card-link'>
-
+        <div className='project-day-card-link mt-auto'>
           <p className='pe-2'>MORE DETAILS</p>
 
           <div className='text-end mt-3'>
             {type === "Gold" ? (
               <span style={{
                 fontWeight: '500',
-                fontSize: '14px', // Set the font size to the desired size
-                color: '#ffffff', // e59710
-                backgroundColor: '#AB8000', // #fcebce
-                padding: '6px 12px', // Adjust padding for consistency
+                fontSize: '14px',
+                color: '#ffffff',
+                backgroundColor: '#AB8000',
+                padding: '6px 12px',
                 textTransform: 'uppercase',
                 border: '0',
                 display: 'inline-block',
@@ -188,21 +172,21 @@ const ProjectCard = ({
                 Gold
               </span>
             ) : (
-              <button style={{
+              <span style={{
                 border: '0',
-                padding: '6px 13px', // Adjust padding for consistency
+                padding: '6px 13px',
                 textTransform: 'uppercase',
                 fontWeight: '500',
                 fontSize: '14px',
-                color: '#ffffff', // #10a308
-                backgroundColor: '#008000', // #cefcd0
+                color: '#ffffff',
+                backgroundColor: '#008000',
                 borderRadius: '5px 5px 0px 0px',
+                display: 'inline-block',
               }}>
                 Free
-              </button>
+              </span>
             )}
           </div>
-
         </div>
       </Link>
     </div>
