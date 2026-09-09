@@ -366,23 +366,43 @@ const userGroups = [
 const faqsList = [
   {
     q: "What is Cadbull?",
-    a: "Cadbull is a leading CAD file sharing platform where architects, civil engineers, interior designers, and drafters can download and upload 2D/3D design resources, AutoCAD DWG blocks, and architectural layouts."
+    a: "Cadbull is a leading CAD file sharing platform where architects, civil engineers, interior designers, and drafters can download and upload 2D/3D design resources, AutoCAD DWG blocks, and architectural layouts.",
+    plainAnswer: "Cadbull is a leading CAD file sharing platform where architects, civil engineers, interior designers, and drafters can download and upload 2D/3D design resources, AutoCAD DWG blocks, and architectural layouts."
   },
   {
     q: "Is Cadbull free to use?",
-    a: "Yes, free access is available for thousands of standard CAD drawings. For advanced downloads, gold assets, and unlimited daily downloads, flexible premium subscription plans are available."
+    a: (
+      <span>
+        Yes, free access is available for thousands of standard CAD drawings. For advanced downloads, gold assets, and unlimited daily downloads, explore our flexible{" "}
+        <Link href="/pricing" className="text-primary text-decoration-underline fw-semibold">
+          pricing &amp; subscription plans
+        </Link>.
+      </span>
+    ),
+    plainAnswer: "Yes, free access is available for thousands of standard CAD drawings. For advanced downloads, gold assets, and unlimited daily downloads, flexible premium subscription plans are available."
   },
   {
     q: "What file formats does Cadbull support?",
-    a: "Cadbull primarily supports DWG, DXF, 3DS, MAX, and RVT formats, covering 2D floor plans, 3D models, vector details, and architectural CAD blocks."
+    a: "Cadbull primarily supports DWG, DXF, 3DS, MAX, and RVT formats, covering 2D floor plans, 3D models, vector details, and architectural CAD blocks.",
+    plainAnswer: "Cadbull primarily supports DWG, DXF, 3DS, MAX, and RVT formats, covering 2D floor plans, 3D models, vector details, and architectural CAD blocks."
   },
   {
     q: "How do I upload my designs on Cadbull?",
-    a: "Simply sign up for a free account, click on 'Upload File' in the main navigation, enter your project details and CAD category, and submit your drawings for reviewer verification."
+    a: (
+      <span>
+        Simply sign up for a free account, visit the{" "}
+        <Link href="/work/upload" className="text-primary text-decoration-underline fw-semibold">
+          Upload File
+        </Link>{" "}
+        page, enter your project details and CAD category, and submit your drawings for reviewer verification.
+      </span>
+    ),
+    plainAnswer: "Simply sign up for a free account, go to the Upload File page, enter your project details and CAD category, and submit your drawings for reviewer verification."
   },
   {
     q: "Is Cadbull safe to use?",
-    a: "Yes. All uploaded files undergo review and automated security scans to maintain quality, technical reliability, and strict copyright compliance."
+    a: "Yes. All uploaded files undergo review and automated security scans to maintain quality, technical reliability, and strict copyright compliance.",
+    plainAnswer: "Yes. All uploaded files undergo review and automated security scans to maintain quality, technical reliability, and strict copyright compliance."
   }
 ];
 
@@ -445,7 +465,7 @@ const AboutCadbullPage = () => {
       "name": f.q,
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": f.a
+        "text": typeof f.a === "string" ? f.a : (f.plainAnswer || "")
       }
     }))
   };
@@ -814,7 +834,7 @@ const AboutCadbullPage = () => {
                   </div>
                   <h3 className="h3 fw-bold text-dark mb-3">Trust &amp; Safety</h3>
                   <p className="text-secondary mb-0" style={{ fontSize: '1rem', lineHeight: '1.7' }}>
-                    Cadbull user data ki privacy ko seriously leta hai (see our{" "}
+                    Cadbull takes user data privacy seriously (see our{" "}
                     <Link href="/privacy-policy" className="text-primary text-decoration-underline fw-semibold">
                       Privacy Policy
                     </Link>{" "}
@@ -822,7 +842,7 @@ const AboutCadbullPage = () => {
                     <Link href="/gdpr-compliant-policy" className="text-primary text-decoration-underline fw-semibold">
                       GDPR Compliance
                     </Link>
-                    ). Uploaded files ko quality check aur copyright review process ke through pass kiya jaata hai taaki technical standard aur IP compliance strictly maintain rahe.
+                    ). All uploaded files undergo a thorough quality check and copyright review process to ensure high technical standards and strict intellectual property compliance.
                   </p>
                 </div>
                 <div className="col-lg-4 text-lg-end">
