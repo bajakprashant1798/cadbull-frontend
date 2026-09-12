@@ -37,11 +37,24 @@
   word-break: break-word !important;
 }
 
-/* Fix link color inside editor */
+/* Fix link color and visibility inside editor */
+.ql-editor a,
+.ql-editor a:visited,
+.ql-editor a span,
 .admin-editor-container .ql-editor a,
 .admin-editor-container .ql-editor a:visited,
 .admin-editor-container .ql-editor a span {
   color: #0d6efd !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 2px !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+}
+
+.ql-editor a:hover,
+.admin-editor-container .ql-editor a:hover {
+  color: #0a58ca !important;
   text-decoration: underline !important;
 }
 

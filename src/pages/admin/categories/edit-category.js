@@ -435,17 +435,14 @@ const EditCategory = () => {
 
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <div style={{ backgroundColor: '#fff' }}>
+            <div className="admin-editor-container" style={{ backgroundColor: '#fff' }}>
               <ReactQuill
                 theme="snow"
                 value={description}
                 onChange={handleDescriptionChange}
                 modules={quillModules}
                 formats={quillFormats}
-                style={{
-                  minHeight: '200px',
-                  backgroundColor: '#fff'
-                }}
+                className="quill-resize"
                 placeholder="Enter category description with rich text formatting..."
               />
             </div>

@@ -39,6 +39,7 @@ const CategoriesLayout = ({
                   {/* {title ? makeTitle(title) : pageName  } */}
                 </h1>
                 <div
+                  className="category-header-description mt-2"
                   dangerouslySetInnerHTML={{
                     __html: description || ""
                   }}
