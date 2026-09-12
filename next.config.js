@@ -193,6 +193,11 @@ const nextConfig = {
       // Optional: handle trailing slashes explicitly
       { source: '/login/', destination: '/auth/login', permanent: true },
       { source: '/signup/', destination: '/auth/register', permanent: true },
+      // ✅ Consolidated / Renamed pages 301 redirects
+      { source: '/about-cadbull', destination: '/about-us', permanent: true },
+      { source: '/about-cadbull/', destination: '/about-us', permanent: true },
+      { source: '/our-staff', destination: '/our-team', permanent: true },
+      { source: '/our-staff/', destination: '/our-team', permanent: true },
 
       // // ✅ REDIRECT OLD DETAIL URLS WITHOUT PROPER SLUGS TO 404
       // {
