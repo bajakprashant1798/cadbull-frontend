@@ -1635,7 +1635,8 @@ const EditProject = () => {
                     )}
                   </div>
                 </div>
-              ))
+              );
+            })
             )}
           </div>
 
