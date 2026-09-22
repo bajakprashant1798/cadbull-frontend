@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { getProjectByIdApi, updateProjectApi, getAdminCategoriesWithSubcategories, checkProjectNameApi, generateAIContent } from "@/service/api";
 import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
+import { getSafeImageUrl, handleImageError } from "@/utils/imageUtils";
 import { 
   FaShieldAlt, 
   FaGlobe, 
@@ -1105,8 +1106,9 @@ const EditProject = () => {
             onMouseLeave={handleMouseUp}
           >
             <img
-              src={selectedImage}
+              src={getSafeImageUrl(selectedImage)}
               alt="Zoomed"
+              onError={(e) => handleImageError(e)}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -1538,41 +1540,61 @@ const EditProject = () => {
             {(projectDetails?.images ?? []).length === 0 ? (
               <small className="text-muted">No gallery images yet.</small>
             ) : (
-              (projectDetails.images).map((img, index) => (
-                <div key={img.id} className="image-item mb-3 p-2 border rounded" style={{ display: "flex", alignItems: "center", gap: "10px", background: "#f8f9fa" }}>
-                  <div
-                    style={{ cursor: "zoom-in", position: "relative" }}
-                    onClick={() => {
-                      setSelectedImage(`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/original/${img.image}`);
-                      setZoomScale(1);
-                      setPan({ x: 0, y: 0 });
-                    }}
-                    title="Click to zoom"
-                  >
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/small/${img.image}`}
-                      style={{
-                        width: "150px",
-                        height: "auto",
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                        border: "1px solid #dee2e6"
+              (projectDetails.images).map((img, index) => {
+                const imgPath = img.image ? (img.image.includes('/') ? img.image : `2024/${img.image}`) : '';
+                const origUrl = getSafeImageUrl(
+                  img.image?.startsWith('http')
+                    ? img.image
+                    : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/original/${imgPath}`
+                );
+                const mediumUrl = getSafeImageUrl(
+                  img.image?.startsWith('http')
+                    ? img.image
+                    : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/product_img/medium/${imgPath}`
+                );
+
+                return (
+                  <div key={img.id} className="image-item mb-3 p-2 border rounded" style={{ display: "flex", alignItems: "center", gap: "10px", background: "#f8f9fa" }}>
+                    <div
+                      style={{ cursor: "zoom-in", position: "relative" }}
+                      onClick={() => {
+                        setSelectedImage(origUrl);
+                        setZoomScale(1);
+                        setPan({ x: 0, y: 0 });
                       }}
-                      alt={`Project image ${index + 1}`}
-                    />
-                    <div style={{
-                      position: "absolute",
-                      bottom: 5,
-                      right: 5,
-                      background: "rgba(0,0,0,0.5)",
-                      color: "white",
-                      padding: "2px 5px",
-                      borderRadius: "3px",
-                      fontSize: "10px"
-                    }}>
-                      Zoom 🔍
+                      title="Click to zoom"
+                    >
+                      <img
+                        src={mediumUrl}
+                        onError={(e) => {
+                          if (e.target.src !== origUrl) {
+                            e.target.src = origUrl;
+                          } else {
+                            handleImageError(e);
+                          }
+                        }}
+                        style={{
+                          width: "150px",
+                          height: "auto",
+                          objectFit: "cover",
+                          borderRadius: "4px",
+                          border: "1px solid #dee2e6"
+                        }}
+                        alt={`Project image ${index + 1}`}
+                      />
+                      <div style={{
+                        position: "absolute",
+                        bottom: 5,
+                        right: 5,
+                        background: "rgba(0,0,0,0.5)",
+                        color: "white",
+                        padding: "2px 5px",
+                        borderRadius: "3px",
+                        fontSize: "10px"
+                      }}>
+                        Zoom 🔍
+                      </div>
                     </div>
-                  </div>
 
                   <div className="d-flex flex-column gap-2">
                     <span className="fw-bold">Image #{index + 1}</span>

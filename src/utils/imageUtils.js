@@ -42,8 +42,21 @@ export const getSafeImageUrl = (imageUrl, fallbackUrl = product) => {
       finalUrl = `${cleanBase}/${cleanPath}`;
     }
 
-    // Safely encode spaces and unescaped special characters
-    return encodeURI(finalUrl);
+    // Safely unwrap any double or single encoding (e.g. %252C -> %2C -> ,)
+    // so we start with a clean character string before encoding standard URI chars
+    let decoded = finalUrl;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const next = decodeURIComponent(decoded);
+        if (next === decoded) break;
+        decoded = next;
+      } catch {
+        break;
+      }
+    }
+
+    // Safely encode spaces and unescaped special characters without double-encoding
+    return encodeURI(decoded);
   } catch (error) {
     return defaultFallback;
   }
@@ -211,6 +224,12 @@ export const getSmallVersion = (url) => {
     const safe = url.trim();
 
     // Only rewrite known folders
+    if (safe.includes('/product_img/')) {
+      return safe
+        .replace('/product_img/original/', '/product_img/medium/')
+        .replace('/product_img/large/', '/product_img/medium/');
+    }
+
     if (safe.includes('/project_img/')) {
       return safe
         .replace('/project_img/original/', '/project_img/small/')

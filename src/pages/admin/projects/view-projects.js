@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import AdminLayout from "@/layouts/AdminLayout";
 import { handledownload } from "@/service/globalfunction";
 import { useMemo } from "react";
+import { getSafeImageUrl } from "@/utils/imageUtils";
 
 const slugify = (text) => {
   if (!text) return "";
@@ -112,17 +113,18 @@ const ImageExistsChecker = ({ imagePath, projectId }) => {
             let possibleUrls = [];
             
             if (imagePath.includes('/')) {
-                // ✅ New format with year/month: "2025/01/filename.jpg"
+                // ✅ Format with subfolder: "2024/01/filename.jpg"
                 const sizes = ['small', 'medium', 'large', 'original'];
                 possibleUrls = sizes.map(size => 
-                    `${baseUrl}/product_img/${size}/${imagePath}`
+                    getSafeImageUrl(`${baseUrl}/product_img/${size}/${imagePath}`)
                 );
             } else {
-                // ✅ Old format without subfolders: "filename.jpg"
-                const sizes = ['small', 'medium', 'large', 'original'];
-                possibleUrls = sizes.map(size => 
-                    `${baseUrl}/product_img/${size}/${imagePath}`
-                );
+                // ✅ Format without subfolders: check with 2024/ first, then root
+                const sizes = ['medium', 'original', 'large', 'small'];
+                possibleUrls = [
+                    ...sizes.map(size => getSafeImageUrl(`${baseUrl}/product_img/${size}/2024/${imagePath}`)),
+                    ...sizes.map(size => getSafeImageUrl(`${baseUrl}/product_img/${size}/${imagePath}`))
+                ];
             }
 
             // ✅ Also try the old thumb.cadbull.com format

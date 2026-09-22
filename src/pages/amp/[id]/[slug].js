@@ -2,6 +2,7 @@ import Head from "next/head";
 // import fetch from "node-fetch"; // Or just fetch() in latest Next.js
 import axios from "axios";
 import logo from "@/assets/images/logo.png";
+import { getSafeImageUrl } from "@/utils/imageUtils";
 // AMP config: Export this to make page AMP-only
 export const config = { amp: true };
 
@@ -142,9 +143,11 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
   const description = rawDesc;
   const metaDescription = product?.meta_description
     || (description ? description.replace(/<[^>]+>/g, '').trim().slice(0, 160) : "");
-  const imageUrl = product?.image
-    ? `https://assets.cadbull.com/product_img/original/${product.image}`
-    : "https://cadbull.com/default-img.png";
+  const imageUrl = product?.photo_url
+    ? getSafeImageUrl(product.photo_url)
+    : (product?.image
+        ? getSafeImageUrl(`https://assets.cadbull.com/product_img/original/${product.image.includes('/') ? product.image : `2024/${product.image}`}`)
+        : "https://cadbull.com/default-img.png");
   // This is the correct code
   const profilePic =
     publisher?.profile?.profile_pic
@@ -555,10 +558,12 @@ export default function AmpProductPage({ product, similar, publisher, categoryNa
                   : slugify(sim.work_title);
 
 
-                // ✅ UPDATED: Construct the image URL with the new path
-                const similarImageUrl = sim.image
-                  ? `https://assets.cadbull.com/product_img/original/${sim.image}`
-                  : "https://cadbull.com/default-img.png";
+                // ✅ UPDATED: Construct the image URL with the safe path
+                const similarImageUrl = sim.photo_url
+                  ? getSafeImageUrl(sim.photo_url)
+                  : (sim.image
+                      ? getSafeImageUrl(`https://assets.cadbull.com/product_img/original/${sim.image.includes('/') ? sim.image : `2024/${sim.image}`}`)
+                      : "https://cadbull.com/default-img.png");
 
                 return (
                   <div
