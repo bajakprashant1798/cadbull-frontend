@@ -37,25 +37,32 @@
   word-break: break-word !important;
 }
 
-/* Fix link color and visibility inside editor */
+/* Link styling inside editor */
 .ql-editor a,
 .ql-editor a:visited,
-.ql-editor a span,
 .admin-editor-container .ql-editor a,
-.admin-editor-container .ql-editor a:visited,
-.admin-editor-container .ql-editor a span {
+.admin-editor-container .ql-editor a:visited {
   color: #0d6efd !important;
-  text-decoration: underline !important;
-  text-decoration-thickness: 1.5px !important;
-  text-underline-offset: 2px !important;
   cursor: pointer !important;
-  font-weight: 500 !important;
+  font-weight: 500;
+  text-decoration: none;
 }
 
 .ql-editor a:hover,
 .admin-editor-container .ql-editor a:hover {
   color: #0a58ca !important;
+  text-decoration: underline;
+}
+
+/* Allow underline when explicitly formatted with <u> or underline style */
+.ql-editor a u,
+.ql-editor u a,
+.ql-editor a.ql-underline,
+.admin-editor-container .ql-editor a u,
+.admin-editor-container .ql-editor u a {
   text-decoration: underline !important;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
 }
 
 .ql-toolbar {
