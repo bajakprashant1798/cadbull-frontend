@@ -84,6 +84,9 @@ Allow: /
 User-agent: ChatGPT-User
 Allow: /
 
+User-agent: OAI-AdsBot
+Allow: /
+
 # ---------- Anthropic / Claude ----------
 User-agent: ClaudeBot
 Allow: /
