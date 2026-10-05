@@ -965,8 +965,15 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                     )}
                     {project?.product_subcategory_title && (
                       <li className="breadcrumb-item">
-                        {/* <Link  href={`/categories/sub/${project?.subcategory_path}`}> */}
-                        <Link href={`/${project?.category_path}/1`}>
+                        <Link
+                          href={
+                            project?.subcategory_path
+                              ? project?.category_path
+                                ? `/${project?.category_path}/${project?.subcategory_path}/1`
+                                : `/${project?.subcategory_path}/1`
+                              : `/${project?.category_path}/1`
+                          }
+                        >
                           {project?.product_subcategory_title}
                         </Link>
                       </li>
