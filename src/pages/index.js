@@ -8,6 +8,7 @@ import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from '@/components/Pagination';
 import SearchBar from "@/components/SearchBar";
+import CategoryBentoGrid from "@/components/CategoryBentoGrid";
 // import { ssrTimeout } from "@/utils/ssrTimeout";
 // import Architecture from "@/assets/images/Architecture.png";
 
@@ -670,51 +671,8 @@ export default function Home({
       {/* <AdSense slot="8339598320" format="fluid" layout="in-article" /> */}
       {/* </div> */}
 
-      {/* Categories */}
-      <section className="py-md-5 py-4">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12 mb-3">
-              <div className="mb-md-5 mb-4 d-flex ps-5">
-                <SectionHeading
-                  subHeading={"Explore All"}
-                  mainHeading={"Categories"}
-                  mainHeadingBold={"Cadbull"}
-                  alignment="mx-auto"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="row g-4 justify-content-center">
-            {displayCategories.map((category, index) => {
-              // Convert title to a slug (e.g., "3d Drawing" -> "3d-drawing")
-              // const slug = category.slug.replace(/\s+/g, "-");
-              const slug = category.slug
-              return (
-                <div className="col-lg-3 col-md-4 col-sm-6 col-10" key={index}>
-                  {/* <Link href={`/categories/sub/${slug}`}> */}
-                  <Link href={`/${slug}`}>
-                    <div className="d-flex align-items-center gap-2 category-wrapper">
-                      <Image
-                        src={category.image}
-                        alt="icon"
-                        width={55}
-                        height={55}
-                        className="img-fluid"
-                        loading="lazy"
-                      />
-                      <div>
-                        <h3 className="mb-1 h6">{category.title}</h3>
-                        <p>{category.count}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Categories Bento Grid */}
+      <CategoryBentoGrid initialCategories={initialCategories} />
 
       {/* <div className="border-top border-bottom py-2"> */}
       {/* <AdSense slot="8049838180" format="fluid" layout="in-article" /> */}

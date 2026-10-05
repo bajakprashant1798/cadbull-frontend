@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import Link from "next/link";
 import Icons from "@/components/Icons";
+import CategoryBentoGrid from "@/components/CategoryBentoGrid";
 import BIM1 from "@/assets/icons/BIM1.png";
 import BIM2 from "@/assets/icons/BIM2.png";
 import BIM3 from "@/assets/icons/BIM3.png";
@@ -411,48 +412,8 @@ export default function Home({ initialProjects, totalPages: initialTotalPages, t
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-md-5 py-4">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12 mb-3">
-              <div className="mb-md-5 mb-4 d-flex ps-5">
-                <SectionHeading
-                  subHeading={"find Latest"}
-                  mainHeading={"Categories"}
-                  mainHeadingBold={"Cadbull"}
-                  alignment="mx-auto"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="row g-4 justify-content-center">
-            {categories.map((category, index) => {
-              // Convert title to a slug (e.g., "3d Drawing" -> "3d-drawing")
-              // const slug = category.slug.replace(/\s+/g, "-");
-              const slug = category.slug
-              return (
-                <div className="col-lg-3 col-md-4 col-sm-6 col-10" key={index}>
-                  {/* <Link href={`/categories/sub/${slug}`}> */}
-                  <Link href={`/${slug}`}>
-                    <div className="d-flex align-items-center gap-2 category-wrapper">
-                      <img
-                        src={category.image.src}
-                        alt="icon"
-                        className="img-fluid"
-                      />
-                      <div>
-                        <h6 className="mb-1">{category.title}</h6>
-                        <p>{category.count}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Categories Bento Grid */}
+      <CategoryBentoGrid />
 
       {/* Main PRINCIPLES  */}
       <section className="py-md-5 py-3">

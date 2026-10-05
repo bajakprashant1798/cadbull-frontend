@@ -1,0 +1,156 @@
+/* ==========================================================================
+   CATEGORIES BENTO GRID SECTION (Exact Cadbull Reference Implementation)
+   ========================================================================== */
+
+.categories-bento-section {
+  padding: 48px 0;
+  
+  .sh {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+
+    h2 {
+      font-size: clamp(28px, 3.4vw, 42px);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      font-weight: 800;
+      color: #0f1b3d;
+      margin: 0;
+    }
+
+    .sub {
+      color: #4a5578;
+      margin-top: 8px;
+      max-width: 560px;
+      font-size: 16px;
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+  }
+
+  /* Categories Bento Grid */
+  .cats {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+
+  .cat {
+    background: #ffffff;
+    border: 1px solid #dfe5f1;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 130px;
+    grid-column: span 3;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    text-decoration: none !important;
+    color: inherit;
+    box-sizing: border-box;
+
+    &:hover {
+      border-color: #0f1b3d;
+      background: #fbfcff;
+      transform: translateY(-2px);
+    }
+
+    b {
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      font-weight: 700;
+      color: #0f1b3d;
+      line-height: 1.25;
+    }
+
+    span {
+      color: #4a5578;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    svg {
+      width: 30px;
+      height: 30px;
+      stroke: #2f5bea;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    &.wide {
+      grid-column: span 6;
+    }
+
+    &.big {
+      grid-column: span 6;
+      grid-row: span 2;
+      background: #0f1b3d;
+      color: #ffffff;
+      border-color: #0f1b3d;
+      position: relative;
+      overflow: hidden;
+
+      b {
+        color: #ffffff;
+      }
+
+      span {
+        color: #aab6dc;
+      }
+
+      svg {
+        stroke: #ffffff;
+        width: 40px;
+        height: 40px;
+      }
+
+      strong {
+        font-size: 56px;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        display: block;
+        margin-top: 6px;
+        font-weight: 800;
+        color: #ffffff;
+      }
+
+      &:hover {
+        background: #16265a;
+        border-color: #16265a;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .cat,
+    .cat.big,
+    .cat.wide {
+      grid-column: span 6;
+    }
+    .cat.big {
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    padding: 36px 0;
+    .cat,
+    .cat.big,
+    .cat.wide {
+      grid-column: span 12;
+    }
+    .cat.big strong {
+      font-size: 42px;
+    }
+  }
+}
