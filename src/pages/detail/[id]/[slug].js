@@ -853,7 +853,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 "@type": "Offer",
                 "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
                 "priceCurrency": "USD",
-                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '9.99',
                 "priceValidUntil": "2028-12-31",
                 "availability": "https://schema.org/InStock",
                 "itemCondition": "https://schema.org/NewCondition"
@@ -891,7 +891,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               },
               "offers": {
                 "@type": "Offer",
-                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '5.99',
+                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '9.99',
                 "priceCurrency": "USD"
               }
             })

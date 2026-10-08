@@ -212,10 +212,10 @@ const plans = [
     id: "silver",
     name: "Silver Plan",
     tagline: "Try the full library",
-    price: "$5.99",
+    price: "$9.99",
     period: "/ Weekly",
     icon: "zap",
-    stripeId: "price_1TVxFsFy6VKViPpJCRGnLEYH",
+    stripeId: "price_1TSAT3Fy6VKViPpJP4SIMcZX",
     features: [
       ...baseFeaturesTop(true),
       // { label: "10 Gold files download / day", full: "Upto 10 Gold files/day", bold: true },
@@ -231,12 +231,12 @@ const plans = [
     id: "gold",
     name: "Gold Plan",
     tagline: "Best for active designers",
-    price: "$14.99",
+    price: "$19.99",
     period: "/ Month",
     icon: "crown",
     popular: true,
     badge: "MOST POPULAR",
-    stripeId: "price_1TSAo6Fy6VKViPpJRV0M9OY4",
+    stripeId: "price_1UO8M3Fy6VKViPpJQuLeuVq1",
     features: [
       ...baseFeaturesTop(true),
       // { label: "20 Gold files download / day", full: "Upto 20 Gold files/day", bold: true },
@@ -252,10 +252,10 @@ const plans = [
     id: "platinum",
     name: "Platinum Plan",
     tagline: "Power for studios",
-    price: "$39.99",
+    price: "$49.99",
     period: "/ 3 Months",
     icon: "star",
-    stripeId: "price_1TSB3UFy6VKViPpJdcvQYrh2",
+    stripeId: "price_1UO8ZHFy6VKViPpJ57GVbkgx",
     features: [
       ...baseFeaturesTop(true),
       // { label: "30 Gold files download / day", full: "Upto 30 Gold files/day", bold: true },
@@ -344,9 +344,9 @@ const PricingCard = ({ plan, onSubscribe, activeSubscription, activePlanId }) =>
     (plan.id === "free" && !activeSubscription) ||
     (plan.stripeId && activePlanId && (
       plan.stripeId === activePlanId ||
-      (plan.id === "silver" && ["price_1QLNQAFy6VKViPpJGQCXH5KE", "price_1TSAT3Fy6VKViPpJP4SIMcZX", "price_1TVxFsFy6VKViPpJCRGnLEYH"].includes(activePlanId)) ||
-      (plan.id === "gold" && ["price_1Q8P4NFy6VKViPpJeRzGAybE", "price_1TSAo6Fy6VKViPpJRV0M9OY4"].includes(activePlanId)) ||
-      (plan.id === "platinum" && ["price_1Q8H9gFy6VKViPpJwEh4k3c1", "price_1TSB3UFy6VKViPpJdcvQYrh2"].includes(activePlanId)) ||
+      (plan.id === "silver" && ["price_1QLNQAFy6VKViPpJGQCXH5KE", "price_1TSAT3Fy6VKViPpJP4SIMcZX", "price_1TVxFsFy6VKViPpJCRGnLEYH", "price_1RjwuyFy6VKViPpJHrCcff1Y"].includes(activePlanId)) ||
+      (plan.id === "gold" && ["price_1Q8P4NFy6VKViPpJeRzGAybE", "price_1TSAo6Fy6VKViPpJRV0M9OY4", "price_1UO8M3Fy6VKViPpJQuLeuVq1"].includes(activePlanId)) ||
+      (plan.id === "platinum" && ["price_1Q8H9gFy6VKViPpJwEh4k3c1", "price_1TSB3UFy6VKViPpJdcvQYrh2", "price_1UO8ZHFy6VKViPpJ57GVbkgx"].includes(activePlanId)) ||
       (plan.id === "diamond" && ["price_1Q8PNDFy6VKViPpJSYVg4mvU"].includes(activePlanId))
     ));
 
@@ -483,14 +483,14 @@ const productSchema = {
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "USD",
-    "lowPrice": "5.99",
+    "lowPrice": "9.99",
     "highPrice": "99.00",
     "offerCount": "4",
     "offers": [
       {
         "@type": "Offer",
         "name": "Silver Plan (Weekly Subscription)",
-        "price": "5.99",
+        "price": "9.99",
         "priceCurrency": "USD",
         "url": "https://cadbull.com/pricing",
         "availability": "https://schema.org/InStock",
@@ -499,7 +499,7 @@ const productSchema = {
       {
         "@type": "Offer",
         "name": "Gold Plan (Monthly Subscription)",
-        "price": "14.99",
+        "price": "19.99",
         "priceCurrency": "USD",
         "url": "https://cadbull.com/pricing",
         "availability": "https://schema.org/InStock",
@@ -508,7 +508,7 @@ const productSchema = {
       {
         "@type": "Offer",
         "name": "Platinum Plan (3-Month Subscription)",
-        "price": "39.99",
+        "price": "49.99",
         "priceCurrency": "USD",
         "url": "https://cadbull.com/pricing",
         "availability": "https://schema.org/InStock",
