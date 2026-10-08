@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { Check, Sparkles, Zap, Crown, Gem, Star, ArrowRight, ChevronDown, X } from "lucide-react";
 
-// Scoped CSS styles matching the new modern design with clean contrast and spacing
+// Scoped CSS styles matching modern design with clean contrast and spacing
 const pricingStyles = `
 .pricing-page-root {
   --bg: #F8F9FA;
@@ -21,7 +21,7 @@ const pricingStyles = `
   --navy: #1F2A3D;
   --navy-2: #2C3A52;
   --muted: #64748B;
-  --faint: #94A3B8;
+  --faint: #94A3BF;
   --red: #DC2626;
   --red-dark: #B91C1C;
   --green: #16A34A;
@@ -30,7 +30,9 @@ const pricingStyles = `
   font-family: var(--font);
   background-color: var(--bg);
   color: var(--ink);
-  padding-bottom: 80px;
+  padding-bottom: 96px;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .pricing-page-root *, .pricing-page-root *::before, .pricing-page-root *::after {
@@ -49,6 +51,12 @@ const pricingStyles = `
   padding: 0 20px;
 }
 
+@media (max-width: 640px) {
+  .pricing-wrap, .pricing-narrow {
+    padding: 0 16px;
+  }
+}
+
 /* Hero Section */
 .pricing-hero {
   position: relative;
@@ -56,6 +64,12 @@ const pricingStyles = `
   padding: 44px 0 32px;
   background-color: var(--bg);
   overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .pricing-hero {
+    padding: 24px 0 20px;
+  }
 }
 
 .pricing-hero::before {
@@ -125,10 +139,11 @@ const pricingStyles = `
   margin: 18px auto 0;
   max-width: 32ch;
   font-weight: 800;
-  font-size: clamp(2rem, 1.2rem + 3.2vw, 3.25rem);
-  line-height: 1.15;
+  font-size: clamp(1.45rem, 1.15rem + 1.8vw, 3.25rem);
+  line-height: 1.2;
   letter-spacing: -0.03em;
   color: var(--ink);
+  word-break: break-word;
 }
 
 .pricing-hero .lede {
@@ -153,6 +168,19 @@ const pricingStyles = `
   color: var(--muted);
 }
 
+@media (max-width: 640px) {
+  .pricing-hero .lede {
+    font-size: 0.94rem;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+  .pricing-hero .answer {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-top: 12px;
+  }
+}
+
 .seg-filter {
   display: inline-flex;
   gap: 4px;
@@ -162,6 +190,7 @@ const pricingStyles = `
   border-radius: 999px;
   padding: 4px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  max-width: 100%;
 }
 .seg-filter button {
   font-family: var(--font);
@@ -178,6 +207,23 @@ const pricingStyles = `
 .seg-filter button[aria-pressed="true"] {
   background: var(--navy);
   color: #FFFFFF;
+}
+
+@media (max-width: 480px) {
+  .seg-filter {
+    display: flex;
+    width: 100%;
+    max-width: 335px;
+    margin: 20px auto 0;
+    padding: 3px;
+  }
+  .seg-filter button {
+    flex: 1;
+    padding: 7px 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    text-align: center;
+  }
 }
 
 /* Plans Grid */
@@ -209,6 +255,20 @@ const pricingStyles = `
   .plans-grid { grid-template-columns: repeat(var(--cols, 5), 1fr); }
 }
 
+@media (max-width: 640px) {
+  .plans-sec {
+    padding: 16px 0 10px;
+  }
+  .plans-title {
+    font-size: 1.35rem;
+    margin-bottom: 14px;
+  }
+  .plans-grid {
+    gap: 20px;
+    padding-top: 16px;
+  }
+}
+
 .plan-card {
   position: relative;
   display: flex;
@@ -223,6 +283,13 @@ const pricingStyles = `
 .plan-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 28px rgba(16, 24, 40, 0.08);
+}
+
+@media (max-width: 480px) {
+  .plan-card {
+    padding: 22px 16px 18px;
+    border-radius: 16px;
+  }
 }
 
 .plan-top {
@@ -307,6 +374,32 @@ const pricingStyles = `
 .plan-save--good {
   background: #DCFCE7;
   color: #15803D;
+}
+
+@media (max-width: 480px) {
+  .plan-price {
+    margin-top: 10px;
+  }
+  .plan-cur {
+    font-size: 1.15rem;
+  }
+  .plan-amt {
+    font-size: 2.15rem;
+  }
+  .plan-per {
+    font-size: 0.84rem;
+  }
+  .plan-eq {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    min-height: auto;
+  }
+  .plan-save {
+    min-height: auto;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    margin-top: 8px;
+  }
 }
 
 .plan-feat {
@@ -549,6 +642,22 @@ const pricingStyles = `
 @media (min-width: 760px) {
   .assure-grid { grid-template-columns: repeat(3, 1fr); }
 }
+@media (max-width: 640px) {
+  .assure-grid {
+    margin: 24px 0 0;
+    gap: 10px;
+  }
+  .assure-item {
+    padding: 14px 14px;
+    border-radius: 12px;
+  }
+  .assure-item b {
+    font-size: 0.9rem;
+  }
+  .assure-item span {
+    font-size: 0.82rem;
+  }
+}
 .assure-item {
   background: #FFFFFF;
   border: 1px solid var(--line);
@@ -575,8 +684,8 @@ const pricingStyles = `
 .pricing-sec h2 {
   margin: 0 0 8px;
   font-weight: 800;
-  font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem);
-  line-height: 1.15;
+  font-size: clamp(1.3rem, 1rem + 1.2vw, 2rem);
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
@@ -592,6 +701,25 @@ const pricingStyles = `
   border-radius: 18px;
   padding: 28px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 640px) {
+  .pricing-sec {
+    padding: 36px 0 0;
+  }
+  .pricing-sec h2 {
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+  }
+  .pricing-sec .intro {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .pricing-panel {
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
 }
 
 /* Cost per day */
@@ -651,6 +779,30 @@ const pricingStyles = `
   font-size: 0.85rem;
 }
 
+@media (max-width: 640px) {
+  .cpd-wrapper {
+    gap: 14px;
+  }
+  .cpd-top {
+    font-size: 0.86rem;
+    gap: 4px;
+  }
+  .cpd-name, .cpd-val {
+    font-size: 0.86rem;
+  }
+  .cpd-val small {
+    font-size: 0.76rem;
+    margin-left: 4px;
+  }
+  .cpd-track {
+    height: 10px;
+  }
+  .cpd-foot {
+    font-size: 0.78rem;
+    margin-top: 12px;
+  }
+}
+
 /* Credits Table */
 .credits-two {
   display: grid;
@@ -671,6 +823,11 @@ const pricingStyles = `
   color: var(--ink);
   line-height: 1.5;
 }
+.credits-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .credits-table {
   width: 100%;
   border-collapse: collapse;
@@ -688,14 +845,36 @@ const pricingStyles = `
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 .credits-table tbody th {
   font-weight: 600;
   color: var(--ink);
+  white-space: nowrap;
 }
 .credits-table td:last-child, .credits-table th:last-child {
   text-align: right;
   padding-right: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .credits-two {
+    gap: 16px;
+  }
+  .credits-rule {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+  .credits-table {
+    font-size: 0.82rem;
+  }
+  .credits-table th, .credits-table td {
+    padding: 9px 4px 9px 0;
+  }
+  .credits-table thead th {
+    font-size: 0.72rem;
+  }
 }
 
 /* Format & Category links */
@@ -758,6 +937,29 @@ const pricingStyles = `
   color: var(--ink);
 }
 
+@media (max-width: 640px) {
+  .sub-heading {
+    margin: 16px 0 8px;
+    font-size: 0.92rem;
+  }
+  .pill-links {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .pill-links a, .pill-links .plain-tag {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  .tool-pill-list {
+    gap: 6px;
+  }
+  .tool-pill-list li {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+}
+
 /* FAQs */
 .faq-list {
   display: grid;
@@ -798,6 +1000,30 @@ const pricingStyles = `
   max-width: 68ch;
   line-height: 1.6;
   font-size: 0.92rem;
+}
+
+@media (max-width: 640px) {
+  .faq-list {
+    gap: 8px;
+  }
+  .faq-item {
+    padding: 0 14px;
+    border-radius: 12px;
+  }
+  .faq-item summary {
+    padding: 13px 24px 13px 0;
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+  .faq-item summary .faq-icon {
+    top: 13px;
+    right: 0;
+  }
+  .faq-item p {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
 }
 `;
 
@@ -859,7 +1085,7 @@ const plans = [
     icon: "bolt",
     stripeId: "price_1TSAT3Fy6VKViPpJP4SIMcZX",
     ctaLabel: "Get weekly plan",
-    payNotice: "UPI, cards, PayPal",
+    payNotice: null,
     features: [
       { label: "25 AI credits", key: true },
       { label: "10 Gold downloads / day", key: true },
@@ -889,7 +1115,7 @@ const plans = [
     icon: "crown",
     stripeId: "price_1UO8M3Fy6VKViPpJQuLeuVq1",
     ctaLabel: "Get monthly plan",
-    payNotice: "UPI, cards, PayPal",
+    payNotice: null,
     features: [
       { label: "100 AI credits", key: true },
       { label: "20 Gold downloads / day", key: true },
@@ -918,7 +1144,7 @@ const plans = [
     icon: "star",
     stripeId: "price_1UO8ZHFy6VKViPpJ57GVbkgx",
     ctaLabel: "Get 3-month plan",
-    payNotice: "UPI, cards, PayPal",
+    payNotice: null,
     features: [
       { label: "300 AI credits", key: true },
       { label: "30 Gold downloads / day", key: true },
@@ -948,7 +1174,7 @@ const plans = [
     icon: "gem",
     stripeId: "price_1Q8PNDFy6VKViPpJSYVg4mvU",
     ctaLabel: "Get yearly plan",
-    payNotice: "UPI, cards, PayPal",
+    payNotice: null,
     features: [
       { label: "1,500 AI credits", key: true },
       { label: "40 Gold downloads / day", key: true },
@@ -1028,7 +1254,7 @@ const PlanIcon = ({ type }) => {
   }
 };
 
-const Pricing = () => {
+const Pricing = ({ lastProductId = 0, initialProductCount = 0 }) => {
   const router = useRouter();
   const userData = useSessionStorageData("userData");
   const isAuthenticated = useSelector((store) => store.logininfo.isAuthenticated);
@@ -1038,25 +1264,27 @@ const Pricing = () => {
   const [activePlanId, setActivePlanId] = useState(null);
   const [showMessage, setShowMessage] = useState(true);
   const [filter, setFilter] = useState("all"); // 'all' | 'short' | 'long'
-  const [productCount, setProductCount] = useState(269000);
+  const [productCount, setProductCount] = useState(lastProductId || initialProductCount || 0);
   const cpdRef = useRef(null);
 
-  // Fetch real dynamic product count matching homepage hero
+  // Fallback in case SSR count was not populated
   useEffect(() => {
-    getallprojects(1, 12)
-      .then((res) => {
-        const count =
-          res.data?.lastProductId ??
-          res.data?.totalProducts ??
-          (res.data?.products?.[0]?.id || 269000);
-        if (count) {
-          setProductCount(count);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch product count:", err);
-      });
-  }, []);
+    if (!productCount) {
+      getallprojects(1, 12)
+        .then((res) => {
+          const count =
+            res.data?.lastProductId ??
+            res.data?.totalProducts ??
+            (res.data?.products?.[0]?.id || 0);
+          if (count) {
+            setProductCount(count);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch product count:", err);
+        });
+    }
+  }, [productCount]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -1143,10 +1371,11 @@ const Pricing = () => {
   const filteredPlans = filter === "all"
     ? plans
     : filter === "short"
-    ? plans.filter((p) => ["free", "silver", "gold"].includes(p.id))
-    : plans.filter((p) => ["free", "platinum", "diamond"].includes(p.id));
+      ? plans.filter((p) => ["free", "silver", "gold"].includes(p.id))
+      : plans.filter((p) => ["free", "platinum", "diamond"].includes(p.id));
 
-  const formattedProductCount = (productCount ? Number(productCount).toLocaleString("en-US") : "269,000") + "+";
+  const formattedProductCount = productCount ? `${Number(productCount).toLocaleString("en-US")}+` : "";
+  const countPrefix = formattedProductCount ? `${formattedProductCount} ` : "";
 
   const structuredDataGraph = {
     "@context": "https://schema.org",
@@ -1176,8 +1405,8 @@ const Pricing = () => {
         "@type": "WebPage",
         "@id": "https://cadbull.com/pricing#webpage",
         "url": "https://cadbull.com/pricing",
-        "name": `Cadbull Pricing | ${formattedProductCount} DWG, Revit & 3D Files + AI Studio`,
-        "description": `Cadbull plans from $9.99 a week. Download ${formattedProductCount} DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`,
+        "name": `Cadbull Pricing | ${countPrefix}DWG, Revit & 3D Files + AI Studio`,
+        "description": `Cadbull plans from $9.99 a week. Download ${countPrefix}DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`,
         "isPartOf": {
           "@id": "https://cadbull.com/#website"
         },
@@ -1269,8 +1498,8 @@ const Pricing = () => {
   return (
     <Fragment>
       <Head>
-        <title>Cadbull Pricing | {formattedProductCount} DWG, Revit &amp; 3D Files + AI Studio</title>
-        <meta name="description" content={`Cadbull plans from $9.99 a week. Download ${formattedProductCount} DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
+        <title>{`Cadbull Pricing | ${countPrefix}DWG, Revit & 3D Files + AI Studio`}</title>
+        <meta name="description" content={`Cadbull plans from $9.99 a week. Download ${countPrefix}DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/pricing`} />
         <meta name="robots" content="index,follow,max-image-preview:large" />
         <meta name="theme-color" content="#1F2A3D" />
@@ -1280,14 +1509,14 @@ const Pricing = () => {
         <meta property="og:site_name" content="Cadbull" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/pricing`} />
-        <meta property="og:title" content={`Cadbull Pricing | ${formattedProductCount} DWG, Revit & 3D Files + AI Studio`} />
-        <meta property="og:description" content={`Cadbull plans from $9.99 a week. Download ${formattedProductCount} DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
+        <meta property="og:title" content={`Cadbull Pricing | ${countPrefix}DWG, Revit & 3D Files + AI Studio`} />
+        <meta property="og:description" content={`Cadbull plans from $9.99 a week. Download ${countPrefix}DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@cadbull" />
-        <meta name="twitter:title" content={`Cadbull Pricing | ${formattedProductCount} DWG, Revit & 3D Files + AI Studio`} />
-        <meta name="twitter:description" content={`Cadbull plans from $9.99 a week. Download ${formattedProductCount} DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
+        <meta name="twitter:title" content={`Cadbull Pricing | ${countPrefix}DWG, Revit & 3D Files + AI Studio`} />
+        <meta name="twitter:description" content={`Cadbull plans from $9.99 a week. Download ${countPrefix}DWG, 3ds Max, Revit and 3D model files, plus AI Studio for floor plans and 3D views.`} />
 
         {/* JSON-LD Schema */}
         <script
@@ -1343,7 +1572,7 @@ const Pricing = () => {
             </div>
 
             <h1 id="pricing-h1">
-              {formattedProductCount} DWG, 3ds Max, Revit and 3D model files, plus an AI studio
+              {countPrefix}DWG, 3ds Max, Revit and 3D model files, plus an AI studio
             </h1>
 
             <p className="lede">
@@ -1472,21 +1701,20 @@ const Pricing = () => {
                       type="button"
                       onClick={() => handleSubscribe(plan)}
                       disabled={activeSubscription && !isCurrent}
-                      className={`plan-cta ${
-                        isCurrent
+                      className={`plan-cta ${isCurrent
                           ? "plan-cta--green"
                           : plan.popular
-                          ? "plan-cta--red"
-                          : plan.id === "free"
-                          ? "plan-cta--green"
-                          : ""
-                      }`}
+                            ? "plan-cta--red"
+                            : plan.id === "free"
+                              ? "plan-cta--green"
+                              : ""
+                        }`}
                     >
                       {isCurrent ? "CURRENT PLAN" : plan.ctaLabel}
                       {!isCurrent && <ArrowRight size={16} strokeWidth={2.5} />}
                     </button>
 
-                    <p className="plan-pay">{plan.payNotice}</p>
+                    {plan.payNotice && <p className="plan-pay">{plan.payNotice}</p>}
                   </article>
                 );
               })}
@@ -1525,9 +1753,6 @@ const Pricing = () => {
               <li><Link href="/categories/1?file_type=3d%20sketchup">SketchUp (SKP) files</Link></li>
               <li><Link href="/categories/1?file_type=Revit">Revit (RVT) files</Link></li>
               <li><Link href="/categories/1?file_type=PDF">PDF files</Link></li>
-              <li><span className="plain-tag">DXF files</span></li>
-              <li><span className="plain-tag">JPEG files</span></li>
-              <li><span className="plain-tag">Photoshop files</span></li>
             </ul>
 
             <h3 className="sub-heading">Browse by category</h3>
@@ -1623,38 +1848,40 @@ const Pricing = () => {
                 </p>
               </div>
 
-              <table className="credits-table">
-                <caption className="visually-hidden">Price per AI generation by plan</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Plan</th>
-                    <th scope="col">Credits</th>
-                    <th scope="col">Per generation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">Silver, weekly</th>
-                    <td>25</td>
-                    <td>$0.40</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Gold, monthly</th>
-                    <td>100</td>
-                    <td>$0.20</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Platinum, 3 months</th>
-                    <td>300</td>
-                    <td>$0.17</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Diamond, yearly</th>
-                    <td>1,500</td>
-                    <td>$0.07</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="credits-table-wrap">
+                <table className="credits-table">
+                  <caption className="visually-hidden">Price per AI generation by plan</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Plan</th>
+                      <th scope="col">Credits</th>
+                      <th scope="col">Per generation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Silver, weekly</th>
+                      <td>25</td>
+                      <td>$0.40</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Gold, monthly</th>
+                      <td>100</td>
+                      <td>$0.20</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Platinum, 3 months</th>
+                      <td>300</td>
+                      <td>$0.17</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Diamond, yearly</th>
+                      <td>1,500</td>
+                      <td>$0.07</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </section>
@@ -1695,6 +1922,34 @@ const Pricing = () => {
     </Fragment>
   );
 };
+
+export async function getServerSideProps({ res }) {
+  try {
+    if (res) {
+      res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+    }
+    const projectRes = await getallprojects(1, 12);
+    const count =
+      projectRes?.data?.lastProductId ??
+      projectRes?.data?.totalProducts ??
+      (projectRes?.data?.products?.[0]?.id || 0);
+
+    return {
+      props: {
+        lastProductId: count || 0,
+        initialProductCount: count || 0,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to get product count in getServerSideProps:", error);
+    return {
+      props: {
+        lastProductId: 0,
+        initialProductCount: 0,
+      },
+    };
+  }
+}
 
 Pricing.getLayout = function getLayout(page) {
   return <MainLayout>{page}</MainLayout>;
