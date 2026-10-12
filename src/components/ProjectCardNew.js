@@ -22,6 +22,7 @@ const ProjectCardNew = ({
     id,
     photo_url,
     type,
+    slug,
     favorites, // Optionally pass favorites list from parent
     priority = false, // Add priority prop for LCP images
 }) => {
@@ -115,6 +116,11 @@ const ProjectCardNew = ({
 
 
 
+    const cleanSlug = typeof slug === 'string' ? slug.trim() : '';
+    const finalSlug = (cleanSlug && !['null', 'undefined'].includes(cleanSlug.toLowerCase()))
+        ? cleanSlug
+        : slugify(work_title);
+
     return (
         <>
             <style jsx>{`
@@ -144,8 +150,8 @@ const ProjectCardNew = ({
             <div ref={ref} className='custom-card-hover project-day-card card h-100 shadow-sm rounded-4 position-relative overflow-hidden' onMouseEnter={() => preloadImage(heroUrl)}>
                 <Link
                     className="h-100 text-decoration-none d-flex flex-column"
-                    href={`/detail/${id}/${slugify(work_title)}`}
-                    onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
+                    href={`/detail/${id}/${finalSlug}`}
+                    onMouseEnter={() => router.prefetch(`/detail/${id}/${finalSlug}`)}
                 >
                     <div className="project-day-card-image position-relative w-100 bg-white" style={{ aspectRatio: '4/3', borderBottom: '1px solid #f1f5f9' }}>
                         <div className="w-100 h-100 position-absolute z-0" style={{ inset: 0, opacity: 0.18, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,112,243,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,112,243,0.5) 1px, transparent 1px)', backgroundSize: '32px 32px, 32px 32px' }}></div>

@@ -280,7 +280,7 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                   "@type": "ListItem",
                   "position": idx + 1,
                   "name": project.work_title,
-                  "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/detail/${project.id}/${slugify(project.work_title)}`
+                  "url": `${process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com"}/detail/${project.id}/${project.slug || slugify(project.work_title)}`
                 }))
               })
             }}

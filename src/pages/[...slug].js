@@ -313,10 +313,10 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     }, [type, file_type, search]);
 
     // Canonical URL should reflect the full path structure
-    const canonicalUrl = `${process.env.NEXT_PUBLIC_FRONT_URL}/${currentPath}`;
+    const frontUrl = (process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com").replace(/\/+$/, '');
+    const canonicalUrl = `${frontUrl}/${currentPath}`.replace(/([^:]\/)\/+/g, "$1");
 
     // Dynamic breadcrumb generation for JSON-LD and SEO
-    const frontUrl = process.env.NEXT_PUBLIC_FRONT_URL || "https://cadbull.com";
     const breadcrumbItems = [
         {
             "@type": "ListItem",
@@ -442,7 +442,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                                     "@type": "ListItem",
                                     "position": idx + 1,
                                     "name": project.work_title,
-                                    "url": `${frontUrl}/detail/${project.id}/${slugify(project.work_title)}`
+                                    "url": `${frontUrl}/detail/${project.id}/${project.slug || slugify(project.work_title)}`
                                 }))
                             })
                         }}

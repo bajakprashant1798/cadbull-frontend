@@ -388,6 +388,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
+  const frontUrl = (process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com').replace(/\/+$/, '');
+  const cleanCanonicalUrl = (canonicalUrl || `${frontUrl}${router.asPath}`).replace(/([^:]\/)\/+/g, "$1");
   const { categoryAndSubCategory, categoriesList } = useSelector((store) => store.projectinfo);
   const { id } = router.query;
 
@@ -739,7 +741,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta property="og:title" content={project?.meta_title || project?.work_title} />
         <meta property="og:description" content={project?.meta_description || project?.description?.slice(0, 150)} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={canonicalUrl || `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`} />
+        <meta property="og:url" content={cleanCanonicalUrl} />
 
         {/* PRIMARY OG IMAGE (MANDATORY FOR FACEBOOK & WHATSAPP) */}
         {previewImage && (
@@ -795,7 +797,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           name="twitter:image"
           content={previewImage
             ? getSafeImageUrl(previewImage)
-            : `${process.env.NEXT_PUBLIC_FRONT_URL}/default-img.png`
+            : `${frontUrl}/default-img.png`
           }
         />
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
@@ -812,8 +814,8 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 "name": project?.work_title,
                 "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
                 "image": galleryUrls.map((url) => getSafeImageUrl(url)),
-                "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
-                "mainEntityOfPage": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`
+                "url": cleanCanonicalUrl,
+                "mainEntityOfPage": cleanCanonicalUrl
               }),
             }}
           />
@@ -851,7 +853,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               } : undefined,
               "offers": {
                 "@type": "Offer",
-                "url": `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`,
+                "url": cleanCanonicalUrl,
                 "priceCurrency": "USD",
                 "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '9.99',
                 "priceValidUntil": "2028-12-31",
@@ -920,7 +922,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         )}
 
 
-        <link rel="canonical" href={canonicalUrl} />
+        <link rel="canonical" href={cleanCanonicalUrl} />
         <link rel="preconnect" href="https://assets.cadbull.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://assets.cadbull.com"></link>
         {/* <link rel="preload" href="https://assets.cadbull.com" as="image" />
@@ -935,7 +937,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           />
         )}
 
-        <link rel="amphtml" href={`${process.env.NEXT_PUBLIC_FRONT_URL}/amp/${project?.id}/${encodeURIComponent(project?.slug || project?.work_title || '')}`} />
+        <link rel="amphtml" href={`${frontUrl}/amp/${project?.id}/${encodeURIComponent(project?.slug || project?.work_title || '')}`} />
 
       </Head>
       <section className="bg-light pt-4 pt-md-5 pb-3 pb-md-3 category-page category-page-border-bottom">
@@ -1003,9 +1005,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                       href={res.url}
                       onClick={(e) => {
                         e.preventDefault();
-                        navigator.clipboard.writeText(
-                          `${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`
-                        );
+                        navigator.clipboard.writeText(cleanCanonicalUrl);
                         toast.success("Link Copied Successfully");
                       }}
                       className="link-button copy-link-size"
@@ -1022,7 +1022,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   {/* facebook share  */}
                   <FacebookShareButton
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <FacebookIcon size={32} borderRadius={"10"} />
                   </FacebookShareButton>
@@ -1030,7 +1030,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   <TwitterShareButton
                     hashtags={["cadbull", "3ddesign", "2ddesing"]}
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <TwitterIcon size={32} borderRadius={"10"} />
                   </TwitterShareButton>
@@ -1038,34 +1038,34 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                   <PinterestShareButton
                     title={project?.work_title}
                     media={getSafeImageUrl(previewImage)}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <PinterestIcon size={32} borderRadius={"10"} />
                   </PinterestShareButton>
                   {/* email share  */}
                   <EmailShareButton
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <EmailIcon size={32} borderRadius={"10"} />
                   </EmailShareButton>
                   {/* what's app share */}
                   <WhatsappShareButton
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <WhatsappIcon size={32} borderRadius={"10"} />
                   </WhatsappShareButton>
                   {/* facebook messanger share  */}
                   <FacebookMessengerShareButton
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <FacebookMessengerIcon size={32} borderRadius={"10"} />
                   </FacebookMessengerShareButton>
                   <LinkedinShareButton
                     title={project?.work_title}
-                    url={`${process.env.NEXT_PUBLIC_FRONT_URL}${router.asPath}`}
+                    url={cleanCanonicalUrl}
                   >
                     <LinkedinIcon size={32} borderRadius={"10"} />
                   </LinkedinShareButton>
@@ -2150,8 +2150,8 @@ export async function getServerSideProps(ctx) {
     // 3) case-SENSITIVE compare; preserve query string (like UTM parameters) on redirect
     const incomingSlug = decodeURIComponent(params.slug || "");
     if (incomingSlug !== canonicalSlug) {
-      const reqUrl = ctx.req?.url || '';
-      const queryString = reqUrl.includes('?') ? reqUrl.slice(reqUrl.indexOf('?')) : '';
+      const resolvedUrl = ctx.resolvedUrl || '';
+      const queryString = resolvedUrl.includes('?') ? resolvedUrl.slice(resolvedUrl.indexOf('?')) : '';
       return {
         redirect: {
           destination: `/detail/${id}/${encodeURIComponent(canonicalSlug)}${queryString}`,
@@ -2176,11 +2176,13 @@ export async function getServerSideProps(ctx) {
     // optional: tidy up proxies
     res.setHeader('Vary', 'Accept-Encoding');
 
+    const frontUrlSSR = (process.env.NEXT_PUBLIC_FRONT_URL || 'https://cadbull.com').replace(/\/+$/, '');
+    const cleanCanonicalSSR = `${frontUrlSSR}/detail/${id}/${encodeURIComponent(canonicalSlug)}`.replace(/([^:]\/)\/+/g, "$1");
     return {
       props: {
         initialProject: project,
         initialSimilar: similarRes?.data?.projects || [],
-        canonicalUrl: `${process.env.NEXT_PUBLIC_FRONT_URL}/detail/${id}/${encodeURIComponent(canonicalSlug)}`,
+        canonicalUrl: cleanCanonicalSSR,
       },
     };
   } catch (err) {

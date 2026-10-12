@@ -21,6 +21,7 @@ const ProjectCard = ({
   id,
   photo_url,
   type,
+  slug,
   favorites, // Optionally pass favorites list from parent
   priority = false, // Add priority prop for LCP images
 }) => {
@@ -95,12 +96,17 @@ const ProjectCard = ({
       .replace(/^\-+|\-+$/g, "");
   }
 
+  const cleanSlug = typeof slug === 'string' ? slug.trim() : '';
+  const finalSlug = (cleanSlug && !['null', 'undefined'].includes(cleanSlug.toLowerCase()))
+    ? cleanSlug
+    : slugify(work_title);
+
   return (
     <div ref={ref} className='project-day-card h-100' onMouseEnter={() => preloadImage(heroUrl)} style={{ padding: '14px' }}>
       <Link
         className="h-100 d-flex flex-column text-decoration-none"
-        href={`/detail/${id}/${slugify(work_title)}`}
-        onMouseEnter={() => router.prefetch(`/detail/${id}/${slugify(work_title)}`)}
+        href={`/detail/${id}/${finalSlug}`}
+        onMouseEnter={() => router.prefetch(`/detail/${id}/${finalSlug}`)}
       >
         <div className='project-day-card-image mb-3 position-relative' style={{ height: "250px" }}>
           <Image

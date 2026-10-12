@@ -373,7 +373,7 @@ export default function AISearchAssistant() {
                                                                     onMouseLeave={(e) => e.currentTarget.classList.remove('shadow')}
                                                                     onClick={() => {
                                                                         setIsOpen(false);
-                                                                        router.push(`/detail/${product.id}/${slugify(product.title)}`);
+                                                                        router.push(`/detail/${product.id}/${product.slug || slugify(product.title)}`);
                                                                     }}>
 
                                                                     <div className="position-relative rounded-2 flex-shrink-0 ms-2 my-1 border" style={{ width: '70px', height: '70px', overflow: 'hidden' }}>
