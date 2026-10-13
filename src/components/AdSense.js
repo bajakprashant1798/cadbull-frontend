@@ -161,6 +161,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { isUserSubscribed } from "@/utils/subscription";
 
 const AdSense = ({
   style,
@@ -184,20 +185,7 @@ const AdSense = ({
   const [unfilled, setUnfilled] = useState(false);
 
   const user = useSelector((state) => state.logininfo?.user);
-
-  let isSubscribed = false;
-  if (user && user.acc_exp_date) {
-    const expDate = new Date(user.acc_exp_date);
-    const today = new Date();
-    if (expDate > today) {
-      isSubscribed = true;
-    }
-  }
-
-  // Commented out so that paid/subscribed users will also see ads
-  // if (isSubscribed) {
-  //   return null;
-  // }
+  const isSubscribed = isUserSubscribed(user);
 
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
   const baseStyle = { display: "block", textAlign: "center" };
@@ -209,7 +197,7 @@ const AdSense = ({
 
   // Start observing when lazy
   useEffect(() => {
-    // if (!lazy) return;
+    if (isSubscribed) return;
     if (!lazy) return;
     // // Safari legacy fallback: if IO doesn’t exist, mount immediately
     // if (typeof window !== 'undefined' && !('IntersectionObserver' in window)) {
@@ -229,18 +217,19 @@ const AdSense = ({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [lazy]);
+  }, [lazy, isSubscribed]);
 
   // Re-key on route change so <ins> is fresh on new pages
   useEffect(() => {
+    if (isSubscribed) return;
     pushedRef.current = false;
     setUnfilled(false);
     setKeyBump(x => x + 1);
-  }, [router.asPath, slot]);
+  }, [router.asPath, slot, isSubscribed]);
 
   // Detect unfilled / blocked ads to hide the wrapper card
   useEffect(() => {
-    if (!mounted || typeof window === "undefined" || process.env.NODE_ENV === "development") return;
+    if (isSubscribed || !mounted || typeof window === "undefined" || process.env.NODE_ENV === "development") return;
 
     let timeoutId;
     const ins = containerRef.current?.querySelector(".adsbygoogle");
@@ -282,11 +271,11 @@ const AdSense = ({
       observer.disconnect();
       clearTimeout(timeoutId);
     };
-  }, [mounted, keyBump]);
+  }, [mounted, keyBump, isSubscribed]);
 
   // Push ad request after <ins> is in the DOM
   useEffect(() => {
-    if (!mounted || pushedRef.current) return;
+    if (isSubscribed || !mounted || pushedRef.current) return;
     if (typeof window === "undefined") return;
     if (!clientId) return;
 
@@ -314,7 +303,12 @@ const AdSense = ({
     // slight delay to ensure script is ready
     const t = setTimeout(tryPush, 300);
     return () => clearTimeout(t);
-  }, [mounted, clientId, keyBump]);
+  }, [mounted, clientId, keyBump, isSubscribed]);
+
+  // If user has an active paid subscription, do not show any ads
+  if (isSubscribed) {
+    return null;
+  }
 
   if (process.env.NODE_ENV === "development") {
     return (

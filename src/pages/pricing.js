@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import useSessionStorageData from "@/utils/useSessionStorageData";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { isUserSubscribed } from "@/utils/subscription";
 import { Check, Sparkles, Zap, Crown, Gem, Star, ArrowRight, ChevronDown, X } from "lucide-react";
 
 // Scoped CSS styles matching modern design with clean contrast and spacing
@@ -639,8 +640,11 @@ const pricingStyles = `
   grid-template-columns: 1fr;
   margin: 40px 0 0;
 }
-@media (min-width: 760px) {
-  .assure-grid { grid-template-columns: repeat(3, 1fr); }
+@media (min-width: 640px) {
+  .assure-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .assure-grid { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 640px) {
   .assure-grid {
@@ -1064,6 +1068,7 @@ const plans = [
       { label: "All free files", key: false },
       { label: "No premium files", off: true },
       { label: "No Gold downloads", off: true },
+      { label: "No ads (100% ad-free)", off: true },
       { label: "Create library", key: false },
       { label: "Upload files", key: false },
       { label: "Projects library", key: false },
@@ -1090,6 +1095,7 @@ const plans = [
       { label: "25 AI credits", key: true },
       { label: "10 Gold downloads / day", key: true },
       { label: "10 Free downloads / day", key: true },
+      { label: "No ads (100% ad-free)", key: true },
       { label: "All premium files", key: false },
       { label: "All free files", key: false },
       { isAiTools: true },
@@ -1120,6 +1126,7 @@ const plans = [
       { label: "100 AI credits", key: true },
       { label: "20 Gold downloads / day", key: true },
       { label: "15 Free downloads / day", key: true },
+      { label: "No ads (100% ad-free)", key: true },
       { label: "All premium files", key: false },
       { label: "All free files", key: false },
       { isAiTools: true },
@@ -1149,6 +1156,7 @@ const plans = [
       { label: "300 AI credits", key: true },
       { label: "30 Gold downloads / day", key: true },
       { label: "25 Free downloads / day", key: true },
+      { label: "No ads (100% ad-free)", key: true },
       { label: "All premium files", key: false },
       { label: "All free files", key: false },
       { isAiTools: true },
@@ -1179,6 +1187,7 @@ const plans = [
       { label: "1,500 AI credits", key: true },
       { label: "40 Gold downloads / day", key: true },
       { label: "50 Free downloads / day", key: true },
+      { label: "No ads (100% ad-free)", key: true },
       { label: "All premium files", key: false },
       { label: "All free files", key: false },
       { isAiTools: true },
@@ -1191,6 +1200,10 @@ const plans = [
 ];
 
 const faqsData = [
+  {
+    q: "Do subscribed members see advertisements?",
+    a: "No! All active paid subscription plans (Silver, Gold, Platinum, and Diamond) include an entirely ad-free experience. Google ads are completely removed across all pages as long as your subscription is active."
+  },
   {
     q: "Which file formats can I download on Cadbull?",
     a: "Cadbull has DWG, 3ds Max, Revit, SketchUp, PDF, DXF, JPEG and Photoshop files, and DWG is the most common. You can browse files by type from the categories page."
@@ -1294,8 +1307,7 @@ const Pricing = ({ lastProductId = 0, initialProductCount = 0 }) => {
         if (!response) return;
         setUser(response.data);
         const expDate = new Date(response.data.acc_exp_date);
-        const today = new Date();
-        if (response.data.acc_exp_date && expDate > today) {
+        if (isUserSubscribed(response.data)) {
           setActiveSubscription(true);
           try {
             const subRes = await getSubscriptionDetail();
@@ -1720,7 +1732,7 @@ const Pricing = ({ lastProductId = 0, initialProductCount = 0 }) => {
               })}
             </div>
 
-            {/* Assurance 3-column banner */}
+            {/* Assurance 4-column banner */}
             <div className="assure-grid">
               <div className="assure-item">
                 <b>Switch plans any time</b>
@@ -1729,6 +1741,10 @@ const Pricing = ({ lastProductId = 0, initialProductCount = 0 }) => {
               <div className="assure-item">
                 <b>Pay your way</b>
                 <span>UPI for Indian customers, plus credit cards, debit cards, and PayPal.</span>
+              </div>
+              <div className="assure-item">
+                <b>100% Ad-Free Experience</b>
+                <span>No Google Ads across all pages for all active subscribed members.</span>
               </div>
               <div className="assure-item">
                 <b>Credits last the whole plan</b>

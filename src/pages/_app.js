@@ -11,8 +11,10 @@ import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Authprovider from "@/component/Authprovider/Authprovider";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useSelector, useDispatch } from "react-redux";
 import { store } from "../../redux/app/store";
+import { loginSuccess } from "../../redux/app/features/authSlice";
+import { isUserSubscribed } from "@/utils/subscription";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import Script from "next/script";
@@ -47,19 +49,17 @@ const inter = Inter({
 // Dynamic AdSense Scripts Loader based on user subscription status
 function AdSenseScripts() {
   const user = useSelector((state) => state.logininfo?.user);
+  const [mounted, setMounted] = React.useState(false);
 
-  let isSubscribed = false;
-  if (user && user.acc_exp_date) {
-    const expDate = new Date(user.acc_exp_date);
-    const today = new Date();
-    if (expDate > today) {
-      isSubscribed = true;
-    }
-  }
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  // If the user is subscribed, do not load any Google AdSense scripts
-  // Commented out so that paid/subscribed users will also see ads
-  // if (isSubscribed) return null;
+  // Avoid injecting AdSense scripts during SSR before client auth state is determined
+  if (!mounted) return null;
+
+  // If the user has an active paid subscription, do not load any Google AdSense scripts
+  if (isUserSubscribed(user)) return null;
 
   const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
   if (!adsenseClientId) return null;
@@ -123,6 +123,30 @@ function AdSenseScripts() {
       />
     </>
   );
+}
+
+// Rehydrates user state from localStorage on client mount if not already populated
+function AuthHydrator() {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.logininfo?.user);
+
+  React.useEffect(() => {
+    if ((!user || !user.id) && typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("userData");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.id) {
+            dispatch(loginSuccess({ user: parsed, status: "authenticated" }));
+          }
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }, [dispatch, user]);
+
+  return null;
 }
 
 export default function App({ Component, pageProps }) {
@@ -326,6 +350,8 @@ export default function App({ Component, pageProps }) {
 
       {/* <Authprovider> */}
       <Provider store={store}>
+        {/* Rehydrate auth state on client mount */}
+        <AuthHydrator />
         {/* Load AdSense scripts conditionally under Redux Provider context */}
         <AdSenseScripts />
 
