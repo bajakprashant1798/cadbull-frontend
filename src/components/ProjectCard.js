@@ -136,9 +136,10 @@ const ProjectCard = ({
               }}
               className='border-0 bg-transparent p-0 shadow-none d-in'
             >
-              {isFavorited ? <Icons.Dislike /> : <Icons.Like />}
+              {/* {isFavorited ? <Icons.Dislike /> : <Icons.Like />} */}
+              <img src={save.src} className='border-0' alt='icon' loading="lazy" />
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
@@ -148,7 +149,7 @@ const ProjectCard = ({
               className='border-0 bg-transparent p-0 shadow-none'
             >
               <img src={save.src} className='border-0' alt='icon' loading="lazy" />
-            </button>
+            </button> */}
           </div>
         </div>
 
