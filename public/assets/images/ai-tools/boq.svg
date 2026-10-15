@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 216" width="360" height="216">
+  <rect width="100%" height="100%" fill="#F1F5F9"/>
+  <g transform="translate(45, 26)">
+    <rect x="0" y="0" width="270" height="164" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <rect x="0" y="0" width="270" height="34" rx="8" fill="#1F2A3D"/>
+    <rect x="0" y="24" width="270" height="10" fill="#1F2A3D"/>
+    <text x="18" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#F8FAFC">ITEM</text>
+    <text x="120" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#F8FAFC">QTY</text>
+    <text x="190" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#F8FAFC">TOTAL ($)</text>
+    
+    <line x1="0" y1="65" x2="270" y2="65" stroke="#F1F5F9" stroke-width="1.5"/>
+    <text x="18" y="55" font-family="Inter, sans-serif" font-size="10" fill="#334155">Concrete M25</text>
+    <text x="120" y="55" font-family="Inter, sans-serif" font-size="10" fill="#64748B">145 m³</text>
+    <text x="190" y="55" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0F172A">18,850</text>
+    
+    <line x1="0" y1="98" x2="270" y2="98" stroke="#F1F5F9" stroke-width="1.5"/>
+    <text x="18" y="88" font-family="Inter, sans-serif" font-size="10" fill="#334155">Steel Fe500</text>
+    <text x="120" y="88" font-family="Inter, sans-serif" font-size="10" fill="#64748B">12.4 ton</text>
+    <text x="190" y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0F172A">11,280</text>
+    
+    <line x1="0" y1="130" x2="270" y2="130" stroke="#F1F5F9" stroke-width="1.5"/>
+    <text x="18" y="120" font-family="Inter, sans-serif" font-size="10" fill="#334155">Brick Masonry</text>
+    <text x="120" y="120" font-family="Inter, sans-serif" font-size="10" fill="#64748B">280 m²</text>
+    <text x="190" y="120" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0F172A">5,460</text>
+    
+    <rect x="0" y="132" width="270" height="32" rx="0" fill="#E8F6EC"/>
+    <text x="18" y="152" font-family="Inter, sans-serif" font-size="11" font-weight="800" fill="#15803D">ESTIMATE TOTAL</text>
+    <text x="190" y="152" font-family="Inter, sans-serif" font-size="12" font-weight="800" fill="#15803D">$35,590</text>
+  </g>
+</svg>

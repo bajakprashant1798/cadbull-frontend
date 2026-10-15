@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 216" width="360" height="216">
+  <rect width="100%" height="100%" fill="#F8FAFC"/>
+  <rect x="35" y="24" width="290" height="168" rx="4" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+  <rect x="50" y="38" width="130" height="85" fill="#EEF2F6" stroke="#CBD5E1"/>
+  <path d="M 60 100 L 90 65 L 120 85 L 150 55 L 170 100 Z" fill="#93C5FD" opacity="0.6"/>
+  <rect x="190" y="38" width="120" height="38" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <rect x="190" y="84" width="120" height="38" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <line x1="50" y1="135" x2="310" y2="135" stroke="#DC2626" stroke-width="1.5"/>
+  <line x1="50" y1="145" x2="160" y2="145" stroke="#94A3B8" stroke-width="2"/>
+  <line x1="50" y1="155" x2="210" y2="155" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="50" y1="165" x2="180" y2="165" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="280" y="170" font-family="Inter, sans-serif" font-weight="800" font-size="10" fill="#1E293B">A1 SHEET</text>
+</svg>

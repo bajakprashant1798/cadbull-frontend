@@ -872,7 +872,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         />
 
         {/* 3. SoftwareApplication (CAD Asset) Schema */}
-        <script
+        {/* <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -898,7 +898,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               }
             })
           }}
-        />
+        /> */}
 
         {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
         {project?.faqs && project.faqs.length > 0 && (

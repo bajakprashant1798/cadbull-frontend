@@ -345,7 +345,16 @@ const Header = () => {
                       <div className="d-flex align-items-center gap-1">
                         {link.title}
                         {link.isNew && (
-                          <span className="badge bg-danger rounded-pill px-1" style={{ fontSize: '0.55rem', padding: '0.2em 0.4em', transform: 'translateY(-1px)' }}>
+                          <span
+                            className="badge bg-danger rounded-pill px-1"
+                            style={{
+                              fontSize: '0.55rem',
+                              padding: '0.2em 0.4em',
+                              transform: 'translateY(-1px)',
+                              position: 'static',
+                              display: 'inline-block'
+                            }}
+                          >
                             NEW
                           </span>
                         )}

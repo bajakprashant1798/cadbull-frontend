@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 216" width="360" height="216">
+  <rect width="100%" height="100%" fill="#1E293B"/>
+  <g transform="translate(65, 30)">
+    <path d="M 0 0 L 230 0 L 230 150 L 70 150 L 70 110 L 0 110 Z" fill="#0F172A" stroke="#38BDF8" stroke-width="2.5"/>
+    <line x1="80" y1="0" x2="80" y2="80" stroke="#38BDF8" stroke-width="2"/>
+    <line x1="80" y1="80" x2="0" y2="80" stroke="#38BDF8" stroke-width="2"/>
+    <line x1="160" y1="0" x2="160" y2="150" stroke="#38BDF8" stroke-width="2"/>
+    <line x1="80" y1="80" x2="160" y2="80" stroke="#38BDF8" stroke-width="2"/>
+    <rect x="95" y="15" width="50" height="40" fill="#1E3A5F" stroke="#60A5FA" stroke-width="1" stroke-dasharray="3 3"/>
+    <path d="M 80 40 L 95 40 A 15 15 0 0 0 80 25" stroke="#F43F5E" stroke-width="1.8" fill="none"/>
+    <path d="M 160 110 L 175 110 A 15 15 0 0 0 160 95" stroke="#F43F5E" stroke-width="1.8" fill="none"/>
+    <text x="40" y="45" font-family="Inter, sans-serif" font-size="9" fill="#94A3B8" text-anchor="middle">BED</text>
+    <text x="120" y="120" font-family="Inter, sans-serif" font-size="9" fill="#94A3B8" text-anchor="middle">LIVING</text>
+    <text x="195" y="75" font-family="Inter, sans-serif" font-size="9" fill="#94A3B8" text-anchor="middle">KITCHEN</text>
+  </g>
+</svg>

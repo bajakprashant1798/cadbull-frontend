@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 216" width="360" height="216">
+  <rect width="100%" height="100%" fill="#F5FBF6"/>
+  <g transform="translate(45, 36)">
+    <rect x="0" y="0" width="270" height="144" rx="10" fill="#FFFFFF" stroke="#86EFAC" stroke-width="2"/>
+    <rect x="20" y="24" width="105" height="48" rx="6" fill="#F8FAFC" stroke="#CBD5E1"/>
+    <text x="32" y="44" font-family="Inter, sans-serif" font-size="10" fill="#64748B">Feet (ft)</text>
+    <text x="32" y="62" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#0F172A">100.00</text>
+    
+    <circle cx="135" cy="48" r="14" fill="#15803D"/>
+    <path d="M 129 48 L 141 48 M 137 44 L 141 48 L 137 52" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+    
+    <rect x="145" y="24" width="105" height="48" rx="6" fill="#E8F6EC" stroke="#86EFAC"/>
+    <text x="157" y="44" font-family="Inter, sans-serif" font-size="10" fill="#15803D">Meters (m)</text>
+    <text x="157" y="62" font-family="Inter, sans-serif" font-size="15" font-weight="800" fill="#15803D">30.48</text>
+    
+    <rect x="20" y="94" width="230" height="24" rx="4" fill="#F1F5F9"/>
+    <line x1="30" y1="94" x2="30" y2="108" stroke="#64748B" stroke-width="1.5"/>
+    <line x1="50" y1="94" x2="50" y2="104" stroke="#94A3B8" stroke-width="1"/>
+    <line x1="70" y1="94" x2="70" y2="108" stroke="#64748B" stroke-width="1.5"/>
+    <line x1="90" y1="94" x2="90" y2="104" stroke="#94A3B8" stroke-width="1"/>
+    <line x1="110" y1="94" x2="110" y2="108" stroke="#64748B" stroke-width="1.5"/>
+    <line x1="130" y1="94" x2="130" y2="104" stroke="#94A3B8" stroke-width="1"/>
+    <line x1="150" y1="94" x2="150" y2="108" stroke="#64748B" stroke-width="1.5"/>
+    <line x1="170" y1="94" x2="170" y2="104" stroke="#94A3B8" stroke-width="1"/>
+    <line x1="190" y1="94" x2="190" y2="108" stroke="#64748B" stroke-width="1.5"/>
+    <line x1="210" y1="94" x2="210" y2="104" stroke="#94A3B8" stroke-width="1"/>
+    <line x1="230" y1="94" x2="230" y2="108" stroke="#64748B" stroke-width="1.5"/>
+  </g>
+</svg>
