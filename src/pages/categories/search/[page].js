@@ -6,7 +6,7 @@ import Icons from "@/components/Icons";
 import ProjectCard from "@/components/ProjectCard";
 import Pagination from "@/components/Pagination";
 import SearchBar from "@/components/SearchBar";
-// import FAQSection from "@/components/FAQSection";
+import CategoryFaqSection from "@/components/CategoryFaqSection";
 import { useSelector, useDispatch } from "react-redux";
 import { getSearchResults, getFavouriteItems } from "@/service/api";
 import { debounce } from "lodash";
@@ -483,6 +483,9 @@ const SearchCategories = ({initialProjects, initialTotalResults, initialTotalPag
                 </div>
               </div>
             </div>
+
+            {/* Category FAQs Section */}
+            <CategoryFaqSection categoryName="CAD Drawings" />
           </div>
         </section>
       </CategoriesLayout>

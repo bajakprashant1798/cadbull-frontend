@@ -23,6 +23,22 @@ import Pagination from "@/components/Pagination";
 import { debounce, set } from "lodash";
 import logo from "@/assets/images/logo.png";
 import AdSense from "@/components/AdSense";
+import CategoryFaqSection from "@/components/CategoryFaqSection";
+
+const categoryPageFaqs = [
+  {
+    question: "What CAD drawing categories are available on Cadbull?",
+    answer: "Cadbull offers a wide range of CAD drawing categories, including Architecture, House Plans, Landscaping, Interior Design, Structural Details, Mechanical Drawings, Electrical Blocks, 3D Drawings, and more."
+  },
+  {
+    question: "Are there free CAD files available in all categories?",
+    answer: "Yes, almost every category on Cadbull includes both free and premium (Gold) CAD drawings. Users can register for a free account to download free DWG files, or subscribe to a gold plan for premium files."
+  },
+  {
+    question: "What software can I use to open Cadbull files?",
+    answer: "Most Cadbull files are in DWG format, which can be opened with Autodesk AutoCAD. Some drawings are in SKP (SketchUp), MAX (3ds Max), or RVT (Revit) formats, compatible with their respective software."
+  }
+];
 import { performance } from "@/utils/performance";
 import { useComponentTimer } from "@/utils/apiTiming";
 
@@ -596,6 +612,9 @@ const Categories = ({
                 </div>
               </div>
             </div>
+
+            {/* Category FAQs Section */}
+            <CategoryFaqSection faqs={categoryPageFaqs} categoryName="CAD Categories" />
 
           </div>
         </section>

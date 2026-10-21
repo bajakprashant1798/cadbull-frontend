@@ -730,7 +730,7 @@ html.js .pricing-page-root .plans.in .ruler-bar i {
 }
 
 .pricing-page-root .cmp thead th {
-  position:sticky;top:0;z-index:5;border-top:0;padding:22px 12px 16px;background:#fff;border-bottom:1px solid var(--line);vertical-align:bottom
+  position:sticky;top:72px;z-index:10;border-top:0;padding:22px 12px 16px;background:#fff;border-bottom:1px solid var(--line);vertical-align:bottom
 }
 
 .pricing-page-root .cmp thead th:first-child {
@@ -1941,6 +1941,12 @@ html.js .pricing-page-root .ruler-bar i {
   font-size: 1.1rem !important;
   line-height: 1.1 !important;
   color: #111827 !important;
+}
+
+.pricing-page-root .cmp thead th {
+  position: sticky !important;
+  top: 72px !important;
+  z-index: 10 !important;
 }
 
 .pricing-page-root .cmp thead .col-gold .ch-name {
