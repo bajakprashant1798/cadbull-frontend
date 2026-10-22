@@ -145,23 +145,23 @@ function validateSEODescription(description) {
 function validateSEOMetaTitle(metaTitle) {
   const length = metaTitle ? metaTitle.length : 0;
   if (length < 50) {
-    return { isValid: false, message: `Meta title too short for SEO (${length}/50-60 chars). Add more descriptive words.` };
+    return { isValid: false, message: `Meta title too short for SEO (${length}/50-55 chars). Add more descriptive words.` };
   }
-  if (length > 60) {
-    return { isValid: false, message: `Meta title too long for SEO (${length}/50-60 chars). Reduce length for better search results.` };
+  if (length > 55) {
+    return { isValid: false, message: `Meta title too long for SEO (${length}/50-55 chars). Reduce length for better search results.` };
   }
-  return { isValid: true, message: `Perfect SEO length (${length}/50-60 chars)` };
+  return { isValid: true, message: `Perfect SEO length (${length}/50-55 chars)` };
 }
 
 function validateSEOMetaDescription(metaDescription) {
   const length = metaDescription ? metaDescription.length : 0;
   if (length < 150) {
-    return { isValid: false, message: `Meta description too short for SEO (${length}/150-160 chars). Add more details.` };
+    return { isValid: false, message: `Meta description too short for SEO (${length}/150-155 chars). Add more details.` };
   }
-  if (length > 160) {
-    return { isValid: false, message: `Meta description too long for SEO (${length}/150-160 chars). Reduce content for better search results.` };
+  if (length > 155) {
+    return { isValid: false, message: `Meta description too long for SEO (${length}/150-155 chars). Reduce content for better search results.` };
   }
-  return { isValid: true, message: `Perfect SEO length (${length}/150-160 chars)` };
+  return { isValid: true, message: `Perfect SEO length (${length}/150-155 chars)` };
 }
 
 const quillModules = {
@@ -874,11 +874,11 @@ const EditProject = () => {
         return;
       }
       if (!seoMetaTitleValidation.isValid) {
-        toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
+        toast.error("Meta title length does not meet SEO requirements (50-55 characters).");
         return;
       }
       if (!seoMetaDescriptionValidation.isValid) {
-        toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
+        toast.error("Meta description length does not meet SEO requirements (150-155 characters).");
         return;
       }
     }
@@ -899,11 +899,11 @@ const EditProject = () => {
     // }
     // // Description validation removed - no length restrictions
     // if (!seoMetaTitleValidation.isValid) {
-    //   toast.error("Meta title length does not meet SEO requirements (50-60 characters).");
+    //   toast.error("Meta title length does not meet SEO requirements (50-55 characters).");
     //   return;
     // }
     // if (!seoMetaDescriptionValidation.isValid) {
-    //   toast.error("Meta description length does not meet SEO requirements (150-160 characters).");
+    //   toast.error("Meta description length does not meet SEO requirements (150-155 characters).");
     //   return;
     // }
 
@@ -1055,10 +1055,10 @@ const EditProject = () => {
   let sxoScore = 0;
   const mtLength = metaTitleVal.length;
   const mdLength = metaDescVal.length;
-  if (mtLength >= 50 && mtLength <= 60) sxoScore += 50;
-  else if (mtLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mtLength - 55) * 2);
-  if (mdLength >= 150 && mdLength <= 160) sxoScore += 50;
-  else if (mdLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mdLength - 155) * 1);
+  if (mtLength >= 50 && mtLength <= 55) sxoScore += 50;
+  else if (mtLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mtLength - 52.5) * 2);
+  if (mdLength >= 150 && mdLength <= 155) sxoScore += 50;
+  else if (mdLength > 0) sxoScore += Math.max(0, 50 - Math.abs(mdLength - 152.5) * 1);
   
   let aioScore = 0;
   const tldrLen = eeatData.tldr.length;
@@ -1285,7 +1285,7 @@ const EditProject = () => {
             <input
               className="form-control"
               {...register("meta_title")}
-              placeholder="Enter SEO meta title (50-60 characters)"
+              placeholder="Enter SEO meta title (50-55 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Title */}
             <div style={{
@@ -1305,7 +1305,7 @@ const EditProject = () => {
               className="form-control"
               {...register("meta_description")}
               rows="3"
-              placeholder="Enter SEO meta description (150-160 characters)"
+              placeholder="Enter SEO meta description (150-155 characters)"
             />
             {/* ✅ SEO Length Validation for Meta Description */}
             <div style={{
@@ -1793,8 +1793,8 @@ const EditProject = () => {
                 <ul style={{ marginTop: "8px", marginBottom: "0" }}>
                   <li>Title: 60-70 characters</li>
                   <li>Description: No length restrictions (write as much as needed)</li>
-                  <li>Meta Title: 50-60 characters</li>
-                  <li>Meta Description: 150-160 characters</li>
+                  <li>Meta Title: 50-55 characters</li>
+                  <li>Meta Description: 150-155 characters</li>
                 </ul>
               </small>
             </div>

@@ -27,12 +27,12 @@ const useSeoCheck = (project) => {
     if (wtLen < 60 || wtLen > 70) issues.push(`Work Title length = ${wtLen}`);
 
     const mtLen = trim(project.meta_title).length;
-    // Meta Title target: 50–60 chars
-    if (mtLen < 50 || mtLen > 60) issues.push(`Meta Title length = ${mtLen}`);
+    // Meta Title target: 50–55 chars
+    if (mtLen < 50 || mtLen > 55) issues.push(`Meta Title length = ${mtLen}`);
 
     const mdLen = trim(project.meta_description).length;
-    // Meta Description target: 150–160 chars
-    if (mdLen < 150 || mdLen > 160) issues.push(`Meta Description length = ${mdLen}`);
+    // Meta Description target: 150–155 chars
+    if (mdLen < 150 || mdLen > 155) issues.push(`Meta Description length = ${mdLen}`);
 
     const hasTags = !!trim(project.tags);
     if (!hasTags) issues.push(`Tags missing`);
