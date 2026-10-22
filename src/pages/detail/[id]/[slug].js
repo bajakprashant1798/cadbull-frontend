@@ -1571,8 +1571,12 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                           </div>
                         </div>
                         <div>
-                          <Link href={`/profile/author/${project?.user_id}`} className="btn btn-primary btn-sm py-1.5 px-3 rounded-pill fw-semibold" style={{ fontSize: '0.8rem' }}>
-                            View Profile
+                          <Link
+                            href={`/profile/author/${project?.user_id}`}
+                            className="btn btn-primary text-white btn-sm py-1.5 px-3 rounded-pill fw-semibold"
+                            style={{ fontSize: '0.8rem', color: '#ffffff' }}
+                          >
+                            <span style={{ color: '#ffffff' }}>View Profile</span>
                           </Link>
                         </div>
                       </div>
