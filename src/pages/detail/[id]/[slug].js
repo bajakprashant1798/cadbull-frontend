@@ -76,6 +76,7 @@ const WhatsappIcon = dynamic(() => import('react-share').then(mod => mod.Whatsap
 const WhatsappShareButton = dynamic(() => import('react-share').then(mod => mod.WhatsappShareButton), { ssr: false });
 
 import { FaLink, FaChevronUp, FaChevronDown, FaStar, FaRegStar, FaShieldAlt, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { Save as SaveIcon, Maximize2 as ZoomIcon } from 'lucide-react';
 import { toast } from "react-toastify";
 import { handledownload } from "@/service/globalfunction";
 import Head from "next/head";
@@ -164,7 +165,21 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [showRelated, setShowRelated] = useState(false);
 
   //---- GALLERY STATE ----
-  const [galleryUrls, setGalleryUrls] = useState([]); // array of URLs (strings)
+  const [galleryUrls, setGalleryUrls] = useState(() => {
+    if (Array.isArray(initialProject?.gallery_urls) && initialProject.gallery_urls.length > 0) {
+      return initialProject.gallery_urls;
+    }
+    return initialProject?.photo_url ? [initialProject.photo_url] : [];
+  });
+  const [galleryThumbsUrls, setGalleryThumbsUrls] = useState(() => {
+    if (Array.isArray(initialProject?.gallery_thumbs_urls) && initialProject.gallery_thumbs_urls.length > 0) {
+      return initialProject.gallery_thumbs_urls;
+    }
+    if (Array.isArray(initialProject?.gallery_urls) && initialProject.gallery_urls.length > 0) {
+      return initialProject.gallery_urls;
+    }
+    return initialProject?.photo_url ? [initialProject.photo_url] : [];
+  });
   const [showGallery, setShowGallery] = useState(false); // mount Swiper only when needed
 
   // Build gallery once project is loaded
@@ -174,7 +189,12 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       ? project.gallery_urls
       : (project?.photo_url ? [project.photo_url] : []);
     setGalleryUrls(urls);
-  }, [project?.id, project?.photo_url, project?.gallery_urls]);
+
+    const thumbs = Array.isArray(project?.gallery_thumbs_urls) && project.gallery_thumbs_urls.length
+      ? project.gallery_thumbs_urls
+      : urls;
+    setGalleryThumbsUrls(thumbs);
+  }, [project?.id, project?.photo_url, project?.gallery_urls, project?.gallery_thumbs_urls]);
 
   useEffect(() => {
     if (galleryUrls?.length > 1) {
@@ -188,6 +208,35 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
     loop: galleryUrls.length > 1,
   });
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on('select', onSelect);
+    onSelect();
+  }, [emblaApi]);
+
+  const thumbnailRefs = useRef([]);
+  const lightboxThumbnailRefs = useRef([]);
+
+  // Auto-scroll active thumbnail into view
+  useEffect(() => {
+    if (thumbnailRefs.current[selectedIndex]) {
+      thumbnailRefs.current[selectedIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [selectedIndex]);
+
   // Lightbox State for Click-to-Zoom and Drag-to-Pan
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -198,8 +247,19 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const hasMouseDown = useRef(false);
   const hasTouchStart = useRef(false);
 
+  useEffect(() => {
+    if (lightboxIndex !== null && lightboxThumbnailRefs.current[lightboxIndex]) {
+      lightboxThumbnailRefs.current[lightboxIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [lightboxIndex]);
+
   const openLightbox = (index) => {
-    setLightboxIndex(index);
+    const validIdx = typeof index === 'number' && index >= 0 ? index : (selectedIndex || 0);
+    setLightboxIndex(validIdx);
     setIsZoomed(false);
     setPosition({ x: 0, y: 0 });
     setIsDragging(false);
@@ -343,22 +403,6 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
   const [reviewForm, setReviewForm] = useState({ rating: 0, hoverRating: 0, title: '', review: '' });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
-
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState([]);
-
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    setScrollSnaps(emblaApi.scrollSnapList());
-    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
-    emblaApi.on('select', onSelect);
-    onSelect();
-  }, [emblaApi]);
 
   // --- debug helpers (local-only; remove later) ---
   const shortCat = (c) => ({
@@ -732,6 +776,13 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
       ? galleryUrls[0]          // first gallery image
       : project?.photo_url || null;
 
+  // Safe images array for structured data (available on both SSR & client)
+  const allImages = (
+    galleryUrls?.length > 0
+      ? galleryUrls
+      : (project?.photo_url ? [project.photo_url] : [])
+  ).map((url) => getSafeImageUrl(url)).filter(Boolean);
+
   return (
     <Fragment>
       <Head>
@@ -803,54 +854,99 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
         <meta name="twitter:image:alt" content={`${project?.work_title} - CAD Drawing from Cadbull`} />
         <meta name="keywords" content={project?.tags || ""} />
 
-        {/* 1. CreativeWork / Image Gallery Schema */}
-        {galleryUrls?.length > 0 && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "CreativeWork",
-                "name": project?.work_title,
-                "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
-                "image": galleryUrls.map((url) => getSafeImageUrl(url)),
-                "url": cleanCanonicalUrl,
-                "mainEntityOfPage": cleanCanonicalUrl
-              }),
-            }}
-          />
-        )}
+        {/* 1. BreadcrumbList Schema for Google Search Rich Results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": `${frontUrl}/`
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Categories",
+                  "item": `${frontUrl}/categories`
+                },
+                ...(project?.product_category_title ? [{
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": project.product_category_title,
+                  "item": `${frontUrl}/${project?.category_path || ''}/1`
+                }] : []),
+                ...(project?.product_subcategory_title ? [{
+                  "@type": "ListItem",
+                  "position": project?.product_category_title ? 4 : 3,
+                  "name": project.product_subcategory_title,
+                  "item": `${frontUrl}/${project?.subcategory_path ? (project?.category_path ? `${project.category_path}/${project.subcategory_path}/1` : `${project.subcategory_path}/1`) : `${project?.category_path || ''}/1`}`
+                }] : []),
+                {
+                  "@type": "ListItem",
+                  "position": (project?.product_category_title ? 1 : 0) + (project?.product_subcategory_title ? 1 : 0) + 3,
+                  "name": project?.work_title || "CAD Drawing",
+                  "item": cleanCanonicalUrl
+                }
+              ]
+            })
+          }}
+        />
 
-        {/* 2. Product Schema with dynamic review aggregation and offers */}
+        {/* 2. Product Schema with dynamic review aggregation, brand, and offers */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Product",
+              "@id": `${cleanCanonicalUrl}#product`,
               "name": project?.work_title,
-              "image": galleryUrls.map((url) => getSafeImageUrl(url)),
+              "image": allImages.length > 0 ? allImages : (previewImage ? [getSafeImageUrl(previewImage)] : []),
               "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
               "sku": project?.id ? String(project.id) : undefined,
               "mpn": project?.id ? String(project.id) : undefined,
+              "category": project?.product_category_title ? (project?.product_subcategory_title ? `${project.product_category_title} > ${project.product_subcategory_title}` : project.product_category_title) : "CAD Drawings",
               "brand": {
                 "@type": "Brand",
-                "name": "Brand"
-              },
-              "reviewedBy": project?.reviewed_by ? {
-                "@type": "Person",
-                "name": project.reviewed_by
-              } : {
-                "@type": "Person",
                 "name": "Cadbull"
               },
-              "dateReviewed": project?.last_reviewed ? project.last_reviewed.split('T')[0] : new Date().toISOString().split('T')[0],
+              "reviewedBy": {
+                "@type": "Organization",
+                "name": project?.reviewed_by || "Cadbull"
+              },
+              "lastReviewed": project?.last_reviewed ? project.last_reviewed.split('T')[0] : new Date().toISOString().split('T')[0],
               "abstract": project?.tldr || undefined,
               "author": project?.experience ? {
                 "@type": "Person",
                 "name": "Expert Contributor",
                 "knowsAbout": project.experience
               } : undefined,
+              "additionalProperty": [
+                {
+                  "@type": "PropertyValue",
+                  "name": "File Format",
+                  "value": project?.file_type || "DWG"
+                },
+                ...(project?.size ? [{
+                  "@type": "PropertyValue",
+                  "name": "File Size",
+                  "value": formatBytes(project.size)
+                }] : []),
+                {
+                  "@type": "PropertyValue",
+                  "name": "Compatible Software",
+                  "value": project?.file_type ? (
+                    project.file_type.toLowerCase().includes("sketchup") || project.file_type.toLowerCase().includes("skp") ? "Trimble SketchUp" :
+                      project.file_type.toLowerCase().includes("revit") ? "Autodesk Revit" :
+                        project.file_type.toLowerCase().includes("max") || project.file_type.toLowerCase().includes("3ds") ? "Autodesk 3ds Max" : "Autodesk AutoCAD"
+                  ) : "Autodesk AutoCAD"
+                }
+              ],
               "offers": {
                 "@type": "Offer",
                 "url": cleanCanonicalUrl,
@@ -858,7 +954,12 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
                 "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '9.99',
                 "priceValidUntil": "2028-12-31",
                 "availability": "https://schema.org/InStock",
-                "itemCondition": "https://schema.org/NewCondition"
+                "itemCondition": "https://schema.org/NewCondition",
+                "seller": {
+                  "@type": "Organization",
+                  "name": "Cadbull",
+                  "url": "https://cadbull.com"
+                }
               },
               "aggregateRating": reviewsData?.total > 0 ? {
                 "@type": "AggregateRating",
@@ -871,36 +972,87 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           }}
         />
 
-        {/* 3. SoftwareApplication (CAD Asset) Schema */}
-        {/* <script
+        {/* 3. DigitalDocument / CAD Asset Schema (proper schema for CAD files and drawings) */}
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
+              "@type": (project?.file_type?.toLowerCase()?.includes("skp") || project?.file_type?.toLowerCase()?.includes("max") || project?.file_type?.toLowerCase()?.includes("3ds")) ? ["DigitalDocument", "3DModel"] : "DigitalDocument",
               "name": project?.work_title,
-              "operatingSystem": "Windows, macOS",
-              "applicationCategory": "DesignApplication",
+              "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
               "fileFormat": project?.file_type || "DWG",
-              "fileSize": formatBytes(project?.size) || "Unknown size",
-              "requirements": {
-                "@type": "SoftwareApplication",
-                "name": project?.file_type ? (
-                  project.file_type.toLowerCase().includes("sketchup") || project.file_type.toLowerCase().includes("skp") ? "Trimble SketchUp" :
-                    project.file_type.toLowerCase().includes("revit") ? "Autodesk Revit" :
-                      project.file_type.toLowerCase().includes("max") || project.file_type.toLowerCase().includes("3ds") ? "Autodesk 3ds Max" : "Autodesk AutoCAD"
-                ) : "Autodesk AutoCAD"
+              "encodingFormat": project?.file_type ? (
+                project.file_type.toLowerCase().includes("dwg") ? "image/vnd.dwg" :
+                  project.file_type.toLowerCase().includes("dxf") ? "image/vnd.dxf" :
+                    project.file_type.toLowerCase().includes("skp") ? "application/vnd.sketchup.skp" :
+                      project.file_type.toLowerCase().includes("max") || project.file_type.toLowerCase().includes("3ds") ? "application/x-3ds" :
+                        project.file_type.toLowerCase().includes("revit") ? "application/octet-stream" :
+                          `application/${project.file_type.toLowerCase()}`
+              ) : "image/vnd.dwg",
+              ...(project?.size ? { "contentSize": formatBytes(project.size) } : {}),
+              "url": cleanCanonicalUrl,
+              "image": allImages.length > 0 ? allImages : (previewImage ? [getSafeImageUrl(previewImage)] : []),
+              "author": (project?.firstname || project?.lastname) ? {
+                "@type": "Person",
+                "name": `${project.firstname || ''} ${project.lastname || ''}`.trim()
+              } : {
+                "@type": "Organization",
+                "name": "Cadbull"
               },
-              "offers": {
-                "@type": "Offer",
-                "price": project?.type?.toLowerCase() === 'free' ? '0.00' : '9.99',
-                "priceCurrency": "USD"
+              "publisher": {
+                "@type": "Organization",
+                "name": "Cadbull",
+                "url": frontUrl,
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://assets.cadbull.com/assets/images/logo.png"
+                }
+              },
+              "hasDigitalDocumentPermission": {
+                "@type": "DigitalDocumentPermission",
+                "permissionType": "https://schema.org/ReadPermission",
+                "grantee": {
+                  "@type": "Audience",
+                  "audienceType": "public"
+                }
               }
             })
           }}
-        /> */}
+        />
 
-        {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+        {/* 4. ItemPage / WebPage Schema (native Schema.org specification for E-E-A-T reviewedBy & lastReviewed) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemPage",
+              "@id": `${cleanCanonicalUrl}#webpage`,
+              "url": cleanCanonicalUrl,
+              "name": project?.work_title,
+              "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
+              "inLanguage": "en-US",
+              "isPartOf": {
+                "@type": "WebSite",
+                "name": "Cadbull",
+                "url": frontUrl
+              },
+              "lastReviewed": project?.last_reviewed ? project.last_reviewed.split('T')[0] : new Date().toISOString().split('T')[0],
+              "reviewedBy": {
+                "@type": "Organization",
+                "name": project?.reviewed_by || "Cadbull"
+              },
+              "mainEntity": {
+                "@type": "Product",
+                "name": project?.work_title,
+                "url": cleanCanonicalUrl
+              }
+            })
+          }}
+        />
+
+        {/* 5. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
         {project?.faqs && project.faqs.length > 0 && (
           <script
             type="application/ld+json"
@@ -1134,92 +1286,134 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
 
 
               {/* E9E9EB */}
-              <div className="p-3 rounded-2 shadow-sm heroFrame mb-3 mt-2" style={{ background: "#FDFDFD" }}>
-                {galleryUrls.length > 1 ? (
-                  /* MULTI-IMAGE MODE (with ratio, but only 1–2 images loaded at a time) */
-                  <div className="embla" ref={emblaRef}>
-                    <div className="embla__container">
-                      {galleryUrls.map((url, idx) => {
-                        const isFirst = idx === 0;
-                        // Only load current, previous and next slide
-                        const isNearCurrent = Math.abs(idx - selectedIndex) <= 1;
+              <div className="product-image-viewer-card shadow-sm mb-3 mt-2">
+                <div className="product-image-viewer-stage">
+                  {/* Save button (top-left) */}
+                  <button
+                    type="button"
+                    className={`viewer-overlay-btn save-btn ${isFavorited ? 'saved' : ''}`}
+                    onClick={() => handleLike()}
+                    title={isFavorited ? "Saved to Favorites" : "Save to Favorites"}
+                    aria-label="Save project"
+                  >
+                    <SaveIcon size={15} />
+                    <span>{isFavorited ? "Saved" : "Save"}</span>
+                  </button>
 
-                        return (
-                          <div className="embla__slide" key={`embla-${idx}`}>
-                            <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
-                              {isNearCurrent ? (
-                                <Image
-                                  src={getSafeImageUrl(url)}   // ✅ still your original high-quality image
-                                  alt={project?.work_title ? (idx === 0 ? project.work_title : `${project.work_title} ${idx + 1}`) : `Slide ${idx + 1}`}
-                                  fill
-                                  priority={isFirst}
-                                  fetchPriority={isFirst ? "high" : "auto"}
-                                  loading={isFirst ? "eager" : "lazy"}
-                                  decoding={isFirst ? "auto" : "async"}
-                                  quality={85}
-                                  sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                                  onClick={() => openLightbox(idx)}
-                                  style={{ cursor: "zoom-in" }}
-                                />
-                              ) : (
-                                // Lightweight placeholder instead of loading full image
-                                <div className="embla__placeholder">
-                                  {/* optional text/icon here */}
-                                </div>
-                              )}
+                  {/* Zoom button (top-right) */}
+                  <button
+                    type="button"
+                    className="viewer-overlay-btn zoom-btn"
+                    onClick={() => openLightbox(galleryUrls.length > 1 ? selectedIndex : 0)}
+                    title="Zoom image"
+                    aria-label="Zoom image"
+                  >
+                    <ZoomIcon size={15} />
+                    <span>Zoom</span>
+                  </button>
+
+                  {galleryUrls.length > 1 ? (
+                    /* MULTI-IMAGE MODE (with ratio, but only 1–2 images loaded at a time) */
+                    <div className="embla" ref={emblaRef}>
+                      <div className="embla__container">
+                        {galleryUrls.map((url, idx) => {
+                          const isFirst = idx === 0;
+                          // Only load current, previous and next slide
+                          const isNearCurrent = Math.abs(idx - selectedIndex) <= 1;
+
+                          return (
+                            <div className="embla__slide" key={`embla-${idx}`}>
+                              <div className="embla__stage" style={{ ['--frame-ratio']: ratioStr }}>
+                                {isNearCurrent ? (
+                                  <Image
+                                    src={getSafeImageUrl(url)}   // ✅ still your original high-quality image
+                                    alt={project?.work_title ? (idx === 0 ? project.work_title : `${project.work_title} ${idx + 1}`) : `Slide ${idx + 1}`}
+                                    fill
+                                    priority={isFirst}
+                                    fetchPriority={isFirst ? "high" : "auto"}
+                                    loading={isFirst ? "eager" : "lazy"}
+                                    decoding={isFirst ? "auto" : "async"}
+                                    quality={85}
+                                    sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                                    onClick={() => openLightbox(idx)}
+                                    style={{ cursor: "zoom-in" }}
+                                  />
+                                ) : (
+                                  // Lightweight placeholder instead of loading full image
+                                  <div className="embla__placeholder">
+                                    {/* optional text/icon here */}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                          );
+                        })}
+                      </div>
 
-                    {/* controls remain same */}
-                    <button className="embla__btn embla__btn--prev" onClick={scrollPrev}>
-                      <Icons.leftSwip />
-                    </button>
-                    <button className="embla__btn embla__btn--next" onClick={scrollNext}>
-                      <Icons.rightSwip />
-                    </button>
-                    <div className="embla__dots">
-                      {scrollSnaps.map((_, i) => (
+                      {/* controls */}
+                      <button 
+                        type="button" 
+                        className="viewer-nav-btn prev-btn" 
+                        onClick={scrollPrev}
+                        aria-label="Previous image"
+                      >
+                        <FaChevronLeft size={16} />
+                      </button>
+                      <button 
+                        type="button" 
+                        className="viewer-nav-btn next-btn" 
+                        onClick={scrollNext}
+                        aria-label="Next image"
+                      >
+                        <FaChevronRight size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    /* SINGLE IMAGE MODE (no ratio, use natural height) */
+                    <div className="embla__single text-center p-2">
+                      <Image
+                        key={project?.id || project?.photo_url}
+                        src={getSafeImageUrl(project?.photo_url)}
+                        width={project?.image_width || 800}
+                        height={project?.image_height || 600}
+                        alt={project?.work_title || "CAD Drawing"}
+                        className="img-fluid"
+                        priority
+                        fetchPriority="high"
+                        quality={85}
+                        placeholder="empty"
+                        sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
+                        style={{ objectFit: "contain", width: "100%", height: "auto", cursor: "zoom-in" }}
+                        onClick={() => openLightbox(0)}
+                        onError={() => setImgError(true)}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* THUMBNAIL STRIP (Shown when multiple images exist) */}
+                {galleryUrls.length > 1 && (
+                  <div className="viewer-thumbs-strip">
+                    <div className="viewer-thumbs-track">
+                      {galleryUrls.map((url, idx) => (
                         <button
-                          key={i}
-                          className={`embla__dot ${i === selectedIndex ? "embla__dot--active" : ""}`}
-                          onClick={() => scrollTo(i)}
-                        />
+                          key={`thumb-${idx}`}
+                          ref={(el) => (thumbnailRefs.current[idx] = el)}
+                          type="button"
+                          className={`viewer-thumb-item ${idx === selectedIndex ? "active" : ""}`}
+                          onClick={() => scrollTo(idx)}
+                          aria-label={`View image ${idx + 1}`}
+                          title={`Image ${idx + 1}`}
+                        >
+                          <img
+                            src={getSafeImageUrl(galleryThumbsUrls[idx] || url)}
+                            alt={project?.work_title ? `${project.work_title} ${idx + 1}` : `Thumbnail ${idx + 1}`}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </button>
                       ))}
                     </div>
-                  </div>
-                ) : (
-                  /* SINGLE IMAGE MODE (no ratio, use natural height) */
-                  <div className="embla__single">
-                    <Image
-                      // key={project?.id || project?.photo_url}
-                      // src={getSafeImageUrl(project?.photo_url)}
-                      // alt={project?.work_title || "CAD Drawing"}
-                      // width={project?.image_width || 800}
-                      // height={project?.image_height || 600}
-                      // style={{ width: "100%", height: "auto", objectFit: "contain" }}
-                      // priority
-                      // quality={85}
-                      // sizes="100vw"
-                      // onError={() => setImgError(true)}
-
-                      key={project?.id || project?.photo_url}
-                      src={getSafeImageUrl(project?.photo_url)}
-                      width={project?.image_width || 800}
-                      height={project?.image_height || 600}
-                      alt={project?.work_title || "CAD Drawing"}
-                      className="img-fluid"
-                      priority
-                      fetchPriority="high"
-                      quality={85}
-                      placeholder="empty"
-                      sizes="(max-width: 480px) 100vw, (max-width: 768px) 90vw, 72vw"
-                      style={{ objectFit: "contain", width: "100%", height: "auto", cursor: "zoom-in" }}
-                      onClick={() => openLightbox(0)}
-                      onError={() => setImgError(true)}
-                    />
                   </div>
                 )}
               </div>
@@ -2032,7 +2226,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           )}
 
           {/* Zoom hint badge / Counter */}
-          <div className="lightbox-hint">
+          <div className="lightbox-hint" style={galleryUrls.length > 1 ? { bottom: '82px' } : {}}>
             {isZoomed 
               ? (isDragging ? "Panning..." : "Drag to pan / Click to zoom out") 
               : `Click to zoom in ${galleryUrls.length > 1 ? `• Image ${lightboxIndex + 1} of ${galleryUrls.length}` : ''}`}
@@ -2041,6 +2235,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           <div 
             className="lightbox-content"
             onClick={(e) => e.stopPropagation()}
+            style={galleryUrls.length > 1 ? { paddingBottom: '80px' } : {}}
           >
             <img 
               src={getSafeImageUrl(galleryUrls[lightboxIndex])} 
@@ -2061,6 +2256,40 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               draggable={false}
             />
           </div>
+
+          {/* Lightbox thumbnail strip */}
+          {galleryUrls.length > 1 && (
+            <div 
+              className="lightbox-thumbs-strip"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="lightbox-thumbs-track">
+                {galleryUrls.map((url, i) => (
+                  <button
+                    key={`lb-thumb-${i}`}
+                    ref={(el) => (lightboxThumbnailRefs.current[i] = el)}
+                    type="button"
+                    className={`lightbox-thumb-item ${i === lightboxIndex ? 'active' : ''}`}
+                    onClick={() => {
+                      setLightboxIndex(i);
+                      setIsZoomed(false);
+                      setPosition({ x: 0, y: 0 });
+                      setIsDragging(false);
+                      if (emblaApi) emblaApi.scrollTo(i);
+                    }}
+                    aria-label={`View image ${i + 1}`}
+                  >
+                    <img 
+                      src={getSafeImageUrl(galleryThumbsUrls[i] || url)} 
+                      alt={`Thumbnail ${i + 1}`} 
+                      loading="lazy" 
+                      decoding="async" 
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Fragment>
