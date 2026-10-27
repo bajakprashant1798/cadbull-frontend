@@ -906,6 +906,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
               "@type": "Product",
               "@id": `${cleanCanonicalUrl}#product`,
               "name": project?.work_title,
+              "mainEntityOfPage": cleanCanonicalUrl,
               "image": allImages.length > 0 ? allImages : (previewImage ? [getSafeImageUrl(previewImage)] : []),
               "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
               "sku": project?.id ? String(project.id) : undefined,
@@ -1021,38 +1022,7 @@ const ViewDrawing = ({ initialProject, initialSimilar, canonicalUrl }) => {
           }}
         />
 
-        {/* 4. ItemPage / WebPage Schema (native Schema.org specification for E-E-A-T reviewedBy & lastReviewed) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemPage",
-              "@id": `${cleanCanonicalUrl}#webpage`,
-              "url": cleanCanonicalUrl,
-              "name": project?.work_title,
-              "description": project?.meta_description || (project?.description ? project.description.replace(/<[^>]*>/g, '').slice(0, 300) : "Download high-quality AutoCAD drawings and 2D/3D CAD blocks."),
-              "inLanguage": "en-US",
-              "isPartOf": {
-                "@type": "WebSite",
-                "name": "Cadbull",
-                "url": frontUrl
-              },
-              "lastReviewed": project?.last_reviewed ? project.last_reviewed.split('T')[0] : new Date().toISOString().split('T')[0],
-              "reviewedBy": {
-                "@type": "Organization",
-                "name": project?.reviewed_by || "Cadbull"
-              },
-              "mainEntity": {
-                "@type": "Product",
-                "name": project?.work_title,
-                "url": cleanCanonicalUrl
-              }
-            })
-          }}
-        />
-
-        {/* 5. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
+        {/* 4. FAQPage Schema for Search & AI Overview (GEO/AEO) extraction */}
         {project?.faqs && project.faqs.length > 0 && (
           <script
             type="application/ld+json"
