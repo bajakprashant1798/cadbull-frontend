@@ -161,8 +161,11 @@ const Categories = ({
   useEffect(() => {
     setSortType(type);
     setSortTerm(file_type);
-    setSearchTerm(search);
-    setSearchedText(search);
+    const urlSearch = typeof search === "string" ? search : "";
+    if (urlSearch !== searchTerm && urlSearch !== (searchTerm || "").trim()) {
+      setSearchTerm(urlSearch);
+      setSearchedText(urlSearch);
+    }
   }, [type, file_type, search]); // The URL is the single source of truth for filters.
 
   const debouncedSearch = useCallback(

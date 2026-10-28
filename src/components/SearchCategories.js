@@ -107,8 +107,9 @@ const SearchCategories = ({ categories, type, slug: propSlug, fetchSlug, current
   }, [searchTerm, slugTarget]); // Depend on slugTarget
 
   const handleSearch = (e) => {
-    if (e.target.value.trim().length >= 2) {
-      setSearchTerm(e.target.value.trim());
+    const val = e.target.value;
+    if (val.trim().length >= 2) {
+      setSearchTerm(val);
     } else {
       setSearchTerm("");
     }

@@ -98,9 +98,20 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
         const query = {};
         if (params.type) query.type = params.type;
         if (params.file_type) query.file_type = params.file_type;
-        if (params.search) query.search = params.search;
+        if (params.search && params.search.trim()) query.search = params.search;
         return query;
     };
+
+    // ✅ Sync search input from URL query when navigating or on initial page load
+    useEffect(() => {
+        if (router.isReady) {
+            const urlSearch = typeof search === "string" ? search : "";
+            if (urlSearch !== searchText && urlSearch !== (searchText || "").trim()) {
+                setSearchText(urlSearch);
+                setSearchedText(urlSearch);
+            }
+        }
+    }, [router.isReady, search]);
 
     // ✅ Optimized: Only fetch main categories if not provided via SSR
     useEffect(() => {
@@ -140,15 +151,16 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
     const debouncedSearch = useCallback(
         debounce((value) => {
-            setSearchedText(value);
+            const val = typeof value === "string" ? value : "";
+            setSearchedText(val);
             dispatch(updatesubcatpage(1));
-            dispatch(updatesubcatserachTerm(value));
+            dispatch(updatesubcatserachTerm(val));
             router.push({
                 pathname: `/${currentPath}/1`, // Use full path logic
                 query: buildQuery({
                     type: router.query.type || "",
                     file_type: router.query.file_type || "",
-                    search: value,
+                    search: val,
                 })
             }, undefined, { shallow: true });
         }, 500),
@@ -157,7 +169,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
 
     const handleInputChange = (value) => {
-        const val = value.trim();
+        const val = typeof value === "string" ? value : (value?.target?.value || "");
         setSearchText(val);
         debouncedSearch(val);
     };
@@ -165,13 +177,15 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
 
     const handleSearchSubmit = (val) => {
         debouncedSearch.cancel && debouncedSearch.cancel(); // Cancel any pending debounce
-        setSearchedText(val || searchText);
+        const finalVal = typeof val === "string" ? val : (val?.target?.value || searchText);
+        const trimmedVal = (finalVal || "").trim();
+        setSearchedText(trimmedVal);
         router.push({
             pathname: `/${currentPath}/1`, // Use full path logic
             query: buildQuery({
                 type: router.query.type || "",
                 file_type: router.query.file_type || "",
-                search: val || searchText,
+                search: trimmedVal,
             })
         });
     };
@@ -216,7 +230,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
     }, [dispatch]);
 
     // Prepare layout props
-    const CategoriesProps = searchedText.length
+    const CategoriesProps = (searchedText || "").trim().length
         ? {
             title: "Search Results",
             description: "Cadbull presents a variety of online drawings including DWG, Cad, AutoCAD, and 3D drawings.",
@@ -503,7 +517,7 @@ const CadLandscaping = ({ initialProjects, initialTotalPages, initialSlug, initi
                             <div className="col-lg-12">
                                 <div className="d-flex justify-content-between align-items-md-center flex-column flex-md-row gap-2">
                                     <div className="col-lg-3">
-                                        {searchedText.length ? (
+                                        {(searchedText || "").trim().length ? (
                                             <h2 className="h5 text-nowrap">
                                                 <span className="fw-semibold text-primary">
                                                     {searchedText}
